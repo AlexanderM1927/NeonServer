@@ -1,0 +1,16 @@
+﻿using System;
+using System.Collections.Generic;
+
+using Neon.HabboHotel.Catalog;
+
+namespace Neon.Communication.Packets.Outgoing.Catalog
+{
+    public class RecyclerRewardsComposer : ServerPacket
+    {
+        public RecyclerRewardsComposer()
+            : base(ServerPacketHeader.RecyclerRewardsMessageComposer)
+        {
+            base.WriteInteger(0);// Count of items
+        }
+    }
+}
