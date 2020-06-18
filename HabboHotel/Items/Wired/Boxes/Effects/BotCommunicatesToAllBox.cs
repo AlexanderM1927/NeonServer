@@ -33,8 +33,9 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
         public void HandleSave(ClientPacket Packet)
         {
             int Unknown = Packet.PopInt();
-            string ChatConfig = Packet.PopString();
             int ChatMode = Packet.PopInt();
+            string ChatConfig = Packet.PopString();
+            int Delay = Packet.PopInt();
 
             this.StringData = ChatConfig;
             if (ChatMode == 1)
@@ -45,7 +46,6 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
             {
                 this.BoolData = false;
             }
-            int Delay = Packet.PopInt();
 
             this.Delay = Delay;
             this.TickCount = Delay;
