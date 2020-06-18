@@ -12,21 +12,28 @@ using Neon.Communication.Packets.Outgoing.Rooms.Chat;
 
 namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
 {
-    class BotCommunicateToUserBox : IWiredItem
+    class BotCommunicateToUserBox : IWiredItem, IWiredCycle
     {
         public Room Instance { get; set; }
         public Item Item { get; set; }
         public WiredBoxType Type { get { return WiredBoxType.EffectBotCommunicatesToUserBox; } }
         public ConcurrentDictionary<int, Item> SetItems { get; set; }
+        public int TickCount { get; set; }
         public string StringData { get; set; }
         public bool BoolData { get; set; }
+        public int Delay { get { return this._delay; } set { this._delay = value; this.TickCount = value + 1; } }
         public string ItemsData { get; set; }
+
+        private long _next;
+        private int _delay = 0;
+        private bool Requested = false;
 
         public BotCommunicateToUserBox(Room Instance, Item Item)
         {
             this.Instance = Instance;
             this.Item = Item;
             this.SetItems = new ConcurrentDictionary<int, Item>();
+            this.TickCount = Delay;
         }
 
         public void HandleSave(ClientPacket Packet)
@@ -44,6 +51,10 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
             {
                 this.BoolData = false;
             }
+            int Delay = Packet.PopInt();
+
+            this.Delay = Delay;
+            this.TickCount = Delay;
         }
 
         public bool Execute(params object[] Params)
@@ -75,6 +86,16 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
                 User.Chat(Player.GetClient().GetHabbo().Username + ": " + Chat, false, User.LastBubble);
             }
 
+            return true;
+        }
+        public bool OnCycle()
+        {
+            if (this._next == 0 || this._next < NeonEnvironment.Now())
+                this._next = NeonEnvironment.Now() + this.Delay;
+
+
+            this.Requested = true;
+            this.TickCount = Delay;
             return true;
         }
     }
