@@ -143,7 +143,7 @@ namespace Neon.Communication.Packets.Outgoing.Rooms.Furni.Wired
                 base.WriteInteger(Box.StringData != null ? int.Parse(Box.StringData.Split(';')[1]) : 0);
             }
 
-            if (Box is IWiredCycle && Box.Type != WiredBoxType.EffectKickUser && Box.Type != WiredBoxType.EffectMatchPosition && Box.Type != WiredBoxType.EffectMoveAndRotate && Box.Type != WiredBoxType.EffectSetRollerSpeed && Box.Type != WiredBoxType.EffectAddScore && Box.Type != WiredBoxType.EffectAddRewardPoints &&
+            if (Box is IWiredCycle && Box.Type != WiredBoxType.EffectBotCommunicatesToAllBox && Box.Type != WiredBoxType.EffectBotCommunicatesToUserBox && Box.Type != WiredBoxType.EffectKickUser && Box.Type != WiredBoxType.EffectMatchPosition && Box.Type != WiredBoxType.EffectMoveAndRotate && Box.Type != WiredBoxType.EffectSetRollerSpeed && Box.Type != WiredBoxType.EffectAddScore && Box.Type != WiredBoxType.EffectAddRewardPoints &&
                 Box.Type != WiredBoxType.EffectMoveToDir && Box.Type != WiredBoxType.EffectMoveUser && Box.Type != WiredBoxType.EffectShowMessage && Box.Type != WiredBoxType.EffectGiveUserHanditem && Box.Type != WiredBoxType.EffectGiveUserEnable && Box.Type != WiredBoxType.EffectTimerReset
                 && Box.Type != WiredBoxType.EffectGiveUserFreeze && Box.Type != WiredBoxType.EffectExecuteWiredStacks)
             {
@@ -159,7 +159,13 @@ namespace Neon.Communication.Packets.Outgoing.Rooms.Furni.Wired
                 base.WriteInteger(WiredBoxTypeUtility.GetWiredId(Box.Type));
                 base.WriteInteger(Cycle.Delay);
             }
-            
+            else if(Box.Type == WiredBoxType.EffectBotCommunicatesToAllBox && Box.Type == WiredBoxType.EffectBotCommunicatesToUserBox)
+            {
+                IWiredCycle Cycle = (IWiredCycle)Box;
+                base.WriteInteger(0);
+                base.WriteInteger(WiredBoxTypeUtility.GetWiredId(Box.Type));
+                base.WriteInteger(Cycle.Delay);
+            }
             else
             {
                 base.WriteInteger(0);

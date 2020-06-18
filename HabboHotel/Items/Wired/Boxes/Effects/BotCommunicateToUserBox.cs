@@ -21,7 +21,7 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
         public int TickCount { get; set; }
         public string StringData { get; set; }
         public bool BoolData { get; set; }
-        public int Delay { get { return this._delay; } set { this._delay = value; this.TickCount = value; } }
+        public int Delay { get { return this._delay; } set { this._delay = value; this.TickCount = value + 1; } }
         public string ItemsData { get; set; }
 
         private long _next;
@@ -33,6 +33,7 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
             this.Instance = Instance;
             this.Item = Item;
             this.SetItems = new ConcurrentDictionary<int, Item>();
+            this.TickCount = Delay;
         }
 
         public void HandleSave(ClientPacket Packet)
@@ -51,7 +52,9 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
                 this.BoolData = false;
             }
             int Delay = Packet.PopInt();
+
             this.Delay = Delay;
+            this.TickCount = Delay;
         }
 
         public bool Execute(params object[] Params)
@@ -85,6 +88,7 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
 
             return true;
         }
+
         public bool OnCycle()
         {
             if (this._next == 0 || this._next < NeonEnvironment.Now())
