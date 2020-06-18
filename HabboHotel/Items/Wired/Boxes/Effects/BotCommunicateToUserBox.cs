@@ -39,8 +39,8 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
         public void HandleSave(ClientPacket Packet)
         {
             int Unknown = Packet.PopInt();
-            int ChatMode = Packet.PopInt();
             string ChatConfig = Packet.PopString();
+            int ChatMode = Packet.PopInt();
 
             this.StringData = ChatConfig;
             if (ChatMode == 1)
