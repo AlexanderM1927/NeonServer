@@ -231,6 +231,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands
             Register("pagar", new PayCommand());
             Register("setz", new SetzCommand());
             Register("resetsc", new ResetScoreBoard());
+            Register("emoji", new EmojiCommand());
         }
 
         private void Register(string v)
