@@ -229,19 +229,19 @@ namespace Neon.HabboHotel.GameClients
             }
         }
 
-        public void StaffAlert(ServerPacket Message, int Exclude = 0)
+        public void StaffAlert(string Message)
         {
             foreach (GameClient client in this.GetClients.ToList())
             {
                 if (client == null || client.GetHabbo() == null)
                     continue;
 
-                if (client.GetHabbo().Rank < 4 || client.GetHabbo().Id == Exclude)
+                if (client.GetHabbo().Rank < 4)
                     continue;
 
-                client.SendMessage(Message);
+                client.SendWhisper(Message, 23);
             }
-        }
+        }     
 
         public void QuizzAlert(ServerPacket Message, Item Item, Room room, int Exclude = 0)
         {
