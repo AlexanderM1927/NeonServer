@@ -33,7 +33,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
             }
 
             string Message = CommandManager.MergeParams(Params, 1);
-            NeonEnvironment.GetGame().GetClientManager().StaffAlert("[Staff Alert] " + Message + "" + " - " + Session.GetHabbo().Username);
+            NeonEnvironment.GetGame().GetClientManager().StaffAlert3("[Staff Alert] " + Message + "" + " - " + Session.GetHabbo().Username);
             return;
         }
     }
