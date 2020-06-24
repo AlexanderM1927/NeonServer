@@ -6,11 +6,6 @@ using Neon.Communication.Packets.Outgoing.Users;
 using Neon.Database.Interfaces;
 using Neon.HabboHotel.GameClients;
 using Neon.HabboHotel.Items;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.Communication.Packets.Incoming.Calendar
 {
@@ -59,8 +54,7 @@ namespace Neon.Communication.Packets.Incoming.Calendar
             {
                 case "itemid":
                     {
-                        ItemData Item = null;
-                        if (!NeonEnvironment.GetGame().GetItemManager().GetItem(int.Parse(GiftValue), out Item))
+                        if (!NeonEnvironment.GetGame().GetItemManager().GetItem(int.Parse(GiftValue), out ItemData Item))
                         {
                             // No existe este ItemId.
                             return;

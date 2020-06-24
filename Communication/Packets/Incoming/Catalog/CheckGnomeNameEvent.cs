@@ -205,8 +205,7 @@ namespace Neon.Communication.Packets.Incoming.Catalog
         {
             if (Session == null || Session.GetHabbo() == null)
                 return;
-
-            int Id = Packet.PopInt();
+            _ = Packet.PopInt();
             string Pin = Packet.PopString();
 
             if (Pin == Session.GetHabbo().PinClient)

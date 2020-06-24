@@ -1,11 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using Neon.Database.Interfaces;
-using Neon.HabboHotel.Global;
-
-
+﻿using Neon.Database.Interfaces;
 
 namespace Neon.Communication.Packets.Incoming.Avatar
 {

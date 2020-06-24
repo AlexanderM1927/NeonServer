@@ -1,15 +1,8 @@
-﻿using System;
-using System.Data;
-
-using Neon.Communication.Packets.Incoming;
+﻿using System.Data;
 using Neon.HabboHotel.GameClients;
 using Neon.HabboHotel.Catalog.Vouchers;
-
-
-
 using Neon.Communication.Packets.Outgoing.Catalog;
 using Neon.Communication.Packets.Outgoing.Inventory.Purse;
-
 using Neon.Database.Interfaces;
 using Neon.HabboHotel.Items;
 using Neon.Communication.Packets.Outgoing.Inventory.Furni;
@@ -23,8 +16,7 @@ namespace Neon.Communication.Packets.Incoming.Catalog
         {
             string VoucherCode = Packet.PopString().Replace("\r", "");
 
-            Voucher Voucher = null;
-            if (!NeonEnvironment.GetGame().GetCatalog().GetVoucherManager().TryGetVoucher(VoucherCode, out Voucher))
+            if (!NeonEnvironment.GetGame().GetCatalog().GetVoucherManager().TryGetVoucher(VoucherCode, out Voucher Voucher))
             {
                 Session.SendMessage(new VoucherRedeemErrorComposer(0));
                 return;
@@ -88,8 +80,7 @@ namespace Neon.Communication.Packets.Incoming.Catalog
             else if (Voucher.Type == VoucherType.ITEM)
             {
 
-                ItemData Item = null;
-                if (!NeonEnvironment.GetGame().GetItemManager().GetItem((Voucher.Value), out Item))
+                if (!NeonEnvironment.GetGame().GetItemManager().GetItem((Voucher.Value), out ItemData Item))
                 {
                     // No existe este ItemId.
                     return;

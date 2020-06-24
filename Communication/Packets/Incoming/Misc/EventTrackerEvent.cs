@@ -23,7 +23,7 @@ namespace Neon.Communication.Packets.Incoming.Misc
             if (Session.GetHabbo().MultiWhisper && Test3.Equals("RWUAM_WHISPER_USER"))
             {
                 Room Room = Session.GetHabbo().CurrentRoom;
-                RoomUser User = Room.GetRoomUserManager().GetRoomUserByHabbo(Session.GetHabbo().lastUserId);
+                RoomUser User = Room.GetRoomUserManager().GetRoomUserByHabbo(Session.GetHabbo().LastUserId);
                 if (!Session.GetHabbo().MultiWhispers.Contains(User))
                 {
                     Session.GetHabbo().MultiWhispers.Add(User);

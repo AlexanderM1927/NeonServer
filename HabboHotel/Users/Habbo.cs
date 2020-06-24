@@ -8,7 +8,6 @@ using log4net;
 
 using Neon.Core;
 using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Groups;
 using Neon.HabboHotel.GameClients;
 using Neon.HabboHotel.Achievements;
 using Neon.HabboHotel.Users.Badges;
@@ -33,11 +32,9 @@ using Neon.HabboHotel.Rooms.Chat.Commands;
 using Neon.HabboHotel.Users.Permissions;
 using Neon.HabboHotel.Subscriptions;
 using Neon.HabboHotel.Club;
-using System.Linq;
 using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
 using Neon.Communication.Packets.Outgoing.LandingView;
 using Neon.HabboHotel.Users.Polls;
-using Neon.HabboHotel.Catalog;
 using Neon.HabboHotel.Items;
 using Neon.HabboHotel.Helpers;
 
@@ -51,38 +48,7 @@ namespace Neon.HabboHotel.Users
         public string _tag;
         public string _tagcolor;
         public string _nameColor;
-
-        //Generic player values.
-        private int _id;
-        private string _username;
-        private int _rank;
-        private string _motto;
-        private string _look;
-        private string _gender;
         public int _bet;
-        private string _footballLook;
-        private string _footballGender;
-        private string _backupLook;
-        private bool _lastMovFGate;
-        private string _backupGender;
-        private int _credits;
-        private int _duckets;
-        private int _diamonds;
-        private string _pinClient;
-        private int _gotwPoints;
-        private int _userpoints;
-        private int _homeRoom;
-        private double _lastOnline;
-        private double _accountCreated;
-        private List<int> _clientVolume;
-        private double _lastNameChange;
-        private string _machineId;
-        private bool _chatPreference;
-        private bool _focusPreference;
-        private bool _isExpert;
-        private int _vipRank;
-        private int _CurrentTalentLevel;
-        private int _BonusPoints;
         public bool _playingChess = false;
         public string _eColor = "";
 
@@ -97,27 +63,6 @@ namespace Neon.HabboHotel.Users
         public string _alerttype = "2";
         public string _eventtype = "2";
         public int _eventsopened;
-        private bool _appearOffline;
-        private bool _allowTradingRequests;
-        private bool _allowUserFollowing;
-        private bool _allowFriendRequests;
-        private bool _allowMessengerInvites;
-        private bool _allowPetSpeech;
-        private bool _allowBotSpeech;
-        private bool _allowPublicRoomStatus;
-        private bool _allowConsoleMessages;
-        private bool _allowGifts;
-        private bool _allowMimic;
-        private bool _receiveWhispers;
-        private bool _ignorePublicWhispers;
-        private bool _playingFastFood;
-        private FriendBarState _friendbarState;
-        private int _christmasDay;
-        private int _wantsToRideHorse;
-        private int _timeAFK;
-        private int _lastUserID;
-        private bool _disableForcedEffects = false;
-
         internal string lastLayout;
 
         public long _lastTimeUsedHelpCommand;
@@ -125,23 +70,9 @@ namespace Neon.HabboHotel.Users
         //Player saving.
         private bool _disconnected;
         private bool _habboSaved;
-        private bool _changingName;
         public byte _changename;
 
         public Dictionary<string, int> WiredRewards;
-
-        //Counters
-        private double _floodTime;
-        private int _friendCount;
-        private double _timeMuted;
-        private double _tradingLockExpiry;
-
-        private int _bannedPhraseCount;
-        private double _sessionStart;
-        private int _messengerSpamCount;
-        private double _messengerSpamTime;
-        private int _creditsTickUpdate;
-        private int _bonusTickUpdate;
         public byte _guidelevel;
         public byte _publicistalevel;
         public byte _builder;
@@ -149,38 +80,8 @@ namespace Neon.HabboHotel.Users
         public bool _isFirstThrow;
         public bool _hisTurn = false;
         public byte _TargetedBuy;
-
-        //Room related
-        private int _tentId;
-        private int _hopperId;
-        private bool _isHopping;
-        private int _teleportId;
-        private bool _isTeleporting;
-        private int _teleportingRoomId;
-        private bool _roomAuthOk;
-        private int _currentRoomId;
         public bool Spectating = false;
         public string _Opponent;
-
-        //Advertising reporting system.
-        private bool _hasSpoken;
-        private bool _advertisingReported;
-        private double _lastAdvertiseReport;
-        private bool _advertisingReportBlocked;
-
-        //Values generated within the game.
-        private bool _wiredInteraction;
-        private int _questLastCompleted;
-
-        private int _lastMessageCount;
-        private string _lastMessage;
-
-        private bool _inventoryAlert;
-        private bool _ignoreBobbaFilter;
-        private bool _wiredTeleporting;
-        private int _customBubbleId;
-        private int _tempInt;
-        private bool _onHelperDuty;
         public string chatHTMLColour;
         public int chatHTMLSize;
 
@@ -190,11 +91,12 @@ namespace Neon.HabboHotel.Users
         public int lastY;
         public int lastX2;
         public int lastY2;
-        //alfas
+        
+        //Alfas
         internal bool onDuty;
         internal bool onService;
         internal uint userHelping;
-        internal typeOfHelper rankHelper;
+        internal TypeOfHelper rankHelper;
         internal bool requestHelp;
         internal bool requestTour;
         internal bool reportsOfHarassment;
@@ -202,30 +104,11 @@ namespace Neon.HabboHotel.Users
         public bool _SecurityQuestion = false;
         public bool _IsBeingAsked = false;
 
-        // Chess
 
         // Camara
-
         public string _lastPhotoPreview;
         public string lastPhotoPreview;
-
-        //Fastfood
-        private int _fastfoodScore;
-        
-
-        //Just random fun stuff.
-        private int _petId;
-
-        //Anti-script placeholders.
-        private DateTime _lastGiftPurchaseTime;
-        private DateTime _lastMottoUpdateTime;
-
         public int LastSqlQuery = 0;
-        private DateTime _lastForumMessageUpdateTime;
-
-        private int _giftPurchasingWarnings;
-        private int _mottoUpdateWarnings;
-
         public bool _sellingroom = false;
 
         public bool StaffOk = false;
@@ -234,13 +117,6 @@ namespace Neon.HabboHotel.Users
         public int EventType = 1;
         public bool _NUX;
         public bool PassedNuxNavigator = false, PassedNuxDuckets = false, PassedNuxItems = false, PassedNuxChat = false, PassedNuxCatalog = false;
-
-        private bool _sessionGiftBlocked;
-        private bool _sessionMottoBlocked;
-
-        private bool _rigDice;
-        private int _diceNumber;
-
         public List<int> RatedRooms;
         public List<int> MutedUsers;
         public List<RoomUser> MultiWhispers;
@@ -272,8 +148,6 @@ namespace Neon.HabboHotel.Users
         private PermissionComponent _permissions;
 
         public double ForceHeight;
-
-        private IChatCommand _iChatCommand;
         public bool PassedQuiz;
 
         public bool _multiWhisper;
@@ -289,167 +163,166 @@ namespace Neon.HabboHotel.Users
          int GOTWPoints, int UserPoints, bool IgnoreInvites, double TimeMuted, double TradingLock, bool AllowGifts, int FriendBarState, bool DisableForcedEffects, bool AllowMimic, int VIPRank,
          byte guidelevel, byte publicistalevel, byte builder, byte croupier, bool Nux, byte TargetedBuy, string NameColor, string Tag, string TagColor, byte NameChange, string PinClient)
         {
-            _id = Id;
-            _username = Username;
-            _rank = Rank;
-            _motto = Motto;
-            _look = NeonEnvironment.GetGame().GetAntiMutant().RunLook(Look);
-            _gender = Gender.ToLower();
-            _footballLook = NeonEnvironment.FilterFigure(Look.ToLower());
-            _footballGender = Gender.ToLower();
-            _credits = Credits;
-            _duckets = ActivityPoints;
-            _diamonds = Diamonds;
-            _gotwPoints = GOTWPoints;
-            _pinClient = PinClient;
+            this.Id = Id;
+            this.Username = Username;
+            this.Rank = Rank;
+            this.Motto = Motto;
+            this.Look = NeonEnvironment.GetGame().GetAntiMutant().RunLook(Look);
+            this.Gender = Gender.ToLower();
+            FootballLook = NeonEnvironment.FilterFigure(Look.ToLower());
+            FootballGender = Gender.ToLower();
+            this.Credits = Credits;
+            Duckets = ActivityPoints;
+            this.Diamonds = Diamonds;
+            this.GOTWPoints = GOTWPoints;
+            this.PinClient = PinClient;
             _NUX = Nux;
-            _userpoints = UserPoints;
-            _homeRoom = HomeRoom;
-            _lastOnline = LastOnline;
+            this.UserPoints = UserPoints;
+            this.HomeRoom = HomeRoom;
+            this.LastOnline = LastOnline;
             _guidelevel = guidelevel;
             _publicistalevel = publicistalevel;
             _builder = builder;
             _croupier = croupier;
             _TargetedBuy = TargetedBuy;
-            _accountCreated = CreateDate;
-            _clientVolume = new List<int>();
+            AccountCreated = CreateDate;
+            ClientVolume = new List<int>();
             _nameColor = NameColor;
             _tag = Tag;
             _tagcolor = TagColor;
             _changename = NameChange;
             foreach (string Str in clientVolume.Split(','))
             {
-                int Val = 0;
-                if (int.TryParse(Str, out Val))
-                    _clientVolume.Add(int.Parse(Str));
+                if (int.TryParse(Str, out _))
+                    ClientVolume.Add(int.Parse(Str));
                 else
-                    _clientVolume.Add(100);
+                    ClientVolume.Add(100);
             }
 
-            _lastNameChange = LastNameChange;
-            _machineId = machineID;
-            _chatPreference = ChatPreference;
-            _focusPreference = FocusPreference;
-            _isExpert = IsExpert == true;
+            this.LastNameChange = LastNameChange;
+            MachineId = machineID;
+            this.ChatPreference = ChatPreference;
+            this.FocusPreference = FocusPreference;
+            IsExpert = IsExpert == true;
 
-            _appearOffline = AppearOffline;
-            _allowTradingRequests = true;//TODO
-            _allowUserFollowing = true;//TODO
-            _allowFriendRequests = HasFriendRequestsDisabled;//TODO
-            _allowMessengerInvites = IgnoreInvites;
-            _allowPetSpeech = PetsMuted;
-            _allowBotSpeech = BotsMuted;
-            _allowPublicRoomStatus = HideInRoom;
-            _allowConsoleMessages = true;
-            _allowGifts = AllowGifts;
-            _allowMimic = AllowMimic;
+            this.AppearOffline = AppearOffline;
+            AllowTradingRequests = true;//TODO
+            AllowUserFollowing = true;//TODO
+            AllowFriendRequests = HasFriendRequestsDisabled;//TODO
+            AllowMessengerInvites = IgnoreInvites;
+            AllowPetSpeech = PetsMuted;
+            AllowBotSpeech = BotsMuted;
+            AllowPublicRoomStatus = HideInRoom;
+            AllowConsoleMessages = true;
+            this.AllowGifts = AllowGifts;
+            this.AllowMimic = AllowMimic;
             _lastPhotoPreview = lastPhotoPreview;
-            _receiveWhispers = true;
-            _ignorePublicWhispers = false;
-            _playingFastFood = false;
-            _friendbarState = FriendBarStateUtility.GetEnum(FriendBarState);
-            _christmasDay = ChristmasDay;
-            _wantsToRideHorse = 0;
-            _timeAFK = 0;
-            _disableForcedEffects = DisableForcedEffects;
-            _vipRank = VIPRank;
+            ReceiveWhispers = true;
+            IgnorePublicWhispers = false;
+            PlayingFastFood = false;
+            FriendbarState = FriendBarStateUtility.GetEnum(FriendBarState);
+            ChristmasDay = ChristmasDay;
+            WantsToRideHorse = 0;
+            TimeAFK = 0;
+            this.DisableForcedEffects = DisableForcedEffects;
+            this.VIPRank = VIPRank;
             _bet = 0;
 
-            this.onDuty = false;
-            this.requestHelp = false;
-            this.requestTour = false;
-            this.userHelping = 0;
-            this.reportsOfHarassment = false;
-            this.onService = false;
+            onDuty = false;
+            requestHelp = false;
+            requestTour = false;
+            userHelping = 0;
+            reportsOfHarassment = false;
+            onService = false;
 
-            this._disconnected = false;
-            this._habboSaved = false;
-            this._changingName = false;
+            _disconnected = false;
+            _habboSaved = false;
+            ChangingName = false;
 
-            this._floodTime = 0;
-            this._friendCount = 0;
-            this._timeMuted = TimeMuted;
-            this._timeCached = DateTime.Now;
+            FloodTime = 0;
+            FriendCount = 0;
+            this.TimeMuted = TimeMuted;
+            _timeCached = DateTime.Now;
 
-            this._sellingroom = false;
+            _sellingroom = false;
 
             //this._CurrentTalentLevel = GetCurrentTalentLevel();
 
-            this._tradingLockExpiry = TradingLock;
-            if (this._tradingLockExpiry > 0 && NeonEnvironment.GetUnixTimestamp() > this.TradingLockExpiry)
+            TradingLockExpiry = TradingLock;
+            if (TradingLockExpiry > 0 && NeonEnvironment.GetUnixTimestamp() > TradingLockExpiry)
             {
-                this._tradingLockExpiry = 0;
+                TradingLockExpiry = 0;
                 using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
                 {
                     dbClient.RunQuery("UPDATE `user_info` SET `trading_locked` = '0' WHERE `user_id` = '" + Id + "' LIMIT 1");
                 }
             }
 
-            this._bannedPhraseCount = 0;
-            this._sessionStart = NeonEnvironment.GetUnixTimestamp();
-            this._messengerSpamCount = 0;
-            this._messengerSpamTime = 0;
-            this._creditsTickUpdate = NeonStaticGameSettings.UserCreditsUpdateTimer;
+            BannedPhraseCount = 0;
+            SessionStart = NeonEnvironment.GetUnixTimestamp();
+            MessengerSpamCount = 0;
+            MessengerSpamTime = 0;
+            CreditsUpdateTick = NeonStaticGameSettings.UserCreditsUpdateTimer;
 
-            this._tentId = 0;
-            this._hopperId = 0;
-            this._isHopping = false;
-            this._teleportId = 0;
-            this._isTeleporting = false;
-            this._teleportingRoomId = 0;
-            this._roomAuthOk = false;
-            this._currentRoomId = 0;
+            TentId = 0;
+            HopperId = 0;
+            IsHopping = false;
+            TeleporterId = 0;
+            IsTeleporting = false;
+            TeleportingRoomID = 0;
+            RoomAuthOk = false;
+            CurrentRoomId = 0;
 
-            this._hasSpoken = false;
-            this._lastAdvertiseReport = 0;
-            this._advertisingReported = false;
-            this._advertisingReportBlocked = AdvertisingReportBlocked;
+            HasSpoken = false;
+            LastAdvertiseReport = 0;
+            AdvertisingReported = false;
+            AdvertisingReportedBlocked = AdvertisingReportBlocked;
 
-            this._multiWhisper = false;
-            this._wiredInteraction = false;
-            this._questLastCompleted = 0;
-            this._inventoryAlert = false;
-            this._ignoreBobbaFilter = false;
-            this._wiredTeleporting = false;
+            _multiWhisper = false;
+            WiredInteraction = false;
+            QuestLastCompleted = 0;
+            InventoryAlert = false;
+            IgnoreBobbaFilter = false;
+            WiredTeleporting = false;
             LastClothingUpdateTime = DateTime.Now;
-            this._customBubbleId = 0;
-            this._onHelperDuty = false;
-            this._fastfoodScore = 0;
-            this._petId = 0;
-            this._tempInt = 0;
+            CustomBubbleId = 0;
+            OnHelperDuty = false;
+            FastfoodScore = 0;
+            PetId = 0;
+            TempInt = 0;
 
-            this._lastGiftPurchaseTime = DateTime.Now;
-            this._lastMottoUpdateTime = DateTime.Now;
-            this._lastForumMessageUpdateTime = DateTime.Now;
+            LastGiftPurchaseTime = DateTime.Now;
+            LastMottoUpdateTime = DateTime.Now;
+            LastForumMessageUpdateTime = DateTime.Now;
             ClothingUpdateWarnings = 0;
 
-            this._giftPurchasingWarnings = 0;
-            this._mottoUpdateWarnings = 0;
+            GiftPurchasingWarnings = 0;
+            MottoUpdateWarnings = 0;
 
-            this._sessionGiftBlocked = false;
-            this._sessionMottoBlocked = false;
-            this._isFirstThrow = true;
+            SessionGiftBlocked = false;
+            SessionMottoBlocked = false;
+            _isFirstThrow = true;
             SessionClothingBlocked = false;
 
-            this.FavoriteRooms = new ArrayList();
-            this.MutedUsers = new List<int>();
-            this.MultiWhispers = new List<RoomUser>();
-            this.Achievements = new ConcurrentDictionary<string, UserAchievement>();
-            this.Relationships = new Dictionary<int, Relationship>();
-            this.RatedRooms = new List<int>();
-            this.UsersRooms = new List<RoomData>();
-            this.TradeItems = new List<Item>();
+            FavoriteRooms = new ArrayList();
+            MutedUsers = new List<int>();
+            MultiWhispers = new List<RoomUser>();
+            Achievements = new ConcurrentDictionary<string, UserAchievement>();
+            Relationships = new Dictionary<int, Relationship>();
+            RatedRooms = new List<int>();
+            UsersRooms = new List<RoomData>();
+            TradeItems = new List<Item>();
 
             //TODO: Nope.
-            this.InitPermissions();
+            InitPermissions();
 
             #region Stats
-            DataRow StatRow = null;
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
                 dbClient.SetQuery("SELECT `id`,`roomvisits`,`onlinetime`,`respect`,`respectgiven`,`giftsgiven`,`giftsreceived`,`dailyrespectpoints`,`dailypetrespectpoints`,`achievementscore`,`quest_id`,`quest_progress`,`groupid`,`tickets_answered`,`respectstimestamp`,`forum_posts`, `PurchaseUsersConcurrent`, `vip_gifts` FROM `user_stats` WHERE `id` = @user_id LIMIT 1");
                 dbClient.AddParameter("user_id", Id);
-                StatRow = dbClient.getRow();
+                
+                DataRow StatRow = dbClient.getRow();
 
                 if (StatRow == null)//No row, add it yo
                 {
@@ -461,7 +334,7 @@ namespace Neon.HabboHotel.Users
 
                 try
                 {
-                    this._habboStats = new HabboStats(Convert.ToInt32(StatRow["roomvisits"]), Convert.ToDouble(StatRow["onlineTime"]), Convert.ToInt32(StatRow["respect"]), Convert.ToInt32(StatRow["respectGiven"]), Convert.ToInt32(StatRow["giftsGiven"]),
+                    _habboStats = new HabboStats(Convert.ToInt32(StatRow["roomvisits"]), Convert.ToDouble(StatRow["onlineTime"]), Convert.ToInt32(StatRow["respect"]), Convert.ToInt32(StatRow["respectGiven"]), Convert.ToInt32(StatRow["giftsGiven"]),
                         Convert.ToInt32(StatRow["giftsReceived"]), Convert.ToInt32(StatRow["dailyRespectPoints"]), Convert.ToInt32(StatRow["dailyPetRespectPoints"]), Convert.ToInt32(StatRow["AchievementScore"]),
                         Convert.ToInt32(StatRow["quest_id"]), Convert.ToInt32(StatRow["quest_progress"]), Convert.ToInt32(StatRow["groupid"]), Convert.ToString(StatRow["respectsTimestamp"]), Convert.ToInt32(StatRow["forum_posts"]), Convert.ToBoolean(StatRow["PurchaseUsersConcurrent"]), Convert.ToInt32(StatRow["vip_gifts"]));
 
@@ -489,8 +362,7 @@ namespace Neon.HabboHotel.Users
                 }
             }
 
-            Group G = null;
-            if (!NeonEnvironment.GetGame().GetGroupManager().TryGetGroup(this._habboStats.FavouriteGroupId, out G))
+            if (!NeonEnvironment.GetGame().GetGroupManager().TryGetGroup(this._habboStats.FavouriteGroupId, out _))
                 this._habboStats.FavouriteGroupId = 0;
             #endregion
         }
@@ -499,79 +371,47 @@ namespace Neon.HabboHotel.Users
 
         internal ClubManager GetClubManager()
         {
-            return this.ClubManager;
+            return ClubManager;
         }
         public string PrefixName
         {
-            get { return this._tag; }
-            set { this._tag = value; }
+            get { return _tag; }
+            set { _tag = value; }
         }
 
-        public string eColor
+        public string EColor
         {
-            get { return this._eColor; }
-            set { this._eColor = value; }
+            get { return _eColor; }
+            set { _eColor = value; }
         }
 
         public string PrefixColor
         {
-            get { return this._tagcolor; }
-            set { this._tagcolor = value; }
+            get { return _tagcolor; }
+            set { _tagcolor = value; }
         }
 
         public string NameColor
         {
-            get { return this._nameColor; }
-            set { this._nameColor = value; }
+            get { return _nameColor; }
+            set { _nameColor = value; }
         }
 
-        public int Id
-        {
-            get { return this._id; }
-            set { this._id = value; }
-        }
+        public int Id { get; set; }
 
-        public int lastUserId
-        {
-            get { return this._lastUserID; }
-            set { this._lastUserID = value; }
-        }
+        public int LastUserId { get; set; }
 
-        public string Username
-        {
-            get { return this._username; }
-            set { this._username = value; }
-        }
+        public string Username { get; set; }
 
-        public int Rank
-        {
-            get { return this._rank; }
-            set { this._rank = value; }
-        }
+        public int Rank { get; set; }
 
-        public string Motto
-        {
-            get { return this._motto; }
-            set { this._motto = value; }
-        }
+        public string Motto { get; set; }
 
-        public string Look
-        {
-            get { return this._look; }
-            set { this._look = value; }
-        }
+        public string Look { get; set; }
 
-        public string Gender
-        {
-            get { return this._gender; }
-            set { this._gender = value; }
-        }
+        public string Gender { get; set; }
 
-        public string FootballLook
-        {
-            get { return this._footballLook; }
-            set { this._footballLook = value; }
-        }
+        public string FootballLook { get; set; }
 
         private bool InitPolls()
         {
@@ -585,17 +425,9 @@ namespace Neon.HabboHotel.Users
             return this._polls;
         }
 
-        public string FootballGender
-        {
-            get { return this._footballGender; }
-            set { this._footballGender = value; }
-        }
+        public string FootballGender { get; set; }
 
-        public bool LastMovFGate
-        {
-            get { return this._lastMovFGate; }
-            set { this._lastMovFGate = value; }
-        }
+        public bool LastMovFGate { get; set; }
 
         // Dice System
 
@@ -605,7 +437,7 @@ namespace Neon.HabboHotel.Users
             set { this._isFirstThrow = value; }
         }
 
-        public bool isControlling
+        public bool IsControlling
         {
             get { return this._isControlling; }
             set { this._isControlling = value; }
@@ -629,196 +461,68 @@ namespace Neon.HabboHotel.Users
             set { this._multiWhisper = value; }
         }
 
-        public string BackupLook
-        {
-            get { return this._backupLook; }
-            set { this._backupLook = value; }
-        }
+        public string BackupLook { get; set; }
 
-        public string BackupGender
-        {
-            get { return this._backupGender; }
-            set { this._backupGender = value; }
-        }
+        public string BackupGender { get; set; }
 
-        public int Credits
-        {
-            get { return this._credits; }
-            set { this._credits = value; }
-        }
+        public int Credits { get; set; }
 
-        public int Duckets
-        {
-            get { return this._duckets; }
-            set { this._duckets = value; }
-        }
+        public int Duckets { get; set; }
 
-        public int Diamonds
-        {
-            get { return this._diamonds; }
-            set { this._diamonds = value; }
-        }
+        public int Diamonds { get; set; }
 
-        public bool RigDice
-        {
-            get { return this._rigDice; }
-            set { this._rigDice = value; }
-        }
+        public bool RigDice { get; set; }
 
-        public int DiceNumber
-        {
-            get { return this._diceNumber; }
-            set { this._diceNumber = value; }
-        }
+        public int DiceNumber { get; set; }
 
-        public string PinClient
-        {
-            get { return this._pinClient; }
-            set { this._pinClient = value; }
-        }
+        public string PinClient { get; set; }
 
-        public int GOTWPoints
-        {
-            get { return this._gotwPoints; }
-            set { this._gotwPoints = value; }
-        }
+        public int GOTWPoints { get; set; }
 
-        public int BonusPoints
-        {
-            get { return this._BonusPoints; }
-            set { this._BonusPoints = value; }
-        }
+        public int BonusPoints { get; set; }
 
-        public int UserPoints
-        {
-            get { return this._userpoints; }
-            set { this._userpoints = value; }
-        }
+        public int UserPoints { get; set; }
 
-        public int HomeRoom
-        {
-            get { return this._homeRoom; }
-            set { this._homeRoom = value; }
-        }
+        public int HomeRoom { get; set; }
 
-        public double LastOnline
-        {
-            get { return this._lastOnline; }
-            set { this._lastOnline = value; }
-        }
+        public double LastOnline { get; set; }
 
-        public double AccountCreated
-        {
-            get { return this._accountCreated; }
-            set { this._accountCreated = value; }
-        }
+        public double AccountCreated { get; set; }
 
-        public List<int> ClientVolume
-        {
-            get { return this._clientVolume; }
-            set { this._clientVolume = value; }
-        }
+        public List<int> ClientVolume { get; set; }
 
-        public double LastNameChange
-        {
-            get { return this._lastNameChange; }
-            set { this._lastNameChange = value; }
-        }
+        public double LastNameChange { get; set; }
 
-        public string MachineId
-        {
-            get { return this._machineId; }
-            set { this._machineId = value; }
-        }
+        public string MachineId { get; set; }
 
-        public bool ChatPreference
-        {
-            get { return this._chatPreference; }
-            set { this._chatPreference = value; }
-        }
-        public bool FocusPreference
-        {
-            get { return this._focusPreference; }
-            set { this._focusPreference = value; }
-        }
+        public bool ChatPreference { get; set; }
+        public bool FocusPreference { get; set; }
 
-        public bool IsExpert
-        {
-            get { return this._isExpert; }
-            set { this._isExpert = value; }
-        }
+        public bool IsExpert { get; set; }
 
-        public bool AppearOffline
-        {
-            get { return this._appearOffline; }
-            set { this._appearOffline = value; }
-        }
+        public bool AppearOffline { get; set; }
 
-        public int VIPRank
-        {
-            get { return this._vipRank; }
-            set { this._vipRank = value; }
-        }
+        public int VIPRank { get; set; }
 
-        public int TempInt
-        {
-            get { return this._tempInt; }
-            set { this._tempInt = value; }
-        }
+        public int TempInt { get; set; }
 
-        public bool AllowTradingRequests
-        {
-            get { return this._allowTradingRequests; }
-            set { this._allowTradingRequests = value; }
-        }
+        public bool AllowTradingRequests { get; set; }
 
-        public bool AllowUserFollowing
-        {
-            get { return this._allowUserFollowing; }
-            set { this._allowUserFollowing = value; }
-        }
+        public bool AllowUserFollowing { get; set; }
 
-        public bool AllowFriendRequests
-        {
-            get { return this._allowFriendRequests; }
-            set { this._allowFriendRequests = value; }
-        }
+        public bool AllowFriendRequests { get; set; }
 
-        public bool AllowMessengerInvites
-        {
-            get { return this._allowMessengerInvites; }
-            set { this._allowMessengerInvites = value; }
-        }
+        public bool AllowMessengerInvites { get; set; }
 
-        public bool AllowPetSpeech
-        {
-            get { return this._allowPetSpeech; }
-            set { this._allowPetSpeech = value; }
-        }
+        public bool AllowPetSpeech { get; set; }
 
-        public bool AllowBotSpeech
-        {
-            get { return this._allowBotSpeech; }
-            set { this._allowBotSpeech = value; }
-        }
+        public bool AllowBotSpeech { get; set; }
 
-        public bool AllowPublicRoomStatus
-        {
-            get { return this._allowPublicRoomStatus; }
-            set { this._allowPublicRoomStatus = value; }
-        }
+        public bool AllowPublicRoomStatus { get; set; }
 
-        public bool AllowConsoleMessages
-        {
-            get { return this._allowConsoleMessages; }
-            set { this._allowConsoleMessages = value; }
-        }
+        public bool AllowConsoleMessages { get; set; }
 
-        public bool AllowGifts
-        {
-            get { return this._allowGifts; }
-            set { this._allowGifts = value; }
-        }
+        public bool AllowGifts { get; set; }
 
         // CHESS SYSTEM
         public bool PlayingChess
@@ -827,316 +531,112 @@ namespace Neon.HabboHotel.Users
             set { this._playingChess = value; }
         }
 
-        public bool AllowMimic
-        {
-            get { return this._allowMimic; }
-            set { this._allowMimic = value; }
-        }
+        public bool AllowMimic { get; set; }
 
-        public bool ReceiveWhispers
-        {
-            get { return this._receiveWhispers; }
-            set { this._receiveWhispers = value; }
-        }
+        public bool ReceiveWhispers { get; set; }
 
-        public bool IgnorePublicWhispers
-        {
-            get { return this._ignorePublicWhispers; }
-            set { this._ignorePublicWhispers = value; }
-        }
+        public bool IgnorePublicWhispers { get; set; }
 
-        public bool PlayingFastFood
-        {
-            get { return this._playingFastFood; }
-            set { this._playingFastFood = value; }
-        }
+        public bool PlayingFastFood { get; set; }
 
-        public FriendBarState FriendbarState
-        {
-            get { return this._friendbarState; }
-            set { this._friendbarState = value; }
-        }
+        public FriendBarState FriendbarState { get; set; }
 
-        public int ChristmasDay
-        {
-            get { return this._christmasDay; }
-            set { this._christmasDay = value; }
-        }
+        public int ChristmasDay { get; set; }
 
-        public int WantsToRideHorse
-        {
-            get { return this._wantsToRideHorse; }
-            set { this._wantsToRideHorse = value; }
-        }
+        public int WantsToRideHorse { get; set; }
 
-        public int TimeAFK
-        {
-            get { return this._timeAFK; }
-            set { this._timeAFK = value; }
-        }
+        public int TimeAFK { get; set; }
 
-        public string LastMessage
-        {
-            get { return this._lastMessage; }
-            set { this._lastMessage = value; }
-        }
+        public string LastMessage { get; set; }
 
-        public int LastMessageCount
-        {
-            get { return this._lastMessageCount; }
-            set { this._lastMessageCount = value; }
-        }
+        public int LastMessageCount { get; set; }
 
-        public bool DisableForcedEffects
-        {
-            get { return this._disableForcedEffects; }
-            set { this._disableForcedEffects = value; }
-        }
+        public bool DisableForcedEffects { get; set; } = false;
 
-        public bool ChangingName
-        {
-            get { return this._changingName; }
-            set { this._changingName = value; }
-        }
+        public bool ChangingName { get; set; }
 
-        public int FriendCount
-        {
-            get { return this._friendCount; }
-            set { this._friendCount = value; }
-        }
+        public int FriendCount { get; set; }
 
-        public double FloodTime
-        {
-            get { return this._floodTime; }
-            set { this._floodTime = value; }
-        }
+        public double FloodTime { get; set; }
 
-        public int BannedPhraseCount
-        {
-            get { return this._bannedPhraseCount; }
-            set { this._bannedPhraseCount = value; }
-        }
+        public int BannedPhraseCount { get; set; }
 
-        public bool RoomAuthOk
-        {
-            get { return this._roomAuthOk; }
-            set { this._roomAuthOk = value; }
-        }
+        public bool RoomAuthOk { get; set; }
 
-        public int CurrentRoomId
-        {
-            get { return this._currentRoomId; }
-            set { this._currentRoomId = value; }
-        }
+        public int CurrentRoomId { get; set; }
 
-        public int QuestLastCompleted
-        {
-            get { return this._questLastCompleted; }
-            set { this._questLastCompleted = value; }
-        }
+        public int QuestLastCompleted { get; set; }
 
-        public int MessengerSpamCount
-        {
-            get { return this._messengerSpamCount; }
-            set { this._messengerSpamCount = value; }
-        }
+        public int MessengerSpamCount { get; set; }
 
-        public double MessengerSpamTime
-        {
-            get { return this._messengerSpamTime; }
-            set { this._messengerSpamTime = value; }
-        }
+        public double MessengerSpamTime { get; set; }
 
-        public double TimeMuted
-        {
-            get { return this._timeMuted; }
-            set { this._timeMuted = value; }
-        }
+        public double TimeMuted { get; set; }
 
-        public double TradingLockExpiry
-        {
-            get { return this._tradingLockExpiry; }
-            set { this._tradingLockExpiry = value; }
-        }
+        public double TradingLockExpiry { get; set; }
 
-        public double SessionStart
-        {
-            get { return this._sessionStart; }
-            set { this._sessionStart = value; }
-        }
+        public double SessionStart { get; set; }
 
-        public int TentId
-        {
-            get { return this._tentId; }
-            set { this._tentId = value; }
-        }
+        public int TentId { get; set; }
 
-        public int HopperId
-        {
-            get { return this._hopperId; }
-            set { this._hopperId = value; }
-        }
+        public int HopperId { get; set; }
 
-        public bool IsHopping
-        {
-            get { return this._isHopping; }
-            set { this._isHopping = value; }
-        }
+        public bool IsHopping { get; set; }
 
-        public int TeleporterId
-        {
-            get { return this._teleportId; }
-            set { this._teleportId = value; }
-        }
+        public int TeleporterId { get; set; }
 
-        public bool IsTeleporting
-        {
-            get { return this._isTeleporting; }
-            set { this._isTeleporting = value; }
-        }
+        public bool IsTeleporting { get; set; }
 
-        public int TeleportingRoomID
-        {
-            get { return this._teleportingRoomId; }
-            set { this._teleportingRoomId = value; }
-        }
+        public int TeleportingRoomID { get; set; }
 
-        public bool HasSpoken
-        {
-            get { return this._hasSpoken; }
-            set { this._hasSpoken = value; }
-        }
+        public bool HasSpoken { get; set; }
 
-        public double LastAdvertiseReport
-        {
-            get { return this._lastAdvertiseReport; }
-            set { this._lastAdvertiseReport = value; }
-        }
+        public double LastAdvertiseReport { get; set; }
 
-        public bool AdvertisingReported
-        {
-            get { return this._advertisingReported; }
-            set { this._advertisingReported = value; }
-        }
+        public bool AdvertisingReported { get; set; }
 
-        public bool AdvertisingReportedBlocked
-        {
-            get { return this._advertisingReportBlocked; }
-            set { this._advertisingReportBlocked = value; }
-        }
+        public bool AdvertisingReportedBlocked { get; set; }
 
-        public bool WiredInteraction
-        {
-            get { return this._wiredInteraction; }
-            set { this._wiredInteraction = value; }
-        }
+        public bool WiredInteraction { get; set; }
 
-        public bool InventoryAlert
-        {
-            get { return this._inventoryAlert; }
-            set { this._inventoryAlert = value; }
-        }
+        public bool InventoryAlert { get; set; }
 
-        public bool IgnoreBobbaFilter
-        {
-            get { return this._ignoreBobbaFilter; }
-            set { this._ignoreBobbaFilter = value; }
-        }
+        public bool IgnoreBobbaFilter { get; set; }
 
-        public bool WiredTeleporting
-        {
-            get { return this._wiredTeleporting; }
-            set { this._wiredTeleporting = value; }
-        }
+        public bool WiredTeleporting { get; set; }
 
-        public int CustomBubbleId
-        {
-            get { return this._customBubbleId; }
-            set { this._customBubbleId = value; }
-        }
+        public int CustomBubbleId { get; set; }
 
-        public bool OnHelperDuty
-        {
-            get { return this._onHelperDuty; }
-            set { this._onHelperDuty = value; }
-        }
+        public bool OnHelperDuty { get; set; }
 
-        public int FastfoodScore
-        {
-            get { return this._fastfoodScore; }
-            set { this._fastfoodScore = value; }
-        }
+        public int FastfoodScore { get; set; }
 
-        public int PetId
-        {
-            get { return this._petId; }
-            set { this._petId = value; }
-        }
+        public int PetId { get; set; }
 
-        public int CreditsUpdateTick
-        {
-            get { return this._creditsTickUpdate; }
-            set { this._creditsTickUpdate = value; }
-        }
+        public int CreditsUpdateTick { get; set; }
 
-        public int BonusUpdateTick
-        {
-            get { return this._bonusTickUpdate; }
-            set { this._bonusTickUpdate = value; }
-        }
+        public int BonusUpdateTick { get; set; }
 
-        public IChatCommand IChatCommand
-        {
-            get { return this._iChatCommand; }
-            set { this._iChatCommand = value; }
-        }
+        public IChatCommand IChatCommand { get; set; }
 
-        public DateTime LastGiftPurchaseTime
-        {
-            get { return this._lastGiftPurchaseTime; }
-            set { this._lastGiftPurchaseTime = value; }
-        }
+        public DateTime LastGiftPurchaseTime { get; set; }
 
-        public DateTime LastMottoUpdateTime
-        {
-            get { return this._lastMottoUpdateTime; }
-            set { this._lastMottoUpdateTime = value; }
-        }
+        public DateTime LastMottoUpdateTime { get; set; }
 
         public DateTime LastClothingUpdateTime { get; set; }
 
 
-        public DateTime LastForumMessageUpdateTime
-        {
-            get { return this._lastForumMessageUpdateTime; }
-            set { this._lastForumMessageUpdateTime = value; }
-        }
+        public DateTime LastForumMessageUpdateTime { get; set; }
 
-        public int GiftPurchasingWarnings
-        {
-            get { return this._giftPurchasingWarnings; }
-            set { this._giftPurchasingWarnings = value; }
-        }
+        public int GiftPurchasingWarnings { get; set; }
 
-        public int MottoUpdateWarnings
-        {
-            get { return this._mottoUpdateWarnings; }
-            set { this._mottoUpdateWarnings = value; }
-        }
+        public int MottoUpdateWarnings { get; set; }
 
         public int ClothingUpdateWarnings { get; set; }
 
-        public int CurrentTalentLevel
-        {
-            get { return this._CurrentTalentLevel; }
-            set { this._CurrentTalentLevel = value; }
-        }
+        public int CurrentTalentLevel { get; set; }
 
-        public bool SessionGiftBlocked
-        {
-            get { return this._sessionGiftBlocked; }
-            set { this._sessionGiftBlocked = value; }
-        }
+        public bool SessionGiftBlocked { get; set; }
 
         public bool SecureTradeEnabled
         {
@@ -1162,11 +662,7 @@ namespace Neon.HabboHotel.Users
             set { this._IsBeingAsked = value; }
         }
 
-        public bool SessionMottoBlocked
-        {
-            get { return this._sessionMottoBlocked; }
-            set { this._sessionMottoBlocked = value; }
-        }
+        public bool SessionMottoBlocked { get; set; }
 
         public bool SessionClothingBlocked { get; set; }
 
@@ -1190,8 +686,7 @@ namespace Neon.HabboHotel.Users
                 if (CurrentRoomId <= 0)
                     return null;
 
-                Room _room = null;
-                if (NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(CurrentRoomId, out _room))
+                if (NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(CurrentRoomId, out Room _room))
                     return _room;
 
                 return null;
@@ -1209,7 +704,7 @@ namespace Neon.HabboHotel.Users
             get
             {
                 this._habboSaved = true;
-                return "UPDATE `users` SET `online` = '0', `last_online` = '" + NeonEnvironment.GetUnixTimestamp() + "', `activity_points` = '" + this.Duckets + "', `credits` = '" + this.Credits + "', `vip_points` = '" + this.Diamonds + "' ,  `bonus_points` = '" + this._BonusPoints + "', `home_room` = '" + this.HomeRoom + "', `gotw_points` = '" + this.GOTWPoints + "', `user_points` = '" + this.UserPoints + "', `publi` = '" + this._publicistalevel + "', `guia` = '" + this._guidelevel + "', `builder` = '" + this._builder + "', `croupier` = '" + this._croupier + "', `time_muted` = '" + this.TimeMuted + "',`friend_bar_state` = '" + FriendBarStateUtility.GetInt(this._friendbarState) + "' WHERE id = '" + Id + "' LIMIT 1;UPDATE `user_stats` SET `roomvisits` = '" + this._habboStats.RoomVisits + "', `onlineTime` = '" + (NeonEnvironment.GetUnixTimestamp() - this.SessionStart + this._habboStats.OnlineTime) + "', `respect` = '" + this._habboStats.Respect + "', `respectGiven` = '" + this._habboStats.RespectGiven + "', `giftsGiven` = '" + this._habboStats.GiftsGiven + "', `giftsReceived` = '" + this._habboStats.GiftsReceived + "', `dailyRespectPoints` = '" + this._habboStats.DailyRespectPoints + "', `dailyPetRespectPoints` = '" + this._habboStats.DailyPetRespectPoints + "', `AchievementScore` = '" + this._habboStats.AchievementPoints + "', `quest_id` = '" + this._habboStats.QuestID + "', `quest_progress` = '" + this._habboStats.QuestProgress + "', `groupid` = '" + this._habboStats.FavouriteGroupId + "',`forum_posts` = '" + this._habboStats.ForumPosts + "',`PurchaseUsersConcurrent` = '" + this._habboStats.PurchaseUsersConcurrent + "', `vip_gifts` = '" + this._habboStats.vipGifts + "' WHERE `id` = '" + this.Id + "' LIMIT 1;";
+                return "UPDATE `users` SET `online` = '0', `last_online` = '" + NeonEnvironment.GetUnixTimestamp() + "', `activity_points` = '" + this.Duckets + "', `credits` = '" + this.Credits + "', `vip_points` = '" + this.Diamonds + "' ,  `bonus_points` = '" + this.BonusPoints + "', `home_room` = '" + this.HomeRoom + "', `gotw_points` = '" + this.GOTWPoints + "', `user_points` = '" + this.UserPoints + "', `publi` = '" + this._publicistalevel + "', `guia` = '" + this._guidelevel + "', `builder` = '" + this._builder + "', `croupier` = '" + this._croupier + "', `time_muted` = '" + this.TimeMuted + "',`friend_bar_state` = '" + FriendBarStateUtility.GetInt(this.FriendbarState) + "' WHERE id = '" + Id + "' LIMIT 1;UPDATE `user_stats` SET `roomvisits` = '" + this._habboStats.RoomVisits + "', `onlineTime` = '" + (NeonEnvironment.GetUnixTimestamp() - this.SessionStart + this._habboStats.OnlineTime) + "', `respect` = '" + this._habboStats.Respect + "', `respectGiven` = '" + this._habboStats.RespectGiven + "', `giftsGiven` = '" + this._habboStats.GiftsGiven + "', `giftsReceived` = '" + this._habboStats.GiftsReceived + "', `dailyRespectPoints` = '" + this._habboStats.DailyRespectPoints + "', `dailyPetRespectPoints` = '" + this._habboStats.DailyPetRespectPoints + "', `AchievementScore` = '" + this._habboStats.AchievementPoints + "', `quest_id` = '" + this._habboStats.QuestID + "', `quest_progress` = '" + this._habboStats.QuestProgress + "', `groupid` = '" + this._habboStats.FavouriteGroupId + "',`forum_posts` = '" + this._habboStats.ForumPosts + "',`PurchaseUsersConcurrent` = '" + this._habboStats.PurchaseUsersConcurrent + "', `vip_gifts` = '" + this._habboStats.vipGifts + "' WHERE `id` = '" + this.Id + "' LIMIT 1;";
             }
         }
 
@@ -1296,7 +791,7 @@ namespace Neon.HabboHotel.Users
 
             Messenger = new HabboMessenger(Id);
             Messenger.Init(data.friends, data.requests);
-            this._friendCount = Convert.ToInt32(data.friends.Count);
+            this.FriendCount = Convert.ToInt32(data.friends.Count);
             this._disconnected = false;
             UsersRooms = data.rooms;
             Relationships = data.Relations;
@@ -1336,7 +831,7 @@ namespace Neon.HabboHotel.Users
                 this.ClubManager = (ClubManager)null;
             }
 
-            if(_onHelperDuty)
+            if(OnHelperDuty)
             {
                 GameClient Session = NeonEnvironment.GetGame().GetClientManager().GetClientByUserID(this.Id);
                 HelperToolsManager.RemoveHelper(Session);
@@ -1344,70 +839,70 @@ namespace Neon.HabboHotel.Users
             
             NeonEnvironment.GetGame().GetClientManager().UnregisterClient(Id, Username);
 
-            if (!this._habboSaved) // GUARDADO DE USER
+            if (!_habboSaved) // GUARDADO DE USER
             {
-                this._habboSaved = true;
+                _habboSaved = true;
                 using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
                 {
-                    dbClient.runFastQuery("UPDATE `users` SET `online` = '0', `last_online` = '" + NeonEnvironment.GetUnixTimestamp() + "', `activity_points` = '" + this.Duckets + "', `credits` = '" + this.Credits + "',  `vip_points` = '" + this.Diamonds + "' ,  `bonus_points` = '" + this._BonusPoints + "', `home_room` = '" + this.HomeRoom + "', `gotw_points` = '" + this.GOTWPoints + "', `user_points` = '" + this.UserPoints + "', `time_muted` = '" + this.TimeMuted + "',`friend_bar_state` = '" + FriendBarStateUtility.GetInt(this._friendbarState) + "' WHERE id = '" + Id + "' LIMIT 1;UPDATE `user_stats` SET `roomvisits` = '" + this._habboStats.RoomVisits + "', `onlineTime` = '" + (NeonEnvironment.GetUnixTimestamp() - this.SessionStart + this._habboStats.OnlineTime) + "', `respect` = '" + this._habboStats.Respect + "', `respectGiven` = '" + this._habboStats.RespectGiven + "', `giftsGiven` = '" + this._habboStats.GiftsGiven + "', `giftsReceived` = '" + this._habboStats.GiftsReceived + "', `dailyRespectPoints` = '" + this._habboStats.DailyRespectPoints + "', `dailyPetRespectPoints` = '" + this._habboStats.DailyPetRespectPoints + "', `AchievementScore` = '" + this._habboStats.AchievementPoints + "', `quest_id` = '" + this._habboStats.QuestID + "', `quest_progress` = '" + this._habboStats.QuestProgress + "', `groupid` = '" + this._habboStats.FavouriteGroupId + "',`forum_posts` = '" + this._habboStats.ForumPosts + "',`PurchaseUsersConcurrent` = '" + this._habboStats.PurchaseUsersConcurrent + "' WHERE `id` = '" + this.Id + "' LIMIT 1;");
+                    dbClient.runFastQuery("UPDATE `users` SET `online` = '0', `last_online` = '" + NeonEnvironment.GetUnixTimestamp() + "', `activity_points` = '" + Duckets + "', `credits` = '" + Credits + "',  `vip_points` = '" + Diamonds + "' ,  `bonus_points` = '" + BonusPoints + "', `home_room` = '" + HomeRoom + "', `gotw_points` = '" + GOTWPoints + "', `user_points` = '" + UserPoints + "', `time_muted` = '" + TimeMuted + "',`friend_bar_state` = '" + FriendBarStateUtility.GetInt(FriendbarState) + "' WHERE id = '" + Id + "' LIMIT 1;UPDATE `user_stats` SET `roomvisits` = '" + _habboStats.RoomVisits + "', `onlineTime` = '" + (NeonEnvironment.GetUnixTimestamp() - SessionStart + _habboStats.OnlineTime) + "', `respect` = '" + _habboStats.Respect + "', `respectGiven` = '" + _habboStats.RespectGiven + "', `giftsGiven` = '" + _habboStats.GiftsGiven + "', `giftsReceived` = '" + _habboStats.GiftsReceived + "', `dailyRespectPoints` = '" + this._habboStats.DailyRespectPoints + "', `dailyPetRespectPoints` = '" + this._habboStats.DailyPetRespectPoints + "', `AchievementScore` = '" + this._habboStats.AchievementPoints + "', `quest_id` = '" + this._habboStats.QuestID + "', `quest_progress` = '" + this._habboStats.QuestProgress + "', `groupid` = '" + this._habboStats.FavouriteGroupId + "',`forum_posts` = '" + this._habboStats.ForumPosts + "',`PurchaseUsersConcurrent` = '" + this._habboStats.PurchaseUsersConcurrent + "' WHERE `id` = '" + this.Id + "' LIMIT 1;");
 
                     if (GetPermissions().HasRight("mod_tickets"))
                         dbClient.RunQuery("UPDATE `moderation_tickets` SET `status` = 'open', `moderator_id` = '0' WHERE `status` ='picked' AND `moderator_id` = '" + Id + "'");
                 }
             }
 
-            this.Dispose();
+            Dispose();
 
-            this._client = null;
+            _client = null;
 
         }
 
         public void Dispose()
         {
-            if (this.InventoryComponent != null)
-                this.InventoryComponent.SetIdleState();
+            if (InventoryComponent != null)
+                InventoryComponent.SetIdleState();
 
-            if (this.UsersRooms != null)
+            if (UsersRooms != null)
                 UsersRooms.Clear();
 
-            if (this.MultiWhispers != null)
+            if (MultiWhispers != null)
                 MultiWhispers.Clear();
 
-            if (this.InRoom && this.CurrentRoom != null)
-                this.CurrentRoom.GetRoomUserManager().RemoveUserFromRoom(this._client, false, false);
+            if (InRoom && CurrentRoom != null)
+                CurrentRoom.GetRoomUserManager().RemoveUserFromRoom(_client, false, false);
 
             if (Messenger != null)
             {
-                this.Messenger.AppearOffline = true;
-                this.Messenger.Destroy();
+                Messenger.AppearOffline = true;
+                Messenger.Destroy();
             }
 
-            if (this._fx != null)
-                this._fx.Dispose();
+            if (_fx != null)
+                _fx.Dispose();
 
-            if (this._clothing != null)
-                this._clothing.Dispose();
+            if (_clothing != null)
+                _clothing.Dispose();
 
-            if (this._permissions != null)
-                this._permissions.Dispose();
+            if (_permissions != null)
+                _permissions.Dispose();
         }
 
         public void CheckBonusTimer()
         {
             try
             {
-                this._bonusTickUpdate--;
+                BonusUpdateTick--;
 
-                if (this._bonusTickUpdate <= 0)
+                if (BonusUpdateTick <= 0)
                 {
                     int BonusUpdate = 1;
 
-                    this._BonusPoints += BonusUpdate;
+                    BonusPoints += BonusUpdate;
 
-                    this._client.SendMessage(new HabboActivityPointNotificationComposer(this._BonusPoints, BonusUpdate, 101));
-                    this._client.SendMessage(new RoomCustomizedAlertComposer("¡Enhorabuena! Has recibido un punto bonus por estar conectado durante 2 horas."));
-                    this._client.SendMessage(new BonusRareMessageComposer(this._client));
-                    this.BonusUpdateTick = NeonStaticGameSettings.BonusRareUpdateTimer;
+                    _client.SendMessage(new HabboActivityPointNotificationComposer(BonusPoints, BonusUpdate, 101));
+                    _client.SendMessage(new RoomCustomizedAlertComposer("¡Enhorabuena! Has recibido un punto bonus por estar conectado durante 2 horas."));
+                    _client.SendMessage(new BonusRareMessageComposer(_client));
+                    BonusUpdateTick = NeonStaticGameSettings.BonusRareUpdateTimer;
                 }
             }
             catch { }
@@ -1416,47 +911,47 @@ namespace Neon.HabboHotel.Users
         {
             try
             {
-                this._creditsTickUpdate--;
+                CreditsUpdateTick--;
 
-                if (this._creditsTickUpdate <= 0)
+                if (CreditsUpdateTick <= 0)
                 {
                     int CreditUpdate = NeonStaticGameSettings.UserCreditsUpdateAmount;
                     int DucketUpdate = NeonStaticGameSettings.UserPixelsUpdateAmount;
                     int VipDucketUpdate = NeonStaticGameSettings.UserVipPixelsUpdateAmount;
 
-                    this._credits += CreditUpdate;
-                    if (this._client.GetHabbo().Rank == 2 && this._client.GetHabbo().VIPRank == 1)
+                    Credits += CreditUpdate;
+                    if (_client.GetHabbo().Rank == 2 && _client.GetHabbo().VIPRank == 1)
                     {
-                        this._duckets += VipDucketUpdate;
+                        Duckets += VipDucketUpdate;
                     }
                     else
                     {
-                        this._duckets += DucketUpdate;
+                        Duckets += DucketUpdate;
                     }
 
 
-                    if (this._client.GetHabbo().Rank == 2 && this._client.GetHabbo().VIPRank == 1)
+                    if (_client.GetHabbo().Rank == 2 && _client.GetHabbo().VIPRank == 1)
                     {
-                        this._client.SendMessage(new CreditBalanceComposer(this._credits));
-                        this._client.SendMessage(new HabboActivityPointNotificationComposer(this._duckets, VipDucketUpdate));
+                        _client.SendMessage(new CreditBalanceComposer(Credits));
+                        _client.SendMessage(new HabboActivityPointNotificationComposer(Duckets, VipDucketUpdate));
                     }
                     else
                     {
-                        this._client.SendMessage(new CreditBalanceComposer(this._credits));
-                        this._client.SendMessage(new HabboActivityPointNotificationComposer(this._duckets, DucketUpdate));
+                        _client.SendMessage(new CreditBalanceComposer(Credits));
+                        _client.SendMessage(new HabboActivityPointNotificationComposer(Duckets, DucketUpdate));
                     }
                     
-                    if (this._client.GetHabbo().Rank == 2 && this._client.GetHabbo().VIPRank == 1)
+                    if (_client.GetHabbo().Rank == 2 && _client.GetHabbo().VIPRank == 1)
                     {
-                        this.GetClient().SendMessage(RoomNotificationComposer.SendBubble("newuser", "Has recibido " + CreditUpdate + " créditos y " + VipDucketUpdate + " duckets por estar conectado 15 minutos.", ""));
+                        GetClient().SendMessage(RoomNotificationComposer.SendBubble("newuser", "Has recibido " + CreditUpdate + " créditos y " + VipDucketUpdate + " duckets por estar conectado 15 minutos.", ""));
 
                     }
                     else
                     {
-                        this.GetClient().SendMessage(RoomNotificationComposer.SendBubble("newuser", "Has recibido " + CreditUpdate + " créditos y " + DucketUpdate + " duckets por estar conectado 15 minutos.", ""));
+                        GetClient().SendMessage(RoomNotificationComposer.SendBubble("newuser", "Has recibido " + CreditUpdate + " créditos y " + DucketUpdate + " duckets por estar conectado 15 minutos.", ""));
                     }
 
-                    this.CreditsUpdateTick = NeonStaticGameSettings.UserCreditsUpdateTimer;
+                    CreditsUpdateTick = NeonStaticGameSettings.UserCreditsUpdateTimer;
                 }
             }
             catch { }
@@ -1464,8 +959,8 @@ namespace Neon.HabboHotel.Users
 
         public GameClient GetClient()
         {
-            if (this._client != null)
-                return this._client;
+            if (_client != null)
+                return _client;
 
             return NeonEnvironment.GetGame().GetClientManager().GetClientByUserID(Id);
         }
@@ -1487,44 +982,42 @@ namespace Neon.HabboHotel.Users
 
         public SearchesComponent GetNavigatorSearches()
         {
-            return this._navigatorSearches;
+            return _navigatorSearches;
         }
 
         public EffectsComponent Effects()
         {
-            return this._fx;
+            return _fx;
         }
 
         public ClothingComponent GetClothing() => _clothing;
 
         public int GetQuestProgress(int p)
         {
-            int progress = 0;
-            quests.TryGetValue(p, out progress);
+            quests.TryGetValue(p, out int progress);
             return progress;
         }
 
         public UserAchievement GetAchievementData(string p)
         {
-            UserAchievement achievement = null;
-            Achievements.TryGetValue(p, out achievement);
+            Achievements.TryGetValue(p, out UserAchievement achievement);
             return achievement;
         }
 
         public void ChangeName(string Username)
         {
-            this.LastNameChange = NeonEnvironment.GetUnixTimestamp();
+            LastNameChange = NeonEnvironment.GetUnixTimestamp();
             this.Username = Username;
 
-            this.SaveKey("username", Username);
-            this.SaveKey("last_change", this.LastNameChange.ToString());
+            SaveKey("username", Username);
+            SaveKey("last_change", LastNameChange.ToString());
         }
 
         public void SaveKey(string Key, string Value)
         {
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
-                dbClient.SetQuery("UPDATE `users` SET " + Key + " = @value WHERE `id` = '" + this.Id + "' LIMIT 1;");
+                dbClient.SetQuery("UPDATE `users` SET " + Key + " = @value WHERE `id` = '" + Id + "' LIMIT 1;");
                 dbClient.AddParameter("value", Value);
                 dbClient.RunQuery();
             }
@@ -1532,78 +1025,77 @@ namespace Neon.HabboHotel.Users
 
         public void PrepareRoom(int Id, string Password)
         {
-            if (this.GetClient() == null || this.GetClient().GetHabbo() == null)
+            if (GetClient() == null || GetClient().GetHabbo() == null)
                 return;
 
-            if (this.GetClient().GetHabbo().InRoom)
+            if (GetClient().GetHabbo().InRoom)
             {
-                Room OldRoom = null;
-                if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(this.GetClient().GetHabbo().CurrentRoomId, out OldRoom))
+                if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(GetClient().GetHabbo().CurrentRoomId, out Room OldRoom))
                     return;
 
                 if (OldRoom.GetRoomUserManager() != null)
-                    OldRoom.GetRoomUserManager().RemoveUserFromRoom(this.GetClient(), false, false);
+                    OldRoom.GetRoomUserManager().RemoveUserFromRoom(GetClient(), false, false);
             }
 
-            if (this.GetClient().GetHabbo().IsTeleporting && this.GetClient().GetHabbo().TeleportingRoomID != Id)
+            if (GetClient().GetHabbo().IsTeleporting && GetClient().GetHabbo().TeleportingRoomID != Id)
             {
-                this.GetClient().SendMessage(new CloseConnectionComposer(this.GetClient()));
+                GetClient().SendMessage(new CloseConnectionComposer(GetClient()));
                 return;
             }
 
             Room Room = NeonEnvironment.GetGame().GetRoomManager().LoadRoom(Id);
             if (Room == null)
             {
-                this.GetClient().SendMessage(new CloseConnectionComposer(this.GetClient()));
+                GetClient().SendMessage(new CloseConnectionComposer(GetClient()));
                 return;
             }
 
             if (Room.isCrashed)
             {
-                this.GetClient().SendNotification("La sala no está disponible en estos momentos, ponte en contacto con un administrador.");
-                this.GetClient().SendMessage(new CloseConnectionComposer(this.GetClient()));
+                GetClient().SendNotification("La sala no está disponible en estos momentos, ponte en contacto con un administrador.");
+                GetClient().SendMessage(new CloseConnectionComposer(GetClient()));
                 return;
             }
 
-            this.GetClient().GetHabbo().CurrentRoomId = Room.RoomId;
+            GetClient().GetHabbo().CurrentRoomId = Room.RoomId;
 
-            if (!this.GetClient().GetHabbo().GetPermissions().HasRight("room_ban_override") && Room.UserIsBanned(this.GetClient().GetHabbo().Id))
+            if (!GetClient().GetHabbo().GetPermissions().HasRight("room_ban_override") && Room.UserIsBanned(GetClient().GetHabbo().Id))
             {
-                if (Room.HasBanExpired(this.GetClient().GetHabbo().Id))
-                    Room.RemoveBan(this.GetClient().GetHabbo().Id);
+                if (Room.HasBanExpired(GetClient().GetHabbo().Id))
+                    Room.RemoveBan(GetClient().GetHabbo().Id);
                 else
                 {
-                    this.GetClient().GetHabbo().RoomAuthOk = false;
-                    this.GetClient().SendMessage(new CantConnectComposer(4));
-                    this.GetClient().SendMessage(new CloseConnectionComposer(this.GetClient()));
+                    GetClient().GetHabbo().RoomAuthOk = false;
+                    GetClient().SendMessage(new CantConnectComposer(4));
+                    GetClient().SendMessage(new CloseConnectionComposer(GetClient()));
                     return;
                 }
             }
 
-            this.GetClient().SendMessage(new OpenConnectionComposer());
+            GetClient().SendMessage(new OpenConnectionComposer());
 
-            if (Room.GetRoomUserManager().userCount >= Room.UsersMax && !this.GetClient().GetHabbo().GetPermissions().HasRight("room_enter_full") && this.GetClient().GetHabbo().Id != Room.OwnerId)
+            if (Room.GetRoomUserManager().userCount >= Room.UsersMax && !GetClient().GetHabbo().GetPermissions().HasRight("room_enter_full") && GetClient().GetHabbo().Id != Room.OwnerId)
             {
-                this.GetClient().SendMessage(new CantConnectComposer(1));
-                this.GetClient().SendMessage(new CloseConnectionComposer(this.GetClient()));
+                GetClient().SendMessage(new CantConnectComposer(1));
+                GetClient().SendMessage(new CloseConnectionComposer(GetClient()));
                 return;
 
             }
 
-            if (!Room.CheckRights(this.GetClient(), true, true) && !this.GetClient().GetHabbo().IsTeleporting && !this.GetClient().GetHabbo().IsHopping)
+            if (!Room.CheckRights(GetClient(), true, true) && !GetClient().GetHabbo().IsTeleporting && !GetClient().GetHabbo().IsHopping)
             {
-                if (Room.Access == RoomAccess.DOORBELL && !this.GetClient().GetHabbo().GetPermissions().HasRight("room_enter_locked"))
+                if (Room.Access == RoomAccess.DOORBELL && !GetClient().GetHabbo().GetPermissions().HasRight("room_enter_locked"))
                 {
                     if (Room.UserCount > 0)
                     {
-                        this.GetClient().SendMessage(new DoorbellComposer(""));
-                        Room.SendMessage(new DoorbellComposer(this.GetClient().GetHabbo().Username), true);
+                        GetClient().SendMessage(new DoorbellComposer(""));
+                        Room.SendMessage(new DoorbellComposer(GetClient().GetHabbo().Username), true);
                         return;
                     }
                     else
                     {
-                        this.GetClient().SendMessage(new FlatAccessDeniedComposer(""));
-                        this.GetClient().SendMessage(new CloseConnectionComposer(this.GetClient()));
+                        GetClient().SendMessage(new FlatAccessDeniedComposer(""));
+                        GetClient().SendMessage(new CloseConnectionComposer(GetClient()));
                         return;
                     }
                 }
@@ -1611,15 +1103,15 @@ namespace Neon.HabboHotel.Users
                 {
                     if (Password.ToLower() != Room.Password.ToLower() || String.IsNullOrWhiteSpace(Password))
                     {
-                        this.GetClient().SendMessage(new GenericErrorComposer(-100002));
-                        this.GetClient().SendMessage(new CloseConnectionComposer(this.GetClient()));
+                        GetClient().SendMessage(new GenericErrorComposer(-100002));
+                        GetClient().SendMessage(new CloseConnectionComposer(GetClient()));
                         return;
                     }
                 }
             }
 
             if (!EnterRoom(Room))
-                this.GetClient().SendMessage(new CloseConnectionComposer(this.GetClient()));
+                GetClient().SendMessage(new CloseConnectionComposer(GetClient()));
 
         }
 
@@ -1653,32 +1145,32 @@ namespace Neon.HabboHotel.Users
         public bool EnterRoom(Room Room)
         {
             if (Room == null)
-                this.GetClient().SendMessage(new CloseConnectionComposer(this.GetClient()));
+                GetClient().SendMessage(new CloseConnectionComposer(GetClient()));
 
-            this.GetClient().SendMessage(new RoomReadyComposer(Room.RoomId, Room.ModelName));
+            GetClient().SendMessage(new RoomReadyComposer(Room.RoomId, Room.ModelName));
             if (Room.Wallpaper != "0.0")
-                this.GetClient().SendMessage(new RoomPropertyComposer("wallpaper", Room.Wallpaper));
+                GetClient().SendMessage(new RoomPropertyComposer("wallpaper", Room.Wallpaper));
             if (Room.Floor != "0.0")
-                this.GetClient().SendMessage(new RoomPropertyComposer("floor", Room.Floor));
+                GetClient().SendMessage(new RoomPropertyComposer("floor", Room.Floor));
 
-            this.GetClient().SendMessage(new RoomPropertyComposer("landscape", Room.Landscape));
-            this.GetClient().SendMessage(new RoomRatingComposer(Room.Score, !(this.GetClient().GetHabbo().RatedRooms.Contains(Room.RoomId) || Room.OwnerId == this.GetClient().GetHabbo().Id)));
+            GetClient().SendMessage(new RoomPropertyComposer("landscape", Room.Landscape));
+            GetClient().SendMessage(new RoomRatingComposer(Room.Score, !(GetClient().GetHabbo().RatedRooms.Contains(Room.RoomId) || Room.OwnerId == GetClient().GetHabbo().Id)));
 
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
-                dbClient.RunQuery("INSERT INTO user_roomvisits (user_id,room_id,entry_timestamp,exit_timestamp,hour,minute) VALUES ('" + this.GetClient().GetHabbo().Id + "','" + this.GetClient().GetHabbo().CurrentRoomId + "','" + NeonEnvironment.GetUnixTimestamp() + "','0','" + DateTime.Now.Hour + "','" + DateTime.Now.Minute + "');");// +
+                dbClient.RunQuery("INSERT INTO user_roomvisits (user_id,room_id,entry_timestamp,exit_timestamp,hour,minute) VALUES ('" + GetClient().GetHabbo().Id + "','" + this.GetClient().GetHabbo().CurrentRoomId + "','" + NeonEnvironment.GetUnixTimestamp() + "','0','" + DateTime.Now.Hour + "','" + DateTime.Now.Minute + "');");// +
             }
 
 
-            if (Room.OwnerId != this.Id)
+            if (Room.OwnerId != Id)
             {
-                this.GetClient().GetHabbo().GetStats().RoomVisits += 1;
-                NeonEnvironment.GetGame().GetAchievementManager().ProgressAchievement(this.GetClient(), "ACH_RoomEntry", 1);            
+                GetClient().GetHabbo().GetStats().RoomVisits += 1;
+                NeonEnvironment.GetGame().GetAchievementManager().ProgressAchievement(GetClient(), "ACH_RoomEntry", 1);            
             }
             return true;
         }
     }
-    enum typeOfHelper
+    enum TypeOfHelper
     {
         None,
         Guide,

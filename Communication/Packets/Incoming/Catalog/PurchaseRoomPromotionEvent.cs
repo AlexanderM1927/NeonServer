@@ -19,16 +19,14 @@ namespace Neon.Communication.Packets.Incoming.Catalog
         {
             if (Session == null || Session.GetHabbo() == null)
                 return;
-
-            int PageId = Packet.PopInt();
-            int ItemId = Packet.PopInt();
+            _ = Packet.PopInt();
+            _ = Packet.PopInt();
             int RoomId = Packet.PopInt();
-            string word;
             string Name = Packet.PopString();
-            Name = NeonEnvironment.GetGame().GetChatManager().GetFilter().IsUnnaceptableWord(Name, out word) ? "Spam" : Name;
-            bool junk3 = Packet.PopBoolean();
+            Name = NeonEnvironment.GetGame().GetChatManager().GetFilter().IsUnnaceptableWord(Name, out _) ? "Spam" : Name;
+            _ = Packet.PopBoolean();
             string Desc = Packet.PopString();
-            Desc = NeonEnvironment.GetGame().GetChatManager().GetFilter().IsUnnaceptableWord(Desc, out word) ? "Spam" : Desc;
+            Desc = NeonEnvironment.GetGame().GetChatManager().GetFilter().IsUnnaceptableWord(Desc, out _) ? "Spam" : Desc;
             int CategoryId = Packet.PopInt();
 
             RoomData Data = NeonEnvironment.GetGame().GetRoomManager().GenerateRoomData(RoomId);

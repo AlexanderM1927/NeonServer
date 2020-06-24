@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Neon.HabboHotel.GameClients;
+﻿using Neon.HabboHotel.GameClients;
 using Neon.Communication.Packets.Outgoing.Catalog;
 
 namespace Neon.Communication.Packets.Incoming.Catalog

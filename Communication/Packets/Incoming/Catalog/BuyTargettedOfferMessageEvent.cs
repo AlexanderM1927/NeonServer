@@ -1,5 +1,4 @@
-﻿using Neon.Communication.Packets.Outgoing;
-using Neon.Communication.Packets.Outgoing.Catalog;
+﻿using Neon.Communication.Packets.Outgoing.Catalog;
 using Neon.Communication.Packets.Outgoing.Inventory.Furni;
 using Neon.Communication.Packets.Outgoing.Inventory.Purse;
 using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
@@ -130,8 +129,7 @@ namespace Neon.Communication.Packets.Incoming.Catalog
                                 #region NORMAL ITEMS CASE
                                 case "item":
                                     {
-                                        ItemData item = null;
-                                        if (!NeonEnvironment.GetGame().GetItemManager().GetItem(int.Parse(product.Item), out item)) return;
+                                        if (!NeonEnvironment.GetGame().GetItemManager().GetItem(int.Parse(product.Item), out ItemData item)) return;
                                         if (item == null) return;
                                         var cItem = ItemFactory.CreateSingleItemNullable(item, Session.GetHabbo(), string.Empty, string.Empty);
                                         if (cItem != null)

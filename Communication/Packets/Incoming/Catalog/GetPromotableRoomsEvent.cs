@@ -1,9 +1,5 @@
-﻿using System;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using System.Collections.Generic;
-
-using Neon.Communication.Packets.Incoming;
 using Neon.HabboHotel.Rooms;
 using Neon.HabboHotel.GameClients;
 using Neon.Communication.Packets.Outgoing.Catalog;

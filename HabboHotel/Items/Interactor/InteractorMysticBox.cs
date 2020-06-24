@@ -50,7 +50,7 @@ namespace Neon.HabboHotel.Items.Interactor
                         eColor = "22";
                         break;
                 }
-                Session.GetHabbo().eColor = eColor;
+                Session.GetHabbo().EColor = eColor;
             }
             Item.ExtraData = eColor;
             Item.UpdateState(false, true);

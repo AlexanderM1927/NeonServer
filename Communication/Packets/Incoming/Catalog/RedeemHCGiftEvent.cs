@@ -1,7 +1,4 @@
-﻿using Neon.Communication.Packets.Outgoing.Catalog;
-using Neon.HabboHotel.GameClients;
-using Neon.HabboHotel.Rooms.AI;
-using Neon.Communication.Packets.Incoming;
+﻿using Neon.HabboHotel.GameClients;
 using Neon.HabboHotel.Items;
 using Neon.Communication.Packets.Outgoing.Inventory.Furni;
 using Neon.Database.Interfaces;

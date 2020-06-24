@@ -28,14 +28,14 @@ namespace Neon.HabboHotel.Rooms
 
         public RoomManager()
         {
-            this._roomModels = new Dictionary<string, RoomModel>();
+            _roomModels = new Dictionary<string, RoomModel>();
 
-            this._rooms = new ConcurrentDictionary<int, Room>();
-            this._loadedRoomData = new ConcurrentDictionary<int, RoomData>();
+            _rooms = new ConcurrentDictionary<int, Room>();
+            _loadedRoomData = new ConcurrentDictionary<int, RoomData>();
 
-            this.LoadModels();
+            LoadModels();
 
-            this._purgeLastExecution = DateTime.Now.AddHours(3);
+            _purgeLastExecution = DateTime.Now.AddHours(3);
 
             log.Info(">> Rooms Manager -> READY!");
         }
@@ -90,7 +90,7 @@ namespace Neon.HabboHotel.Rooms
 
         public void LoadModels()
         {
-            if (this._roomModels.Count > 0)
+            if (_roomModels.Count > 0)
                 _roomModels.Clear();
 
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
@@ -104,7 +104,7 @@ namespace Neon.HabboHotel.Rooms
                 foreach (DataRow Row in Data.Rows)
                 {
                     string Modelname = Convert.ToString(Row["id"]);
-                    string staticFurniture = Convert.ToString(Row["public_items"]);
+                    _ = Convert.ToString(Row["public_items"]);
 
                     _roomModels.Add(Modelname, new RoomModel(Convert.ToInt32(Row["door_x"]), Convert.ToInt32(Row["door_y"]), (Double)Row["door_z"], Convert.ToInt32(Row["door_dir"]),
                         Convert.ToString(Row["heightmap"]), Convert.ToString(Row["public_items"]), NeonEnvironment.EnumToBool(Row["club_only"].ToString()), Convert.ToString(Row["poolmap"]), Convert.ToInt32(Row["wall_height"])));
@@ -153,16 +153,13 @@ namespace Neon.HabboHotel.Rooms
         {
             if (Room == null)
                 return;
-
-            Room room = null;
-            if (this._rooms.TryRemove(Room.RoomId, out room))
+            if (_rooms.TryRemove(Room.RoomId, out _))
             {
                 Room.Dispose();
 
                 if (RemoveData)
                 {
-                    RoomData Data = null;
-                    this._loadedRoomData.TryRemove(Room.Id, out Data);
+                    _ = _loadedRoomData.TryRemove(Room.Id, out _);
                 }
             }
             //Logging.WriteLine("[RoomMgr] Unloaded room: \"" + Room.Name + "\" (ID: " + Room.RoomId + ")");
@@ -365,9 +362,8 @@ namespace Neon.HabboHotel.Rooms
 
             RoomData Data = new RoomData();
 
-            Room Room;
 
-            if (TryGetRoom(RoomId, out Room))
+            if (TryGetRoom(RoomId, out Room Room))
                 return Room.RoomData;
 
             DataRow Row = null;
@@ -406,9 +402,8 @@ namespace Neon.HabboHotel.Rooms
 
         public Room LoadRoom(int Id)
         {
-            Room Room = null;
 
-            if (TryGetRoom(Id, out Room))
+            if (TryGetRoom(Id, out Room Room))
                 return Room;
 
             RoomData Data = GenerateRoomData(Id);
