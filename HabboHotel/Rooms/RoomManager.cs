@@ -16,15 +16,13 @@ namespace Neon.HabboHotel.Rooms
     {
         private static readonly ILog log = LogManager.GetLogger("Neon.HabboHotel.Rooms.RoomManager");
 
-        private Dictionary<string, RoomModel> _roomModels;
+        private readonly Dictionary<string, RoomModel> _roomModels;
 
-        private ConcurrentDictionary<int, Room> _rooms;
-        private ConcurrentDictionary<int, RoomData> _loadedRoomData;
+        private readonly ConcurrentDictionary<int, Room> _rooms;
+        private readonly ConcurrentDictionary<int, RoomData> _loadedRoomData;
 
 
         private DateTime _cycleLastExecution;
-        private DateTime _purgeLastExecution;
-
 
         public RoomManager()
         {
@@ -35,7 +33,7 @@ namespace Neon.HabboHotel.Rooms
 
             LoadModels();
 
-            _purgeLastExecution = DateTime.Now.AddHours(3);
+            PurgeLastExecution = DateTime.Now.AddHours(3);
 
             log.Info(">> Rooms Manager -> READY!");
         }
@@ -87,6 +85,8 @@ namespace Neon.HabboHotel.Rooms
         {
             get { return this._rooms.Count; }
         }
+
+        public DateTime PurgeLastExecution { get; }
 
         public void LoadModels()
         {

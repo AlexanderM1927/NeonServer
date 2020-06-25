@@ -31,8 +31,7 @@ namespace Neon.Communication.Packets.Incoming.Rooms.AI.Bots
             string DataString = Packet.PopString();
             if (ActionId < 1 || ActionId > 5)
                 return;
-            RoomUser Bot = null;
-            if (!Room.GetRoomUserManager().TryGetBot(BotId, out Bot))
+            if (!Room.GetRoomUserManager().TryGetBot(BotId, out RoomUser Bot))
                 return;
             if ((Bot.BotData.ownerID != Session.GetHabbo().Id && !Session.GetHabbo().GetPermissions().HasRight("bot_edit_any_override")))
                 return;
@@ -73,57 +72,69 @@ namespace Neon.Communication.Packets.Incoming.Rooms.AI.Bots
                 #region Setup Speech (2)
                 case 2:
                     {
+
                         string[] ConfigData = DataString.Split(new string[]
                         {
                             ";#;"
                         }, StringSplitOptions.None);
+
                         string[] SpeechData = ConfigData[0].Split(new char[]
                         {
                             '\r',
                             '\n'
                         }, StringSplitOptions.RemoveEmptyEntries);
+
                         string AutomaticChat = Convert.ToString(ConfigData[1]);
                         string SpeakingInterval = Convert.ToString(ConfigData[2]);
                         string MixChat = Convert.ToString(ConfigData[3]);
+
                         if (String.IsNullOrEmpty(SpeakingInterval) || Convert.ToInt32(SpeakingInterval) <= 0 || Convert.ToInt32(SpeakingInterval) < 7)
                             SpeakingInterval = "7";
+
                         RoomBot.AutomaticChat = Convert.ToBoolean(AutomaticChat);
                         RoomBot.SpeakingInterval = Convert.ToInt32(SpeakingInterval);
                         RoomBot.MixSentences = Convert.ToBoolean(MixChat);
+
+                        using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
+                        { dbClient.runFastQuery("DELETE FROM `bots_speech` WHERE `bot_id` = '" + Bot.BotData.Id + "'"); }
+
+                        #region Save Data - TODO: MAKE METHODS FOR THIS.
+                        for (int i = 0; i <= SpeechData.Length - 1; i++)
+                        {
+                            using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
+                            {
+                                dbClient.SetQuery("INSERT INTO `bots_speech` (`bot_id`, `text`) VALUES (@id, @data)");
+                                dbClient.AddParameter("id", BotId);
+                                dbClient.AddParameter("data", SpeechData[i]);
+                                dbClient.RunQuery();
+
+                                dbClient.SetQuery("UPDATE `bots` SET `automatic_chat` = @AutomaticChat, `speaking_interval` = @SpeakingInterval, `mix_sentences` = @MixChat WHERE `id` = @id LIMIT 1");
+                                dbClient.AddParameter("id", BotId);
+                                dbClient.AddParameter("AutomaticChat", AutomaticChat.ToLower());
+                                dbClient.AddParameter("SpeakingInterval", Convert.ToInt32(SpeakingInterval));
+                                dbClient.AddParameter("MixChat", NeonEnvironment.BoolToEnum(Convert.ToBoolean(MixChat)));
+                                dbClient.RunQuery();
+                            }
+                        }
+                        #endregion
+
+                        #region Handle Speech
+                        RoomBot.RandomSpeech.Clear();
                         using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
                         {
-                            dbClient.RunQuery("DELETE FROM `bots_speech` WHERE `bot_id` = '" + Bot.BotData.Id + "'");
-                            #region Save Data - TODO: MAKE METHODS FOR THIS.
-                            for (int i = 0; i <= SpeechData.Length - 1; i++)
-                            {
-                                SpeechData[i] = Regex.Replace(SpeechData[i], "<(.|\\n)*?>", string.Empty);
-                                {
-                                    dbClient.SetQuery("INSERT INTO `bots_speech` (`bot_id`, `text`) VALUES (@id, @data)");
-                                    dbClient.AddParameter("id", BotId);
-                                    dbClient.AddParameter("data", SpeechData[i]);
-                                    dbClient.RunQuery();
-                                    dbClient.SetQuery("UPDATE `bots` SET `automatic_chat` = @AutomaticChat, `speaking_interval` = @SpeakingInterval, `mix_sentences` = @MixChat WHERE `id` = @id LIMIT 1");
-                                    dbClient.AddParameter("id", BotId);
-                                    dbClient.AddParameter("AutomaticChat", AutomaticChat.ToLower());
-                                    dbClient.AddParameter("SpeakingInterval", Convert.ToInt32(SpeakingInterval));
-                                    dbClient.AddParameter("MixChat", NeonEnvironment.BoolToEnum(Convert.ToBoolean(MixChat)));
-                                    dbClient.RunQuery();
-                                }
-                            }
-                                #endregion
-
-                                #region Handle Speech
-                                RoomBot.RandomSpeech.Clear();
-                            dbClient.SetQuery("SELECT `text` FROM `bots_speech` WHERE `bot_id` = @id");
+                            dbClient.SetQuery("SELECT * FROM `bots_speech` WHERE `bot_id` = @id ORDER BY id ASC");
                             dbClient.AddParameter("id", BotId);
+
                             DataTable BotSpeech = dbClient.getTable();
+
                             List<RandomSpeech> Speeches = new List<RandomSpeech>();
                             foreach (DataRow Speech in BotSpeech.Rows)
                             {
                                 RoomBot.RandomSpeech.Add(new RandomSpeech(Convert.ToString(Speech["text"]), BotId));
                             }
-                            #endregion
                         }
+                        #endregion
+
                         break;
                     }
                 #endregion

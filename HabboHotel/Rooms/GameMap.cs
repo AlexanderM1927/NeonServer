@@ -1,65 +1,51 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Text;
 using Neon.Core;
 using Neon.HabboHotel.Items;
 using Neon.HabboHotel.Pathfinding;
-using Neon.HabboHotel.Rooms.Games;
-using Neon.HabboHotel.Users;
 using Neon.HabboHotel.Groups;
 using Neon.HabboHotel.Rooms.Games.Teams;
 using System.Collections.Concurrent;
 using Neon.Communication.Packets.Outgoing.Rooms.Engine;
-using System.Diagnostics;
-using Neon.Communication.Packets.Outgoing;
 using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
 using Neon.HabboHotel.Items.RentableSpaces;
 using Neon.HabboHotel.GameClients;
-using Neon.HabboHotel.Items.Wired;
-using Neon.HabboHotel.Items.Wired.Boxes.Effects;
 
 namespace Neon.HabboHotel.Rooms
 {
     public class Gamemap
     {
         private Room _room;
-        private byte[,] mGameMap;
-
         public bool gotPublicPool;
         public bool DiagonalEnabled;
-        private RoomModel mStaticModel;
-        private byte[,] mUserItemEffect;
-        private double[,] mItemHeightMap;
-        private DynamicRoomModel mDynamicModel;
         private ConcurrentDictionary<Point, List<int>> mCoordinatedItems;
         private ConcurrentDictionary<Point, List<RoomUser>> userMap;
 
         public Gamemap(Room room)
         {
-            this._room = room;
-            this.DiagonalEnabled = true;
+            _room = room;
+            DiagonalEnabled = true;
 
-            mStaticModel = NeonEnvironment.GetGame().GetRoomManager().GetModel(room.ModelName);
-            if (mStaticModel == null)
+            StaticModel = NeonEnvironment.GetGame().GetRoomManager().GetModel(room.ModelName);
+            if (StaticModel == null)
             {
                 NeonEnvironment.GetGame().GetRoomManager().LoadModel(room.ModelName);
-                mStaticModel = NeonEnvironment.GetGame().GetRoomManager().GetModel(room.ModelName);
+                StaticModel = NeonEnvironment.GetGame().GetRoomManager().GetModel(room.ModelName);
             }
 
-            if (mStaticModel == null)
+            if (StaticModel == null)
                 return;
 
-            mDynamicModel = new DynamicRoomModel(mStaticModel);
+            Model = new DynamicRoomModel(StaticModel);
 
             mCoordinatedItems = new ConcurrentDictionary<Point, List<int>>();
 
 
             gotPublicPool = room.RoomData.Model.gotPublicPool;
-            mGameMap = new byte[Model.MapSizeX, Model.MapSizeY];
-            mItemHeightMap = new double[Model.MapSizeX, Model.MapSizeY];
+            GameMap = new byte[Model.MapSizeX, Model.MapSizeY];
+            ItemHeightMap = new double[Model.MapSizeX, Model.MapSizeY];
 
             userMap = new ConcurrentDictionary<Point, List<RoomUser>>();
         }
@@ -68,12 +54,14 @@ namespace Neon.HabboHotel.Rooms
         {
             if (userMap.ContainsKey(coord))
             {
-                ((List<RoomUser>)userMap[coord]).Add(user);
+                userMap[coord].Add(user);
             }
             else
             {
-                List<RoomUser> users = new List<RoomUser>();
-                users.Add(user);
+                List<RoomUser> users = new List<RoomUser>
+                {
+                    user
+                };
                 userMap.TryAdd(coord, users);
             }
         }
@@ -111,7 +99,7 @@ namespace Neon.HabboHotel.Rooms
         public void RemoveUserFromMap(RoomUser user, Point coord)
         {
             if (userMap.ContainsKey(coord))
-                ((List<RoomUser>)userMap[coord]).RemoveAll(x => x != null && x.VirtualId == user.VirtualId);
+                userMap[coord].RemoveAll(x => x != null && x.VirtualId == user.VirtualId);
         }
 
         public bool MapGotUser(Point coord)
@@ -122,19 +110,19 @@ namespace Neon.HabboHotel.Rooms
         public List<RoomUser> GetRoomUsers(Point coord)
         {
             if (userMap.ContainsKey(coord))
-                return (List<RoomUser>)userMap[coord];
+                return userMap[coord];
             else
                 return new List<RoomUser>();
         }
 
-        public Point getRandomWalkableSquare()
+        public Point GetRandomWalkableSquare()
         {
             var walkableSquares = new List<Point>();
-            for (int y = 0; y < mGameMap.GetUpperBound(1); y++)
+            for (int y = 0; y < GameMap.GetUpperBound(1); y++)
             {
-                for (int x = 0; x < mGameMap.GetUpperBound(0); x++)
+                for (int x = 0; x < GameMap.GetUpperBound(0); x++)
                 {
-                    if (mStaticModel.DoorX != x && mStaticModel.DoorY != y && mGameMap[x, y] == 1)
+                    if (StaticModel.DoorX != x && StaticModel.DoorY != y && GameMap[x, y] == 1)
                         walkableSquares.Add(new Point(x, y));
                 }
             }
@@ -153,14 +141,14 @@ namespace Neon.HabboHotel.Rooms
         }
 
 
-        public bool isInMap(int X, int Y)
+        public bool IsInMap(int X, int Y)
         {
             var walkableSquares = new List<Point>();
-            for (int y = 0; y < mGameMap.GetUpperBound(1); y++)
+            for (int y = 0; y < GameMap.GetUpperBound(1); y++)
             {
-                for (int x = 0; x < mGameMap.GetUpperBound(0); x++)
+                for (int x = 0; x < GameMap.GetUpperBound(0); x++)
                 {
-                    if (mStaticModel.DoorX != x && mStaticModel.DoorY != y && mGameMap[x, y] == 1)
+                    if (StaticModel.DoorX != x && StaticModel.DoorY != y && GameMap[x, y] == 1)
                         walkableSquares.Add(new Point(x, y));
                 }
             }
@@ -177,25 +165,25 @@ namespace Neon.HabboHotel.Rooms
 
         private void SetDefaultValue(int x, int y)
         {
-            mGameMap[x, y] = 0;
-            mUserItemEffect[x, y] = 0;
-            mItemHeightMap[x, y] = 0.0;
+            GameMap[x, y] = 0;
+            EffectMap[x, y] = 0;
+            ItemHeightMap[x, y] = 0.0;
 
             if (x == Model.DoorX && y == Model.DoorY)
             {
-                mGameMap[x, y] = 3;
+                GameMap[x, y] = 3;
             }
             else if (Model.SqState[x, y] == SquareState.OPEN)
             {
-                mGameMap[x, y] = 1;
+                GameMap[x, y] = 1;
             }
             else if (Model.SqState[x, y] == SquareState.SEAT)
             {
-                mGameMap[x, y] = 2;
+                GameMap[x, y] = 2;
             }
         }
 
-        public void updateMapForItem(Item item)
+        public void UpdateMapForItem(Item item)
         {
             RemoveFromMap(item);
             AddToMap(item);
@@ -222,7 +210,6 @@ namespace Neon.HabboHotel.Rooms
                 }
 
                 Array.Clear(items, 0, items.Length);
-                items = null;
             }
 
             #region Dynamic game map handling
@@ -241,11 +228,11 @@ namespace Neon.HabboHotel.Rooms
 
             if (MaxX != StaticModel.MapSizeX || MaxY != StaticModel.MapSizeY)
             {
-                mUserItemEffect = new byte[Model.MapSizeX, Model.MapSizeY];
-                mGameMap = new byte[Model.MapSizeX, Model.MapSizeY];
+                EffectMap = new byte[Model.MapSizeX, Model.MapSizeY];
+                GameMap = new byte[Model.MapSizeX, Model.MapSizeY];
 
 
-                mItemHeightMap = new double[Model.MapSizeX, Model.MapSizeY];
+                ItemHeightMap = new double[Model.MapSizeX, Model.MapSizeY];
                 //if (modelRemap)
                 //    Model.Generate(); //Clears model
 
@@ -253,24 +240,24 @@ namespace Neon.HabboHotel.Rooms
                 {
                     for (int chr = 0; chr < Model.MapSizeX; chr++)
                     {
-                        mGameMap[chr, line] = 0;
-                        mUserItemEffect[chr, line] = 0;
+                        GameMap[chr, line] = 0;
+                        EffectMap[chr, line] = 0;
 
                         if (chr == Model.DoorX && line == Model.DoorY)
                         {
-                            mGameMap[chr, line] = 3;
+                            GameMap[chr, line] = 3;
                         }
                         else if (Model.SqState[chr, line] == SquareState.OPEN)
                         {
-                            mGameMap[chr, line] = 1;
+                            GameMap[chr, line] = 1;
                         }
                         else if (Model.SqState[chr, line] == SquareState.SEAT)
                         {
-                            mGameMap[chr, line] = 2;
+                            GameMap[chr, line] = 2;
                         }
                         else if (Model.SqState[chr, line] == SquareState.POOL)
                         {
-                            mUserItemEffect[chr, line] = 6;
+                            EffectMap[chr, line] = 6;
                         }
                     }
                 }
@@ -283,7 +270,7 @@ namespace Neon.HabboHotel.Rooms
                         {
                             if (StaticModel.mRoomModelfx[x, y] != 0)
                             {
-                                mUserItemEffect[x, y] = StaticModel.mRoomModelfx[x, y];
+                                EffectMap[x, y] = StaticModel.mRoomModelfx[x, y];
                             }
                         }
                     }
@@ -311,11 +298,11 @@ namespace Neon.HabboHotel.Rooms
             {
                 //mGameMap
                 //mUserItemEffect
-                mUserItemEffect = new byte[Model.MapSizeX, Model.MapSizeY];
-                mGameMap = new byte[Model.MapSizeX, Model.MapSizeY];
+                EffectMap = new byte[Model.MapSizeX, Model.MapSizeY];
+                GameMap = new byte[Model.MapSizeX, Model.MapSizeY];
 
 
-                mItemHeightMap = new double[Model.MapSizeX, Model.MapSizeY];
+                ItemHeightMap = new double[Model.MapSizeX, Model.MapSizeY];
                 //if (modelRemap)
                 //    Model.Generate(); //Clears model
 
@@ -323,24 +310,24 @@ namespace Neon.HabboHotel.Rooms
                 {
                     for (int chr = 0; chr < Model.MapSizeX; chr++)
                     {
-                        mGameMap[chr, line] = 0;
-                        mUserItemEffect[chr, line] = 0;
+                        GameMap[chr, line] = 0;
+                        EffectMap[chr, line] = 0;
 
                         if (chr == Model.DoorX && line == Model.DoorY)
                         {
-                            mGameMap[chr, line] = 3;
+                            GameMap[chr, line] = 3;
                         }
                         else if (Model.SqState[chr, line] == SquareState.OPEN)
                         {
-                            mGameMap[chr, line] = 1;
+                            GameMap[chr, line] = 1;
                         }
                         else if (Model.SqState[chr, line] == SquareState.SEAT)
                         {
-                            mGameMap[chr, line] = 2;
+                            GameMap[chr, line] = 2;
                         }
                         else if (Model.SqState[chr, line] == SquareState.POOL)
                         {
-                            mUserItemEffect[chr, line] = 6;
+                            EffectMap[chr, line] = 6;
                         }
                     }
                 }
@@ -353,7 +340,7 @@ namespace Neon.HabboHotel.Rooms
                         {
                             if (StaticModel.mRoomModelfx[x, y] != 0)
                             {
-                                mUserItemEffect[x, y] = StaticModel.mRoomModelfx[x, y];
+                                EffectMap[x, y] = StaticModel.mRoomModelfx[x, y];
                             }
                         }
                     }
@@ -384,8 +371,8 @@ namespace Neon.HabboHotel.Rooms
                 if (!AddItemToMap(Item))
                     continue;
             }
+
             Array.Clear(tmpItems, 0, tmpItems.Length);
-            tmpItems = null;
 
             if (_room.RoomBlockingEnabled == 0)
             {
@@ -394,14 +381,14 @@ namespace Neon.HabboHotel.Rooms
                     if (user == null)
                         continue;
 
-                    user.SqState = mGameMap[user.X, user.Y];
-                    mGameMap[user.X, user.Y] = 0;
+                    user.SqState = GameMap[user.X, user.Y];
+                    GameMap[user.X, user.Y] = 0;
                 }
             }
 
             try
             {
-                mGameMap[Model.DoorX, Model.DoorY] = 3;
+                GameMap[Model.DoorX, Model.DoorY] = 3;
             }
             catch { }
         }
@@ -428,31 +415,31 @@ namespace Neon.HabboHotel.Rooms
                 {
                     Model.OpenSquare(Coord.X, Coord.Y, Item.GetZ);
                 }
-                if (mItemHeightMap[Coord.X, Coord.Y] <= Item.TotalHeight)
+                if (ItemHeightMap[Coord.X, Coord.Y] <= Item.TotalHeight)
                 {
-                    mItemHeightMap[Coord.X, Coord.Y] = Item.TotalHeight - mDynamicModel.SqFloorHeight[Item.GetX, Item.GetY];
-                    mUserItemEffect[Coord.X, Coord.Y] = 0;
+                    ItemHeightMap[Coord.X, Coord.Y] = Item.TotalHeight - Model.SqFloorHeight[Item.GetX, Item.GetY];
+                    EffectMap[Coord.X, Coord.Y] = 0;
 
 
                     switch (Item.GetBaseItem().InteractionType)
                     {
                         case InteractionType.POOL:
-                            mUserItemEffect[Coord.X, Coord.Y] = 1;
+                            EffectMap[Coord.X, Coord.Y] = 1;
                             break;
                         case InteractionType.NORMAL_SKATES:
-                            mUserItemEffect[Coord.X, Coord.Y] = 2;
+                            EffectMap[Coord.X, Coord.Y] = 2;
                             break;
                         case InteractionType.ICE_SKATES:
-                            mUserItemEffect[Coord.X, Coord.Y] = 3;
+                            EffectMap[Coord.X, Coord.Y] = 3;
                             break;
                         case InteractionType.lowpool:
-                            mUserItemEffect[Coord.X, Coord.Y] = 4;
+                            EffectMap[Coord.X, Coord.Y] = 4;
                             break;
                         case InteractionType.haloweenpool:
-                            mUserItemEffect[Coord.X, Coord.Y] = 5;
+                            EffectMap[Coord.X, Coord.Y] = 5;
                             break;
                         case InteractionType.SILLAGUIA:
-                            mUserItemEffect[Coord.X, Coord.Y] = 7;
+                            EffectMap[Coord.X, Coord.Y] = 7;
                             break;
                     }
 
@@ -460,28 +447,28 @@ namespace Neon.HabboHotel.Rooms
                     //SwimHalloween
                     if (Item.GetBaseItem().Walkable)    // If this item is walkable and on the floor, allow users to walk here.
                     {
-                        if (mGameMap[Coord.X, Coord.Y] != 3)
-                            mGameMap[Coord.X, Coord.Y] = 1;
+                        if (GameMap[Coord.X, Coord.Y] != 3)
+                            GameMap[Coord.X, Coord.Y] = 1;
                     }
                     else if (Item.GetBaseItem().InteractionType == InteractionType.GATE && Item.ExtraData == "1")
                     {
-                        if (mGameMap[Coord.X, Coord.Y] != 3)
-                            mGameMap[Coord.X, Coord.Y] = 1;
+                        if (GameMap[Coord.X, Coord.Y] != 3)
+                            GameMap[Coord.X, Coord.Y] = 1;
                     }
                     else if (Item.GetBaseItem().IsSeat || Item.GetBaseItem().InteractionType == InteractionType.BED || Item.GetBaseItem().InteractionType == InteractionType.TENT_SMALL)
                     {
-                        mGameMap[Coord.X, Coord.Y] = 3;
+                        GameMap[Coord.X, Coord.Y] = 3;
                     }
                     else // Finally, if it's none of those, block the square.
                     {
-                        if (mGameMap[Coord.X, Coord.Y] != 3)
-                            mGameMap[Coord.X, Coord.Y] = 0;
+                        if (GameMap[Coord.X, Coord.Y] != 3)
+                            GameMap[Coord.X, Coord.Y] = 0;
                     }
                 }
 
                 // Set bad maps
                 if (Item.GetBaseItem().InteractionType == InteractionType.BED || Item.GetBaseItem().InteractionType == InteractionType.TENT_SMALL)
-                    mGameMap[Coord.X, Coord.Y] = 3;
+                    GameMap[Coord.X, Coord.Y] = 3;
             }
             catch (Exception e)
             {
@@ -866,23 +853,23 @@ namespace Neon.HabboHotel.Rooms
 
         public byte GetFloorStatus(Point coord)
         {
-            if (coord.X > mGameMap.GetUpperBound(0) || coord.Y > mGameMap.GetUpperBound(1))
+            if (coord.X > GameMap.GetUpperBound(0) || coord.Y > GameMap.GetUpperBound(1))
                 return 1;
 
-            return mGameMap[coord.X, coord.Y];
+            return GameMap[coord.X, coord.Y];
         }
 
         public void SetFloorStatus(int X, int Y, byte Status)
         {
-            mGameMap[X, Y] = Status;
+            GameMap[X, Y] = Status;
         }
 
         public double GetHeightForSquareFromData(Point coord)
         {
-            if (coord.X > mDynamicModel.SqFloorHeight.GetUpperBound(0) ||
-                coord.Y > mDynamicModel.SqFloorHeight.GetUpperBound(1))
+            if (coord.X > Model.SqFloorHeight.GetUpperBound(0) ||
+                coord.Y > Model.SqFloorHeight.GetUpperBound(1))
                 return 1;
-            return mDynamicModel.SqFloorHeight[coord.X, coord.Y];
+            return Model.SqFloorHeight[coord.X, coord.Y];
         }
 
         public bool CanRollItemHere(int x, int y)
@@ -898,10 +885,10 @@ namespace Neon.HabboHotel.Rooms
 
         public bool SquareIsOpen(int x, int y, bool pOverride)
         {
-            if ((mDynamicModel.MapSizeX - 1) < x || (mDynamicModel.MapSizeY - 1) < y)
+            if ((Model.MapSizeX - 1) < x || (Model.MapSizeY - 1) < y)
                 return false;
 
-            return CanWalk(mGameMap[x, y], pOverride);
+            return CanWalk(GameMap[x, y], pOverride);
         }
 
         public bool GetHighestItemForSquare(Point Square, out Item Item)
@@ -1299,7 +1286,7 @@ namespace Neon.HabboHotel.Rooms
                     Chair = true;
             }
 
-            if ((mGameMap[To.X, To.Y] == 3 && !EndOfPath && !Chair) || (mGameMap[To.X, To.Y] == 0) || (mGameMap[To.X, To.Y] == 2 && !EndOfPath))
+            if ((GameMap[To.X, To.Y] == 3 && !EndOfPath && !Chair) || (GameMap[To.X, To.Y] == 0) || (GameMap[To.X, To.Y] == 2 && !EndOfPath))
             {
                 if (User.Path.Count > 0)
                     User.Path.Clear();
@@ -1336,22 +1323,22 @@ namespace Neon.HabboHotel.Rooms
 
                 if (XValue == -1 && YValue == -1)
                 {
-                    if (mGameMap[To.X + 1, To.Y] != 1 && mGameMap[To.X, To.Y + 1] != 1)
+                    if (GameMap[To.X + 1, To.Y] != 1 && GameMap[To.X, To.Y + 1] != 1)
                         return false;
                 }
                 else if (XValue == 1 && YValue == -1)
                 {
-                    if (mGameMap[To.X - 1, To.Y] != 1 && mGameMap[To.X, To.Y + 1] != 1)
+                    if (GameMap[To.X - 1, To.Y] != 1 && GameMap[To.X, To.Y + 1] != 1)
                         return false;
                 }
                 else if (XValue == 1 && YValue == 1)
                 {
-                    if (mGameMap[To.X - 1, To.Y] != 1 && mGameMap[To.X, To.Y - 1] != 1)
+                    if (GameMap[To.X - 1, To.Y] != 1 && GameMap[To.X, To.Y - 1] != 1)
                         return false;
                 }
                 else if (XValue == -1 && YValue == 1)
                 {
-                    if (mGameMap[To.X + 1, To.Y] != 1 && mGameMap[To.X, To.Y - 1] != 1)
+                    if (GameMap[To.X + 1, To.Y] != 1 && GameMap[To.X, To.Y - 1] != 1)
                         return false;
                 }
             }
@@ -1375,7 +1362,7 @@ namespace Neon.HabboHotel.Rooms
                     return true;
             }
 
-            if ((mGameMap[To.X, To.Y] == 3 && !EndOfPath) || mGameMap[To.X, To.Y] == 0 || (mGameMap[To.X, To.Y] == 2 && !EndOfPath))
+            if ((GameMap[To.X, To.Y] == 3 && !EndOfPath) || GameMap[To.X, To.Y] == 0 || (GameMap[To.X, To.Y] == 2 && !EndOfPath))
                 return false;
 
             if (!Roller)
@@ -1404,11 +1391,11 @@ namespace Neon.HabboHotel.Rooms
 
         public bool itemCanBePlacedHere(int x, int y)
         {
-            if (mDynamicModel.MapSizeX - 1 < x || mDynamicModel.MapSizeY - 1 < y ||
-                (x == mDynamicModel.DoorX && y == mDynamicModel.DoorY))
+            if (Model.MapSizeX - 1 < x || Model.MapSizeY - 1 < y ||
+                (x == Model.DoorX && y == Model.DoorY))
                 return false;
 
-            return mGameMap[x, y] == 1;
+            return GameMap[x, y] == 1;
         }
 
         public bool StackTable(int CoordX, int CoordY)
@@ -1447,7 +1434,7 @@ namespace Neon.HabboHotel.Rooms
                 return SqAbsoluteHeight(X, Y, Items);
             }
             else
-                return mDynamicModel.SqFloorHeight[X, Y];
+                return Model.SqFloorHeight[X, Y];
 
             #region Old
             /*
@@ -1779,50 +1766,35 @@ namespace Neon.HabboHotel.Rooms
             return Math.Abs(X1 - X2) + Math.Abs(Y1 - Y2);
         }
 
-        public DynamicRoomModel Model
-        {
-            get { return mDynamicModel; }
-        }
+        public DynamicRoomModel Model { get; private set; }
 
-        public RoomModel StaticModel
-        {
-            get { return mStaticModel; }
-        }
+        public RoomModel StaticModel { get; private set; }
 
-        public byte[,] EffectMap
-        {
-            get { return mUserItemEffect; }
-        }
+        public byte[,] EffectMap { get; private set; }
 
-        public byte[,] GameMap
-        {
-            get { return mGameMap; }
-        }
+        public byte[,] GameMap { get; private set; }
 
-        public double[,] ItemHeightMap
-        {
-            get { return mItemHeightMap; }
-        }
+        public double[,] ItemHeightMap { get; private set; }
 
         public void Dispose()
         {
             userMap.Clear();
-            mDynamicModel.Destroy();
+            Model.Destroy();
             mCoordinatedItems.Clear();
 
-            Array.Clear(mGameMap, 0, mGameMap.Length);
-            Array.Clear(mUserItemEffect, 0, mUserItemEffect.Length);
-            Array.Clear(mItemHeightMap, 0, mItemHeightMap.Length);
+            Array.Clear(GameMap, 0, GameMap.Length);
+            Array.Clear(EffectMap, 0, EffectMap.Length);
+            Array.Clear(ItemHeightMap, 0, ItemHeightMap.Length);
 
             userMap = null;
-            mGameMap = null;
-            mUserItemEffect = null;
-            mItemHeightMap = null;
+            GameMap = null;
+            EffectMap = null;
+            ItemHeightMap = null;
             mCoordinatedItems = null;
 
-            mDynamicModel = null;
+            Model = null;
             this._room = null;
-            mStaticModel = null;
+            StaticModel = null;
         }
     }
 }
