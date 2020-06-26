@@ -29,7 +29,6 @@ namespace Neon.HabboHotel.Rooms
 {
     public class RoomUser
     {
-        private Room _room;
         public bool AllowOverride;
         public BotAI BotAI;
         public RoomBot BotData;
@@ -604,8 +603,6 @@ namespace Neon.HabboHotel.Rooms
             GoalY = pY;
             PathRecalcNeeded = true;
             FreezeInteracting = false;
-
-            _room.GetGameMap().GenerateMaps();
         }
 
         public void MoveTo(int pX, int pY)

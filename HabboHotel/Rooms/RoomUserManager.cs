@@ -867,7 +867,6 @@ namespace Neon.HabboHotel.Rooms
                         else
                             InvalidStep = true;
                         User.SetStep = false;
-                        _room.GetGameMap().GenerateMaps();
                     }
 
                     if (User.IsWalking && !User.Freezed)
@@ -1013,7 +1012,6 @@ namespace Neon.HabboHotel.Rooms
 
                         if (_room.GotSoccer())
                             _room.GetSoccer().OnUserWalk(User);
-                        _room.GetGameMap().GenerateMaps();
                     }
                     else
                     {
