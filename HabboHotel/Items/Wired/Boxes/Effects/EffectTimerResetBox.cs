@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Neon.Communication.Packets.Incoming;
 using Neon.HabboHotel.Rooms;
 using Neon.HabboHotel.Users;
-using Neon.Communication.Packets.Incoming;
+using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
+using System.Collections;
 
 namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
 {
@@ -15,12 +12,12 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
     {
         public Room Instance { get; set; }
         public Item Item { get; set; }
-        public WiredBoxType Type { get { return WiredBoxType.EffectTimerReset; } }
+        public WiredBoxType Type => WiredBoxType.EffectTimerReset;
         public ConcurrentDictionary<int, Item> SetItems { get; set; }
         public string StringData { get; set; }
         public bool BoolData { get; set; }
         public string ItemsData { get; set; }
-        public int Delay { get { return this._delay; } set { this._delay = value; this.TickCount = value + 1; } }
+        public int Delay { get => _delay; set { _delay = value; TickCount = value + 1; } }
         public int TickCount { get; set; }
         private int _delay = 0;
         private Queue _queue;
@@ -37,12 +34,11 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
         public void HandleSave(ClientPacket Packet)
         {
             int Unknown = Packet.PopInt();
-            int Unknown2 = Packet.PopInt();
-            int Unknown3 = Packet.PopInt();
-            int Delay = Packet.PopInt();
+            string Mode = Packet.PopString();
+            int Unused = Packet.PopInt();
+            this.Delay = Packet.PopInt();
 
-            this.Delay = Delay;
-            this.TickCount = Delay;
+            this.StringData = Mode;
         }
 
         public bool OnCycle()
@@ -60,7 +56,7 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
                 if (Player == null || Player.CurrentRoom != Instance)
                     continue;
 
-                //this.SendMessageToUser(Player);
+                //this.SendFreezeToUser(Player);
             }
 
             this.TickCount = Delay;
@@ -69,10 +65,19 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
 
         public bool Execute(params object[] Params)
         {
-            if (Instance == null)
+            if (Params == null || Params.Length == 0)
                 return false;
 
-                Instance.GetWired().TriggerEvent(WiredBoxType.TriggerAtGivenTime, true);
+            Instance.GetWired().TriggerEvent(WiredBoxType.TriggerAtGivenTime, true);
+
+            Habbo Player = (Habbo)Params[0];
+            if (Player == null || Player.GetClient() == null)
+                return false;
+
+            if (String.IsNullOrEmpty(StringData))
+                return false;
+
+            this._queue.Enqueue(Player);
 
             return true;
         }

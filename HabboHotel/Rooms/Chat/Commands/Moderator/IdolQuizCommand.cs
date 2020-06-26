@@ -38,7 +38,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
                             Chair.UpdateState();
                         }
 
-                        Room.endQuestion();
+                        Room.EndQuestion();
                     }
                 }
                 else
@@ -61,8 +61,8 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
                                 return;
                             }
                             NeonEnvironment.GetGame().GetClientManager().QuizzAlert(new QuickPollMessageComposer(question), Chair, Room);
-                            Room.setPoolQuestion(question);
-                            Room.clearPoolAnswers();
+                            Room.SetPoolQuestion(question);
+                            Room.ClearPoolAnswers();
                         }
                     }
                 }

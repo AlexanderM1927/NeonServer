@@ -2,18 +2,19 @@
 using System.Linq;
 using System.Text;
 using System.Collections.Generic;
+
 using Neon.Communication.Packets.Incoming;
 using Neon.HabboHotel.Rooms;
 using Neon.Communication.Packets.Outgoing.Rooms.Avatar;
 using Neon.Communication.Packets.Outgoing.Rooms.Engine;
+
 using System.Data;
 using Neon.Communication.Packets.Outgoing;
 using Neon.HabboHotel.Rooms.AI;
 using Neon.HabboHotel.Rooms.AI.Speech;
+
 using Neon.Database.Interfaces;
 using Neon.Utilities;
-using System.Text.RegularExpressions;
-using Neon.Database;
 
 namespace Neon.Communication.Packets.Incoming.Rooms.AI.Bots
 {
@@ -23,27 +24,36 @@ namespace Neon.Communication.Packets.Incoming.Rooms.AI.Bots
         {
             if (!Session.GetHabbo().InRoom)
                 return;
+
             Room Room = Session.GetHabbo().CurrentRoom;
             if (Room == null)
                 return;
+
             int BotId = Packet.PopInt();
             int ActionId = Packet.PopInt();
             string DataString = Packet.PopString();
+
             if (ActionId < 1 || ActionId > 5)
                 return;
-            if (!Room.GetRoomUserManager().TryGetBot(BotId, out RoomUser Bot))
+
+            RoomUser Bot = null;
+            if (!Room.GetRoomUserManager().TryGetBot(BotId, out Bot))
                 return;
+
             if ((Bot.BotData.ownerID != Session.GetHabbo().Id && !Session.GetHabbo().GetPermissions().HasRight("bot_edit_any_override")))
                 return;
+
             RoomBot RoomBot = Bot.BotData;
             if (RoomBot == null)
                 return;
+
             /* 1 = Copy looks
              * 2 = Setup Speech
              * 3 = Relax
              * 4 = Dance
              * 5 = Change Name
              */
+
             switch (ActionId)
             {
                 #region Copy Looks (1)
@@ -56,19 +66,23 @@ namespace Neon.Communication.Packets.Incoming.Rooms.AI.Bots
                         UserChangeComposer.WriteString(Bot.BotData.Motto);
                         UserChangeComposer.WriteInteger(0);
                         Room.SendMessage(UserChangeComposer);
+
                         //Change the defaults
                         Bot.BotData.Look = Session.GetHabbo().Look;
                         Bot.BotData.Gender = Session.GetHabbo().Gender;
+
                         using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
                         {
                             dbClient.SetQuery("UPDATE `bots` SET `look` = @look, `gender` = '" + Session.GetHabbo().Gender + "' WHERE `id` = '" + Bot.BotData.Id + "' LIMIT 1");
                             dbClient.AddParameter("look", Session.GetHabbo().Look);
                             dbClient.RunQuery();
                         }
+
                         //Room.SendMessage(new UserChangeComposer(BotUser.GetClient(), true));
                         break;
                     }
                 #endregion
+
                 #region Setup Speech (2)
                 case 2:
                     {
@@ -88,7 +102,7 @@ namespace Neon.Communication.Packets.Incoming.Rooms.AI.Bots
                         string SpeakingInterval = Convert.ToString(ConfigData[2]);
                         string MixChat = Convert.ToString(ConfigData[3]);
 
-                        if (String.IsNullOrEmpty(SpeakingInterval) || Convert.ToInt32(SpeakingInterval) <= 0 || Convert.ToInt32(SpeakingInterval) < 7)
+                        if (string.IsNullOrEmpty(SpeakingInterval) || Convert.ToInt32(SpeakingInterval) <= 0 || Convert.ToInt32(SpeakingInterval) < 7)
                             SpeakingInterval = "7";
 
                         RoomBot.AutomaticChat = Convert.ToBoolean(AutomaticChat);
@@ -96,7 +110,7 @@ namespace Neon.Communication.Packets.Incoming.Rooms.AI.Bots
                         RoomBot.MixSentences = Convert.ToBoolean(MixChat);
 
                         using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
-                        { dbClient.runFastQuery("DELETE FROM `bots_speech` WHERE `bot_id` = '" + Bot.BotData.Id + "'"); }
+                        { dbClient.RunQuery("DELETE FROM `bots_speech` WHERE `bot_id` = '" + Bot.BotData.Id + "'"); }
 
                         #region Save Data - TODO: MAKE METHODS FOR THIS.
                         for (int i = 0; i <= SpeechData.Length - 1; i++)
@@ -122,7 +136,7 @@ namespace Neon.Communication.Packets.Incoming.Rooms.AI.Bots
                         RoomBot.RandomSpeech.Clear();
                         using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
                         {
-                            dbClient.SetQuery("SELECT * FROM `bots_speech` WHERE `bot_id` = @id ORDER BY id ASC");
+                            dbClient.SetQuery("SELECT `text` FROM `bots_speech` WHERE `bot_id` = @id");
                             dbClient.AddParameter("id", BotId);
 
                             DataTable BotSpeech = dbClient.getTable();
@@ -138,6 +152,7 @@ namespace Neon.Communication.Packets.Incoming.Rooms.AI.Bots
                         break;
                     }
                 #endregion
+
                 #region Relax (3)
                 case 3:
                     {
@@ -145,6 +160,7 @@ namespace Neon.Communication.Packets.Incoming.Rooms.AI.Bots
                             Bot.BotData.WalkingMode = "freeroam";
                         else
                             Bot.BotData.WalkingMode = "stand";
+
                         using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
                         {
                             dbClient.RunQuery("UPDATE `bots` SET `walk_mode` = '" + Bot.BotData.WalkingMode + "' WHERE `id` = '" + Bot.BotData.Id + "' LIMIT 1");
@@ -152,6 +168,7 @@ namespace Neon.Communication.Packets.Incoming.Rooms.AI.Bots
                         break;
                     }
                 #endregion
+
                 #region Dance (4)
                 case 4:
                     {
@@ -162,28 +179,32 @@ namespace Neon.Communication.Packets.Incoming.Rooms.AI.Bots
                             Random RandomDance = new Random();
                             Bot.BotData.DanceId = RandomDance.Next(1, 4);
                         }
+
                         Room.SendMessage(new DanceComposer(Bot, Bot.BotData.DanceId));
                         break;
                     }
                 #endregion
+
                 #region Change Name (5)
                 case 5:
                     {
                         if (DataString.Length == 0)
                         {
-                            Session.SendWhisper("Por favor, colócale un nombre al robot.", 34);
+                            Session.SendWhisper("Vamos, ponle algun nombre al bot");
                             return;
                         }
                         else if (DataString.Length >= 16)
                         {
-                            Session.SendWhisper("El nombre del bot no puede superar los 16 caracteres.", 34);
+                            Session.SendWhisper("Vamos.. necesitas un nombre mas corto!");
                             return;
                         }
+
                         if (DataString.Contains("<img src") || DataString.Contains("<font ") || DataString.Contains("</font>") || DataString.Contains("</a>") || DataString.Contains("<i>"))
                         {
                             Session.SendWhisper("¿Qué intentas, crack?", 34);
                             return;
                         }
+
                         Bot.BotData.Name = DataString;
                         using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
                         {

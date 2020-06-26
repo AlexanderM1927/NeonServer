@@ -21,9 +21,8 @@ namespace Neon.Communication.Packets.Incoming.Rooms.AI.Bots
             if (!Session.GetHabbo().InRoom)
                 return;
 
-            Room Room;
 
-            if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Session.GetHabbo().CurrentRoomId, out Room))
+            if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Session.GetHabbo().CurrentRoomId, out Room Room))
                 return;
 
             if (!Room.CheckRights(Session, true))
@@ -39,8 +38,7 @@ namespace Neon.Communication.Packets.Incoming.Rooms.AI.Bots
                 return;
             }
 
-            Bot Bot = null;
-            if (!Session.GetHabbo().GetInventoryComponent().TryGetBot(BotId, out Bot))
+            if (!Session.GetHabbo().GetInventoryComponent().TryGetBot(BotId, out Bot Bot))
                 return;
 
             int BotCount = 0;
@@ -95,8 +93,7 @@ namespace Neon.Communication.Packets.Incoming.Rooms.AI.Bots
             Room.GetGameMap().UpdateUserMovement(new System.Drawing.Point(X,Y), new System.Drawing.Point(X, Y), BotUser);
 
 
-            Bot ToRemove = null;
-            if (!Session.GetHabbo().GetInventoryComponent().TryRemoveBot(BotId, out ToRemove))
+            if (!Session.GetHabbo().GetInventoryComponent().TryRemoveBot(BotId, out Bot ToRemove))
             {
                 Console.WriteLine("Error whilst removing Bot: " + ToRemove.Id);
                 return;

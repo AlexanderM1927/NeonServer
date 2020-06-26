@@ -181,6 +181,8 @@ namespace Neon.HabboHotel.Rooms.Instance
 
                 case WiredBoxType.EffectGiveReward:
                     return new GiveRewardBox(_room, Item);
+                case WiredBoxType.EffectTimerReset:
+                    return new EffectTimerResetBox(_room, Item);
 
                 case WiredBoxType.TriggerAtGivenTime:
                     return new AtGivenTimeBox(_room, Item);

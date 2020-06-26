@@ -26,8 +26,8 @@ namespace Neon.HabboHotel.Bots
 
         public void Init()
         {
-            if (this._responses.Count > 0)
-                this._responses.Clear();
+            if (_responses.Count > 0)
+                _responses.Clear();
 
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
