@@ -206,6 +206,11 @@ namespace Neon.HabboHotel.Rooms.Games.Football
                         (User.X != User.GoalX || User.Y != User.GoalY))
                     {
                         User.handelingBallStatus = 1;
+                        var userPoint = new Point(User.X, User.Y);
+                        ball.ExtraData = "11";
+                        ball.ballIsMoving = true;
+                        MoveBall(ball, User, userPoint);
+
                         var _comeDirection = ComeDirection.GetComeDirection(new Point(User.X, User.Y), ball.Coordinate);
                         if (_comeDirection != Direction.Null)
                         {
@@ -315,7 +320,7 @@ namespace Neon.HabboHotel.Rooms.Games.Football
                     return false;
                 if (item.ballIsMoving)
                 {
-                    if (item.ExtraData == "55" || item.ExtraData == "44") // puede ser un cañito? o.O
+                    if (item.ExtraData == "55" || item.ExtraData == "44" || item.ExtraData == "11") // puede ser un cañito? o.O
                     {
                         var randomValue = new Random().Next(1, 7);
                         if (randomValue != 5) // no cañito de CR7

@@ -123,41 +123,36 @@ namespace Neon.HabboHotel.GameClients
         {
             try
             {
-                UserData userData = UserDataFactory.GetUserData(AuthTicket, out byte errorCode);
+                var userData = UserDataFactory.GetUserData(AuthTicket, out byte errorCode);
+                if (userData?.user == null)
+                    return false;
+
                 if (errorCode == 1 || errorCode == 2)
                 {
+                    Console.WriteLine("Can't login " + errorCode);
                     Disconnect();
                     return false;
                 }
 
                 #region Ban Checking
+
                 //Let's have a quick search for a ban before we successfully authenticate..
-                ModerationBan BanRecord = null;
+                ModerationBan BanRecord;
                 if (!string.IsNullOrEmpty(MachineId))
-                {
                     if (NeonEnvironment.GetGame().GetModerationManager().IsBanned(MachineId, out BanRecord))
-                    {
                         if (NeonEnvironment.GetGame().GetModerationManager().MachineBanCheck(MachineId))
                         {
                             Disconnect();
                             return false;
                         }
-                    }
-                }
 
-                if (userData.user != null)
-                {
-                    //Now let us check for a username ban record..
-                    BanRecord = null;
-                    if (NeonEnvironment.GetGame().GetModerationManager().IsBanned(userData.user.Username, out BanRecord))
+                if (NeonEnvironment.GetGame().GetModerationManager().IsBanned(userData.user.Username, out BanRecord))
+                    if (NeonEnvironment.GetGame().GetModerationManager().UsernameBanCheck(userData.user.Username))
                     {
-                        if (NeonEnvironment.GetGame().GetModerationManager().UsernameBanCheck(userData.user.Username))
-                        {
-                            Disconnect();
-                            return false;
-                        }
+                        Disconnect();
+                        return false;
                     }
-                }
+
                 #endregion
 
                 NeonEnvironment.GetGame().GetClientManager().RegisterClient(this, userData.userID, userData.user.Username);

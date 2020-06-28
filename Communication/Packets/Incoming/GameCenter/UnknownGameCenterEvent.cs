@@ -1,15 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Games;
-using Neon.Communication.Packets.Outgoing.GameCenter;
-using System.Data;
-
-using Neon.HabboHotel.Users;
-using Neon.HabboHotel.GameClients;
-using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
+﻿using Neon.HabboHotel.GameClients;
 
 namespace Neon.Communication.Packets.Incoming.GameCenter
 {
@@ -19,11 +8,9 @@ namespace Neon.Communication.Packets.Incoming.GameCenter
         {
             int GameId = Packet.PopInt();
             int UserId = Packet.PopInt();
-
-            GameData GameData = null;
-            if (NeonEnvironment.GetGame().GetGameDataManager().TryGetGame(GameId, out GameData))
+            if (NeonEnvironment.GetGame().GetGameDataManager().TryGetGame(GameId, out _))
             {
-               // Session.SendMessage(new Game2WeeklyLeaderboardComposer(GameId)); Comentado y funciona
+                // Session.SendMessage(new Game2WeeklyLeaderboardComposer(GameId)); Comentado y funciona
             }
         }
     }

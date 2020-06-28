@@ -24,7 +24,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator.Fun
             get { return "Obligas a un usuario a decir el mensaje que desees."; }
         }
 
-        public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
+        public void Execute(GameClients.GameClient Session, Room Room, string[] Params)
         {
             RoomUser ThisUser = Room.GetRoomUserManager().GetRoomUserByHabbo(Session.GetHabbo().Id);
             if (ThisUser == null)
@@ -41,7 +41,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator.Fun
                     if (TargetUser.GetClient() != null && TargetUser.GetClient().GetHabbo() != null)
                         if (!TargetUser.GetClient().GetHabbo().GetPermissions().HasRight("mod_make_say_any"))
                             Room.SendMessage(new ChatComposer(TargetUser.VirtualId, Message, 0, TargetUser.LastBubble));
-                        else
+                        else if (Session.GetHabbo().Rank < TargetUser.GetClient().GetHabbo().Rank)
                             Session.SendWhisper("El usuario no puede decir eso.");
                 }
                 else

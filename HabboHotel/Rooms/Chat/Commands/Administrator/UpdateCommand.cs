@@ -14,20 +14,11 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Administrator
 {
     class UpdateCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_update"; }
-        }
+        public string PermissionRequired => "command_update";
 
-        public string Parameters
-        {
-            get { return "%variable%"; }
-        }
+        public string Parameters => "%variable%";
 
-        public string Description
-        {
-            get { return "Actualiza una característica de Neon."; }
-        }
+        public string Description => "Actualiza una característica de Neon.";
 
         public void Execute(GameClient Session, Room Room, string[] Params)
         {
@@ -74,7 +65,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Administrator
                             break;
                         }
 
-                        string Message = CommandManager.MergeParams(Params, 2);
+                        _ = CommandManager.MergeParams(Params, 2);
 
                         NeonEnvironment.GetGame().GetGroupManager().Init();
 
@@ -109,7 +100,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Administrator
                             break;
                         }
 
-                        string Message = CommandManager.MergeParams(Params, 2);
+                        _ = CommandManager.MergeParams(Params, 2);
 
                         NeonEnvironment.GetGame().GetCommunityGoalVS().LoadCommunityGoalVS();
 
@@ -330,6 +321,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Administrator
                     }
 
                 case "config":
+                case "configs":
                 case "settings":
                     {
                         if (!Session.GetHabbo().GetPermissions().HasCommand("command_update_configuration"))

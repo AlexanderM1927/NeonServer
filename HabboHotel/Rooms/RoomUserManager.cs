@@ -144,15 +144,13 @@ namespace Neon.HabboHotel.Rooms
 
             if (User.IsPet)
             {
-                RoomUser PetRemoval = null;
 
-                _pets.TryRemove(User.PetData.PetId, out PetRemoval);
+                _pets.TryRemove(User.PetData.PetId, out RoomUser PetRemoval);
                 petCount--;
             }
             else
             {
-                RoomUser BotRemoval = null;
-                _bots.TryRemove(User.BotData.Id, out BotRemoval);
+                _bots.TryRemove(User.BotData.Id, out RoomUser BotRemoval);
             }
 
 
@@ -170,9 +168,7 @@ namespace Neon.HabboHotel.Rooms
         }
 
         public RoomUser GetUserForSquare(int x, int y)
-        {
-            return _room.GetGameMap().GetRoomUsers(new Point(x, y)).FirstOrDefault();
-        }
+            => _room.GetGameMap().GetRoomUsers(new Point(x, y)).FirstOrDefault();
 
         public bool AddAvatarToRoom(GameClient Session)
         {
@@ -326,39 +322,6 @@ namespace Neon.HabboHotel.Rooms
                   User.Dispose();
               }
               */
-            return true;
-        }
-
-        public bool AddSpectatorToRoom(GameClient Session)
-        {
-            if (_room == null)
-                return false;
-
-            if (Session == null)
-                return false;
-
-            if (Session.GetHabbo().CurrentRoom == null)
-                return false;
-
-            RoomUser User = new RoomUser(Session.GetHabbo().Id, _room.RoomId, primaryPrivateUserID++, _room);
-
-            if (User == null || User.GetClient() == null)
-                return false;
-
-            DynamicRoomModel Model = _room.GetGameMap().Model;
-            if (Model == null)
-                return false;
-
-
-            foreach (RoomUser Bot in this._bots.Values.ToList())
-            {
-                if (Bot == null || Bot.BotAI == null)
-                    continue;
-
-                Bot.BotAI.OnUserEnterRoom(User);
-
-            }
-
             return true;
         }
 
@@ -857,12 +820,9 @@ namespace Neon.HabboHotel.Rooms
                                 continue;
                             }
 
-                            List<Item> Items = _room.GetGameMap().GetCoordinatedItems(new Point(User.X, User.Y));
-                            foreach (Item Item in Items.ToList())
-                            {
-                                Item.UserWalksOnFurni(User);
-                            }
-
+                            Item iitem;
+                            if (_room.GetGameMap().GetHighestItemForSquare(new Point(User.X, User.Y), out iitem))
+                                iitem.UserWalksOnFurni(User);
                             UpdateUserStatus(User, true);
                         }
                         else
@@ -872,10 +832,10 @@ namespace Neon.HabboHotel.Rooms
 
                     if (User.PathRecalcNeeded)
                     {
-                        if (User.Path.Count > 1)
-                            User.Path.Clear();
+                        User.Path.Clear();
 
-                        User.Path = PathFinder.FindPath(User, this._room.GetGameMap().DiagonalEnabled, this._room.GetGameMap(), new Vector2D(User.X, User.Y), new Vector2D(User.GoalX, User.GoalY));
+                        User.Path = PathFinder.FindPath(User, _room.GetGameMap().DiagonalEnabled, _room.GetGameMap(),
+                            new Vector2D(User.X, User.Y), new Vector2D(User.GoalX, User.GoalY));
 
                         if (User.Path.Count > 1)
                         {
@@ -886,8 +846,7 @@ namespace Neon.HabboHotel.Rooms
                         else
                         {
                             User.PathRecalcNeeded = false;
-                            if (User.Path.Count > 1)
-                                User.Path.Clear();
+                            User.Path.Clear();
                         }
                     }
 
