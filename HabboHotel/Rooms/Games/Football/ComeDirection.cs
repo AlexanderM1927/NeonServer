@@ -1,206 +1,143 @@
 ﻿using System.Drawing;
 
-namespace Neon.HabboHotel.Rooms
+namespace Neon.HabboHotel.Rooms.Games.Football
 {
-    enum ComeDirection
+    public class ComeDirection
     {
-        UP,
-        UP_RIGHT,
-        RIGHT,
-        DOWN_RIGHT,
-        DOWN,
-        DOWN_LEFT,
-        LEFT,
-        UP_LEFT,
-        NULL
-    }
-
-    public class _ComeDirection
-    {
-        internal static ComeDirection InverseDirections(Room room, ComeDirection comeWith, int x, int y)
+        internal static Direction InverseDirections(Room room, Direction comeWith, int x, int y)
         {
             try
             {
-                if (comeWith == ComeDirection.UP)
-                {
-                    return ComeDirection.DOWN;
-                }
-                else if (comeWith == ComeDirection.UP_RIGHT)
-                {
+                if (comeWith == Direction.Up)
+                    return Direction.Down;
+                if (comeWith == Direction.UpRight)
                     if (room.GetGameMap().StaticModel.SqState[x, y] == SquareState.BLOCKED)
-                    {
-                        if (room.GetGameMap().StaticModel.SqState[x + 1, y] == SquareState.BLOCKED) // x
-                            return ComeDirection.DOWN_RIGHT;
-                        else
-                            return ComeDirection.UP_LEFT;
-                    }
+                        return room.GetGameMap().StaticModel.SqState[x + 1, y] == SquareState.BLOCKED ? Direction.DownRight : Direction.UpLeft;
                     else
-                        return ComeDirection.DOWN_RIGHT;
-                }
-                else if (comeWith == ComeDirection.RIGHT)
-                {
-                    return ComeDirection.LEFT;
-                }
-                else if (comeWith == ComeDirection.DOWN_RIGHT)
-                {
+                        return Direction.DownRight;
+                if (comeWith == Direction.Right)
+                    return Direction.Left;
+                if (comeWith == Direction.DownRight)
                     if (room.GetGameMap().StaticModel.SqState[x, y] == SquareState.BLOCKED)
-                    {
-                        if (room.GetGameMap().StaticModel.SqState[x + 1, y] == SquareState.BLOCKED) // x
-                            return ComeDirection.UP_RIGHT;
-                        else
-                            return ComeDirection.DOWN_LEFT;
-                    }
+                        return room.GetGameMap().StaticModel.SqState[x + 1, y] == SquareState.BLOCKED ? Direction.UpRight : Direction.DownLeft;
                     else
-                        return ComeDirection.UP_RIGHT;
-                }
-                else if (comeWith == ComeDirection.DOWN)
-                {
-                    return ComeDirection.UP;
-                }
-                else if (comeWith == ComeDirection.DOWN_LEFT)
-                {
-                    if (room.GetGameMap().Model.MapSizeX - 1 <= x)
-                        return ComeDirection.DOWN_RIGHT;
-                    else
-                        return ComeDirection.UP_LEFT;
-                }
-                else if (comeWith == ComeDirection.LEFT)
-                {
-                    return ComeDirection.RIGHT;
-                }
-                else if (comeWith == ComeDirection.UP_LEFT)
-                {
-                    if (room.GetGameMap().Model.MapSizeX - 1 <= x)
-                        return ComeDirection.UP_RIGHT;
-                    else
-                        return ComeDirection.DOWN_LEFT;
-                }
-                return ComeDirection.NULL;
+                        return Direction.UpRight;
+                if (comeWith == Direction.Down)
+                    return Direction.Up;
+                if (comeWith == Direction.DownLeft)
+                    return room.GetGameMap().Model.MapSizeX - 1 <= x ? Direction.DownRight : Direction.UpLeft;
+                if (comeWith == Direction.Left)
+                    return Direction.Right;
+                if (comeWith == Direction.UpLeft)
+                    return room.GetGameMap().Model.MapSizeX - 1 <= x ? Direction.UpRight : Direction.DownLeft;
+                return Direction.Null;
             }
             catch
             {
-                return ComeDirection.NULL;
+                return Direction.Null;
             }
         }
 
-        internal static ComeDirection GetInverseDirectionEasy(ComeDirection comeWith)
+
+        internal static Direction GetInverseDirectionEasy(Direction comeWith)
         {
             try
             {
-                if (comeWith == ComeDirection.UP)
+                switch (comeWith)
                 {
-                    return ComeDirection.DOWN;
+                    case Direction.Up:
+                        return Direction.Down;
+                    case Direction.UpRight:
+                        return Direction.DownLeft;
+                    case Direction.Right:
+                        return Direction.Left;
+                    case Direction.DownRight:
+                        return Direction.UpLeft;
+                    case Direction.Down:
+                        return Direction.Up;
+                    case Direction.DownLeft:
+                        return Direction.UpRight;
+                    case Direction.Left:
+                        return Direction.Right;
+                    case Direction.UpLeft:
+                        return Direction.DownRight;
                 }
-                else if (comeWith == ComeDirection.UP_RIGHT)
-                {
-                    return ComeDirection.DOWN_LEFT;
-                }
-                else if (comeWith == ComeDirection.RIGHT)
-                {
-                    return ComeDirection.LEFT;
-                }
-                else if (comeWith == ComeDirection.DOWN_RIGHT)
-                {
-                    return ComeDirection.UP_LEFT;
-                }
-                else if (comeWith == ComeDirection.DOWN)
-                {
-                    return ComeDirection.UP;
-                }
-                else if (comeWith == ComeDirection.DOWN_LEFT)
-                {
-                    return ComeDirection.UP_RIGHT;
-                }
-                else if (comeWith == ComeDirection.LEFT)
-                {
-                    return ComeDirection.RIGHT;
-                }
-                else if (comeWith == ComeDirection.UP_LEFT)
-                {
-                    return ComeDirection.DOWN_RIGHT;
-                }
-                return ComeDirection.NULL;
+                return Direction.Null;
             }
             catch
             {
-                return ComeDirection.NULL;
+                return Direction.Null;
             }
         }
 
-        internal static void GetNewCoords(ComeDirection comeWith, ref int newX, ref int newY)
+        internal static void GetNewCoords(Direction comeWith, ref int newX, ref int newY)
         {
             try
             {
-                if (comeWith == ComeDirection.UP)
+                switch (comeWith)
                 {
-                    // newX = newX;
-                    newY++;
-                }
-                else if (comeWith == ComeDirection.UP_RIGHT)
-                {
-                    newX--;
-                    newY++;
-                }
-                else if (comeWith == ComeDirection.RIGHT)
-                {
-                    newX--;
+                    case Direction.Up:
+                        newY++;
+                        break;
+                    case Direction.UpRight:
+                        newX--;
+                        newY++;
+                        break;
+                    case Direction.Right:
+                        newX--;
+                        break;
+                    case Direction.DownRight:
+                        newX--;
+                        newY--;
+                        break;
+                    case Direction.Down:
+                        // newX = newX;
+                        newY--;
+                        break;
+                    case Direction.DownLeft:
+                        newX++;
+                        newY--;
+                        break;
+                    case Direction.Left:
+                        newX++;
+                        break;
                     // newY = newY;
-                }
-                else if (comeWith == ComeDirection.DOWN_RIGHT)
-                {
-                    newX--;
-                    newY--;
-                }
-                else if (comeWith == ComeDirection.DOWN)
-                {
-                    // newX = newX;
-                    newY--;
-                }
-                else if (comeWith == ComeDirection.DOWN_LEFT)
-                {
-                    newX++;
-                    newY--;
-                }
-                else if (comeWith == ComeDirection.LEFT)
-                {
-                    newX++;
-                    // newY = newY;
-                }
-                else if (comeWith == ComeDirection.UP_LEFT)
-                {
-                    newX++;
-                    newY++;
+                    case Direction.UpLeft:
+                        newX++;
+                        newY++;
+                        break;
                 }
             }
-            catch { }
+            catch
+            {
+            }
         }
 
-        internal static ComeDirection GetComeDirection(Point user, Point ball)
+        internal static Direction GetComeDirection(Point user, Point ball)
         {
             try
             {
                 if (user.X == ball.X && user.Y - 1 == ball.Y)
-                    return ComeDirection.DOWN;
-                else if (user.X + 1 == ball.X && user.Y - 1 == ball.Y)
-                    return ComeDirection.DOWN_LEFT;
-                else if (user.X + 1 == ball.X && user.Y == ball.Y)
-                    return ComeDirection.LEFT;
-                else if (user.X + 1 == ball.X && user.Y + 1 == ball.Y)
-                    return ComeDirection.UP_LEFT;
-                else if (user.X == ball.X && user.Y + 1 == ball.Y)
-                    return ComeDirection.UP;
-                else if (user.X - 1 == ball.X && user.Y + 1 == ball.Y)
-                    return ComeDirection.UP_RIGHT;
-                else if (user.X - 1 == ball.X && user.Y == ball.Y)
-                    return ComeDirection.RIGHT;
-                else if (user.X - 1 == ball.X && user.Y - 1 == ball.Y)
-                    return ComeDirection.DOWN_RIGHT;
-                else
-                    return ComeDirection.NULL;
+                    return Direction.Down;
+                if (user.X + 1 == ball.X && user.Y - 1 == ball.Y)
+                    return Direction.DownLeft;
+                if (user.X + 1 == ball.X && user.Y == ball.Y)
+                    return Direction.Left;
+                if (user.X + 1 == ball.X && user.Y + 1 == ball.Y)
+                    return Direction.UpLeft;
+                if (user.X == ball.X && user.Y + 1 == ball.Y)
+                    return Direction.Up;
+                if (user.X - 1 == ball.X && user.Y + 1 == ball.Y)
+                    return Direction.UpRight;
+                if (user.X - 1 == ball.X && user.Y == ball.Y)
+                    return Direction.Right;
+                if (user.X - 1 == ball.X && user.Y - 1 == ball.Y)
+                    return Direction.DownRight;
+                return Direction.Null;
             }
             catch
             {
-                return ComeDirection.NULL;
+                return Direction.Null;
             }
         }
     }

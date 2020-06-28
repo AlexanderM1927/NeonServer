@@ -15,6 +15,7 @@ using Neon.HabboHotel.Rooms.AI.Speech;
 
 using Neon.Database.Interfaces;
 using Neon.Utilities;
+using System.Text.RegularExpressions;
 
 namespace Neon.Communication.Packets.Incoming.Rooms.AI.Bots
 {
@@ -115,6 +116,7 @@ namespace Neon.Communication.Packets.Incoming.Rooms.AI.Bots
                         #region Save Data - TODO: MAKE METHODS FOR THIS.
                         for (int i = 0; i <= SpeechData.Length - 1; i++)
                         {
+                            SpeechData[i] = Regex.Replace(SpeechData[i], "<(.|\\n)*?>", string.Empty);
                             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
                             {
                                 dbClient.SetQuery("INSERT INTO `bots_speech` (`bot_id`, `text`) VALUES (@id, @data)");

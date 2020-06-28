@@ -373,6 +373,11 @@ namespace Neon.HabboHotel.Rooms
 
         public RoomData RoomData { get; }
 
+        internal void FixGameMap()
+        {
+            _gamemap = new Gamemap(this);
+        }
+
         public Gamemap GetGameMap()
         {
             return _gamemap;
@@ -1159,6 +1164,25 @@ namespace Neon.HabboHotel.Rooms
         #endregion
 
         #region Communication (Packets)
+        internal void SendFastMessage(IServerPacket message)
+        {
+            try
+            {
+                lock (GetRoomUserManager().GetUsers())
+                {
+                    foreach (
+                        var client in
+                        GetRoomUserManager()
+                            .GetUsers().Values.Where(user => user != null && !user.IsBot)
+                            .Select(user => user.GetClient())
+                            .Where(client => client != null))
+                        client.SendMessage(message);
+                }
+            }
+            catch
+            {
+            }
+        }
         public void SendMessage(IServerPacket Message, bool UsersWithRightsOnly = false)
         {
             if (Message == null)

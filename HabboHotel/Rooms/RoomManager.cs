@@ -20,9 +20,11 @@ namespace Neon.HabboHotel.Rooms
 
         private readonly ConcurrentDictionary<int, Room> _rooms;
         private readonly ConcurrentDictionary<int, RoomData> _loadedRoomData;
+        public List<Room> LoadedBallRooms;
 
 
         private DateTime _cycleLastExecution;
+        private DateTime _cycleBallLastExecution;
 
         public RoomManager()
         {
@@ -30,6 +32,7 @@ namespace Neon.HabboHotel.Rooms
 
             _rooms = new ConcurrentDictionary<int, Room>();
             _loadedRoomData = new ConcurrentDictionary<int, RoomData>();
+            LoadedBallRooms = new List<Room>();
 
             LoadModels();
 
@@ -40,6 +43,33 @@ namespace Neon.HabboHotel.Rooms
 
         public void OnCycle()
         {
+            if (LoadedBallRooms.Count > 0)
+            {
+                var sinceBallLastTime = DateTime.Now - _cycleBallLastExecution;
+                if (sinceBallLastTime.TotalMilliseconds >= 180)
+                {
+                    _cycleBallLastExecution = DateTime.Now;
+                    foreach (var Room in LoadedBallRooms)
+                    {
+                        if (Room == null)
+                            return;
+                        try
+                        {
+                            if (Room.GotSoccer())
+                            {
+                                //                                lock (_lock)
+                                Room.GetSoccer().OnCycle();
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            Logging.LogCriticalException("INVALID MARIO BUG IN BALLMOVEMENT: <" + Room.Id +
+                                                         "> :" +
+                                                         e);
+                        }
+                    }
+                }
+            }
             try
             {
                 TimeSpan sinceLastTime = DateTime.Now - _cycleLastExecution;

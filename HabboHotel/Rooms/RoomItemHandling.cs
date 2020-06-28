@@ -31,7 +31,6 @@ namespace Neon.HabboHotel.Rooms
         private Room _room;
 
         public int HopperCount;
-        private bool mGotRollers;
         private int mRollerSpeed;
         private int mRollerCycle;
 
@@ -53,7 +52,7 @@ namespace Neon.HabboHotel.Rooms
             this._room = Room;
 
             this.HopperCount = 0;
-            this.mGotRollers = false;
+            this.GotRollers = false;
             this.mRollerSpeed = Room.RollerSpeed;
             this.mRollerCycle = 0;
 
@@ -76,11 +75,7 @@ namespace Neon.HabboHotel.Rooms
             this._rollers.TryAdd(ItemId, Roller);
         }
 
-        public bool GotRollers
-        {
-            get { return mGotRollers; }
-            set { mGotRollers = value; }
-        }
+        public bool GotRollers { get; set; }
 
         public void QueueRoomItemUpdate(Item item)
         {
@@ -266,7 +261,7 @@ namespace Neon.HabboHotel.Rooms
             {
                 if (Item.IsRoller)
                 {
-                    mGotRollers = true;
+                    GotRollers = true;
                 }
                 else if (Item.GetBaseItem().InteractionType == InteractionType.MOODLIGHT)
                 {
@@ -297,14 +292,12 @@ namespace Neon.HabboHotel.Rooms
         {
             if (_floorItems != null && _floorItems.ContainsKey(pId))
             {
-                Item Item = null;
-                if (_floorItems.TryGetValue(pId, out Item))
+                if (_floorItems.TryGetValue(pId, out Item Item))
                     return Item;
             }
             else if (_wallItems != null && _wallItems.ContainsKey(pId))
             {
-                Item Item = null;
-                if (_wallItems.TryGetValue(pId, out Item))
+                if (_wallItems.TryGetValue(pId, out Item Item))
                     return Item;
             }
 
@@ -367,7 +360,7 @@ namespace Neon.HabboHotel.Rooms
 
         private List<ServerPacket> CycleRollers()
         {
-            if (!mGotRollers)
+            if (!GotRollers)
                 return new List<ServerPacket>();
 
             if (mRollerCycle >= mRollerSpeed || mRollerSpeed == 0)
@@ -490,7 +483,7 @@ namespace Neon.HabboHotel.Rooms
             return mMessage;
         }
 
-        public ServerPacket UpdateUserOnRoller(RoomUser pUser, Point pNextCoord, int pRollerID, Double NextZ)
+        public ServerPacket UpdateUserOnRoller(RoomUser pUser, Point pNextCoord, int pRollerID, double NextZ)
         {
             var mMessage = new ServerPacket(ServerPacketHeader.SlideObjectBundleMessageComposer);
             mMessage.WriteInteger(pUser.X);
@@ -709,7 +702,7 @@ namespace Neon.HabboHotel.Rooms
                 }
             }
 
-            Double newZ = _room.GetGameMap().Model.SqFloorHeight[newX, newY];
+            double newZ = _room.GetGameMap().Model.SqFloorHeight[newX, newY];
 
             if (Session.GetHabbo().ForceHeight != -1)
             {
@@ -976,7 +969,7 @@ namespace Neon.HabboHotel.Rooms
 
         public void OnCycle()
         {
-            if (mGotRollers)
+            if (GotRollers)
             {
                 try
                 {
@@ -985,7 +978,7 @@ namespace Neon.HabboHotel.Rooms
                 catch //(Exception e)
                 {
                     // Logging.LogThreadException(e.ToString(), "rollers for room with ID " + room.RoomId);
-                    mGotRollers = false;
+                    GotRollers = false;
                 }
             }
 

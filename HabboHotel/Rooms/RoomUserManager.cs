@@ -581,6 +581,7 @@ namespace Neon.HabboHotel.Rooms
                 return null;
             return User;
         }
+        public ConcurrentDictionary<int, RoomUser> GetUsers() => _users;
 
         public RoomUser GetRoomUserByHabbo(int Id)
         {
@@ -816,7 +817,7 @@ namespace Neon.HabboHotel.Rooms
                     {
                         User.DiceTotal = 0;
 
-                        if (this._room.GetGameMap().IsValidWalk(User, new Vector2D(User.X, User.Y), new Vector2D(User.SetX, User.SetY), User.AllowOverride) || User.RidingHorse)
+                        if (_room.GetGameMap().IsValidWalk(User, new Vector2D(User.X, User.Y), new Vector2D(User.SetX, User.SetY), User.AllowOverride) || User.RidingHorse)
                         {
                             if (!User.RidingHorse)
                                 _room.GetGameMap().UpdateUserMovement(new Point(User.Coordinate.X, User.Coordinate.Y), new Point(User.SetX, User.SetY), User);
@@ -869,9 +870,30 @@ namespace Neon.HabboHotel.Rooms
                         User.SetStep = false;
                     }
 
+                    if (User.PathRecalcNeeded)
+                    {
+                        if (User.Path.Count > 1)
+                            User.Path.Clear();
+
+                        User.Path = PathFinder.FindPath(User, this._room.GetGameMap().DiagonalEnabled, this._room.GetGameMap(), new Vector2D(User.X, User.Y), new Vector2D(User.GoalX, User.GoalY));
+
+                        if (User.Path.Count > 1)
+                        {
+                            User.PathStep = 1;
+                            User.IsWalking = true;
+                            User.PathRecalcNeeded = false;
+                        }
+                        else
+                        {
+                            User.PathRecalcNeeded = false;
+                            if (User.Path.Count > 1)
+                                User.Path.Clear();
+                        }
+                    }
+
                     if (User.IsWalking && !User.Freezed)
                     {
-                        SquarePoint point = DreamPathfinder.GetNextStep(User, new Vector2D(User.X, User.Y), new Vector2D(User.GoalX, User.GoalY), this._room.GetGameMap());
+                        SquarePoint point = DreamPathfinder.GetNextStep(User, new Vector2D(User.X, User.Y), new Vector2D(User.GoalX, User.GoalY), _room.GetGameMap());
                         if (InvalidStep || (point.X == User.X) && (point.Y == User.Y) || (User.GoalX == User.X && User.GoalY == User.Y)) //No path found, or reached goal (:
                         {
                             User.IsWalking = false;
@@ -1665,7 +1687,7 @@ namespace Neon.HabboHotel.Rooms
 
         public ICollection<RoomUser> GetUserList()
         {
-            return this._users.Values;
+            return _users.Values;
         }
     }
 }
