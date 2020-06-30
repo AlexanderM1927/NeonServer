@@ -229,6 +229,20 @@ namespace Neon.HabboHotel.GameClients
             }
         }
 
+        public void StaffAlert3(string Message)
+        {
+            foreach (GameClient client in this.GetClients.ToList())
+            {
+                if (client == null || client.GetHabbo() == null)
+                    continue;
+
+                if (client.GetHabbo().Rank < 4)
+                    continue;
+
+                client.SendWhisper(Message, 23);
+            }
+        }    
+
         public void StaffAlert(ServerPacket Message, int Exclude = 0)
         {
             foreach (GameClient client in this.GetClients.ToList())
@@ -241,7 +255,7 @@ namespace Neon.HabboHotel.GameClients
 
                 client.SendMessage(Message);
             }
-        }
+        } 
 
         public void QuizzAlert(ServerPacket Message, Item Item, Room room, int Exclude = 0)
         {

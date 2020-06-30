@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
 using Neon.HabboHotel.GameClients;
 using Neon.Communication.Packets.Outgoing.Rooms.Chat;
 
@@ -10,58 +6,55 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User.Fun
 {
     class SuperPushCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_super_push"; }
-        }
+        public string PermissionRequired => "command_super_push";
+        public string Parameters => "[USUARIO]";
+        public string Description => "Estupendo empuje hacia otro usuario. (Los empuja 3 casillas de distancia)";
 
-        public string Parameters
+        public void Execute(GameClient Session, Room Room, string[] Params)
         {
-            get { return "%target%"; }
-        }
 
-        public string Description
-        {
-            get { return "Empujar a otro usuario 3 cuadrados de ti."; }
-        }
 
-        public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
-        {
             if (Params.Length == 1)
             {
-                Session.SendWhisper("Please enter the username of the user you wish to push.");
+                Session.SendWhisper("Por favor, introduzca el nombre de usuario del usuario que desea empujar.");
                 return;
             }
 
-            //if (!Room.SPushEnabled && !Room.CheckRights(Session, true) && !Session.GetHabbo().GetPermissions().HasRight("room_override_custom_config"))
-            //{
-            //    Session.SendWhisper("Oops, it appears that the room owner has disabled the ability to use the push command in here.");
-            //    return;
-            //}
+            if (!Room.SPushEnabled && !Room.CheckRights(Session, true) && !Session.GetHabbo().GetPermissions().HasRight("room_override_custom_config"))
+            {
+                Session.SendWhisper("Vaya, parece que el propietario de la sala ha deshabilitado la capacidad de utilizar el comando push aquí.");
+                return;
+            }
 
             GameClient TargetClient = NeonEnvironment.GetGame().GetClientManager().GetClientByUsername(Params[1]);
             if (TargetClient == null)
             {
-                Session.SendWhisper("An error occoured whilst finding that user, maybe they're not online.");
+                Session.SendWhisper("Se produjo un error mientras que la búsqueda de usuario, tal vez no están en línea.");
                 return;
             }
 
             RoomUser TargetUser = Room.GetRoomUserManager().GetRoomUserByHabbo(TargetClient.GetHabbo().Id);
             if (TargetUser == null)
             {
-                Session.SendWhisper("An error occoured whilst finding that user, maybe they're not online or in this room.");
+                Session.SendWhisper("Se produjo un error mientras que la búsqueda de usuario, tal vez no están en línea o en esta sala.");
                 return;
             }
 
             if (TargetClient.GetHabbo().Username == Session.GetHabbo().Username)
             {
-                Session.SendWhisper("Come on, surely you don't want to push yourself!");
+                Session.SendWhisper("Vamos, seguramente usted no quiere empujar a sí mismo!");
+                return;
+            }
+
+            if (TargetClient.GetHabbo().GetPermissions().HasRight("mod_tool"))
+            {
+                Session.SendWhisper("No puedes empujar a este usuario.");
                 return;
             }
 
             if (TargetUser.TeleportEnabled)
             {
-                Session.SendWhisper("Oops, you cannot push a user whilst they have their teleport mode enabled.");
+                Session.SendWhisper("Vaya, no se puede empujar a un usuario al mismo tiempo que han permitido a su modo de teletransporte.");
                 return;
             }
 
@@ -73,19 +66,19 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User.Fun
             {
                 if (TargetUser.SetX - 1 == Room.GetGameMap().Model.DoorX || TargetUser.SetY - 1 == Room.GetGameMap().Model.DoorY)
                 {
-                    Session.SendWhisper("Please don't push that user out of the room :(!");
+                    Session.SendWhisper("Por favor, no empujar a ese usuario fuera de la habitación :(!");
                     return;
                 }
 
                 if (TargetUser.SetX - 2 == Room.GetGameMap().Model.DoorX || TargetUser.SetY - 2 == Room.GetGameMap().Model.DoorY)
                 {
-                    Session.SendWhisper("Please don't push that user out of the room :(!");
+                    Session.SendWhisper("Por favor, no empujar a ese usuario fuera de la habitación:(!");
                     return;
                 }
 
                 if (TargetUser.SetX - 3 == Room.GetGameMap().Model.DoorX || TargetUser.SetY - 3 == Room.GetGameMap().Model.DoorY)
                 {
-                    Session.SendWhisper("Please don't push that user out of the room :(!");
+                    Session.SendWhisper("Por favor, no empujar a ese usuario fuera de la habitación:(!");
                     return;
                 }
 

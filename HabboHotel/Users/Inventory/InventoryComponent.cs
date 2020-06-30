@@ -338,8 +338,7 @@ namespace Neon.HabboHotel.Users.Inventory
 
             if (this._floorItems.ContainsKey(Id))
             {
-                Item ToRemove = null;
-                this._floorItems.TryRemove(Id, out ToRemove);
+                this._floorItems.TryRemove(Id, out Item ToRemove);
             }
 
             if (this._wallItems.ContainsKey(Id))

@@ -71,6 +71,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User
                 "\t- Nillus\n" +
                 "\t- Sledmore\n" +
                 "<b>Neon Developers:</b>\n" +
+                "\t- DjAlexander\n" +
                 "\t- Javas\n" +
                 "<b>Informacion Actual</b>:\n" +
                 "\t- Usuarios en linea: " + OnlineUsers + "\n" +

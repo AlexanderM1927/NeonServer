@@ -81,7 +81,7 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Engine
                 Session.GetHabbo().lastY2 = MoveY;
             }
 
-            if (Session.GetHabbo().isControlling)
+            if (Session.GetHabbo().IsControlling)
             {
                 RoomUser Controlled = Room.GetRoomUserManager().GetRoomUserByUsername(Session.GetHabbo().Opponent);
                 if (Controlled != null || Controlled.CanWalk)

@@ -37,7 +37,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User.Fan
                 Item[] items = Room.GetRoomItemHandler().GetFloor.ToArray();
                 foreach (Item Item in items.ToList())
                 {
-                    GameClient TargetClient = NeonEnvironment.GetGame().GetClientManager().GetClientByUserID(Item.UserID);
+                    _ = NeonEnvironment.GetGame().GetClientManager().GetClientByUserID(Item.UserID);
                     if (Item.GetBaseItem().InteractionType == InteractionType.STACKTOOL)
 
                         Room.SendMessage(new UpdateMagicTileComposer(Item.Id, int.Parse(height)));

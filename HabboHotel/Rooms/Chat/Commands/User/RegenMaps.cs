@@ -22,7 +22,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User
             get { return "Regenerar el mapa de la sala en la que estás."; }
         }
 
-        public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
+        public void Execute(GameClients.GameClient Session, Room Room, string[] Params)
         {
             if (!Room.CheckRights(Session, true))
             {

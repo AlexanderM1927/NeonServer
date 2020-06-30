@@ -31,15 +31,15 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
         {
             this.Instance = Instance;
             this.Item = Item;
-            this.SetItems = new ConcurrentDictionary<int, Item>();
+            SetItems = new ConcurrentDictionary<int, Item>();
         }
 
         public void HandleSave(ClientPacket Packet)
         {
-            int Unknown = Packet.PopInt();
+            _ = Packet.PopInt();
             string Link = Packet.PopString();
 
-            this.StringData = Link;
+            StringData = Link;
         }
 
         public bool Execute(params object[] Params)
@@ -51,7 +51,7 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
             if (Player == null || Player.GetClient() == null)
                 return false;
 
-            if (String.IsNullOrEmpty(StringData))
+            if (string.IsNullOrEmpty(StringData))
                 return false;
 
             ServerPacket packet = new ServerPacket(2);

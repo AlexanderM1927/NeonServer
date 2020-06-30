@@ -24,8 +24,7 @@ namespace Neon.Communication.Packets.Incoming.Catalog
             if (reward == null) return;
             int rewardId;
             var furniMaticBoxId = 4692;
-            ItemData data = null;
-            NeonEnvironment.GetGame().GetItemManager().GetItem(furniMaticBoxId, out data);
+            NeonEnvironment.GetGame().GetItemManager().GetItem(furniMaticBoxId, out ItemData data);
             var maticData = DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day;
             using (var dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {

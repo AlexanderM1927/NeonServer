@@ -24,6 +24,7 @@ using Neon.HabboHotel.Rooms.Games.Teams;
 using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
 using Neon.Football;
 using Neon.HabboHotel.Items.Wired.Util;
+using Neon.HabboHotel.Rooms.Games.Football;
 
 namespace Neon.HabboHotel.Items
 {
@@ -71,10 +72,11 @@ namespace Neon.HabboHotel.Items
         // Futbol
         internal bool Shoot = false;
         internal ComeDirection comeDirection;
+        public Direction Direction;
         internal IComeDirection ComeDirection;
         public MovementDirection MoveToDirMovement = MovementDirection.NONE;
         internal int _iBallValue;
-        internal GameClient ballMover;
+        internal RoomUser ballMover;
         internal bool ballIsMoving;
 
         public int ExtradataInt // added

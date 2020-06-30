@@ -55,7 +55,7 @@ namespace Neon.HabboHotel
             return forummanager;
         }
 
-        private GroupForumManager forummanager;
+        private readonly GroupForumManager forummanager;
         private readonly PacketManager _packetManager;
         private readonly GameClientManager _clientManager;
         private readonly ModerationManager _modManager;
@@ -90,7 +90,7 @@ namespace Neon.HabboHotel
         private readonly PollManager _pollManager;
         private readonly CommunityGoalVS _communityGoalVS;
         private readonly CalendarManager _calendarManager;
-        private RentableSpaceManager _rentableSpaceManager;
+        private readonly RentableSpaceManager _rentableSpaceManager;
         private readonly NuxUserGiftsManager _nuxusergiftManager;
         private readonly NuxUserGiftsListManager _nuxusergiftlistManager;
         private readonly LeaderBoardDataManager _leaderBoardDataManager;
@@ -98,7 +98,7 @@ namespace Neon.HabboHotel
         private bool _cycleEnded;
         private bool _cycleActive;
         private Task _gameCycle;
-        private int _cycleSleepTime = 25;
+        private readonly int _cycleSleepTime = 25;
 
         public Game()
         {

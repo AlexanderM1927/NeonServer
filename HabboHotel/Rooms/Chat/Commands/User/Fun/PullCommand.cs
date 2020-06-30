@@ -35,11 +35,11 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User.Fun
                 return;
             }
 
-            //if (!Room.PullEnabled && !Session.GetHabbo().GetPermissions().HasRight("room_override_custom_config"))
-            //{
-            //    Session.SendWhisper("Oops, el dueño de la sala no permite que hales a otros en su sala");
-            //    return;
-            //}
+            if (!Room.PullEnabled && !Session.GetHabbo().GetPermissions().HasRight("room_override_custom_config"))
+            {
+                Session.SendWhisper("Oops, el dueño de la sala no permite que hales a otros en su sala");
+                return;
+            }
 
             GameClient TargetClient = NeonEnvironment.GetGame().GetClientManager().GetClientByUsername(Params[1]);
             if (TargetClient == null)

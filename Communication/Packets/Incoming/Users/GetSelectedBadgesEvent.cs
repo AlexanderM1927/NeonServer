@@ -17,7 +17,7 @@ namespace Neon.Communication.Packets.Incoming.Users
             if (Habbo == null)
                 return;
 
-            Session.GetHabbo().lastUserId = UserId;
+            Session.GetHabbo().LastUserId = UserId;
             Session.SendMessage(new HabboUserBadgesComposer(Habbo));
         }
     }

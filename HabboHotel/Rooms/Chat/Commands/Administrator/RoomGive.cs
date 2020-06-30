@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
+﻿using System.Linq;
 
 using Neon.HabboHotel.GameClients;
 using Neon.Communication.Packets.Outgoing.Inventory.Purse;
@@ -11,22 +8,13 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
 {
     class RoomGiveCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_room_give"; }
-        }
+        public string PermissionRequired => "command_room_give";
 
-        public string Parameters
-        {
-            get { return "%type% %amount%"; }
-        }
+        public string Parameters => "%type% %amount%";
 
-        public string Description
-        {
-            get { return ""; }
-        }
+        public string Description => "";
 
-        public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
+        public void Execute(GameClient Session, Room Room, string[] Params)
         {
             if (Params.Length == 1)
             {

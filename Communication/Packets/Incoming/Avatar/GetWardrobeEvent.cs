@@ -1,9 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.Communication.Packets.Outgoing.Avatar;
+﻿using Neon.Communication.Packets.Outgoing.Avatar;
 
 namespace Neon.Communication.Packets.Incoming.Avatar
 {

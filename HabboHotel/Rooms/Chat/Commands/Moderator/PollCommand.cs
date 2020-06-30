@@ -26,16 +26,16 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
                 
                 if (quest == "end")
                 {
-                    Room.endQuestion();
+                    Room.EndQuestion();
                 }
                 else if(time != -1 || time != 0)
                 {
-                    Room.startQuestion(quest);
+                    Room.StartQuestion(quest);
                     time *= 1000;
                     Task t = Task.Factory.StartNew(() => TaskStopQuestion(Room, time));
                 }
                 else
-                    Room.startQuestion(quest);
+                    Room.StartQuestion(quest);
 
             }
         }
@@ -43,7 +43,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
         public void TaskStopQuestion(Room room, int time)
         {
             Thread.Sleep(time);
-            room.endQuestion();
+            room.EndQuestion();
         }
 
         public string Description =>

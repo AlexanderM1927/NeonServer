@@ -1,15 +1,7 @@
 ﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.Utilities;
 using Neon.HabboHotel.Users;
 using Neon.HabboHotel.GameClients;
-
-
 using Neon.HabboHotel.Moderation;
-
 using Neon.Database.Interfaces;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
@@ -31,7 +23,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
             get { return "IP and account ban another user."; }
         }
 
-        public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
+        public void Execute(GameClient Session, Room Room, string[] Params)
         {
             if (Params.Length == 1)
             {
@@ -63,7 +55,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
                 IPAddress = dbClient.getString();
             }
 
-            string Reason = null;
+            string Reason;
             if (Params.Length >= 3)
                 Reason = CommandManager.MergeParams(Params, 2);
             else

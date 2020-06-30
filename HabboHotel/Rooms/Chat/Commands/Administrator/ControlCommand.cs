@@ -38,7 +38,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User
             if (Params.Length == 2 && Params[1] == "end")
             {
                 Session.SendWhisper("Has dejado de controlar a " + Session.GetHabbo().Opponent +".", 34);
-                Session.GetHabbo().isControlling = false;
+                Session.GetHabbo().IsControlling = false;
                 return;
             }
 
@@ -46,7 +46,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User
             if (TargetClient != null)
             {
                 Session.GetHabbo().Opponent = TargetClient.GetHabbo().Username;
-                Session.GetHabbo().isControlling = true;
+                Session.GetHabbo().IsControlling = true;
                 Session.SendMessage(RoomNotificationComposer.SendBubble("definitions", "Ahora estás controlando a " + TargetClient.GetHabbo().Username + ". Para parar di :control end."));
                 return;
             }

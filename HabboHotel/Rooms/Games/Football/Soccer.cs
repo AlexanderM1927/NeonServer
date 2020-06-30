@@ -1,213 +1,234 @@
-﻿using System;
-using System.Linq;
-using System.Drawing;
-using System.Collections.Generic;
+﻿#region
+
+using System;
 using System.Collections.Concurrent;
-
-using Neon.Communication.Packets.Incoming;
-
+using System.Drawing;
+using Neon.Communication.Packets.Outgoing;
 using Neon.HabboHotel.Items;
-using Neon.HabboHotel.GameClients;
-using Neon.HabboHotel.Pathfinding;
-
-using Neon.Communication.Packets.Outgoing.Rooms.Engine;
-using Neon.HabboHotel.Rooms.Games.Teams;
 using Neon.HabboHotel.Items.Wired;
+using Neon.HabboHotel.Rooms.Games.Teams;
+using Neon.Utilities;
+
+#endregion
 
 namespace Neon.HabboHotel.Rooms.Games.Football
 {
+    public enum Direction
+    {
+        Up,
+        UpRight,
+        Right,
+        DownRight,
+        Down,
+        DownLeft,
+        Left,
+        UpLeft,
+        Null
+    }
+
+
     public class Soccer
     {
+        // private ConcurrentDictionary<int, Item> _balls;
         private Room _room;
+        // internal Item Balls { get; private set; }
+        private ConcurrentDictionary<int, Item> Balls;
         private Item[] gates;
-        private ConcurrentDictionary<int, Item> _balls;
-        private bool _gameStarted;
+        //        private readonly object _lock = new object();
 
         public Soccer(Room room)
         {
-            this._room = room;
-            this.gates = new Item[4];
-            this._balls = new ConcurrentDictionary<int, Item>();
-            this._gameStarted = false;
+            _room = room;
+            gates = new Item[4];
+            Balls = new ConcurrentDictionary<int, Item>();
+            GameIsStarted = false;
         }
-        public bool GameIsStarted
-        {
-            get { return this._gameStarted; }
-        }
+
+        public bool GameIsStarted { get; private set; }
+
         public void StopGame(bool userTriggered = false)
         {
-            this._gameStarted = false;
+            GameIsStarted = false;
 
             if (!userTriggered)
                 _room.GetWired().TriggerEvent(WiredBoxType.TriggerGameEnds, null);
         }
 
-        public void StartGame()
-        {
-            this._gameStarted = true;
-        }
+        public void StartGame() => GameIsStarted = true;
 
         public void AddBall(Item item)
         {
-            this._balls.TryAdd(item.Id, item);
+            if (!NeonEnvironment.GetGame().GetRoomManager().LoadedBallRooms.Contains(_room))
+                NeonEnvironment.GetGame().GetRoomManager().LoadedBallRooms.Add(_room);
+
+            Balls.TryAdd(item.Id, item);
         }
 
         public void RemoveBall(int itemID)
         {
-            Item Item = null;
-            this._balls.TryRemove(itemID, out Item);
+            var item = _room.GetRoomItemHandler().GetItem(itemID);
+            if (item == null)
+                return;
+            item.ballIsMoving = false;
+            Balls.TryRemove(itemID, out item);
+
+            if (NeonEnvironment.GetGame().GetRoomManager().LoadedBallRooms.Contains(_room))
+                NeonEnvironment.GetGame().GetRoomManager().LoadedBallRooms.Remove(_room);
         }
 
-        public void OnUserWalk(RoomUser User)
+        internal void OnCycle()
         {
-            if (User == null)
+            if (Balls == null)
                 return;
-
-            foreach (Item item in this._balls.Values.ToList())
+            foreach (var ball in Balls.Values)
             {
-                int NewX = 0;
-                int NewY = 0;
-                int differenceX = User.X - item.GetX;
-                int differenceY = User.Y - item.GetY;
-
-                if (differenceX == 0 && differenceY == 0)
+                if (ball == null)
+                    return;
+                if (ball.ballIsMoving)
                 {
-                    if (User.RotBody == 4)
-                    {
-                        NewX = User.X;
-                        NewY = User.Y + 4;
-                        item.ExtraData = "55";
-                        item.BallIsMoving = true;
-                        item.BallValue = 1;
-
-                    }
-                    else if (User.RotBody == 6)
-                    {
-                        NewX = User.X - 4;
-                        NewY = User.Y;
-                        item.ExtraData = "55";
-                        item.BallIsMoving = true;
-                        item.BallValue = 1;
-
-                    }
-                    else if (User.RotBody == 0)
-                    {
-                        NewX = User.X;
-                        NewY = User.Y - 4;
-                        item.ExtraData = "55";
-                        item.BallIsMoving = true;
-                        item.BallValue = 1;
-
-                    }
-                    else if (User.RotBody == 2)
-                    {
-                        NewX = User.X + 4;
-                        NewY = User.Y;
-                        item.ExtraData = "55";
-                        item.BallIsMoving = true;
-                        item.BallValue = 1;
-
-                    }
-                    else if (User.RotBody == 1)
-                    {
-                        NewX = User.X + 4;
-                        NewY = User.Y - 4;
-                        item.ExtraData = "55";
-                        item.BallIsMoving = true;
-                        item.BallValue = 1;
-
-                    }
-                    else if (User.RotBody == 7)
-                    {
-                        NewX = User.X - 4;
-                        NewY = User.Y - 4;
-                        item.ExtraData = "55";
-                        item.BallIsMoving = true;
-                        item.BallValue = 1;
-
-                    }
-                    else if (User.RotBody == 3)
-                    {
-                        NewX = User.X + 4;
-                        NewY = User.Y + 4;
-                        item.ExtraData = "55";
-                        item.BallIsMoving = true;
-                        item.BallValue = 1;
-
-                    }
-                    else if (User.RotBody == 5)
-                    {
-                        NewX = User.X - 4;
-                        NewY = User.Y + 4;
-                        item.ExtraData = "55";
-                        item.BallIsMoving = true;
-                        item.BallValue = 1;
-                    }
-
-                    if (!this._room.GetRoomItemHandler().CheckPosItem(User.GetClient(), item, NewX, NewY, item.Rotation, false, false))
-                    {
-                        if (User.RotBody == 0)
-                        {
-                            NewX = User.X;
-                            NewY = User.Y + 1;
-                        }
-                        else if (User.RotBody == 2)
-                        {
-                            NewX = User.X - 1;
-                            NewY = User.Y;
-                        }
-                        else if (User.RotBody == 4)
-                        {
-                            NewX = User.X;
-                            NewY = User.Y - 1;
-                        }
-                        else if (User.RotBody == 6)
-                        {
-                            NewX = User.X + 1;
-                            NewY = User.Y;
-                        }
-                        else if (User.RotBody == 5)
-                        {
-                            NewX = User.X + 1;
-                            NewY = User.Y - 1;
-                        }
-                        else if (User.RotBody == 3)
-                        {
-                            NewX = User.X - 1;
-                            NewY = User.Y - 1;
-                        }
-                        else if (User.RotBody == 7)
-                        {
-                            NewX = User.X + 1;
-                            NewY = User.Y + 1;
-                        }
-                        else if (User.RotBody == 1)
-                        {
-                            NewX = User.X - 1;
-                            NewY = User.Y + 1;
-                        }
-                    }
-                }
-                else if (differenceX <= 1 && differenceX >= -1 && differenceY <= -1 && differenceY >= 1 && VerifyBall(User, item.Coordinate.X, item.Coordinate.Y))//VERYFIC BALL CHECAR SI ESTA EN DIRECCION ASIA LA PELOTA
-                {
-                    NewX = differenceX * -1;
-                    NewY = differenceY * -1;
-
-                    NewX = NewX + item.GetX;
-                    NewY = NewY + item.GetY;
-                }
-
-                if (item.GetRoom().GetGameMap().ValidTile(NewX, NewY))
-                {
-                    MoveBall(item, NewX, NewY, User);
+                    MoveBallProcess(ball, null);
                 }
             }
         }
 
-        private bool VerifyBall(RoomUser user, int actualx, int actualy)
+
+        internal void MoveBallProcess(Item item, RoomUser user)
         {
-            return Rotation.Calculate(user.X, user.Y, actualx, actualy) == user.RotBody;
+            {
+                var tryes = 0;
+                var newX = item.Coordinate.X;
+                var newY = item.Coordinate.Y;
+
+                if (item.ballMover == null && item.ballMover != user)
+                    item.ballMover = user;
+
+                while (tryes < 3)
+                {
+                    if (_room == null)
+                    {
+                        if (_room.GetGameMap() == null)
+                            _room.FixGameMap();
+                        return;
+                    }
+
+                    if (item.Direction == Direction.Null)
+                    {
+                        item.ballIsMoving = false;
+                        break;
+                    }
+
+                    var resetX = newX;
+                    var resetY = newY;
+
+                    ComeDirection.GetNewCoords(item.Direction, ref newX, ref newY);
+
+                    var trollface = false;
+
+                    if (_room.GetGameMap().SquareHasUsers(newX, newY)) // break 100 %, cannot return the ball
+                    {
+                        if (item.ExtraData != "55" && item.ExtraData != "44")
+                        {
+                            item.ballIsMoving = false;
+                            break;
+                        }
+                        trollface = true;
+                    }
+
+                    if (trollface == false)
+                        if (!_room.GetGameMap().itemCanBePlacedHere(newX, newY))
+                        {
+                            item.Direction = ComeDirection.InverseDirections(_room, item.Direction, newX, newY);
+                            newX = resetX;
+                            newY = resetY;
+                            tryes++;
+                            if (tryes > 2)
+                                item.ballIsMoving = false;
+                            continue;
+                        }
+
+                    if (MoveBall(item, item.ballMover, newX, newY))
+                    {
+                        item.ballIsMoving = false;
+                        break;
+                    }
+
+                    int.TryParse(item.ExtraData, out int Number);
+                    if (Number > 11)
+                        item.ExtraData = (int.Parse(item.ExtraData) - 11).ToString();
+
+                    item._iBallValue++;
+
+                    if (item._iBallValue > 1)
+                    {
+                        item.ballIsMoving = false;
+                        item._iBallValue = 1;
+                        item.ballMover = null;
+                    }
+                    break;
+                }
+            }
+            //            }).Start();
         }
+
+        internal void OnUserWalk(RoomUser User)
+        {
+            if (User == null)
+                return;
+
+            foreach (var ball in Balls.Values)
+            {
+                if (ball == null)
+                    return;
+
+                if (User.SetX == ball.GetX && User.SetY == ball.GetY && User.GoalX == ball.GetX &&
+                    User.GoalY == ball.GetY && User.handelingBallStatus == 0) // super chute.
+                {
+                    var userPoint = new Point(User.X, User.Y);
+                    ball.ExtraData = "55";
+                    ball.ballIsMoving = true;
+                    ball._iBallValue = 1;
+                    MoveBall(ball, User, userPoint);
+                }
+                else if (User.X == ball.GetX && User.Y == ball.GetY && User.handelingBallStatus == 0)
+                {
+                    var userPoint = new Point(User.SetX, User.SetY);
+                    ball.ExtraData = "55";
+                    ball.ballIsMoving = true;
+                    ball._iBallValue = 1;
+                    MoveBall(ball, User, userPoint);
+                }
+                else
+                {
+                    if (User.handelingBallStatus == 0 && User.GoalX == ball.GetX && User.GoalY == ball.GetY)
+                        return;
+
+                    if (User.SetX == ball.GetX && User.SetY == ball.GetY && User.IsWalking &&
+                        (User.X != User.GoalX || User.Y != User.GoalY))
+                    {
+                        User.handelingBallStatus = 1;
+                        var userPoint = new Point(User.X, User.Y);
+                        ball.ExtraData = "11";
+                        ball.ballIsMoving = true;
+                        MoveBall(ball, User, userPoint);
+
+                        var _comeDirection = ComeDirection.GetComeDirection(new Point(User.X, User.Y), ball.Coordinate);
+                        if (_comeDirection != Direction.Null)
+                        {
+                            var NewX = User.SetX;
+                            var NewY = User.SetY;
+
+                            ComeDirection.GetNewCoords(_comeDirection, ref NewX, ref NewY);
+                            if (ball.GetRoom().GetGameMap().ValidTile(NewX, NewY))
+                            {
+                                ball.ExtraData = "11";
+                                MoveBall(ball, User, NewX, NewY);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
 
         public void RegisterGate(Item item)
         {
@@ -291,28 +312,73 @@ namespace Neon.HabboHotel.Rooms.Games.Football
             }
         }
 
-        public void MoveBall(Item item, int newX, int newY, RoomUser user)
+        internal bool MoveBall(Item item, RoomUser mover, int newX, int newY)
         {
-            if (item == null || user == null)
-                return;
+            //            lock (_lock)
+            {
+                if (item?.GetBaseItem() == null /*|| mover == null || mover.GetHabbo() == null*/)
+                    return false;
+                if (item.ballIsMoving)
+                {
+                    if (item.ExtraData == "55" || item.ExtraData == "44" || item.ExtraData == "11") // puede ser un cañito? o.O
+                    {
+                        var randomValue = new Random().Next(1, 7);
+                        if (randomValue != 5) // no cañito de CR7
+                            if (!_room.GetGameMap().itemCanBePlacedHere(newX, newY))
+                                return false;
+                    }
+                }
+                else
+                {
+                    if (!_room.GetGameMap().itemCanBePlacedHere(newX, newY))
+                        return false;
+                }
 
-            if (!_room.GetGameMap().itemCanBePlacedHere(newX, newY))
-                return;
+                var oldRoomCoord = item.Coordinate;
 
-            Point oldRoomCoord = item.Coordinate;
-            if (oldRoomCoord.X == newX && oldRoomCoord.Y == newY)
-                return;
+                var mMessage2 = new ServerPacket(ServerPacketHeader.ObjectUpdateMessageComposer); // Cf
+                mMessage2.WriteInteger(item.Id);
+                mMessage2.WriteInteger(item.GetBaseItem().SpriteId);
+                mMessage2.WriteInteger(newX);
+                mMessage2.WriteInteger(newY);
+                mMessage2.WriteInteger(4); // rot;
+                mMessage2.WriteString($"{TextHandling.GetString(item.GetZ):0.00}");
+                mMessage2.WriteString($"{TextHandling.GetString(item.GetZ):0.00}");
+                mMessage2.WriteInteger(0);
+                mMessage2.WriteInteger(0);
+                mMessage2.WriteString(item.ExtraData);
+                mMessage2.WriteInteger(-1);
+                mMessage2.WriteInteger(0);
+                mMessage2.WriteInteger(0); //owner id
+                _room.SendFastMessage(mMessage2);
 
-            double NewZ = _room.GetGameMap().Model.SqFloorHeight[newX, newY];
+                if (oldRoomCoord.X == newX && oldRoomCoord.Y == newY)
+                    return false;
 
-            _room.SendMessage(new SlideObjectBundleComposer(item.Coordinate.X, item.Coordinate.Y, item.GetZ, newX, newY, NewZ, item.Id, item.Id, item.Id));
+                item.SetState(newX, newY, item.GetZ,
+                    Gamemap.GetAffectedTiles(item.GetBaseItem().Length, item.GetBaseItem().Width, newX, newY,
+                        item.Rotation));
 
-            item.ExtraData = "11";
-            item.UpdateNeeded = true;
+                if (mover != null)
+                    _room.OnUserShoot(mover, item);
 
-            _room.GetRoomItemHandler().SetFloorItem(null, item, newX, newY, item.Rotation, false, false, false, false);
+                return false;
+            }
+        }
 
-            this._room.OnUserShoot(user, item);
+        internal void MoveBall(Item item, RoomUser mover, Point user)
+        {
+            try
+            {
+                item.Direction = ComeDirection.GetComeDirection(user, item.Coordinate);
+                if (item.Direction != Direction.Null)
+                    MoveBallProcess(item, mover);
+
+                _room.OnUserShoot(mover, item);
+            }
+            catch
+            {
+            }
         }
 
         public void Dispose()
@@ -320,8 +386,7 @@ namespace Neon.HabboHotel.Rooms.Games.Football
             Array.Clear(gates, 0, gates.Length);
             gates = null;
             _room = null;
-            _balls.Clear();
-            _balls = null;
+            Balls = null;
         }
     }
 }

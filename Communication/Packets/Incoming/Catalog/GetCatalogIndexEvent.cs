@@ -1,7 +1,4 @@
-﻿using System;
-using Neon.Communication.Packets.Incoming;
-
-using Neon.HabboHotel.GameClients;
+﻿using Neon.HabboHotel.GameClients;
 using Neon.Communication.Packets.Outgoing.Catalog;
 using Neon.Communication.Packets.Outgoing.BuildersClub;
 

@@ -1080,7 +1080,6 @@
     <Compile Include="HabboHotel\Rooms\Chat\Commands\User\Fun\SetBetCommand.cs" />
     <Compile Include="HabboHotel\Rooms\Chat\Commands\User\Fun\SexCommand.cs" />
     <Compile Include="HabboHotel\Rooms\Chat\Commands\User\Fun\SuperPushCommand.cs" />
-    <Compile Include="HabboHotel\Rooms\Chat\Commands\User\Fun\TollCommand.cs" />
     <Compile Include="HabboHotel\Rooms\Chat\Commands\User\GroepChatCommand.cs" />
     <Compile Include="HabboHotel\Rooms\Chat\Commands\User\HelpCommand.cs" />
     <Compile Include="HabboHotel\Rooms\Chat\Commands\User\HideWiredCommand.cs" />

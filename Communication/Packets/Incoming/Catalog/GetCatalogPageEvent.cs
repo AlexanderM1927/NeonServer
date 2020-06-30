@@ -1,9 +1,6 @@
-﻿using System;
-
-using Neon.Communication.Packets.Outgoing.Catalog;
+﻿using Neon.Communication.Packets.Outgoing.Catalog;
 using Neon.HabboHotel.Catalog;
 using Neon.HabboHotel.GameClients;
-using Neon.Communication.Packets.Incoming;
 
 namespace Neon.Communication.Packets.Incoming.Catalog
 {
@@ -12,12 +9,10 @@ namespace Neon.Communication.Packets.Incoming.Catalog
         public void Parse(GameClient Session, ClientPacket Packet)
         {
             int PageId = Packet.PopInt();
-            int Something = Packet.PopInt();
+            _ = Packet.PopInt();
             string CataMode = Packet.PopString();            
 
             CatalogPage Page = null;
-            BCCatalogPage BCPage = null;
-
             if (CataMode == "NORMAL")
             {
                 if (!NeonEnvironment.GetGame().GetCatalog().TryGetPage(PageId, out Page))
@@ -31,7 +26,7 @@ namespace Neon.Communication.Packets.Incoming.Catalog
 
             if (CataMode == "BUILDERS_CLUB")
             {
-                if (!NeonEnvironment.GetGame().GetCatalog().TryGetBCPage(PageId, out BCPage))
+                if (!NeonEnvironment.GetGame().GetCatalog().TryGetBCPage(PageId, out BCCatalogPage BCPage))
                     return;
 
                 if (!BCPage.Enabled || !BCPage.Visible || BCPage.MinimumRank > Session.GetHabbo().Rank || (BCPage.MinimumVIP > Session.GetHabbo().VIPRank && Session.GetHabbo().Rank == 1))

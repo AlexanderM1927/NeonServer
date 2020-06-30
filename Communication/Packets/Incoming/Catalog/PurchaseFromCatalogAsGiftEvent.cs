@@ -1,13 +1,10 @@
 ﻿using System;
-using Neon.Communication.Packets.Incoming;
 
 using Neon.Utilities;
 using Neon.HabboHotel.Users;
 using Neon.HabboHotel.Items;
-using Neon.HabboHotel.Groups;
 using Neon.HabboHotel.Catalog;
 using Neon.HabboHotel.GameClients;
-using Neon.HabboHotel.Users.Inventory;
 
 using Neon.Communication.Packets.Outgoing.Catalog;
 using Neon.Communication.Packets.Outgoing.Inventory.Purse;
@@ -22,7 +19,7 @@ namespace Neon.Communication.Packets.Incoming.Catalog
 {
     public class PurchaseFromCatalogAsGiftEvent : IPacketEvent
     {
-        public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
+        public void Parse(GameClient Session, ClientPacket Packet)
         {
             int PageId = Packet.PopInt();
             int ItemId = Packet.PopInt();
@@ -32,7 +29,7 @@ namespace Neon.Communication.Packets.Incoming.Catalog
             int SpriteId = Packet.PopInt();
             int Ribbon = Packet.PopInt();
             int Colour = Packet.PopInt();
-            bool dnow = Packet.PopBoolean();
+            _ = Packet.PopBoolean();
 
             if (NeonEnvironment.GetDBConfig().DBData["gifts_enabled"] != "1")
             {
@@ -40,16 +37,14 @@ namespace Neon.Communication.Packets.Incoming.Catalog
                 return;
             }
 
-            CatalogPage Page = null;
-            if (!NeonEnvironment.GetGame().GetCatalog().TryGetPage(PageId, out Page))
+            if (!NeonEnvironment.GetGame().GetCatalog().TryGetPage(PageId, out CatalogPage Page))
                 return;
             if (Session.GetHabbo().Rank > 8 && !Session.GetHabbo().StaffOk)
                 return;
             if ( !Page.Enabled || !Page.Visible || Page.MinimumRank > Session.GetHabbo().Rank || (Page.MinimumVIP > Session.GetHabbo().VIPRank && Session.GetHabbo().Rank == 1))
                 return;
 
-            CatalogItem Item = null;
-            if (!Page.Items.TryGetValue(ItemId, out Item))
+            if (!Page.Items.TryGetValue(ItemId, out CatalogItem Item))
             {
                 if (Page.ItemOffers.ContainsKey(ItemId))
                 {
@@ -64,8 +59,7 @@ namespace Neon.Communication.Packets.Incoming.Catalog
             if (!ItemUtility.CanGiftItem(Item))
                 return;
 
-            ItemData PresentData = null;
-            if (!NeonEnvironment.GetGame().GetItemManager().GetGift(SpriteId, out PresentData) || PresentData.InteractionType != InteractionType.GIFT)
+            if (!NeonEnvironment.GetGame().GetItemManager().GetGift(SpriteId, out ItemData PresentData) || PresentData.InteractionType != InteractionType.GIFT)
                 return;
 
             if (Session.GetHabbo().Credits < Item.CostCredits)

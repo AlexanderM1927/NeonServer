@@ -25,8 +25,7 @@ namespace Neon.Communication.Packets.Incoming.Catalog
             string roomId = Session.GetHabbo().lastPhotoPreview.Split('-')[0];
             string timestamp = Session.GetHabbo().lastPhotoPreview.Split('-')[1];
             string md5image = URLPost.GetMD5(Session.GetHabbo().lastPhotoPreview);
-            ItemData Item = null;
-            if (!NeonEnvironment.GetGame().GetItemManager().GetItem(8763, out Item))
+            if (!NeonEnvironment.GetGame().GetItemManager().GetItem(8763, out ItemData Item))
                 return;
             if (Item == null)
                 return;

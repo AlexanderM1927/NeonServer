@@ -105,8 +105,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands
             if (Split.Length == 0)
                 return false;
 
-            IChatCommand Cmd = null;
-            if (_commands.TryGetValue(Split[0].ToLower(), out Cmd))
+            if (_commands.TryGetValue(Split[0].ToLower(), out IChatCommand Cmd))
             {
                 if (Session.GetHabbo().GetPermissions().HasRight("mod_tool"))
                     LogCommand(Session.GetHabbo().Id, Message, Session.GetHabbo().MachineId, Session.GetHabbo().Username);
@@ -231,6 +230,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands
             Register("pagar", new PayCommand());
             Register("setz", new SetzCommand());
             Register("resetsc", new ResetScoreBoard());
+            Register("emoji", new EmojiCommand());
         }
 
         private void Register(string v)

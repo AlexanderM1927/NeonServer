@@ -3,7 +3,6 @@ using System.Linq;
 using System.Collections.Generic;
 
 using Neon.Core;
-using Neon.Communication.Packets.Incoming;
 using Neon.HabboHotel.Catalog;
 using Neon.HabboHotel.GameClients;
 using Neon.HabboHotel.Items;
@@ -43,22 +42,20 @@ namespace Neon.Communication.Packets.Incoming.Catalog
             string ExtraData = Packet.PopString();
             int Amount = Packet.PopInt();
 
-            CatalogPage Page = null;
-            if (!NeonEnvironment.GetGame().GetCatalog().TryGetPage(PageId, out Page))
+            if (!NeonEnvironment.GetGame().GetCatalog().TryGetPage(PageId, out CatalogPage Page))
                 return;
             if (Session.GetHabbo().Rank > 8 && !Session.GetHabbo().StaffOk || NeonStaticGameSettings.IsGoingToBeClose)
                 return;
             if (!Page.Enabled || !Page.Visible || Page.MinimumRank > Session.GetHabbo().Rank || (Page.MinimumVIP > Session.GetHabbo().VIPRank && Session.GetHabbo().Rank == 1))
                 return;
-            
-            CatalogItem Item = null; 
+
             bool ValidItem = true;
 
-            if (!Page.Items.TryGetValue(ItemId, out Item))
+            if (!Page.Items.TryGetValue(ItemId, out CatalogItem Item))
             {
                 if (Page.ItemOffers.ContainsKey(ItemId))
                 {
-                    Item = (CatalogItem)Page.ItemOffers[ItemId];
+                    Item = Page.ItemOffers[ItemId];
                     if (Item == null)
                         ValidItem = false;
                 }
@@ -190,8 +187,7 @@ namespace Neon.Communication.Packets.Incoming.Catalog
                         return;
                     }
 
-                    string character;
-                    ExtraData = NeonEnvironment.GetGame().GetChatManager().GetFilter().IsUnnaceptableWord(ExtraData, out character) ? "" : ExtraData;
+                    ExtraData = NeonEnvironment.GetGame().GetChatManager().GetFilter().IsUnnaceptableWord(ExtraData, out string character) ? "" : ExtraData;
 
                     if (string.IsNullOrEmpty(ExtraData))
                     {
@@ -1377,8 +1373,7 @@ namespace Neon.Communication.Packets.Incoming.Catalog
                         Session.SendMessage(new FurniListNotificationComposer(0, 3));
                         Session.SendMessage(new PetInventoryComposer(Session.GetHabbo().GetInventoryComponent().GetPets()));
 
-                        ItemData PetFood = null;
-                        if (NeonEnvironment.GetGame().GetItemManager().GetItem(320, out PetFood))
+                        if (NeonEnvironment.GetGame().GetItemManager().GetItem(320, out ItemData PetFood))
                         {
                             Item Food = ItemFactory.CreateSingleItemNullable(PetFood, Session.GetHabbo(), "", "");
                             if (Food != null)

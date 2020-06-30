@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.Utilities;
 using Neon.HabboHotel.Users;
 using Neon.HabboHotel.GameClients;
 
@@ -32,7 +27,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
             get { return "Realiza una petición de baneo."; ; }
         }
 
-        public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
+        public void Execute(GameClient Session, Room Room, string[] Params)
         {
             if (Params.Length == 1)
             {
@@ -53,14 +48,15 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
                 return;
             }
 
-            Double Expire = 0;
             string Hours = Params[2];
-            if (String.IsNullOrEmpty(Hours) || Hours == "perm")
+
+            double Expire;
+            if (string.IsNullOrEmpty(Hours) || Hours == "perm")
                 Expire = NeonEnvironment.GetUnixTimestamp() + 78892200;
             else
                 Expire = (NeonEnvironment.GetUnixTimestamp() + (Convert.ToDouble(Hours) * 3600));
 
-            string Reason = null;
+            string Reason;
             if (Params.Length >= 4)
                 Reason = CommandManager.MergeParams(Params, 3);
             else

@@ -29,8 +29,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User
         {
             if (Session.GetHabbo().GetPermissions().HasRight("room_unload_any"))
             {
-                Room r;
-                if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Room.Id, out r))
+                if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Room.Id, out Room r))
                 {
                     return;
                 }

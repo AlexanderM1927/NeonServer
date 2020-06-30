@@ -74,8 +74,6 @@ namespace Neon.HabboHotel.Rooms
 
         private Gamemap _gamemap;
         private GameItemHandler _gameItemHandler;
-
-        private RoomData _roomData;
         private TeamManager teammanager;
         public TeamManager teambanzai;
         public TeamManager teamfreeze;
@@ -83,9 +81,6 @@ namespace Neon.HabboHotel.Rooms
 
         private RoomUserManager _roomUserManager;
         private RoomItemHandling _roomItemHandling;
-
-        private List<string> _wordFilterList;
-
         private FilterComponent _filterComponent = null;
         private WiredComponent _wiredComponent = null;
 
@@ -94,7 +89,7 @@ namespace Neon.HabboHotel.Rooms
 
         public int IsLagging { get; set; }
         public int IdleTime { get; set; }
-        private bool _hideWired;
+
         public int ForSaleAmount;
         public bool RoomForSale;
 
@@ -107,7 +102,7 @@ namespace Neon.HabboHotel.Rooms
             this.IsLagging = 0;
             this.IdleTime = 0;
 
-            this._roomData = Data;
+            this.RoomData = Data;
             RoomMuted = false;
             mDisposed = false;
             muteSignalEnabled = false;
@@ -148,7 +143,7 @@ namespace Neon.HabboHotel.Rooms
             this.Wallpaper = Data.Wallpaper;
             this.Floor = Data.Floor;
             this.Landscape = Data.Landscape;
-            this._hideWired = Data.HideWired;
+            this.hideWired = Data.HideWired;
 
             this.WallThickness = Data.WallThickness;
             this.FloorThickness = Data.FloorThickness;
@@ -205,11 +200,7 @@ namespace Neon.HabboHotel.Rooms
             Data.UsersNow = 1;
         }
 
-        public List<string> WordFilterList
-        {
-            get { return _wordFilterList; }
-            set { _wordFilterList = value; }
-        }
+        public List<string> WordFilterList { get; set; }
 
         public List<ServerPacket> HideWiredMessages(bool hideWired)
         {
@@ -238,11 +229,7 @@ namespace Neon.HabboHotel.Rooms
             return list;
         }
 
-        public bool hideWired
-        {
-            get { return _hideWired; }
-            set { _hideWired = value; }
-        }
+        public bool hideWired { get; set; }
 
         #region Room Bans
 
@@ -384,9 +371,11 @@ namespace Neon.HabboHotel.Rooms
         }
 
 
-        public RoomData RoomData
+        public RoomData RoomData { get; }
+
+        internal void FixGameMap()
         {
-            get { return _roomData; }
+            _gamemap = new Gamemap(this);
         }
 
         public Gamemap GetGameMap()
@@ -484,31 +473,31 @@ namespace Neon.HabboHotel.Rooms
             Tags.Clear();
         }
 
-        public void setPoolQuestion(String pool)
+        public void SetPoolQuestion(string pool)
         {
             poolQuestion = pool;
         }
 
-        public void clearPoolAnswers()
+        public void ClearPoolAnswers()
         {
             yesPoolAnswers.Clear();
             noPoolAnswers.Clear();
         }
 
-        public void startQuestion(String question)
+        public void StartQuestion(string question)
         {
-            setPoolQuestion(question);
-            clearPoolAnswers();
+            SetPoolQuestion(question);
+            ClearPoolAnswers();
 
             SendMessage(new QuickPollMessageComposer(question));
         }
-        public void endQuestion()
+        public void EndQuestion()
         {
-            setPoolQuestion(string.Empty);
+            SetPoolQuestion(string.Empty);
             SendMessage(new QuickPollResultsMessageComposer(yesPoolAnswers.Count, noPoolAnswers.Count));
 
 
-            clearPoolAnswers();
+            ClearPoolAnswers();
         }
         public int CountFootBall(int roomId)
         {
@@ -671,7 +660,7 @@ namespace Neon.HabboHotel.Rooms
 
         private void LoadFilter()
         {
-            this._wordFilterList = new List<string>();
+            this.WordFilterList = new List<string>();
 
             DataTable Data = null;
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
@@ -686,7 +675,7 @@ namespace Neon.HabboHotel.Rooms
 
             foreach (DataRow Row in Data.Rows)
             {
-                this._wordFilterList.Add(Convert.ToString(Row["word"]));
+                this.WordFilterList.Add(Convert.ToString(Row["word"]));
             }
         }
 
@@ -1175,6 +1164,25 @@ namespace Neon.HabboHotel.Rooms
         #endregion
 
         #region Communication (Packets)
+        internal void SendFastMessage(IServerPacket message)
+        {
+            try
+            {
+                lock (GetRoomUserManager().GetUsers())
+                {
+                    foreach (
+                        var client in
+                        GetRoomUserManager()
+                            .GetUsers().Values.Where(user => user != null && !user.IsBot)
+                            .Select(user => user.GetClient())
+                            .Where(client => client != null))
+                        client.SendMessage(message);
+                }
+            }
+            catch
+            {
+            }
+        }
         public void SendMessage(IServerPacket Message, bool UsersWithRightsOnly = false)
         {
             if (Message == null)

@@ -27,13 +27,11 @@ namespace Neon.HabboHotel.Items.Interactor
                 Item.UpdateState(false, true);
             }
 
-            int CurrentMode = 0;
-            int NewMode = 0;
-
-            if (!int.TryParse(Item.ExtraData, out CurrentMode))
+            if (!int.TryParse(Item.ExtraData, out int CurrentMode))
             {
             }
 
+            int NewMode;
             if (CurrentMode <= 0)
             {
                 NewMode = 1;
@@ -64,7 +62,7 @@ namespace Neon.HabboHotel.Items.Interactor
 
             Item.RegenerateBlock(NewMode.ToString(), Item.GetRoom().GetGameMap());
 
-            Item.GetRoom().GetGameMap().updateMapForItem(Item);
+            Item.GetRoom().GetGameMap().UpdateMapForItem(Item);
             Item.GetRoom().GetWired().TriggerEvent(WiredBoxType.TriggerStateChanges, Session.GetHabbo(), Item);
             //Item.GetRoom().GenerateMaps();
         }
@@ -78,13 +76,12 @@ namespace Neon.HabboHotel.Items.Interactor
                 Item.UpdateState(false, true);
             }
 
-            int CurrentMode = 0;
-            int NewMode = 0;
-
-            if (!int.TryParse(Item.ExtraData, out CurrentMode))
+            if (!int.TryParse(Item.ExtraData, out int CurrentMode))
             {
             }
 
+
+            int NewMode;
             if (CurrentMode <= 0)
             {
                 NewMode = 1;
@@ -113,7 +110,7 @@ namespace Neon.HabboHotel.Items.Interactor
             Item.ExtraData = NewMode.ToString();
             Item.UpdateState();
 
-            Item.GetRoom().GetGameMap().updateMapForItem(Item);
+            Item.GetRoom().GetGameMap().UpdateMapForItem(Item);
             //Item.GetRoom().GenerateMaps();
         }
     }
