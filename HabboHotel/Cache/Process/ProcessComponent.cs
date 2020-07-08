@@ -1,17 +1,14 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Collections.Generic;
-
-using log4net;
-using Neon.HabboHotel.Cache;
-using Neon.HabboHotel.Users;
+﻿using log4net;
 using Neon.Core;
+using Neon.HabboHotel.Users;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 
 namespace Neon.HabboHotel.Cache.Process
 {
-    sealed class ProcessComponent
+    internal sealed class ProcessComponent
     {
         private static readonly ILog log = LogManager.GetLogger("Neon.HabboHotel.Cache.Process.ProcessComponent");
 
@@ -28,7 +25,9 @@ namespace Neon.HabboHotel.Cache.Process
         /// <summary>
         /// Checks if the timer is lagging behind (server can't keep up).
         /// </summary>
+#pragma warning disable CS0414 // O campo "ProcessComponent._timerLagging" é atribuído, mas seu valor nunca é usado
         private bool _timerLagging = false;
+#pragma warning restore CS0414 // O campo "ProcessComponent._timerLagging" é atribuído, mas seu valor nunca é usado
 
         /// <summary>
         /// Enable/Disable the timer WITHOUT disabling the timer itself.
@@ -38,12 +37,12 @@ namespace Neon.HabboHotel.Cache.Process
         /// <summary>
         /// Used for disposing the ProcessComponent safely.
         /// </summary>
-        private AutoResetEvent _resetEvent = new AutoResetEvent(true);
+        private readonly AutoResetEvent _resetEvent = new AutoResetEvent(true);
 
         /// <summary>
         /// How often the timer should execute.
         /// </summary>
-        private static int _runtimeInSec = 1200;
+        private static readonly int _runtimeInSec = 1200;
 
         /// <summary>
         /// Default.
@@ -57,7 +56,7 @@ namespace Neon.HabboHotel.Cache.Process
         /// </summary>
         public void Init()
         {
-            this._timer = new Timer(new TimerCallback(Run), null, _runtimeInSec * 1000, _runtimeInSec * 1000);
+            _timer = new Timer(new TimerCallback(Run), null, _runtimeInSec * 1000, _runtimeInSec * 1000);
         }
 
         /// <summary>
@@ -68,16 +67,18 @@ namespace Neon.HabboHotel.Cache.Process
         {
             try
             {
-                if (this._disabled)
-                    return;
-
-                if (this._timerRunning)
+                if (_disabled)
                 {
-                    this._timerLagging = true;
                     return;
                 }
 
-                this._resetEvent.Reset();
+                if (_timerRunning)
+                {
+                    _timerLagging = true;
+                    return;
+                }
+
+                _resetEvent.Reset();
 
                 // BEGIN CODE
                 List<UserCache> CacheList = NeonEnvironment.GetGame().GetCacheManager().GetUserCache().ToList();
@@ -88,12 +89,16 @@ namespace Neon.HabboHotel.Cache.Process
                         try
                         {
                             if (Cache == null)
+                            {
                                 continue;
+                            }
 
                             UserCache Temp = null;
 
                             if (Cache.isExpired())
+                            {
                                 NeonEnvironment.GetGame().GetCacheManager().TryRemoveUser(Cache.Id, out Temp);
+                            }
 
                             Temp = null;
                         }
@@ -106,41 +111,47 @@ namespace Neon.HabboHotel.Cache.Process
 
                 CacheList = null;
 
-                    List<Habbo> CachedUsers = NeonEnvironment.GetUsersCached().ToList();
-                    if (CachedUsers.Count > 0)
+                List<Habbo> CachedUsers = NeonEnvironment.GetUsersCached().ToList();
+                if (CachedUsers.Count > 0)
+                {
+                    foreach (Habbo Data in CachedUsers)
                     {
-                        foreach (Habbo Data in CachedUsers)
+                        try
                         {
-                            try
+                            if (Data == null)
                             {
-                                if (Data == null)
-                                    continue;
-
-                                Habbo Temp = null;
-
-                                if (Data.CacheExpired())
-                                    NeonEnvironment.RemoveFromCache(Data.Id, out Temp);
-
-                                if (Temp != null)
-                                    Temp.Dispose();
-
-                                Temp = null;
+                                continue;
                             }
-                            catch (Exception e)
+
+                            Habbo Temp = null;
+
+                            if (Data.CacheExpired())
                             {
-                                Logging.LogCacheException(e.ToString());
+                                NeonEnvironment.RemoveFromCache(Data.Id, out Temp);
                             }
+
+                            if (Temp != null)
+                            {
+                                Temp.Dispose();
+                            }
+
+                            Temp = null;
+                        }
+                        catch (Exception e)
+                        {
+                            Logging.LogCacheException(e.ToString());
                         }
                     }
+                }
 
                 CachedUsers = null;
                 // END CODE
 
                 // Reset the values
-                this._timerRunning = false;
-                this._timerLagging = false;
+                _timerRunning = false;
+                _timerLagging = false;
 
-                this._resetEvent.Set();
+                _resetEvent.Set();
             }
             catch (Exception e) { Logging.LogCacheException(e.ToString()); }
         }
@@ -153,23 +164,25 @@ namespace Neon.HabboHotel.Cache.Process
             // Wait until any processing is complete first.
             try
             {
-                this._resetEvent.WaitOne(TimeSpan.FromMinutes(5));
+                _resetEvent.WaitOne(TimeSpan.FromMinutes(5));
             }
             catch { } // give up
 
             // Set the timer to disabled
-            this._disabled = true;
+            _disabled = true;
 
             // Dispose the timer to disable it.
             try
             {
-                if (this._timer != null)
-                    this._timer.Dispose();
+                if (_timer != null)
+                {
+                    _timer.Dispose();
+                }
             }
             catch { }
 
             // Remove reference to the timer.
-            this._timer = null;
+            _timer = null;
         }
     }
 }

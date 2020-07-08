@@ -1,8 +1,5 @@
-﻿using System;
-
-using Neon.Communication.Packets.Incoming;
+﻿using Neon.Database.Interfaces;
 using System.Collections.Generic;
-using Neon.Database.Interfaces;
 
 namespace Neon.HabboHotel.Support
 {
@@ -31,12 +28,12 @@ namespace Neon.HabboHotel.Support
         public List<string> ReportedChats;
 
 
-        public SupportTicket(int Id, int Score, int Type, int SenderId, int ReportedId, String Message, int RoomId, String RoomName, Double Timestamp, List<string> ReportedChats)
+        public SupportTicket(int Id, int Score, int Type, int SenderId, int ReportedId, string Message, int RoomId, string RoomName, double Timestamp, List<string> ReportedChats)
         {
             this.Id = Id;
             this.Score = Score;
             this.Type = Type;
-            this.Status = TicketStatus.OPEN;
+            Status = TicketStatus.OPEN;
             this.SenderId = SenderId;
             this.ReportedId = ReportedId;
             ModeratorId = 0;
@@ -67,21 +64,22 @@ namespace Neon.HabboHotel.Support
                 }
 
                 if (Status == TicketStatus.ABUSIVE || Status == TicketStatus.INVALID || Status == TicketStatus.RESOLVED)
+                {
                     return 0;
+                }
 
                 if (Status == TicketStatus.DELETED)
+                {
                     return 0;
+                }
 
                 return 0;
             }
         }
 
-        public int TicketId
-        {
-            get { return Id; }
-        }
+        public int TicketId => Id;
 
-        public void Pick(int pModeratorId, Boolean UpdateInDb)
+        public void Pick(int pModeratorId, bool UpdateInDb)
         {
             Status = TicketStatus.PICKED;
             ModeratorId = pModeratorId;
@@ -99,7 +97,7 @@ namespace Neon.HabboHotel.Support
         {
             Status = NewStatus;
 
-            String dbType = "";
+            string dbType = "";
 
             switch (NewStatus)
             {

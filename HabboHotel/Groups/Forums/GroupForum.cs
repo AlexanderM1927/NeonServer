@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.HabboHotel.Groups.Forums
 {
@@ -14,29 +12,11 @@ namespace Neon.HabboHotel.Groups.Forums
         public GroupForumSettings Settings;
         public List<GroupForumThread> Threads;
 
-        public int Id
-        {
-            get
-            {
-                return GroupId;
-            }
-        }
+        public int Id => GroupId;
 
-        public string Name
-        {
-            get
-            {
-                return Group.Name;
-            }
-        }
+        public string Name => Group.Name;
 
-        public string Description
-        {
-            get
-            {
-                return Group.Description;
-            }
-        }
+        public string Description => Group.Description;
 
 
         public GroupForum(Group group)
@@ -52,7 +32,7 @@ namespace Neon.HabboHotel.Groups.Forums
         private void LoadThreads()
         {
             DataTable table;
-            using (var adap = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
+            using (Database.Interfaces.IQueryAdapter adap = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
                 adap.SetQuery("SELECT * FROM group_forums_threads WHERE forum_id = @id ORDER BY id DESC");
                 adap.AddParameter("id", Id);
@@ -65,13 +45,7 @@ namespace Neon.HabboHotel.Groups.Forums
             }
         }
 
-        public int MessagesCount
-        {
-            get
-            {
-                return Threads.SelectMany(c => c.Posts).Count();
-            }
-        }
+        public int MessagesCount => Threads.SelectMany(c => c.Posts).Count();
 
         public int UnreadMessages(int userid)
         {
@@ -84,7 +58,7 @@ namespace Neon.HabboHotel.Groups.Forums
 
         public GroupForumThreadPost GetLastPost()
         {
-            var Posts = Threads.SelectMany(c => c.Posts);
+            IEnumerable<GroupForumThreadPost> Posts = Threads.SelectMany(c => c.Posts);
             return Posts.OrderByDescending(c => c.Timestamp).FirstOrDefault();
         }
 
@@ -95,20 +69,20 @@ namespace Neon.HabboHotel.Groups.Forums
 
         public GroupForumThread CreateThread(int Creator, string Caption)
         {
-            var timestamp = (int)NeonEnvironment.GetUnixTimestamp();
-            var Thread = new GroupForumThread(this, 0, Creator, (int)timestamp, Caption, false, false, 0, 0);
+            int timestamp = (int)NeonEnvironment.GetUnixTimestamp();
+            GroupForumThread Thread = new GroupForumThread(this, 0, Creator, timestamp, Caption, false, false, 0, 0);
 
-            using (var adap = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
+            using (Database.Interfaces.IQueryAdapter adap = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
                 adap.SetQuery("INSERT INTO group_forums_threads (forum_id, user_id, caption, timestamp) VALUES (@a, @b, @c, @d)");
-                adap.AddParameter("a", this.Id);
+                adap.AddParameter("a", Id);
                 adap.AddParameter("b", Creator);
                 adap.AddParameter("c", Caption);
                 adap.AddParameter("d", timestamp);
                 Thread.Id = (int)adap.InsertQuery();
             }
 
-            this.Threads.Add(Thread);
+            Threads.Add(Thread);
             return Thread;
         }
 

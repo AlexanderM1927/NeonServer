@@ -1,19 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.Communication.Packets.Outgoing.LandingView
 {
-    class LimitedCountdownExtendedComposer : ServerPacket
+    internal class LimitedCountdownExtendedComposer : ServerPacket
     {
         public LimitedCountdownExtendedComposer()
             : base(ServerPacketHeader.LimitedCountdownExtendedComposer)
         {
             string date = "20/01/2018 21:00:00.0";
-            DateTime fechilla;
-            DateTime.TryParse(date, out fechilla);
+            DateTime.TryParse(date, out DateTime fechilla);
             TimeSpan diff = fechilla - DateTime.Now;
 
             base.WriteInteger(Convert.ToInt32(diff.TotalSeconds)); // Total Seconds

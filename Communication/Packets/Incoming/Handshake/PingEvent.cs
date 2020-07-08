@@ -1,11 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-namespace Neon.Communication.Packets.Incoming.Handshake
+﻿namespace Neon.Communication.Packets.Incoming.Handshake
 {
-    class PingEvent : IPacketEvent
+    internal class PingEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {

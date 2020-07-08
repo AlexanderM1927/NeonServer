@@ -1,19 +1,17 @@
-﻿using System;
-
-using Neon.Utilities;
-using Neon.HabboHotel.Users;
-using Neon.HabboHotel.Items;
-using Neon.HabboHotel.Catalog;
-using Neon.HabboHotel.GameClients;
-
-using Neon.Communication.Packets.Outgoing.Catalog;
-using Neon.Communication.Packets.Outgoing.Inventory.Purse;
+﻿using Neon.Communication.Packets.Outgoing.Catalog;
 using Neon.Communication.Packets.Outgoing.Inventory.Furni;
+using Neon.Communication.Packets.Outgoing.Inventory.Purse;
+using Neon.Communication.Packets.Outgoing.Moderation;
 using Neon.Database.Interfaces;
+using Neon.HabboHotel.Catalog;
+using Neon.HabboHotel.Catalog.Utilities;
+using Neon.HabboHotel.GameClients;
+using Neon.HabboHotel.Items;
 using Neon.HabboHotel.Items.Utilities;
 using Neon.HabboHotel.Quests;
-using Neon.HabboHotel.Catalog.Utilities;
-using Neon.Communication.Packets.Outgoing.Moderation;
+using Neon.HabboHotel.Users;
+using Neon.Utilities;
+using System;
 
 namespace Neon.Communication.Packets.Incoming.Catalog
 {
@@ -38,29 +36,45 @@ namespace Neon.Communication.Packets.Incoming.Catalog
             }
 
             if (!NeonEnvironment.GetGame().GetCatalog().TryGetPage(PageId, out CatalogPage Page))
+            {
                 return;
+            }
+
             if (Session.GetHabbo().Rank > 8 && !Session.GetHabbo().StaffOk)
+            {
                 return;
-            if ( !Page.Enabled || !Page.Visible || Page.MinimumRank > Session.GetHabbo().Rank || (Page.MinimumVIP > Session.GetHabbo().VIPRank && Session.GetHabbo().Rank == 1))
+            }
+
+            if (!Page.Enabled || !Page.Visible || Page.MinimumRank > Session.GetHabbo().CatRank || (Page.MinimumVIP > Session.GetHabbo().VIPRank && Session.GetHabbo().Rank == 1))
+            {
                 return;
+            }
 
             if (!Page.Items.TryGetValue(ItemId, out CatalogItem Item))
             {
                 if (Page.ItemOffers.ContainsKey(ItemId))
                 {
-                    Item = (CatalogItem)Page.ItemOffers[ItemId];
+                    Item = Page.ItemOffers[ItemId];
                     if (Item == null)
+                    {
                         return;
+                    }
                 }
                 else
+                {
                     return;
+                }
             }
 
             if (!ItemUtility.CanGiftItem(Item))
+            {
                 return;
+            }
 
             if (!NeonEnvironment.GetGame().GetItemManager().GetGift(SpriteId, out ItemData PresentData) || PresentData.InteractionType != InteractionType.GIFT)
+            {
                 return;
+            }
 
             if (Session.GetHabbo().Credits < Item.CostCredits)
             {
@@ -95,14 +109,19 @@ namespace Neon.Communication.Packets.Incoming.Catalog
 
                     Session.GetHabbo().GiftPurchasingWarnings += 1;
                     if (Session.GetHabbo().GiftPurchasingWarnings >= 25)
+                    {
                         Session.GetHabbo().SessionGiftBlocked = true;
+                    }
+
                     return;
                 }
             }
-                
+
 
             if (Session.GetHabbo().SessionGiftBlocked)
+            {
                 return;
+            }
 
             string ED = GiftUser + Convert.ToChar(5) + GiftMessage + Convert.ToChar(5) + Session.GetHabbo().Id + Convert.ToChar(5) + Item.Data.Id + Convert.ToChar(5) + SpriteId + Convert.ToChar(5) + Ribbon + Convert.ToChar(5) + Colour;
 
@@ -160,13 +179,19 @@ namespace Neon.Communication.Packets.Incoming.Catalog
                             int.Parse(Race); // to trigger any possible errors
 
                             if (PetUtility.CheckPetName(PetName))
+                            {
                                 return;
+                            }
 
                             if (Race.Length > 2)
+                            {
                                 return;
+                            }
 
                             if (Color.Length != 6)
+                            {
                                 return;
+                            }
 
                             NeonEnvironment.GetGame().GetAchievementManager().ProgressAchievement(Session, "ACH_PetLover", 1);
                         }
@@ -183,13 +208,17 @@ namespace Neon.Communication.Packets.Incoming.Catalog
                     case InteractionType.WALLPAPER:
                     case InteractionType.LANDSCAPE:
 
-                        Double Number = 0;
+                        double Number = 0;
                         try
                         {
                             if (string.IsNullOrEmpty(Data))
+                            {
                                 Number = 0;
+                            }
                             else
-                                Number = Double.Parse(Data, NeonEnvironment.CultureInfo);
+                            {
+                                Number = double.Parse(Data, NeonEnvironment.CultureInfo);
+                            }
                         }
                         catch
                         {
@@ -249,10 +278,10 @@ namespace Neon.Communication.Packets.Incoming.Catalog
                     if (Receiver.GetHabbo().Rank <= 5)
                     {
 
-                     Receiver.SendNotification("Usted acaba de recibir un regalo de parte de " + Session.GetHabbo().Username + "");
-                   
+                        Receiver.SendNotification("Usted acaba de recibir un regalo de parte de " + Session.GetHabbo().Username + "");
+
                     }
-                        {
+                    {
 
                         Receiver.GetHabbo().GetInventoryComponent().TryAddItem(GiveItem);
                         Receiver.SendMessage(new FurniListNotificationComposer(GiveItem.Id, 1));
@@ -262,13 +291,13 @@ namespace Neon.Communication.Packets.Incoming.Catalog
 
                     }
                 }
-                    NeonEnvironment.GetGame().GetAchievementManager().ProgressAchievement(Session, "ACH_GiftGiver", 1);
-                    NeonEnvironment.GetGame().GetAchievementManager().ProgressAchievement(Receiver, "ACH_GiftReceiver", 1);
-                    NeonEnvironment.GetGame().GetQuestManager().ProgressUserQuest(Session, QuestType.GIFT_OTHERS);
-                    Session.SendNotification("Ha enviado correctamente un regalo");
+                NeonEnvironment.GetGame().GetAchievementManager().ProgressAchievement(Session, "ACH_GiftGiver", 1);
+                NeonEnvironment.GetGame().GetAchievementManager().ProgressAchievement(Receiver, "ACH_GiftReceiver", 1);
+                NeonEnvironment.GetGame().GetQuestManager().ProgressUserQuest(Session, QuestType.GIFT_OTHERS);
+                Session.SendNotification("Ha enviado correctamente un regalo");
 
             }
-       
+
             Session.SendMessage(new PurchaseOKComposer(Item, PresentData));
 
             if (Item.CostCredits > 0)

@@ -1,13 +1,12 @@
 ﻿using Neon.HabboHotel.Items;
-using System;
 
 namespace Neon.HabboHotel.Catalog.FurniMatic
 {
     public class FurniMaticRewards
     {
-        public Int32 DisplayId;
-        public Int32 BaseId;
-        public Int32 Level;
+        public int DisplayId;
+        public int BaseId;
+        public int Level;
 
         public FurniMaticRewards(int displayId, int baseId, int level)
         {
@@ -18,8 +17,11 @@ namespace Neon.HabboHotel.Catalog.FurniMatic
 
         public ItemData GetBaseItem()
         {
-            ItemData data = null;
-            if (NeonEnvironment.GetGame().GetItemManager().GetItem(BaseId, out data)) return data;
+            if (NeonEnvironment.GetGame().GetItemManager().GetItem(BaseId, out ItemData data))
+            {
+                return data;
+            }
+
             return null;
         }
     }

@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections;
+﻿using ConnectionManager.Socket_Exceptions;
+using log4net;
+using SharedPacketLib;
+using System;
+using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
-using ConnectionManager.Socket_Exceptions;
-using SharedPacketLib;
-using System.Collections.Generic;
-using log4net;
-using System.Collections.Concurrent;
 
 namespace ConnectionManager
 {
@@ -75,9 +73,9 @@ namespace ConnectionManager
         /// </summary>
         /// <param name="portID">The ID of the port this item should listen on</param>
         /// <param name="maxConnections">The maximum amount of connections</param>
-        public void init(int portID, int maxConnections, int connectionsPerIP, IDataParser parser,  bool disableNaglesAlgorithm)
+        public void init(int portID, int maxConnections, int connectionsPerIP, IDataParser parser, bool disableNaglesAlgorithm)
         {
-            this._ipConnectionsCount = new ConcurrentDictionary<string, int>();
+            _ipConnectionsCount = new ConcurrentDictionary<string, int>();
 
             this.parser = parser;
             disableNagleAlgorithm = disableNaglesAlgorithm;
@@ -95,8 +93,10 @@ namespace ConnectionManager
         /// </summary>
         private void prepareConnectionDetails()
         {
-            connectionListener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            connectionListener.NoDelay = disableNagleAlgorithm;
+            connectionListener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)
+            {
+                NoDelay = disableNagleAlgorithm
+            };
             try
             {
                 connectionListener.Bind(new IPEndPoint(IPAddress.Any, portInformation));
@@ -171,7 +171,9 @@ namespace ConnectionManager
                             c.connectionChanged += c_connectionChanged;
 
                             if (connectionEvent != null)
+                            {
                                 connectionEvent(c);
+                            }
                         }
                         else
                         {
@@ -246,8 +248,7 @@ namespace ConnectionManager
         {
             if (_ipConnectionsCount.ContainsKey(ip))
             {
-                int am;
-                _ipConnectionsCount.TryRemove(ip, out am);
+                _ipConnectionsCount.TryRemove(ip, out int am);
             }
             _ipConnectionsCount.TryAdd(ip, amount);
         }

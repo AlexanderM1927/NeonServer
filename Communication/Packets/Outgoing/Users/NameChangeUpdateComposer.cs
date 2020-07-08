@@ -1,22 +1,19 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Neon.Communication.Packets.Outgoing.Users
 {
-    class NameChangeUpdateComposer : ServerPacket
+    internal class NameChangeUpdateComposer : ServerPacket
     {
         public NameChangeUpdateComposer(string Name, int Error, ICollection<string> Tags)
             : base(ServerPacketHeader.NameChangeUpdateMessageComposer)
         {
             base.WriteInteger(Error);
-           base.WriteString(Name);
+            base.WriteString(Name);
 
             base.WriteInteger(Tags.Count);
             foreach (string Tag in Tags)
             {
-               base.WriteString(Name + Tag);
+                base.WriteString(Name + Tag);
             }
         }
 
@@ -24,7 +21,7 @@ namespace Neon.Communication.Packets.Outgoing.Users
             : base(ServerPacketHeader.NameChangeUpdateMessageComposer)
         {
             base.WriteInteger(Error);
-           base.WriteString(Name);
+            base.WriteString(Name);
             base.WriteInteger(0);
         }
     }

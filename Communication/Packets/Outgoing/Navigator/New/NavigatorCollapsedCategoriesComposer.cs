@@ -1,11 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-namespace Neon.Communication.Packets.Outgoing.Navigator
+﻿namespace Neon.Communication.Packets.Outgoing.Navigator
 {
-    class NavigatorCollapsedCategoriesComposer : ServerPacket
+    internal class NavigatorCollapsedCategoriesComposer : ServerPacket
     {
         public NavigatorCollapsedCategoriesComposer()
             : base(ServerPacketHeader.NavigatorCollapsedCategoriesMessageComposer)

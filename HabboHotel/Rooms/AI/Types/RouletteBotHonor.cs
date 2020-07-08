@@ -1,23 +1,21 @@
-﻿using Neon.HabboHotel.GameClients;
-using Neon.Database.Interfaces;
+﻿using Neon.Communication.Packets.Outgoing.Inventory.Purse;
 using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
+using Neon.HabboHotel.GameClients;
 using Neon.Utilities;
-using System.Threading.Tasks;
 using System;
 using System.Collections.Generic;
-using Neon.Communication.Packets.Outgoing.Inventory.Purse;
 
 namespace Neon.HabboHotel.Rooms.AI.Types
 {
-    class RouletteBotHonor : BotAI
+    internal class RouletteBotHonor : BotAI
     {
-        private int VirtualId;
-        int GameLength = 100;
-        bool BetsOpen = false;
-        int Bets;
+        private readonly int VirtualId;
+        private int GameLength = 100;
+        private bool BetsOpen = false;
+        private int Bets;
         private double offerMultiplier;
 
-        private Dictionary<int, CasinoDataLocura> Data1;
+        private readonly Dictionary<int, CasinoDataLocura> Data1;
 
         public RouletteBotHonor(int VirtualId)
         {
@@ -47,10 +45,14 @@ namespace Neon.HabboHotel.Rooms.AI.Types
         public override void OnUserSay(RoomUser User, string Message)
         {
             if (User == null || User.GetClient() == null || User.GetClient().GetHabbo() == null)
+            {
                 return;
+            }
 
             if (Gamemap.TileDistance(GetRoomUser().X, GetRoomUser().Y, User.X, User.Y) > 8)
+            {
                 return;
+            }
 
             // Notice that the bet is off to the users.
             if (BetsOpen == false)
@@ -66,17 +68,15 @@ namespace Neon.HabboHotel.Rooms.AI.Types
                 string Multiplier = Message.Split(' ')[0];
                 string Bet = Message.Split(' ')[2];
 
-                int IntMultiplier = 0;
                 // Check if the multiplier is a number.
-                if (!int.TryParse(Multiplier, out IntMultiplier))
+                if (!int.TryParse(Multiplier, out int IntMultiplier))
                 {
                     GetRoomUser().Chat(Multiplier + " no es un valor apto para la apuesta.", false, 33);
                     return;
                 }
 
-                int IntBet = 0;
                 // Check if the bet is a number.
-                if (!int.TryParse(Bet, out IntBet))
+                if (!int.TryParse(Bet, out int IntBet))
                 {
                     GetRoomUser().Chat(Bet + " no es un valor apto para la apuesta.", false, 33);
                     return;
@@ -97,10 +97,12 @@ namespace Neon.HabboHotel.Rooms.AI.Types
 
                 offerMultiplier += .2;
 
-                CasinoDataLocura data = new CasinoDataLocura();
-                data.bet = IntBet;
-                data.quantity = IntMultiplier;
-                data.userId = User.GetClient().GetHabbo().Id;
+                CasinoDataLocura data = new CasinoDataLocura
+                {
+                    bet = IntBet,
+                    quantity = IntMultiplier,
+                    userId = User.GetClient().GetHabbo().Id
+                };
 
 
                 Data1.Add(Bets, data);
@@ -297,7 +299,11 @@ namespace Neon.HabboHotel.Rooms.AI.Types
                 GameLength = 100;
 
             }
-            else GameLength--;
+            else
+            {
+                GameLength--;
+            }
+
             GetRoomUser().Chat(GameLength + "", false, 33);
 
         }

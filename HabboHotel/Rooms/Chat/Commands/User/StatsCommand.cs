@@ -1,26 +1,15 @@
 ﻿using System;
-using System.Linq;
 using System.Text;
-using System.Collections.Generic;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.User
 {
-    class StatsCommand : IChatCommand
+    internal class StatsCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_stats"; }
-        }
+        public string PermissionRequired => "command_stats";
 
-        public string Parameters
-        {
-            get { return ""; }
-        }
+        public string Parameters => "";
 
-        public string Description
-        {
-            get { return "Revisar tus estadísticas."; }
-        }
+        public string Description => "Revisar tus estadísticas.";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {

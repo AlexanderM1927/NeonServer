@@ -1,18 +1,15 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Data;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Catalog.Marketplace;
-using Neon.Communication.Packets.Outgoing.Marketplace;
-
+﻿using Neon.Communication.Packets.Outgoing.Marketplace;
 using Neon.Database.Interfaces;
+using Neon.HabboHotel.Catalog.Marketplace;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Text;
 
 
 namespace Neon.Communication.Packets.Incoming.Marketplace
 {
-    class GetOffersEvent : IPacketEvent
+    internal class GetOffersEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
@@ -27,11 +24,14 @@ namespace Neon.Communication.Packets.Incoming.Marketplace
             string str = "";
             builder.Append("WHERE `state` = '1' AND `timestamp` >= " + NeonEnvironment.GetGame().GetCatalog().GetMarketplace().FormatTimestampString());
             if (MinCost >= 0)
+            {
                 builder.Append(" AND `total_price` > " + MinCost);
-
+            }
 
             if (MaxCost >= 0)
+            {
                 builder.Append(" AND `total_price` < " + MaxCost);
+            }
 
             switch (FilterMode)
             {
@@ -80,9 +80,14 @@ namespace Neon.Communication.Packets.Incoming.Marketplace
                     if (item.LimitedNumber > 0)
                     {
                         if (!dictionary.ContainsKey(item.OfferID))
+                        {
                             dictionary.Add(item.OfferID, item);
+                        }
+
                         if (!dictionary2.ContainsKey(item.OfferID))
+                        {
                             dictionary2.Add(item.OfferID, 1);
+                        }
                     }
                     else
                     {
@@ -100,9 +105,14 @@ namespace Neon.Communication.Packets.Incoming.Marketplace
                 else
                 {
                     if (!dictionary.ContainsKey(item.SpriteId))
+                    {
                         dictionary.Add(item.SpriteId, item);
+                    }
+
                     if (!dictionary2.ContainsKey(item.SpriteId))
+                    {
                         dictionary2.Add(item.SpriteId, 1);
+                    }
                 }
             }
 

@@ -1,35 +1,35 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.Utilities;
-using Neon.HabboHotel.Rooms;
-using Neon.Communication.Packets.Outgoing.Inventory.Trading;
-
+﻿using Neon.Communication.Packets.Outgoing.Inventory.Trading;
 using Neon.Database.Interfaces;
+using Neon.HabboHotel.Rooms;
 
 
 namespace Neon.Communication.Packets.Incoming.Inventory.Trading
 {
-    class InitTradeEvent : IPacketEvent
+    internal class InitTradeEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
             if (Session == null || Session.GetHabbo() == null || !Session.GetHabbo().InRoom)
+            {
                 return;
+            }
 
-            Room Room;
 
-            if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Session.GetHabbo().CurrentRoomId, out Room))
+            if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Session.GetHabbo().CurrentRoomId, out Room Room))
+            {
                 return;
+            }
 
             if (!Room.CanTradeInRoom || NeonStaticGameSettings.IsGoingToBeClose)
+            {
                 return;
+            }
 
             RoomUser User = Room.GetRoomUserManager().GetRoomUserByHabbo(Session.GetHabbo().Id);
             if (User == null)
+            {
                 return;
+            }
 
             if (Session.GetHabbo().TradingLockExpiry > 0)
             {
@@ -53,7 +53,9 @@ namespace Neon.Communication.Packets.Incoming.Inventory.Trading
             RoomUser TargetUser = Room.GetRoomUserManager().GetRoomUserByVirtualId(Packet.PopInt());
 
             if (TargetUser == null || TargetUser.GetClient() == null || TargetUser.GetClient().GetHabbo() == null)
+            {
                 return;
+            }
 
             if (TargetUser.IsTrading)
             {

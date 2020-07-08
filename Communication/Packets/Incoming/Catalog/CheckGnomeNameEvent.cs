@@ -174,37 +174,23 @@
 //        }
 //    }
 //}
-using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Items;
-using Neon.HabboHotel.Rooms.AI;
-using Neon.HabboHotel.Rooms.AI.Speech;
-using Neon.HabboHotel.Items.Utilities;
-
-
-
 using Neon.Communication.Packets.Outgoing.Catalog;
-using Neon.Communication.Packets.Outgoing.Inventory.Furni;
-
-using Neon.Database.Interfaces;
-using Neon.HabboHotel.Rooms.AI.Responses;
+using Neon.Communication.Packets.Outgoing.Moderation;
 using Neon.Communication.Packets.Outgoing.Notifications;
 using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
-using Neon.Communication.Packets.Outgoing.Moderation;
-using System.ServiceModel.Channels;
+using Neon.Database.Interfaces;
 
 namespace Neon.Communication.Packets.Incoming.Catalog
 {
-    class CheckGnomeNameEvent : IPacketEvent
+    internal class CheckGnomeNameEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
             if (Session == null || Session.GetHabbo() == null)
+            {
                 return;
+            }
+
             _ = Packet.PopInt();
             string Pin = Packet.PopString();
 
@@ -228,7 +214,7 @@ namespace Neon.Communication.Packets.Incoming.Catalog
                 Session.SendMessage(new RoomCustomizedAlertComposer("AVISO: el pin es incorrecto se avisárá a todo el equipo Staff."));
                 NeonEnvironment.GetGame().GetClientManager().ManagerAlert(new MOTDNotificationComposer("ATENCION: El Staff " + Session.GetHabbo().Username + " ha fallado al autentificar su identidad."));
                 Session.GetConnection().Dispose();
-                this.LogCommand(Session.GetHabbo().Id, "Inicio de sesión inválido", Session.GetHabbo().MachineId, Session.GetHabbo().Username);
+                LogCommand(Session.GetHabbo().Id, "Inicio de sesión inválido", Session.GetHabbo().MachineId, Session.GetHabbo().Username);
             }
 
 

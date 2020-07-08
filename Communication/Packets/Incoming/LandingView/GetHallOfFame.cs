@@ -9,7 +9,11 @@ namespace Neon.Communication.Packets.Incoming.LandingView
     public class GetHallOfFame
     {
         public static GetHallOfFame instance = new GetHallOfFame();
-        public static GetHallOfFame GetInstance() => instance;
+        public static GetHallOfFame GetInstance()
+        {
+            return instance;
+        }
+
         public Dictionary<uint, UserRank> ranks;
         public List<UserCompetition> usersWithRank;
 
@@ -34,9 +38,11 @@ namespace Neon.Communication.Packets.Incoming.LandingView
 
                 foreach (DataRow Row in gUsersTable.Rows)
                 {
-                    var staff = new UserCompetition(Row);
+                    UserCompetition staff = new UserCompetition(Row);
                     if (!usersWithRank.Contains(staff))
+                    {
                         usersWithRank.Add(staff);
+                    }
                 }
             }
 

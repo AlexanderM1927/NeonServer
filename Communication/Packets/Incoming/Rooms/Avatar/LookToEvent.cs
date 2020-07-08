@@ -1,35 +1,37 @@
 ﻿using Neon.HabboHotel.Pathfinding;
 using Neon.HabboHotel.Rooms;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.Communication.Packets.Incoming.Rooms.Avatar
 {
-    class LookToEvent : IPacketEvent
+    internal class LookToEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
-            Room Room = null;
-            if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Session.GetHabbo().CurrentRoomId, out Room))
+            if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Session.GetHabbo().CurrentRoomId, out Room Room))
+            {
                 return;
+            }
 
             RoomUser User = Room.GetRoomUserManager().GetRoomUserByHabbo(Session.GetHabbo().Id);
             if (User == null)
+            {
                 return;
+            }
 
             if (User.IsAsleep)
+            {
                 return;
-            
+            }
+
             User.UnIdle();
 
             int X = Packet.PopInt();
             int Y = Packet.PopInt();
 
             if ((X == User.X && Y == User.Y) || User.IsWalking || User.RidingHorse)
+            {
                 return;
+            }
 
             int Rot = Rotation.Calculate(User.X, User.Y, X, Y);
 

@@ -1,46 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Neon.HabboHotel.Camera
+﻿namespace Neon.HabboHotel.Camera
 {
     public class CameraPhotoPreview
     {
-        private int _photoId;
-        private int _creatorId;
-        private long _createdAt;
+        private readonly int _photoId;
+        private readonly int _creatorId;
+        private readonly long _createdAt;
 
-        public int Id
-        {
-            get
-            {
-                return this._photoId;
-            }
-        }
+        public int Id => _photoId;
 
-        public int CreatorId
-        {
-            get
-            {
-                return this._creatorId;
-            }
-        }
+        public int CreatorId => _creatorId;
 
-        public long CreatedAt
-        {
-            get
-            {
-                return this._createdAt;
-            }
-        }
+        public long CreatedAt => _createdAt;
 
         public CameraPhotoPreview(int photoId, int creatorId, long createdAt)
         {
-            this._photoId = photoId;
-            this._creatorId = creatorId;
-            this._createdAt = createdAt;
+            _photoId = photoId;
+            _creatorId = creatorId;
+            _createdAt = createdAt;
         }
     }
 }

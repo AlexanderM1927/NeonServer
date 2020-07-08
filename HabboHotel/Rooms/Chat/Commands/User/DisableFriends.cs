@@ -1,27 +1,14 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using Neon.Database.Interfaces;
+﻿using Neon.Database.Interfaces;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.User
 {
-    class DisableFriends : IChatCommand
+    internal class DisableFriends : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_enable_friends"; }
-        }
+        public string PermissionRequired => "command_enable_friends";
 
-        public string Parameters
-        {
-            get { return ""; }
-        }
+        public string Parameters => "";
 
-        public string Description
-        {
-            get { return "Activar o desactivar las solicitudes de amistad."; }
-        }
+        public string Description => "Activar o desactivar las solicitudes de amistad.";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {

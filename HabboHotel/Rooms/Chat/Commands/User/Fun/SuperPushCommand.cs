@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Chat;
 using Neon.HabboHotel.GameClients;
-using Neon.Communication.Packets.Outgoing.Rooms.Chat;
+using System;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.User.Fun
 {
-    class SuperPushCommand : IChatCommand
+    internal class SuperPushCommand : IChatCommand
     {
         public string PermissionRequired => "command_super_push";
         public string Parameters => "[USUARIO]";
@@ -60,7 +60,9 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User.Fun
 
             RoomUser ThisUser = Room.GetRoomUserManager().GetRoomUserByHabbo(Session.GetHabbo().Id);
             if (ThisUser == null)
+            {
                 return;
+            }
 
             if (!((Math.Abs(TargetUser.X - ThisUser.X) >= 2) || (Math.Abs(TargetUser.Y - ThisUser.Y) >= 2)))
             {

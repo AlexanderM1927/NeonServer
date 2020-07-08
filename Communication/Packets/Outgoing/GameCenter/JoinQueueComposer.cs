@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Neon.Communication.Packets.Outgoing.GameCenter
+﻿namespace Neon.Communication.Packets.Outgoing.GameCenter
 {
-    class JoinQueueComposer : ServerPacket
+    internal class JoinQueueComposer : ServerPacket
     {
         public JoinQueueComposer(int GameId)
             : base(ServerPacketHeader.JoinQueueMessageComposer)

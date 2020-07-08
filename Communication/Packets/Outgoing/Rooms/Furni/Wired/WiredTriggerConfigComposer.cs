@@ -1,10 +1,7 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Items;
+﻿using Neon.HabboHotel.Items;
 using Neon.HabboHotel.Items.Wired;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Neon.Communication.Packets.Outgoing.Rooms.Furni.Wired
 {
@@ -24,7 +21,7 @@ namespace Neon.Communication.Packets.Outgoing.Rooms.Furni.Wired
 
             base.WriteInteger(Box.Item.GetBaseItem().SpriteId);
             base.WriteInteger(Box.Item.Id);
-           base.WriteString(Box.StringData);
+            base.WriteString(Box.StringData);
 
             base.WriteInteger(Box is IWiredCycle ? 1 : 0);
             if (Box is IWiredCycle)
@@ -35,10 +32,12 @@ namespace Neon.Communication.Packets.Outgoing.Rooms.Furni.Wired
             base.WriteInteger(0);
             base.WriteInteger(WiredBoxTypeUtility.GetWiredId(Box.Type));
             base.WriteInteger(BlockedItems.Count());
-            if(BlockedItems.Count() > 0)
+            if (BlockedItems.Count() > 0)
             {
                 foreach (int Id in BlockedItems.ToList())
+                {
                     base.WriteInteger(Id);
+                }
             }
         }
     }

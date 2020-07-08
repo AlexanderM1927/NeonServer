@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Neon.Communication.Packets.Outgoing.Groups
+﻿namespace Neon.Communication.Packets.Outgoing.Groups
 {
-    class NewGroupInfoComposer : ServerPacket
+    internal class NewGroupInfoComposer : ServerPacket
     {
         public NewGroupInfoComposer(int RoomId, int GroupId)
             : base(ServerPacketHeader.NewGroupInfoMessageComposer)

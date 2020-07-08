@@ -1,8 +1,8 @@
 ﻿#region
 
+using Neon.HabboHotel.Users.Clothing.Parts;
 using System.Collections.Generic;
 using System.Linq;
-using Neon.HabboHotel.Users.Clothing.Parts;
 
 #endregion
 
@@ -14,12 +14,16 @@ namespace Neon.Communication.Packets.Outgoing.Inventory.AvatarEffects
             : base(ServerPacketHeader.FigureSetIdsMessageComposer)
         {
             WriteInteger(ClothingParts.Count);
-            foreach (var Part in ClothingParts.ToList())
+            foreach (ClothingParts Part in ClothingParts.ToList())
+            {
                 WriteInteger(Part.PartId);
+            }
 
             WriteInteger(ClothingParts.Count);
-            foreach (var Part in ClothingParts.ToList())
+            foreach (ClothingParts Part in ClothingParts.ToList())
+            {
                 WriteString(Part.Part);
+            }
         }
     }
 }

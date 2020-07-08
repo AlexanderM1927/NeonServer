@@ -1,16 +1,10 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using System.Collections.Concurrent;
-
-using Neon.Communication.Packets.Incoming;
-using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Users;
-using System.Drawing;
-using System.Security.Cryptography;
+﻿using Neon.Communication.Packets.Incoming;
 using Neon.Communication.Packets.Outgoing.Rooms.Engine;
-using Neon.Utilities;
+using Neon.HabboHotel.Rooms;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
 
 
 namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
@@ -20,10 +14,7 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
         public Room Instance { get; set; }
         public Item Item { get; set; }
 
-        public WiredBoxType Type
-        {
-            get { return WiredBoxType.EffectMoveFurniToNearestUser; }
-        }
+        public WiredBoxType Type => WiredBoxType.EffectMoveFurniToNearestUser;
 
         public ConcurrentDictionary<int, Item> SetItems { get; set; }
         public string StringData { get; set; }
@@ -31,11 +22,11 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
 
         public int Delay
         {
-            get { return this._delay; }
+            get => _delay;
             set
             {
-                this._delay = value;
-                this.TickCount = value + 1;
+                _delay = value;
+                TickCount = value + 1;
             }
         }
 
@@ -49,9 +40,9 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
         {
             this.Instance = Instance;
             this.Item = Item;
-            this.SetItems = new ConcurrentDictionary<int, Item>();
-            this.TickCount = Delay;
-            this.Requested = false;
+            SetItems = new ConcurrentDictionary<int, Item>();
+            TickCount = Delay;
+            Requested = false;
         }
 
         public void HandleSave(ClientPacket Packet)
@@ -59,8 +50,10 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
             int Unknown = Packet.PopInt();
             string Unknown2 = Packet.PopString();
 
-            if (this.SetItems.Count > 0)
-                this.SetItems.Clear();
+            if (SetItems.Count > 0)
+            {
+                SetItems.Clear();
+            }
 
             int FurniCount = Packet.PopInt();
             for (int i = 0; i < FurniCount; i++)
@@ -68,7 +61,9 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
                 Item SelectedItem = Instance.GetRoomItemHandler().GetItem(Packet.PopInt());
 
                 if (SelectedItem != null && !Instance.GetWired().OtherBoxHasItem(this, SelectedItem.Id))
+                {
                     SetItems.TryAdd(SelectedItem.Id, SelectedItem);
+                }
             }
 
             int Delay = Packet.PopInt();
@@ -77,17 +72,20 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
 
         public bool Execute(params object[] Params)
         {
-            if (this.SetItems.Count == 0)
+            if (SetItems.Count == 0)
+            {
                 return false;
+            }
 
-
-            if (this._next == 0 || this._next < NeonEnvironment.Now())
-                this._next = NeonEnvironment.Now() + this.Delay;
+            if (_next == 0 || _next < NeonEnvironment.Now())
+            {
+                _next = NeonEnvironment.Now() + Delay;
+            }
 
             if (!Requested)
             {
-                this.TickCount = this.Delay;
-                this.Requested = true;
+                TickCount = Delay;
+                Requested = true;
             }
             return true;
         }
@@ -95,41 +93,53 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
         public bool OnCycle()
         {
             if (Instance == null || !Requested || _next == 0)
+            {
                 return false;
+            }
 
             long Now = NeonEnvironment.Now();
             if (_next < Now)
             {
-                foreach (Item Item in this.SetItems.Values.ToList())
+                foreach (Item Item in SetItems.Values.ToList())
                 {
                     if (Item == null)
+                    {
                         continue;
+                    }
 
                     if (!Instance.GetRoomItemHandler().GetFloor.Contains(Item))
+                    {
                         continue;
+                    }
 
                     Item toRemove = null;
 
                     if (Instance.GetWired().OtherBoxHasItem(this, Item.Id))
-                        this.SetItems.TryRemove(Item.Id, out toRemove);
+                    {
+                        SetItems.TryRemove(Item.Id, out toRemove);
+                    }
 
                     Point Point = Instance.GetGameMap().GetChaseMovement(Item);
 
-                    Instance.GetWired().onUserFurniCollision(Instance, Item);
+                    Instance.GetWired().OnUserFurniCollision(Instance, Item);
 
                     if (!Instance.GetGameMap().ItemCanMove(Item, Point))
+                    {
                         continue;
+                    }
 
                     if (Instance.GetGameMap().CanRollItemHere(Point.X, Point.Y) && !Instance.GetGameMap().SquareHasUsers(Point.X, Point.Y))
-                    {    
-                        Double NewZ = Item.GetZ;
-                        Boolean CanBePlaced = true;
+                    {
+                        double NewZ = Item.GetZ;
+                        bool CanBePlaced = true;
 
                         List<Item> Items = Instance.GetGameMap().GetCoordinatedItems(Point);
                         foreach (Item IItem in Items.ToList())
                         {
                             if (IItem == null || IItem.Id == Item.Id)
+                            {
                                 continue;
+                            }
 
                             if (!IItem.GetBaseItem().Walkable)
                             {
@@ -139,10 +149,14 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
                             }
 
                             if (IItem.TotalHeight > NewZ)
+                            {
                                 NewZ = IItem.TotalHeight;
+                            }
 
                             if (CanBePlaced == true && !IItem.GetBaseItem().Stackable)
+                            {
                                 CanBePlaced = false;
+                            }
                         }
 
                         if (CanBePlaced && Point != Item.Coordinate)

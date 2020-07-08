@@ -1,14 +1,9 @@
 ﻿using Neon.Communication.Packets.Outgoing.Navigator;
 using Neon.HabboHotel.Rooms;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.Communication.Packets.Incoming.Navigator
 {
-    class GetGuestRoomEvent : IPacketEvent
+    internal class GetGuestRoomEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
@@ -16,10 +11,12 @@ namespace Neon.Communication.Packets.Incoming.Navigator
 
             RoomData roomData = NeonEnvironment.GetGame().GetRoomManager().GenerateRoomData(roomID);
             if (roomData == null)
+            {
                 return;
+            }
 
-            Boolean isLoading = Packet.PopInt() == 1;
-            Boolean checkEntry = Packet.PopInt() == 1;
+            bool isLoading = Packet.PopInt() == 1;
+            bool checkEntry = Packet.PopInt() == 1;
 
             Session.SendMessage(new GetGuestRoomResultComposer(Session, roomData, isLoading, checkEntry));
         }

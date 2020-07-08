@@ -1,25 +1,14 @@
-﻿using Neon.Communication.Packets.Outgoing;
-using Neon.Communication.Packets.Outgoing.Moderation;
-using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
+﻿using Neon.Communication.Packets.Outgoing.Moderation;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.Administrator
 {
-    class HALCommand : IChatCommand
+    internal class HALCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_hal"; }
-        }
+        public string PermissionRequired => "command_hal";
 
-        public string Parameters
-        {
-            get { return "%message%"; }
-        }
+        public string Parameters => "%message%";
 
-        public string Description
-        {
-            get { return "Envia un mensaje entero a todo el Hotel con un Link"; }
-        }
+        public string Description => "Envia un mensaje entero a todo el Hotel con un Link";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {

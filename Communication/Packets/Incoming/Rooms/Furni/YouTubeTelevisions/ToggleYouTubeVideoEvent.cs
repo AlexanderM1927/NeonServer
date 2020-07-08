@@ -1,13 +1,8 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-
-using Neon.HabboHotel.Items.Televisions;
-using Neon.Communication.Packets.Outgoing.Rooms.Furni.YouTubeTelevisions;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Furni.YouTubeTelevisions;
 
 namespace Neon.Communication.Packets.Incoming.Rooms.Furni
 {
-    class ToggleYouTubeVideoEvent : IPacketEvent
+    internal class ToggleYouTubeVideoEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {

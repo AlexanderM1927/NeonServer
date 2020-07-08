@@ -1,13 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Text;
+﻿using Neon.HabboHotel.Rooms;
 using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms;
 
 namespace Neon.Communication.Packets.Outgoing.Groups
 {
-    class GroupCreationWindowComposer : ServerPacket
+    internal class GroupCreationWindowComposer : ServerPacket
     {
         public GroupCreationWindowComposer(ICollection<RoomData> Rooms)
             : base(ServerPacketHeader.GroupCreationWindowMessageComposer)
@@ -18,7 +14,7 @@ namespace Neon.Communication.Packets.Outgoing.Groups
             foreach (RoomData Room in Rooms)
             {
                 base.WriteInteger(Room.Id);//Room Id
-               base.WriteString(Room.Name);//Room Name
+                base.WriteString(Room.Name);//Room Name
                 base.WriteBoolean(false);//What?
             }
 

@@ -5,11 +5,10 @@ using Neon.HabboHotel.GameClients;
 using Neon.HabboHotel.Rooms;
 using Neon.HabboHotel.Rooms.Polls;
 using Neon.Utilities;
-using System;
 
 namespace Neon.Communication.Packets.Incoming.QuickPolls
 {
-    class SubmitPollAnswerMessageEvent : IPacketEvent
+    internal class SubmitPollAnswerMessageEvent : IPacketEvent
     {
         public void Parse(GameClient Session, ClientPacket Packet)
         {
@@ -21,15 +20,19 @@ namespace Neon.Communication.Packets.Incoming.QuickPolls
             RoomPoll poll = null;
 
             if (Session == null || Session.GetHabbo() == null)
+            {
                 return;
+            }
 
             Room room = Session.GetHabbo().CurrentRoom;
             if (room == null)
+            {
                 return;
+            }
 
             if (questionId == -1)
             {
-                String answer = Packet.PopString();
+                string answer = Packet.PopString();
                 if (room.poolQuestion != string.Empty)
                 {
                     if (room.yesPoolAnswers.Contains(Session.GetHabbo().Id) || room.noPoolAnswers.Contains(Session.GetHabbo().Id))
@@ -54,9 +57,10 @@ namespace Neon.Communication.Packets.Incoming.QuickPolls
             }
             else if (NeonEnvironment.GetGame().GetPollManager().TryGetPollForRoom(room.Id, out poll))
             {
-                RoomPollQuestion question = null;
-                if (!poll.Questions.TryGetValue(questionId, out question))
+                if (!poll.Questions.TryGetValue(questionId, out RoomPollQuestion question))
+                {
                     return;
+                }
 
                 string answer = "";
 
@@ -96,7 +100,9 @@ namespace Neon.Communication.Packets.Incoming.QuickPolls
                     if (!string.IsNullOrEmpty(poll.BadgeReward))
                     {
                         if (!Session.GetHabbo().GetBadgeComponent().HasBadge(poll.BadgeReward))
+                        {
                             Session.GetHabbo().GetBadgeComponent().GiveBadge(poll.BadgeReward, true, Session);
+                        }
                     }
 
                     if (poll.CreditReward > 0)
@@ -113,7 +119,9 @@ namespace Neon.Communication.Packets.Incoming.QuickPolls
                 }
             }
             else
+            {
                 return;
+            }
         }
     }
 }

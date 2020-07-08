@@ -1,14 +1,11 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
+﻿using Neon.HabboHotel.Items;
 using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Items;
+using System;
+using System.Linq;
 
 namespace Neon.Communication.Packets.Incoming.Rooms.Furni.Stickys
 {
-    class AddStickyNoteEvent : IPacketEvent
+    internal class AddStickyNoteEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
@@ -16,19 +13,26 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Furni.Stickys
             string locationData = Packet.PopString();
 
             if (!Session.GetHabbo().InRoom)
+            {
                 return;
+            }
 
-            Room Room;
 
-            if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Session.GetHabbo().CurrentRoomId, out Room))
+            if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Session.GetHabbo().CurrentRoomId, out Room Room))
+            {
                 return;
+            }
 
             if (!Room.CheckRights(Session))
+            {
                 return;
+            }
 
             Item Item = Session.GetHabbo().GetInventoryComponent().GetItem(itemId);
             if (Item == null)
+            {
                 return;
+            }
 
             try
             {
@@ -36,7 +40,9 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Furni.Stickys
 
                 Item RoomItem = new Item(Item.Id, Room.RoomId, Item.BaseItem, Item.ExtraData, 0, 0, 0, 0, Session.GetHabbo().Id, Item.GroupId, 0, 0, WallPossition, Room);
                 if (Room.GetRoomItemHandler().SetWallItem(Session, RoomItem))
+                {
                     Session.GetHabbo().GetInventoryComponent().RemoveItem(itemId);
+                }
             }
             catch
             {
@@ -61,19 +67,26 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Furni.Stickys
 
                 string[] posD = wallPosition.Split(' ');
                 if (posD[2] != "l" && posD[2] != "r")
+                {
                     return null;
+                }
 
                 string[] widD = posD[0].Substring(3).Split(',');
                 int widthX = int.Parse(widD[0]);
                 int widthY = int.Parse(widD[1]);
                 if (widthX < 0 || widthY < 0 || widthX > 200 || widthY > 200)
+                {
                     return null;
+                }
 
                 string[] lenD = posD[1].Substring(2).Split(',');
                 int lengthX = int.Parse(lenD[0]);
                 int lengthY = int.Parse(lenD[1]);
                 if (lengthX < 0 || lengthY < 0 || lengthX > 200 || lengthY > 200)
+                {
                     return null;
+                }
+
                 return ":w=" + widthX + "," + widthY + " " + "l=" + lengthX + "," + lengthY + " " + posD[2];
             }
             catch

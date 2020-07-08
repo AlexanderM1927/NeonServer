@@ -1,26 +1,12 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-namespace Neon.HabboHotel.Rooms.Chat.Commands.User
+﻿namespace Neon.HabboHotel.Rooms.Chat.Commands.User
 {
-    class DisableDiagonalCommand : IChatCommand
+    internal class DisableDiagonalCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_disable_diagonal"; }
-        }
+        public string PermissionRequired => "command_disable_diagonal";
 
-        public string Parameters
-        {
-            get { return ""; }
-        }
+        public string Parameters => "";
 
-        public string Description
-        {
-            get { return "Desactivar la opción de andar en diagonal en tu sala."; }
-        }
+        public string Description => "Desactivar la opción de andar en diagonal en tu sala.";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {

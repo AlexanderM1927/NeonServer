@@ -1,30 +1,14 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using Neon.Database.Interfaces;
-using Neon.Utilities;
-using Neon.HabboHotel.Users;
-using Neon.HabboHotel.GameClients;
+﻿using Neon.HabboHotel.GameClients;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
 {
-    class RemoveBadgeCommand : IChatCommand
+    internal class RemoveBadgeCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_remove_badge"; }
-        }
+        public string PermissionRequired => "command_remove_badge";
 
-        public string Parameters
-        {
-            get { return "%username% %badge%"; }
-        }
+        public string Parameters => "%username% %badge%";
 
-        public string Description
-        {
-            get { return "Borra la placa a un usuario"; }
-        }
+        public string Description => "Borra la placa a un usuario";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {
@@ -33,6 +17,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
                 GameClient TargetClient = null;
                 TargetClient = NeonEnvironment.GetGame().GetClientManager().GetClientByUsername(Params[1]);
                 if (TargetClient != null)
+                {
                     if (!TargetClient.GetHabbo().GetBadgeComponent().HasBadge(Params[2]))
                     {
                         {
@@ -47,6 +32,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
                         Session.SendNotification("La placa se le ha removido al usuario");
 
                     }
+                }
             }
             else
             {

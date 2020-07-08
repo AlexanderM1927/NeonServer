@@ -1,44 +1,43 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Data;
-using System.Threading;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Items;
-using Neon.HabboHotel.Users;
-using Neon.HabboHotel.GameClients;
-
-using Neon.Communication.Packets.Outgoing.Rooms.Engine;
-
-
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Engine;
 using Neon.Communication.Packets.Outgoing.Rooms.Furni;
-
 using Neon.Database.Interfaces;
 using Neon.HabboHotel.Cache;
+using Neon.HabboHotel.GameClients;
+using Neon.HabboHotel.Items;
+using Neon.HabboHotel.Rooms;
+using System;
+using System.Data;
+using System.Threading;
 
 namespace Neon.Communication.Packets.Incoming.Rooms.Furni
 {
-    class OpenGiftEvent : IPacketEvent
+    internal class OpenGiftEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
             if (Session == null || Session.GetHabbo() == null || !Session.GetHabbo().InRoom)
+            {
                 return;
+            }
 
             Room Room = Session.GetHabbo().CurrentRoom;
             if (Room == null)
+            {
                 return;
+            }
 
             int PresentId = Packet.PopInt();
             Item Present = Room.GetRoomItemHandler().GetItem(PresentId);
             if (Present == null)
+            {
                 return;
+            }
 
             if (Present.UserID != Session.GetHabbo().Id)
+            {
                 return;
-            
+            }
+
             DataRow Data = null;
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
@@ -60,9 +59,12 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Furni
                 Session.GetHabbo().GetInventoryComponent().RemoveItem(Present.Id);
                 return;
             }
-            
+
             int PurchaserId = 0;
-            if (Present.GetBaseItem().ItemName == "matic_box") PurchaserId = Session.GetHabbo().Id;
+            if (Present.GetBaseItem().ItemName == "matic_box")
+            {
+                PurchaserId = Session.GetHabbo().Id;
+            }
             else
             {
                 if (!int.TryParse(Present.ExtraData.Split(Convert.ToChar(5))[2], out PurchaserId))
@@ -97,8 +99,7 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Furni
                 return;
             }
 
-            ItemData BaseItem = null;
-            if (!NeonEnvironment.GetGame().GetItemManager().GetItem(Convert.ToInt32(Data["base_id"]), out BaseItem))
+            if (!NeonEnvironment.GetGame().GetItemManager().GetItem(Convert.ToInt32(Data["base_id"]), out ItemData BaseItem))
             {
                 Session.SendNotification("Oops, al parecer este regalo ya no existe!");
                 Room.GetRoomItemHandler().RemoveFurniture(null, Present.Id, false);
@@ -128,8 +129,9 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Furni
             try
             {
                 if (BaseItem == null || Present == null || Room == null || Row == null)
+                {
                     return;
-
+                }
 
                 Thread.Sleep(1500);
 

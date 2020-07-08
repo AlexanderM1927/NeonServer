@@ -1,15 +1,10 @@
-﻿using System;
-using System.Linq;
-using System.Text;
+﻿using Neon.HabboHotel.Rooms.AI;
 using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms.AI;
-using Neon.HabboHotel.GameClients;
-using Neon.HabboHotel.Users.Inventory;
+using System.Linq;
 
 namespace Neon.Communication.Packets.Outgoing.Inventory.Pets
 {
-    class PetInventoryComposer : ServerPacket
+    internal class PetInventoryComposer : ServerPacket
     {
         public PetInventoryComposer(ICollection<Pet> Pets)
             : base(ServerPacketHeader.PetInventoryMessageComposer)

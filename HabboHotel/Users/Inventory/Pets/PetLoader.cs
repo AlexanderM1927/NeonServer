@@ -1,15 +1,13 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Data;
-using System.Collections.Generic;
-using Neon.Database.Interfaces;
+﻿using Neon.Database.Interfaces;
 using Neon.HabboHotel.Rooms.AI;
+using System;
+using System.Collections.Generic;
+using System.Data;
 
 
 namespace Neon.HabboHotel.Users.Inventory.Pets
 {
-    static class PetLoader
+    internal static class PetLoader
     {
         public static List<Pet> GetPetsForUser(int UserId)
         {

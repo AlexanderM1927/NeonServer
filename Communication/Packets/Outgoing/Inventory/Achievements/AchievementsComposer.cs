@@ -1,14 +1,10 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
+﻿using Neon.HabboHotel.Achievements;
 using Neon.HabboHotel.GameClients;
-using Neon.HabboHotel.Achievements;
+using System.Collections.Generic;
 
 namespace Neon.Communication.Packets.Outgoing.Inventory.Achievements
 {
-    class AchievementsComposer : ServerPacket
+    internal class AchievementsComposer : ServerPacket
     {
         public AchievementsComposer(GameClient Session, List<Achievement> Achievements)
             : base(ServerPacketHeader.AchievementsMessageComposer)
@@ -33,14 +29,14 @@ namespace Neon.Communication.Packets.Outgoing.Inventory.Achievements
 
                 base.WriteInteger(0); // Type of reward
                 base.WriteInteger(UserData != null ? UserData.Progress : 0); // Current progress
-                
+
                 base.WriteBoolean(UserData != null ? (UserData.Level >= TotalLevels) : false);// Set 100% completed(??)
                 base.WriteString(Achievement.Category); // Category
                 base.WriteString(string.Empty);
                 base.WriteInteger(TotalLevels); // Total amount of levels 
                 base.WriteInteger(0);
             }
-           base.WriteString("");
+            base.WriteString("");
         }
     }
 }

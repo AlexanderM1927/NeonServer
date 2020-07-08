@@ -1,26 +1,21 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using System.Collections.Concurrent;
-
-using Neon.Communication.Packets.Incoming;
-using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Pathfinding;
-
+﻿using Neon.Communication.Packets.Incoming;
 using Neon.Communication.Packets.Outgoing.Rooms.Engine;
 using Neon.Core;
+using Neon.HabboHotel.Rooms;
+using System;
+using System.Collections.Concurrent;
+using System.Linq;
 
 namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
 {
-    class MatchPositionBox : IWiredItem, IWiredCycle
+    internal class MatchPositionBox : IWiredItem, IWiredCycle
     {
         private int _delay = 0;
         public Room Instance { get; set; }
 
         public Item Item { get; set; }
 
-        public WiredBoxType Type { get { return WiredBoxType.EffectMatchPosition; } }
+        public WiredBoxType Type => WiredBoxType.EffectMatchPosition;
 
         public ConcurrentDictionary<int, Item> SetItems { get; set; }
 
@@ -28,7 +23,7 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
 
         public bool BoolData { get; set; }
 
-        public int Delay { get { return this._delay; } set { this._delay = value; this.TickCount = value + 1; } }
+        public int Delay { get => _delay; set { _delay = value; TickCount = value + 1; } }
 
         public int TickCount { get; set; }
 
@@ -45,15 +40,17 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
         {
             this.Instance = Instance;
             this.Item = Item;
-            this.SetItems = new ConcurrentDictionary<int, Item>();
-            this.TickCount = Delay;
-            this.Requested = false;
+            SetItems = new ConcurrentDictionary<int, Item>();
+            TickCount = Delay;
+            Requested = false;
         }
 
         public void HandleSave(ClientPacket Packet)
         {
-            if (this.SetItems.Count > 0)
-                this.SetItems.Clear();
+            if (SetItems.Count > 0)
+            {
+                SetItems.Clear();
+            }
 
             int Unknown = Packet.PopInt();
             int State = Packet.PopInt();
@@ -66,10 +63,12 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
             {
                 Item SelectedItem = Instance.GetRoomItemHandler().GetItem(Packet.PopInt());
                 if (SelectedItem != null)
+                {
                     SetItems.TryAdd(SelectedItem.Id, SelectedItem);
+                }
             }
 
-            this.StringData = State + ";" + Direction + ";" + Placement;
+            StringData = State + ";" + Direction + ";" + Placement;
 
             int Delay = Packet.PopInt();
             this.Delay = Delay;
@@ -79,37 +78,47 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
         {
             if (!Requested)
             {
-                this.TickCount = this.Delay;
-                this.Requested = true;
+                TickCount = Delay;
+                Requested = true;
             }
             return true;
         }
 
         public bool OnCycle()
         {
-            if (!this.Requested || String.IsNullOrEmpty(this.StringData) || this.StringData == "0;0;0" || this.SetItems.Count == 0)
+            if (!Requested || string.IsNullOrEmpty(StringData) || StringData == "0;0;0" || SetItems.Count == 0)
+            {
                 return false;
+            }
 
-            foreach (Item Item in this.SetItems.Values.ToList())
+            foreach (Item Item in SetItems.Values.ToList())
             {
                 if (Instance.GetRoomItemHandler().GetFloor == null && !Instance.GetRoomItemHandler().GetFloor.Contains(Item))
+                {
                     continue;
+                }
 
-                foreach (string I in this.ItemsData.Split(';'))
+                foreach (string I in ItemsData.Split(';'))
                 {
                     if (string.IsNullOrEmpty(I))
+                    {
                         continue;
+                    }
 
                     int itemId = Convert.ToInt32(I.Split(':')[0]);
                     Item II = Instance.GetRoomItemHandler().GetItem(Convert.ToInt32(itemId));
                     if (II == null)
+                    {
                         continue;
+                    }
 
                     string[] partsString = I.Split(':');
                     try
                     {
                         if (string.IsNullOrEmpty(partsString[0]) || string.IsNullOrEmpty(partsString[1]))
+                        {
                             continue;
+                        }
                     }
                     catch { continue; }
 
@@ -117,61 +126,71 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
 
                     try
                     {
-                        if (int.Parse(this.StringData.Split(';')[0]) == 1)//State
+                        if (int.Parse(StringData.Split(';')[0]) == 1)//State
                         {
                             if (part.Count() >= 4)
-                                this.SetState(II, part[4].ToString());
+                            {
+                                SetState(II, part[4].ToString());
+                            }
                             else
-                                this.SetState(II, "1");
+                            {
+                                SetState(II, "1");
+                            }
                         }
                     }
                     catch (Exception e) { Logging.LogWiredException(e.ToString()); }
 
                     try
                     {
-                        if (int.Parse(this.StringData.Split(';')[1]) == 1)//Direction
-                            this.SetRotation(II, Convert.ToInt32(part[3]));
+                        if (int.Parse(StringData.Split(';')[1]) == 1)//Direction
+                        {
+                            SetRotation(II, Convert.ToInt32(part[3]));
+                        }
                     }
                     catch (Exception e) { Logging.LogWiredException(e.ToString()); }
 
                     try
                     {
-                        if (int.Parse(this.StringData.Split(';')[2]) == 1)//Position
-                            this.SetPosition(II, Convert.ToInt32(part[0].ToString()), Convert.ToInt32(part[1].ToString()), Convert.ToDouble(part[2].ToString()), Convert.ToInt32(part[3].ToString()));
+                        if (int.Parse(StringData.Split(';')[2]) == 1)//Position
+                        {
+                            SetPosition(II, Convert.ToInt32(part[0].ToString()), Convert.ToInt32(part[1].ToString()), Convert.ToDouble(part[2].ToString()), Convert.ToInt32(part[3].ToString()));
+                        }
                     }
                     catch (Exception e) { Logging.LogWiredException(e.ToString()); }
                 }
             }
-            this.Requested = false;
+            Requested = false;
             return true;
         }
 
         private void SetState(Item Item, string Extradata)
         {
             if (Item.ExtraData == Extradata)
+            {
                 return;
+            }
 
             if (Item.GetBaseItem().InteractionType == InteractionType.DICE)
+            {
                 return;
+            }
+
+            Item.ExtraData = Extradata;
+            Item.UpdateState(false, true);
 
             if (Item.GetBaseItem().InteractionType == InteractionType.GATE)
             {
-                if (Item.GetRoom().GetGameMap().SquareHasUsers(Item.GetX, Item.GetY))
-                {
-                    return;
-                }
+                Item.RegenerateBlock(Extradata.ToString(), Item.GetRoom().GetGameMap());
+                Item.GetRoom().GetGameMap().UpdateMapForItem(Item);
             }
-            
-                Item.ExtraData = Extradata;
-                Item.UpdateState(false, true);
-            
-                
         }
 
         private void SetRotation(Item Item, int Rotation)
         {
             if (Item.Rotation == Rotation)
+            {
                 return;
+            }
 
             Item.Rotation = Rotation;
             Item.UpdateState(false, true);

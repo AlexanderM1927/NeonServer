@@ -1,11 +1,9 @@
-﻿using System;
-using System.Drawing;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Engine;
 using Neon.HabboHotel.GameClients;
 using Neon.HabboHotel.Pathfinding;
 using Neon.HabboHotel.Rooms;
-using Neon.Communication.Packets.Incoming;
-
-using Neon.Communication.Packets.Outgoing.Rooms.Engine;
+using System;
+using System.Drawing;
 
 namespace Neon.HabboHotel.Items.Interactor
 {
@@ -22,7 +20,10 @@ namespace Neon.HabboHotel.Items.Interactor
         public void OnTrigger(GameClient Session, Item Item, int Request, bool HasRights)
         {
             if (Session == null)
+            {
                 return;
+            }
+
             RoomUser User = Item.GetRoom().GetRoomUserManager().GetRoomUserByHabbo(Session.GetHabbo().Id);
             if (User == null)
             {
@@ -32,13 +33,13 @@ namespace Neon.HabboHotel.Items.Interactor
             if (!((Math.Abs((User.X - Item.GetX)) >= 2) || (Math.Abs((User.Y - Item.GetY)) >= 2)))
             {
                 User.SetRot(Rotation.Calculate(User.X, User.Y, Item.GetX, Item.GetY), false);
-                if (User.RotBody%2 != 0)
+                if (User.RotBody % 2 != 0)
                 {
                     User.MoveTo(Item.GetX + 1, Item.GetY);
                     return;
                 }
                 Room Room = Item.GetRoom();
-                var NewPoint = new Point(0, 0);
+                Point NewPoint = new Point(0, 0);
                 if (User.RotBody == 4)
                 {
                     NewPoint = new Point(Item.GetX, Item.GetY + 1);
@@ -60,10 +61,10 @@ namespace Neon.HabboHotel.Items.Interactor
                 }
 
                 if (Room.GetGameMap().ValidTile(NewPoint.X, NewPoint.Y) &&
-                    Room.GetGameMap().itemCanBePlacedHere(NewPoint.X, NewPoint.Y) &&
+                    Room.GetGameMap().ItemCanBePlacedHere(NewPoint.X, NewPoint.Y) &&
                     Room.GetGameMap().CanRollItemHere(NewPoint.X, NewPoint.Y))
                 {
-                    Double NewZ = Item.GetRoom().GetGameMap().SqAbsoluteHeight(NewPoint.X, NewPoint.Y);
+                    double NewZ = Item.GetRoom().GetGameMap().SqAbsoluteHeight(NewPoint.X, NewPoint.Y);
 
                     /*var mMessage = new ServerMessage();
                     mMessage.Init(Outgoing.ObjectOnRoller); // Cf

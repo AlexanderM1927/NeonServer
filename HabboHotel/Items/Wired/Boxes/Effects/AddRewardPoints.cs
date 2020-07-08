@@ -10,29 +10,29 @@ using System.Collections.Concurrent;
 
 namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
 {
-    class AddRewardPoints : IWiredItem, IWiredCycle
+    internal class AddRewardPoints : IWiredItem, IWiredCycle
     {
         public Room Instance { get; set; }
         public Item Item { get; set; }
-        public WiredBoxType Type { get { return WiredBoxType.EffectAddRewardPoints; } }
+        public WiredBoxType Type => WiredBoxType.EffectAddRewardPoints;
         public ConcurrentDictionary<int, Item> SetItems { get; set; }
         public string StringData { get; set; }
         public bool BoolData { get; set; }
-        public int Delay { get { return this._delay; } set { this._delay = value; this.TickCount = value + 1; } }
+        public int Delay { get => _delay; set { _delay = value; TickCount = value + 1; } }
         public int TickCount { get; set; }
         public string ItemsData { get; set; }
 
-        private Queue _queue;
+        private readonly Queue _queue;
         private int _delay = 0;
 
         public AddRewardPoints(Room Instance, Item Item)
         {
             this.Instance = Instance;
             this.Item = Item;
-            this.SetItems = new ConcurrentDictionary<int, Item>();
+            SetItems = new ConcurrentDictionary<int, Item>();
 
-            this._queue = new Queue();
-            this.TickCount = Delay;
+            _queue = new Queue();
+            TickCount = Delay;
         }
 
         public void HandleSave(ClientPacket Packet)
@@ -45,7 +45,7 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
             int Delay = Packet.PopInt();
 
             this.Delay = Delay;
-            this.StringData = Convert.ToString(Score + ";" + times);
+            StringData = Convert.ToString(Score + ";" + times);
 
             Habbo Owner = NeonEnvironment.GetHabboById(Item.UserID);
 
@@ -57,7 +57,7 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
 
             if (Owner == null || Owner.Rank < 6)
             {
-                this.StringData = Convert.ToString(0 + ";" + times);
+                StringData = Convert.ToString(0 + ";" + times);
                 Owner.GetClient().SendWhisper("No sé quién te ha dado esto pero no deberías estar jugando con juguetes de mayores.", 34);
                 NeonEnvironment.GetGame().GetClientManager().StaffAlert1(new RoomInviteComposer(int.MinValue, Owner.Username + " está utilizando sin permiso un Wired de Puntos de Recompensa."));
             }
@@ -69,8 +69,8 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
         {
             if (_queue.Count == 0)
             {
-                this._queue.Clear();
-                this.TickCount = Delay;
+                _queue.Clear();
+                TickCount = Delay;
                 return true;
             }
 
@@ -78,26 +78,32 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
             {
                 Habbo Player = (Habbo)_queue.Dequeue();
                 if (Player == null || Player.CurrentRoom != Instance)
+                {
                     continue;
+                }
 
-                this.TeleportUser(Player);
+                TeleportUser(Player);
             }
 
-            this.TickCount = Delay;
+            TickCount = Delay;
             return true;
         }
 
         public bool Execute(params object[] Params)
         {
             if (Params == null || Params.Length == 0)
+            {
                 return false;
+            }
 
             Habbo Player = (Habbo)Params[0];
 
             if (Player == null)
+            {
                 return false;
+            }
 
-            this._queue.Enqueue(Player);
+            _queue.Enqueue(Player);
             return true;
         }
 
@@ -105,7 +111,9 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
         {
             RoomUser User = Player.CurrentRoom.GetRoomUserManager().GetRoomUserByHabbo(Player.Id);
             if (User == null)
+            {
                 return;
+            }
 
             Room Instance = Player.CurrentRoom;
 

@@ -1,14 +1,10 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.Database.Interfaces;
+﻿using Neon.Database.Interfaces;
+using System;
 
 
 namespace Neon.HabboHotel.Users.Effects
 {
-    static class AvatarEffectFactory
+    internal static class AvatarEffectFactory
     {
         /// <summary>
         /// Creates a new AvatarEffect with the specified details.

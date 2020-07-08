@@ -1,11 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-namespace Neon.Communication.Packets.Outgoing.Help
+﻿namespace Neon.Communication.Packets.Outgoing.Help
 {
-    class SendBullyReportComposer : ServerPacket
+    internal class SendBullyReportComposer : ServerPacket
     {
         public SendBullyReportComposer()
             : base(ServerPacketHeader.SendBullyReportMessageComposer)

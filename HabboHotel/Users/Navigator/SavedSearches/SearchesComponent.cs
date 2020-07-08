@@ -1,27 +1,27 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Data;
-using System.Collections.Generic;
+﻿using Neon.Database.Interfaces;
+using System;
 using System.Collections.Concurrent;
-using Neon.Database.Interfaces;
+using System.Collections.Generic;
+using System.Data;
 
 
 namespace Neon.HabboHotel.Users.Navigator.SavedSearches
 {
     public class SearchesComponent
     {
-        private ConcurrentDictionary<int, SavedSearch> _savedSearches;
+        private readonly ConcurrentDictionary<int, SavedSearch> _savedSearches;
 
         public SearchesComponent()
         {
-            this._savedSearches = new ConcurrentDictionary<int, SavedSearch>();
+            _savedSearches = new ConcurrentDictionary<int, SavedSearch>();
         }
 
         public bool Init(Habbo Player)
         {
-            if (this._savedSearches.Count > 0)
-                this._savedSearches.Clear();
+            if (_savedSearches.Count > 0)
+            {
+                _savedSearches.Clear();
+            }
 
             DataTable GetSearches = null;
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
@@ -34,26 +34,23 @@ namespace Neon.HabboHotel.Users.Navigator.SavedSearches
                 {
                     foreach (DataRow Row in GetSearches.Rows)
                     {
-                        this._savedSearches.TryAdd(Convert.ToInt32(Row["id"]), new SavedSearch(Convert.ToInt32(Row["id"]), Convert.ToString(Row["filter"]), Convert.ToString(Row["search_code"])));
+                        _savedSearches.TryAdd(Convert.ToInt32(Row["id"]), new SavedSearch(Convert.ToInt32(Row["id"]), Convert.ToString(Row["filter"]), Convert.ToString(Row["search_code"])));
                     }
                 }
             }
             return true;
         }
 
-        public ICollection<SavedSearch> Searches
-        {
-            get { return this._savedSearches.Values; }
-        }
+        public ICollection<SavedSearch> Searches => _savedSearches.Values;
 
         public bool TryAdd(int Id, SavedSearch Search)
         {
-            return this._savedSearches.TryAdd(Id, Search);
+            return _savedSearches.TryAdd(Id, Search);
         }
 
         public bool TryRemove(int Id, out SavedSearch Removed)
         {
-            return this._savedSearches.TryRemove(Id, out Removed);
+            return _savedSearches.TryRemove(Id, out Removed);
         }
     }
 }

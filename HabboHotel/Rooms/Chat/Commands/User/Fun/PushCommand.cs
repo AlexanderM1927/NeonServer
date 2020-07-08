@@ -1,31 +1,16 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Pathfinding;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Chat;
 using Neon.HabboHotel.GameClients;
-using Neon.Communication.Packets.Outgoing.Rooms.Chat;
+using System;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.User.Fun
 {
-    class PushCommand : IChatCommand
+    internal class PushCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_push"; }
-        }
+        public string PermissionRequired => "command_push";
 
-        public string Parameters
-        {
-            get { return "%target%"; }
-        }
+        public string Parameters => "%target%";
 
-        public string Description
-        {
-            get { return "Empujar a alguien desde tu posición."; }
-        }
+        public string Description => "Empujar a alguien desde tu posición.";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {
@@ -69,7 +54,9 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User.Fun
 
             RoomUser ThisUser = Room.GetRoomUserManager().GetRoomUserByHabbo(Session.GetHabbo().Id);
             if (ThisUser == null)
+            {
                 return;
+            }
 
             if (!((Math.Abs(TargetUser.X - ThisUser.X) >= 2) || (Math.Abs(TargetUser.Y - ThisUser.Y) >= 2)))
             {

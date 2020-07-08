@@ -1,31 +1,31 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms;
-using Neon.Communication.Packets.Outgoing.Rooms.Engine;
-using Neon.Communication.Packets.Outgoing.Rooms.Settings;
+﻿
 using Neon.Communication.Packets.Outgoing.Rooms.Permissions;
+using Neon.Communication.Packets.Outgoing.Rooms.Settings;
 using Neon.Database.Interfaces;
+using Neon.HabboHotel.Rooms;
 
 
 namespace Neon.Communication.Packets.Incoming.Rooms.Action
 {
-    class RemoveRightsEvent : IPacketEvent
+    internal class RemoveRightsEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
             if (!Session.GetHabbo().InRoom)
+            {
                 return;
+            }
 
-            Room Room;
 
-            if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Session.GetHabbo().CurrentRoomId, out Room))
+            if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Session.GetHabbo().CurrentRoomId, out Room Room))
+            {
                 return;
+            }
 
             if (!Room.CheckRights(Session, true))
+            {
                 return;
+            }
 
             int Amount = Packet.PopInt();
             for (int i = 0; (i < Amount && i <= 100); i++)
@@ -52,7 +52,9 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Action
                     }
 
                     if (Room.UsersWithRights.Contains(UserId))
+                    {
                         Room.UsersWithRights.Remove(UserId);
+                    }
 
                     Session.SendMessage(new FlatControllerRemovedComposer(Room, UserId));
                 }

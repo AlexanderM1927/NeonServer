@@ -1,38 +1,25 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms;
-using Neon.Communication.Packets.Outgoing.Rooms.Engine;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Engine;
 using Neon.Database.Interfaces;
 
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.User.Fun
 {
-    class FacelessCommand :IChatCommand
+    internal class FacelessCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_faceless"; }
-        }
+        public string PermissionRequired => "command_faceless";
 
-        public string Parameters
-        {
-            get { return ""; }
-        }
+        public string Parameters => "";
 
-        public string Description
-        {
-            get { return "Eliminar la cara de tu personaje."; }
-        }
+        public string Description => "Eliminar la cara de tu personaje.";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {
-    
+
             RoomUser User = Room.GetRoomUserManager().GetRoomUserByHabbo(Session.GetHabbo().Id);
             if (User == null || User.GetClient() == null)
+            {
                 return;
+            }
 
             string[] headParts;
             string[] figureParts = Session.GetHabbo().Look.Split('.');
@@ -42,9 +29,13 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User.Fun
                 {
                     headParts = Part.Split('-');
                     if (!headParts[1].Equals("99999"))
+                    {
                         headParts[1] = "99999";
+                    }
                     else
+                    {
                         return;
+                    }
 
                     Session.GetHabbo().Look = Session.GetHabbo().Look.Replace(Part, "hd-" + headParts[1] + "-" + headParts[2]);
                     break;

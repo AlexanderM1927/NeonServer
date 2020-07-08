@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
+﻿using Neon.Communication.Packets.Outgoing;
 using Neon.Database.Interfaces;
-using Neon;
-using Neon.HabboHotel.Items;
-using Neon.Communication.Packets.Outgoing;
+using System.Collections.Generic;
 
 namespace Neon.HabboHotel.Catalog
 {
@@ -17,10 +13,12 @@ namespace Neon.HabboHotel.Catalog
             TargetedOffer = null;
 
             dbClient.SetQuery("SELECT * FROM targeted_offers WHERE active = 'true' LIMIT 1;");
-            var row = dbClient.getRow();
+            System.Data.DataRow row = dbClient.getRow();
 
             if (row == null)
+            {
                 return;
+            }
 
             TargetedOffer = new TargetedOffers((int)row["id"], (int)row["limit"], (int)row["time"], row["open"].ToString() == "show", row["active"].ToString() == "true", (string)row["code"],
                 (string)row["title"], (string)row["description"], (string)row["image"], (string)row["icon"],
@@ -56,10 +54,10 @@ namespace Neon.HabboHotel.Catalog
             Expire = expire;
 
             Products = new List<TargetedItems>();
-            foreach (var item in Items)
+            foreach (string item in Items)
             {
-                var itemType = item.Split(',')[0];
-                var itemProduct = item.Split(',')[1];
+                string itemType = item.Split(',')[0];
+                string itemProduct = item.Split(',')[1];
                 Products.Add(new TargetedItems(Id, itemType, itemProduct));
             }
         }
@@ -81,7 +79,7 @@ namespace Neon.HabboHotel.Catalog
 
         internal ServerPacket Serialize()
         {
-            var message = new ServerPacket(ServerPacketHeader.openBoxTargetedOffert);
+            ServerPacket message = new ServerPacket(ServerPacketHeader.openBoxTargetedOffert);
             message.WriteInteger(Open ? 4 : 1);
             message.WriteInteger(Id);
             message.WriteString(Code);
@@ -97,7 +95,11 @@ namespace Neon.HabboHotel.Catalog
             message.WriteString(Icon);
             message.WriteInteger(0);
             message.WriteInteger(Products.Count);
-            foreach (var product in Products) message.WriteString(string.Empty);
+            foreach (TargetedItems product in Products)
+            {
+                message.WriteString(string.Empty);
+            }
+
             return message;
         }
     }

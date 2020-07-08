@@ -1,20 +1,16 @@
-﻿using System;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using System.Collections.Concurrent;
-
+﻿using Neon.Database.Interfaces;
 using Neon.HabboHotel.Items;
 using Neon.HabboHotel.Items.Wired;
-using Neon.HabboHotel.Items.Wired.Boxes.Triggers;
-
-using Neon.HabboHotel.Items.Wired.Boxes.Effects;
-using Neon.HabboHotel.Items.Wired.Boxes.Conditions;
 using Neon.HabboHotel.Items.Wired.Boxes.Add_ons;
-
-using Neon.Database.Interfaces;
+using Neon.HabboHotel.Items.Wired.Boxes.Conditions;
+using Neon.HabboHotel.Items.Wired.Boxes.Effects;
+using Neon.HabboHotel.Items.Wired.Boxes.Triggers;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Data;
 using System.Drawing;
+using System.Linq;
 
 namespace Neon.HabboHotel.Rooms.Instance
 {
@@ -25,8 +21,8 @@ namespace Neon.HabboHotel.Rooms.Instance
 
         public WiredComponent(Room Instance)//, RoomItem Items)
         {
-            this._room = Instance;
-            this._wiredItems = new ConcurrentDictionary<int, IWiredItem>();
+            _room = Instance;
+            _wiredItems = new ConcurrentDictionary<int, IWiredItem>();
         }
 
         public void OnCycle()
@@ -37,7 +33,9 @@ namespace Neon.HabboHotel.Rooms.Instance
                 Item SelectedItem = _room.GetRoomItemHandler().GetItem(Item.Value.Item.Id);
 
                 if (SelectedItem == null)
-                    this.TryRemove(Item.Key);
+                {
+                    TryRemove(Item.Key);
+                }
 
                 if (Item.Value is IWiredCycle)
                 {
@@ -73,18 +71,32 @@ namespace Neon.HabboHotel.Rooms.Instance
 
                 if (Row != null)
                 {
-                    if (String.IsNullOrEmpty(Convert.ToString(Row["string"])))
+                    if (string.IsNullOrEmpty(Convert.ToString(Row["string"])))
                     {
                         if (NewBox.Type == WiredBoxType.ConditionMatchStateAndPosition || NewBox.Type == WiredBoxType.ConditionDontMatchStateAndPosition)
+                        {
                             NewBox.StringData = "0;0;0";
+                        }
                         else if (NewBox.Type == WiredBoxType.ConditionUserCountInRoom || NewBox.Type == WiredBoxType.ConditionUserCountDoesntInRoom)
+                        {
                             NewBox.StringData = "0;0";
+                        }
                         else if (NewBox.Type == WiredBoxType.ConditionFurniHasNoFurni)
+                        {
                             NewBox.StringData = "0";
+                        }
                         else if (NewBox.Type == WiredBoxType.EffectMatchPosition)
+                        {
                             NewBox.StringData = "0;0;0";
-                        else if (NewBox.Type == WiredBoxType.EffectMoveAndRotate)
+                        }
+                        else if (NewBox.Type == WiredBoxType.EffectMoveToDir)
+                        {
                             NewBox.StringData = "0;0";
+                        }
+                        else if (NewBox.Type == WiredBoxType.EffectMoveAndRotate)
+                        {
+                            NewBox.StringData = "0;0";
+                        }
                     }
 
                     NewBox.StringData = Convert.ToString(Row["string"]);
@@ -99,17 +111,20 @@ namespace Neon.HabboHotel.Rooms.Instance
 
                     foreach (string str in Convert.ToString(Row["items"]).Split(';'))
                     {
-                        int Id = 0;
                         string sId = "0";
 
                         if (str.Contains(':'))
+                        {
                             sId = str.Split(':')[0];
+                        }
 
-                        if (int.TryParse(str, out Id) || int.TryParse(sId, out Id))
+                        if (int.TryParse(str, out int Id) || int.TryParse(sId, out Id))
                         {
                             Item SelectedItem = _room.GetRoomItemHandler().GetItem(Convert.ToInt32(Id));
                             if (SelectedItem == null)
+                            {
                                 continue;
+                            }
 
                             NewBox.SetItems.TryAdd(SelectedItem.Id, SelectedItem);
                         }
@@ -120,11 +135,11 @@ namespace Neon.HabboHotel.Rooms.Instance
                     NewBox.ItemsData = "";
                     NewBox.StringData = "";
                     NewBox.BoolData = false;
-                    this.SaveBox(NewBox);
+                    SaveBox(NewBox);
                 }
             }
 
-            if (!this.AddBox(NewBox))
+            if (!AddBox(NewBox))
             {
                 // ummm
             }
@@ -159,6 +174,8 @@ namespace Neon.HabboHotel.Rooms.Instance
                     return new UserFurniCollision(_room, Item);
                 case WiredBoxType.TriggerUserSaysCommand:
                     return new UserSaysCommandBox(_room, Item);
+                case WiredBoxType.TriggerScoreAchieved:
+                    return new ScoreAchievedBox(_room, Item);
 
                 case WiredBoxType.EffectShowMessage:
                     return new ShowMessageBox(_room, Item);
@@ -195,7 +212,7 @@ namespace Neon.HabboHotel.Rooms.Instance
                     return new RemoveActorFromTeamBox(_room, Item);
 
                 case WiredBoxType.EffectMoveToDir:
-                    return new MoveToDir(_room, Item);
+                    return new MoveToDirBox(_room, Item);
                 /*
                 
                 case WiredBoxType.EffectMoveFurniToNearestUser:
@@ -343,6 +360,8 @@ namespace Neon.HabboHotel.Rooms.Instance
                     return new GiveUserCreditsBox(_room, Item);
                 case WiredBoxType.EffectSendYouTubeVideo:
                     return new SendYouTubeVideoBox(_room, Item);
+                case WiredBoxType.EffectShowAlertPHBox:
+                    return new ShowAlertPHBox(_room, Item);
             }
             return null;
         }
@@ -365,7 +384,9 @@ namespace Neon.HabboHotel.Rooms.Instance
         public bool OtherBoxHasItem(IWiredItem Box, int ItemId)
         {
             if (Box == null)
+            {
                 return false;
+            }
 
             ICollection<IWiredItem> Items = GetEffects(Box).Where(x => x.Item.Id != Box.Item.Id).ToList();
 
@@ -373,16 +394,24 @@ namespace Neon.HabboHotel.Rooms.Instance
             {
                 foreach (IWiredItem Item in Items)
                 {
-                    if (Item.Type != WiredBoxType.EffectMoveAndRotate && Item.Type != WiredBoxType.EffectMoveFurniFromNearestUser && Item.Type != WiredBoxType.EffectMoveFurniToNearestUser)
+                    if (Item.Type != WiredBoxType.EffectMoveToDir && Item.Type != WiredBoxType.EffectMoveAndRotate && Item.Type != WiredBoxType.EffectMoveFurniFromNearestUser && Item.Type != WiredBoxType.EffectMoveFurniToNearestUser)
+                    {
                         continue;
+                    }
 
                     if (Item.SetItems == null || Item.SetItems.Count == 0)
+                    {
                         continue;
+                    }
 
                     if (Item.SetItems.ContainsKey(ItemId))
+                    {
                         return true;
+                    }
                     else
+                    {
                         continue;
+                    }
                 }
             }
 
@@ -398,15 +427,19 @@ namespace Neon.HabboHotel.Rooms.Instance
                 if (Type == WiredBoxType.TriggerUserSays)
                 {
                     List<IWiredItem> RanBoxes = new List<IWiredItem>();
-                    foreach (IWiredItem Box in this._wiredItems.Values.ToList())
+                    foreach (IWiredItem Box in _wiredItems.Values.ToList())
                     {
                         if (Box == null)
+                        {
                             continue;
+                        }
 
                         if (Box.Type == WiredBoxType.TriggerUserSays)
                         {
                             if (!RanBoxes.Contains(Box))
+                            {
                                 RanBoxes.Add(Box);
+                            }
                         }
                     }
 
@@ -414,7 +447,9 @@ namespace Neon.HabboHotel.Rooms.Instance
                     foreach (IWiredItem Box in RanBoxes.ToList())
                     {
                         if (Box == null)
+                        {
                             continue;
+                        }
 
                         if (Message.Contains(" " + Box.StringData) || Message.Contains(Box.StringData + " ") || Message == Box.StringData)
                         {
@@ -428,7 +463,9 @@ namespace Neon.HabboHotel.Rooms.Instance
                     foreach (IWiredItem Box in _wiredItems.Values.ToList())
                     {
                         if (Box == null)
+                        {
                             continue;
+                        }
 
                         if (Box.Type == Type && IsTrigger(Box.Item))
                         {
@@ -451,7 +488,7 @@ namespace Neon.HabboHotel.Rooms.Instance
             List<IWiredItem> Items = new List<IWiredItem>();
             foreach (IWiredItem I in _wiredItems.Values)
             {
-                if (this.IsTrigger(I.Item) && I.Item.GetX == Item.Item.GetX && I.Item.GetY == Item.Item.GetY)
+                if (IsTrigger(I.Item) && I.Item.GetX == Item.Item.GetX && I.Item.GetY == Item.Item.GetY)
                 {
                     Items.Add(I);
                 }
@@ -466,7 +503,7 @@ namespace Neon.HabboHotel.Rooms.Instance
 
             foreach (IWiredItem I in _wiredItems.Values)
             {
-                if (this.IsEffect(I.Item) && I.Item.GetX == Item.Item.GetX && I.Item.GetY == Item.Item.GetY)
+                if (IsEffect(I.Item) && I.Item.GetX == Item.Item.GetX && I.Item.GetY == Item.Item.GetY)
                 {
                     Items.Add(I);
                 }
@@ -480,10 +517,12 @@ namespace Neon.HabboHotel.Rooms.Instance
             return Effects.OrderBy(x => Guid.NewGuid()).FirstOrDefault();
         }
 
-        public bool onUserFurniCollision(Room Instance, Item Item)
+        public bool OnUserFurniCollision(Room Instance, Item Item)
         {
             if (Instance == null || Item == null)
+            {
                 return false;
+            }
 
             foreach (Point Point in Item.GetSides())
             {
@@ -495,16 +534,22 @@ namespace Neon.HabboHotel.Rooms.Instance
                         foreach (RoomUser User in Users.ToList())
                         {
                             if (User == null)
+                            {
                                 continue;
+                            }
 
                             Item.UserFurniCollision(User);
                         }
                     }
                     else
+                    {
                         continue;
+                    }
                 }
                 else
+                {
                     continue;
+                }
             }
 
             return true;
@@ -516,7 +561,7 @@ namespace Neon.HabboHotel.Rooms.Instance
 
             foreach (IWiredItem I in _wiredItems.Values)
             {
-                if (this.IsCondition(I.Item) && I.Item.GetX == Item.Item.GetX && I.Item.GetY == Item.Item.GetY)
+                if (IsCondition(I.Item) && I.Item.GetX == Item.Item.GetX && I.Item.GetY == Item.Item.GetY)
                 {
                     Items.Add(I);
                 }
@@ -528,7 +573,9 @@ namespace Neon.HabboHotel.Rooms.Instance
         public void OnEvent(Item Item)
         {
             if (Item.ExtraData == "1")
+            {
                 return;
+            }
 
             Item.ExtraData = "1";
             Item.UpdateState(false, true);
@@ -548,16 +595,24 @@ namespace Neon.HabboHotel.Rooms.Instance
             {
                 Item SelectedItem = _room.GetRoomItemHandler().GetItem(Convert.ToInt32(I.Id));
                 if (SelectedItem == null)
+                {
                     continue;
+                }
 
                 if (Item.Type == WiredBoxType.EffectMatchPosition || Item.Type == WiredBoxType.ConditionMatchStateAndPosition || Item.Type == WiredBoxType.ConditionDontMatchStateAndPosition)
+                {
                     Items += I.Id + ":" + I.GetX + "," + I.GetY + "," + I.GetZ + "," + I.Rotation + "," + I.ExtraData + ";";
+                }
                 else
+                {
                     Items += I.Id + ";";
+                }
             }
 
             if (Item.Type == WiredBoxType.EffectMatchPosition || Item.Type == WiredBoxType.ConditionMatchStateAndPosition || Item.Type == WiredBoxType.ConditionDontMatchStateAndPosition)
+            {
                 Item.ItemsData = Items;
+            }
 
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
@@ -573,23 +628,22 @@ namespace Neon.HabboHotel.Rooms.Instance
 
         public bool AddBox(IWiredItem Item)
         {
-            return this._wiredItems.TryAdd(Item.Item.Id, Item);
+            return _wiredItems.TryAdd(Item.Item.Id, Item);
         }
 
         public bool TryRemove(int ItemId)
         {
-            IWiredItem Item = null;
-            return this._wiredItems.TryRemove(ItemId, out Item);
+            return _wiredItems.TryRemove(ItemId, out _);
         }
 
         public bool TryGet(int id, out IWiredItem Item)
         {
-            return this._wiredItems.TryGetValue(id, out Item);
+            return _wiredItems.TryGetValue(id, out Item);
         }
 
         public void Cleanup()
         {
-            this._wiredItems.Clear();
+            _wiredItems.Clear();
         }
     }
 }

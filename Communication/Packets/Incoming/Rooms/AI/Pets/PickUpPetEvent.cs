@@ -1,51 +1,56 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms.AI;
-using Neon.HabboHotel.Rooms;
+﻿
 using Neon.Communication.Packets.Outgoing.Inventory.Pets;
-
-using System.Drawing;
-using Neon.HabboHotel.GameClients;
 using Neon.Communication.Packets.Outgoing.Rooms.Engine;
 using Neon.Database.Interfaces;
+using Neon.HabboHotel.GameClients;
+using Neon.HabboHotel.Rooms;
+using Neon.HabboHotel.Rooms.AI;
+using System.Drawing;
 
 namespace Neon.Communication.Packets.Incoming.Rooms.AI.Pets
 {
-    class PickUpPetEvent : IPacketEvent
+    internal class PickUpPetEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
             if (!Session.GetHabbo().InRoom)
+            {
                 return;
+            }
 
             if (Session == null || Session.GetHabbo() == null || Session.GetHabbo().GetInventoryComponent() == null)
+            {
                 return;
+            }
 
-            Room Room;
 
-            if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Session.GetHabbo().CurrentRoomId, out Room))
+            if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Session.GetHabbo().CurrentRoomId, out Room Room))
+            {
                 return;
+            }
 
             int PetId = Packet.PopInt();
 
-            RoomUser Pet = null;
-            if (!Room.GetRoomUserManager().TryGetPet(PetId, out Pet))
+            if (!Room.GetRoomUserManager().TryGetPet(PetId, out RoomUser Pet))
             {
                 //Check kick rights, just because it seems most appropriate. 
                 if ((!Room.CheckRights(Session) && Room.WhoCanKick != 2 && Room.Group == null) || (Room.Group != null && !Room.CheckRights(Session, false, true)))
+                {
                     return;
+                }
 
                 //Okay so, we've established we have no pets in this room by this virtual Id, let us check out users, maybe they're creeping as a pet?! 
                 RoomUser TargetUser = Session.GetHabbo().CurrentRoom.GetRoomUserManager().GetRoomUserByHabbo(PetId);
                 if (TargetUser == null)
+                {
                     return;
+                }
 
                 //Check some values first, please! 
                 if (TargetUser.GetClient() == null || TargetUser.GetClient().GetHabbo() == null)
+                {
                     return;
+                }
 
                 //Update the targets PetId. 
                 TargetUser.GetClient().GetHabbo().PetId = 0;
@@ -74,7 +79,9 @@ namespace Neon.Communication.Packets.Incoming.Rooms.AI.Pets
                     UserRiding.MoveTo(new Point(UserRiding.X + 1, UserRiding.Y + 1));
                 }
                 else
+                {
                     Pet.RidingHorse = false;
+                }
             }
 
             Pet.PetData.RoomId = 0;

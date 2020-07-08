@@ -1,35 +1,22 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms;
-using Neon.Communication.Packets.Outgoing.Rooms.Avatar;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Avatar;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.User.Fun
 {
-    class DanceCommand :IChatCommand
+    internal class DanceCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_dance"; }
-        }
+        public string PermissionRequired => "command_dance";
 
-        public string Parameters
-        {
-            get { return "%DanceId%"; }
-        }
+        public string Parameters => "%DanceId%";
 
-        public string Description
-        {
-            get { return "Activar un baile en tu personaje, de 0 a 4."; }
-        }
+        public string Description => "Activar un baile en tu personaje, de 0 a 4.";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {
             RoomUser ThisUser = Session.GetHabbo().CurrentRoom.GetRoomUserManager().GetRoomUserByHabbo(Session.GetHabbo().Id);
             if (ThisUser == null)
+            {
                 return;
+            }
 
             if (Params.Length == 1)
             {
@@ -37,8 +24,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User.Fun
                 return;
             }
 
-            int DanceId;
-            if (int.TryParse(Params[1], out DanceId))
+            if (int.TryParse(Params[1], out int DanceId))
             {
                 if (DanceId > 4 || DanceId < 0)
                 {
@@ -49,7 +35,9 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User.Fun
                 Session.GetHabbo().CurrentRoom.SendMessage(new DanceComposer(ThisUser, DanceId));
             }
             else
+            {
                 Session.SendWhisper("Please enter a valid dance ID.");
+            }
         }
     }
 }

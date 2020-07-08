@@ -61,7 +61,10 @@ namespace Neon.HabboHotel.Items.Interactor
         public void OnTrigger(GameClient Session, Item Item, int Request, bool HasRights)
         {
             if (Item == null || Item.GetRoom() == null || Session == null || Session.GetHabbo() == null)
+            {
                 return;
+            }
+
             RoomUser User = Item.GetRoom().GetRoomUserManager().GetRoomUserByHabbo(Session.GetHabbo().Id);
 
             if (User == null)

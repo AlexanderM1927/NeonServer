@@ -1,10 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-
-namespace Neon.HabboHotel.Badges
+﻿namespace Neon.HabboHotel.Badges
 {
     public class BadgeDefinition
     {
@@ -13,20 +7,20 @@ namespace Neon.HabboHotel.Badges
 
         public BadgeDefinition(string Code, string RequiredRight)
         {
-            this._code = Code;
-            this._requiredRight = RequiredRight;
+            _code = Code;
+            _requiredRight = RequiredRight;
         }
 
         public string Code
         {
-            get { return this._code; }
-            set { this._code = value; }
+            get => _code;
+            set => _code = value;
         }
 
         public string RequiredRight
         {
-            get { return this._requiredRight; }
-            set { this._requiredRight = value; }
+            get => _requiredRight;
+            set => _requiredRight = value;
         }
     }
 }

@@ -1,24 +1,15 @@
-﻿using Neon.HabboHotel.GameClients;
-using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
+using Neon.HabboHotel.GameClients;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.User
 {
-    class ProgressAchievementCommand : IChatCommand
+    internal class ProgressAchievementCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_addtags"; }
-        }
+        public string PermissionRequired => "command_addtags";
 
-        public string Parameters
-        {
-            get { return "<usuario> <achievement> <puntos>"; }
-        }
+        public string Parameters => "<usuario> <achievement> <puntos>";
 
-        public string Description
-        {
-            get { return "Progresar la recompensa de un usuario."; }
-        }
+        public string Description => "Progresar la recompensa de un usuario.";
 
         public void Execute(GameClient Session, Room Room, string[] Params)
         {

@@ -1,32 +1,31 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
+﻿using Neon.HabboHotel.Navigator;
 using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Navigator;
-using Neon.Database.Interfaces;
 
 namespace Neon.Communication.Packets.Incoming.Rooms.Settings
 {
-    class SaveEnforcedCategorySettingsEvent : IPacketEvent
+    internal class SaveEnforcedCategorySettingsEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
-            Room Room = null;
-            if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Packet.PopInt(), out Room))
+            if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Packet.PopInt(), out Room Room))
+            {
                 return;
+            }
 
             if (!Room.CheckRights(Session, true))
+            {
                 return;
+            }
 
             int CategoryId = Packet.PopInt();
             int TradeSettings = Packet.PopInt();
 
             if (TradeSettings < 0 || TradeSettings > 2)
+            {
                 TradeSettings = 0;
+            }
 
-            SearchResultList SearchResultList = null;
-            if (!NeonEnvironment.GetGame().GetNavigator().TryGetSearchResultList(CategoryId, out SearchResultList))
+            if (!NeonEnvironment.GetGame().GetNavigator().TryGetSearchResultList(CategoryId, out SearchResultList SearchResultList))
             {
                 CategoryId = 36;
             }

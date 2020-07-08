@@ -1,24 +1,15 @@
-﻿using System;
-using System.Data;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Concurrent;
-
-using Neon.Core;
-using Neon.HabboHotel.Catalog;
-using Neon.HabboHotel.Groups;
-using Neon.HabboHotel.Items;
-using Neon.HabboHotel.Rooms.AI;
-using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Users.Badges;
+﻿using Neon.Database.Interfaces;
 using Neon.HabboHotel.Achievements;
-using Neon.HabboHotel.Users.Inventory;
+using Neon.HabboHotel.Club;
+using Neon.HabboHotel.Rooms;
+using Neon.HabboHotel.Users.Authenticator;
+using Neon.HabboHotel.Users.Badges;
 using Neon.HabboHotel.Users.Messenger;
 using Neon.HabboHotel.Users.Relationships;
-using Neon.HabboHotel.Users.Authenticator;
-
-using Neon.Database.Interfaces;
-using Neon.HabboHotel.Club;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Data;
 
 namespace Neon.HabboHotel.Users.UserDataManagement
 {
@@ -187,10 +178,14 @@ namespace Neon.HabboHotel.Users.UserDataManagement
                 bool friendHideRoom = NeonEnvironment.EnumToBool(dRow["hide_inroom"].ToString());
 
                 if (friendID == UserId)
+                {
                     continue;
+                }
 
                 if (!friends.ContainsKey(friendID))
+                {
                     friends.Add(friendID, new MessengerBuddy(friendID, friendName, friendLook, friendMotto, friendLastOnline, friendHideOnline, friendHideRoom));
+                }
             }
 
             Dictionary<int, MessengerRequest> requests = new Dictionary<int, MessengerRequest>();
@@ -204,12 +199,16 @@ namespace Neon.HabboHotel.Users.UserDataManagement
                 if (receiverID != UserId)
                 {
                     if (!requests.ContainsKey(receiverID))
+                    {
                         requests.Add(receiverID, new MessengerRequest(UserId, receiverID, requestUsername));
+                    }
                 }
                 else
                 {
                     if (!requests.ContainsKey(senderID))
+                    {
                         requests.Add(senderID, new MessengerRequest(UserId, senderID, requestUsername));
+                    }
                 }
             }
 
@@ -225,7 +224,9 @@ namespace Neon.HabboHotel.Users.UserDataManagement
                 int questId = Convert.ToInt32(dRow["quest_id"]);
 
                 if (quests.ContainsKey(questId))
+                {
                     quests.Remove(questId);
+                }
 
                 quests.Add(questId, Convert.ToInt32(dRow["progress"]));
             }
@@ -234,10 +235,12 @@ namespace Neon.HabboHotel.Users.UserDataManagement
             foreach (DataRow Row in dRelations.Rows)
             {
                 if (friends.ContainsKey(Convert.ToInt32(Row[2])))
+                {
                     Relationships.Add(Convert.ToInt32(Row[2]), new Relationship(Convert.ToInt32(Row[0]), Convert.ToInt32(Row[2]), Convert.ToInt32(Row[3].ToString())));
+                }
             }
 
-            
+
             Dictionary<string, Subscription> subscriptions = new Dictionary<string, Subscription>();
             foreach (DataRow dataRow in Subscriptions.Rows)
             {
@@ -283,11 +286,14 @@ namespace Neon.HabboHotel.Users.UserDataManagement
                 NeonEnvironment.GetGame().GetClientManager().LogClonesOut(Convert.ToInt32(UserId));
 
                 if (dUserInfo == null)
+                {
                     return null;
+                }
 
                 if (NeonEnvironment.GetGame().GetClientManager().GetClientByUserID(UserId) != null)
+                {
                     return null;
-
+                }
 
                 dbClient.SetQuery("SELECT * FROM `user_info` WHERE `user_id` = '" + UserId + "' LIMIT 1");
                 UserInfo = dbClient.getRow();

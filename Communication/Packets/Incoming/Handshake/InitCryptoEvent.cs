@@ -1,5 +1,4 @@
-﻿using System;
-
+﻿
 using Neon.Communication.Encryption;
 using Neon.Communication.Packets.Outgoing.Handshake;
 

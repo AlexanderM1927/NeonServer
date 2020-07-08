@@ -1,38 +1,42 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms;
+﻿
+using Neon.Communication.Packets.Outgoing.Rooms.Engine;
+using Neon.Database.Interfaces;
 using Neon.HabboHotel.Items;
 using Neon.HabboHotel.Quests;
-using Neon.Communication.Packets.Outgoing.Rooms.Engine;
-
-using Neon.Database.Interfaces;
+using Neon.HabboHotel.Rooms;
 
 
 namespace Neon.Communication.Packets.Incoming.Rooms.Engine
 {
-    class ApplyDecorationEvent : IPacketEvent
+    internal class ApplyDecorationEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
             if (!Session.GetHabbo().InRoom)
+            {
                 return;
+            }
 
-            Room Room = null;
-            if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Session.GetHabbo().CurrentRoomId, out Room))
+            if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Session.GetHabbo().CurrentRoomId, out Room Room))
+            {
                 return;
+            }
 
             if (!Room.CheckRights(Session, true))
+            {
                 return;
+            }
 
             Item Item = Session.GetHabbo().GetInventoryComponent().GetItem(Packet.PopInt());
             if (Item == null)
+            {
                 return;
+            }
 
             if (Item.GetBaseItem() == null)
+            {
                 return;
+            }
 
             string DecorationKey = string.Empty;
             switch (Item.GetBaseItem().InteractionType)

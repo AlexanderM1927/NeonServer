@@ -1,13 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
+﻿
 using Neon.Communication.Packets.Outgoing.Navigator;
 
 namespace Neon.Communication.Packets.Incoming.Navigator
 {
-    class CanCreateRoomEvent : IPacketEvent
+    internal class CanCreateRoomEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {

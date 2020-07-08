@@ -1,17 +1,13 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Quests;
+﻿
 using Neon.Communication.Packets.Outgoing.Users;
 using Neon.Database.Interfaces;
+using Neon.HabboHotel.Quests;
 using Neon.HabboHotel.Rooms;
 
 
 namespace Neon.Communication.Packets.Incoming.Inventory.Badges
 {
-    class SetActivatedBadgesEvent : IPacketEvent
+    internal class SetActivatedBadgesEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
@@ -28,10 +24,14 @@ namespace Neon.Communication.Packets.Incoming.Inventory.Badges
                 string Badge = Packet.PopString();
 
                 if (Badge.Length == 0)
+                {
                     continue;
+                }
 
                 if (!Session.GetHabbo().GetBadgeComponent().HasBadge(Badge) || Slot < 1 || Slot > 5)
+                {
                     return;
+                }
 
                 Session.GetHabbo().GetBadgeComponent().GetBadge(Badge).Slot = Slot;
 
@@ -45,12 +45,15 @@ namespace Neon.Communication.Packets.Incoming.Inventory.Badges
 
             NeonEnvironment.GetGame().GetQuestManager().ProgressUserQuest(Session, QuestType.PROFILE_BADGE);
 
-            Room Room;
 
-            if (Session.GetHabbo().InRoom && NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Session.GetHabbo().CurrentRoomId, out Room))
+            if (Session.GetHabbo().InRoom && NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Session.GetHabbo().CurrentRoomId, out Room Room))
+            {
                 Session.GetHabbo().CurrentRoom.SendMessage(new HabboUserBadgesComposer(Session.GetHabbo()));
+            }
             else
+            {
                 Session.SendMessage(new HabboUserBadgesComposer(Session.GetHabbo()));
+            }
         }
     }
 }

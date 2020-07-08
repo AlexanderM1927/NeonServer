@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Neon.Communication.Packets.Outgoing.BuildersClub
+﻿namespace Neon.Communication.Packets.Outgoing.BuildersClub
 {
-    class BCBorrowedItemsComposer : ServerPacket
+    internal class BCBorrowedItemsComposer : ServerPacket
     {
         public BCBorrowedItemsComposer()
             : base(ServerPacketHeader.BCBorrowedItemsMessageComposer)

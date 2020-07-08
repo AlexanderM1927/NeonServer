@@ -1,29 +1,16 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.GameClients;
+﻿
 using Neon.Communication.Packets.Outgoing.Notifications;
+using Neon.HabboHotel.GameClients;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
 {
-    class SendImageToUserCommand : IChatCommand
+    internal class SendImageToUserCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_alert_user"; }
-        }
+        public string PermissionRequired => "command_alert_user";
 
-        public string Parameters
-        {
-            get { return "%usuario% %imagen%"; }
-        }
+        public string Parameters => "%usuario% %imagen%";
 
-        public string Description
-        {
-            get { return "Enviale un Mensaje de alerta a un usuario"; }
-        }
+        public string Description => "Enviale un Mensaje de alerta a un usuario";
 
         public void Execute(GameClient Session, Room Room, string[] Params)
         {
@@ -49,7 +36,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
             string Message = CommandManager.MergeParams(Params, 2);
 
             TargetClient.SendMessage(new GraphicAlertComposer(Message));
-            Session.SendWhisper("Alerta enviada satisfactoriamente a " + TargetClient.GetHabbo().Username +".");
+            Session.SendWhisper("Alerta enviada satisfactoriamente a " + TargetClient.GetHabbo().Username + ".");
 
         }
     }

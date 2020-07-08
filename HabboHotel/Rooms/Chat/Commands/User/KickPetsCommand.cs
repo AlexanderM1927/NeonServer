@@ -1,34 +1,20 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Drawing;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms.AI;
-using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.GameClients;
-using Neon.Communication.Packets.Outgoing.Inventory.Pets;
+﻿using Neon.Communication.Packets.Outgoing.Inventory.Pets;
 using Neon.Database.Interfaces;
+using Neon.HabboHotel.GameClients;
+using Neon.HabboHotel.Rooms.AI;
+using System.Drawing;
+using System.Linq;
 
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.User
 {
-    class KickPetsCommand : IChatCommand
+    internal class KickPetsCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_kickpets"; }
-        }
+        public string PermissionRequired => "command_kickpets";
 
-        public string Parameters
-        {
-            get { return ""; }
-        }
+        public string Parameters => "";
 
-        public string Description
-        {
-            get { return "Expulsar a todas las mascotas de tu sala."; }
-        }
+        public string Description => "Expulsar a todas las mascotas de tu sala.";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {
@@ -43,7 +29,9 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User
                 foreach (RoomUser Pet in Room.GetRoomUserManager().GetUserList().ToList())
                 {
                     if (Pet == null)
+                    {
                         continue;
+                    }
 
                     if (Pet.RidingHorse)
                     {
@@ -55,7 +43,9 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User
                             UserRiding.MoveTo(new Point(UserRiding.X + 1, UserRiding.Y + 1));
                         }
                         else
+                        {
                             Pet.RidingHorse = false;
+                        }
                     }
 
                     Pet.PetData.RoomId = 0;

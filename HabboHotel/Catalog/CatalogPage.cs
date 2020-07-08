@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections;
+﻿using Neon.HabboHotel.Catalog.PredesignedRooms;
 using System.Collections.Generic;
-using Neon.HabboHotel.Catalog.PredesignedRooms;
 
 namespace Neon.HabboHotel.Catalog
 {
@@ -33,34 +31,34 @@ namespace Neon.HabboHotel.Catalog
               Dictionary<int, CatalogDeal> Deals, PredesignedContent PredesignedItems,
               ref Dictionary<int, int> flatOffers)
         {
-            this._id = Id;
-            this._parentId = ParentId;
-            this._enabled = Enabled.ToLower() == "1" ? true : false;
-            this._caption = Caption;
-            this._pageLink = PageLink;
-            this._icon = Icon;
-            this._minRank = MinRank;
-            this._minVIP = MinVIP;
-            this._visible = Visible.ToLower() == "1" ? true : false;
-            this._template = Template;
+            _id = Id;
+            _parentId = ParentId;
+            _enabled = Enabled.ToLower() == "1" ? true : false;
+            _caption = Caption;
+            _pageLink = PageLink;
+            _icon = Icon;
+            _minRank = MinRank;
+            _minVIP = MinVIP;
+            _visible = Visible.ToLower() == "1" ? true : false;
+            _template = Template;
 
             foreach (string Str in PageStrings1.Split('|'))
             {
-                if (this._pageStrings1 == null) { this._pageStrings1 = new List<string>(); }
-                this._pageStrings1.Add(Str);
+                if (_pageStrings1 == null) { _pageStrings1 = new List<string>(); }
+                _pageStrings1.Add(Str);
             }
 
             foreach (string Str in PageStrings2.Split('|'))
             {
-                if (this._pageStrings2 == null) { this._pageStrings2 = new List<string>(); }
-                this._pageStrings2.Add(Str);
+                if (_pageStrings2 == null) { _pageStrings2 = new List<string>(); }
+                _pageStrings2.Add(Str);
             }
 
-            this._items = Items;
-            this._deals = Deals;
-            this._predesignedItems = PredesignedItems;
+            _items = Items;
+            _deals = Deals;
+            _predesignedItems = PredesignedItems;
 
-            this._itemOffers = new Dictionary<int, CatalogItem>();
+            _itemOffers = new Dictionary<int, CatalogItem>();
             foreach (int i in flatOffers.Keys)
             {
                 if (flatOffers[i] == Id)
@@ -70,135 +68,142 @@ namespace Neon.HabboHotel.Catalog
                         if (item.OfferId == i)
                         {
                             if (!_itemOffers.ContainsKey(i))
+                            {
                                 _itemOffers.Add(i, item);
+                            }
                         }
                     }
                 }
             }
 
-            this._dealOffers = new Dictionary<int, CatalogDeal>();
+            _dealOffers = new Dictionary<int, CatalogDeal>();
             foreach (int i in flatOffers.Keys)
             {
                 foreach (CatalogDeal deal in _deals.Values)
                 {
                     if (!_dealOffers.ContainsKey(i))
+                    {
                         _dealOffers.Add(i, deal);
+                    }
                 }
             }
         }
 
         public int Id
         {
-            get { return this._id; }
-            set { this._id = value; }
+            get => _id;
+            set => _id = value;
         }
 
         public int ParentId
         {
-            get { return this._parentId; }
-            set { this._parentId = value; }
+            get => _parentId;
+            set => _parentId = value;
         }
 
         public bool Enabled
         {
-            get { return this._enabled; }
-            set { this._enabled = value; }
+            get => _enabled;
+            set => _enabled = value;
         }
 
         public string Caption
         {
-            get { return this._caption; }
-            set { this._caption = value; }
+            get => _caption;
+            set => _caption = value;
         }
 
         public string PageLink
         {
-            get { return this._pageLink; }
-            set { this._pageLink = value; }
+            get => _pageLink;
+            set => _pageLink = value;
         }
 
         public int Icon
         {
-            get { return this._icon; }
-            set { this._icon = value; }
+            get => _icon;
+            set => _icon = value;
         }
 
         public int MinimumRank
         {
-            get { return this._minRank; }
-            set { this._minRank = value; }
+            get => _minRank;
+            set => _minRank = value;
         }
 
         public int MinimumVIP
         {
-            get { return this._minVIP; }
-            set { this._minVIP = value; }
+            get => _minVIP;
+            set => _minVIP = value;
         }
 
         public bool Visible
         {
-            get { return this._visible; }
-            set { this._visible = value; }
+            get => _visible;
+            set => _visible = value;
         }
 
         public string Template
         {
-            get { return this._template; }
-            set { this._template = value; }
+            get => _template;
+            set => _template = value;
         }
 
         public List<string> PageStrings1
         {
-            get { return this._pageStrings1; }
-            private set { this._pageStrings1 = value; }
+            get => _pageStrings1;
+            private set => _pageStrings1 = value;
         }
 
         public List<string> PageStrings2
         {
-            get { return this._pageStrings2; }
-            private set { this._pageStrings2 = value; }
+            get => _pageStrings2;
+            private set => _pageStrings2 = value;
         }
 
         public Dictionary<int, CatalogItem> Items
         {
-            get { return this._items; }
-            private set { this._items = value; }
+            get => _items;
+            private set => _items = value;
         }
 
         public Dictionary<int, CatalogDeal> Deals
         {
-            get { return this._deals; }
-            private set { this._deals = value; }
+            get => _deals;
+            private set => _deals = value;
         }
 
         public PredesignedContent PredesignedItems
         {
-            get { return this._predesignedItems; }
-            private set { this._predesignedItems = value; }
+            get => _predesignedItems;
+            private set => _predesignedItems = value;
         }
 
         public Dictionary<int, CatalogItem> ItemOffers
         {
-            get { return this._itemOffers; }
-            private set { this._itemOffers = value; }
+            get => _itemOffers;
+            private set => _itemOffers = value;
         }
 
         public Dictionary<int, CatalogItem> LastItemOffers
         {
-            get { return this._lastItemOffers; }
-            set { this._lastItemOffers = value; }
+            get => _lastItemOffers;
+            set => _lastItemOffers = value;
         }
 
         public Dictionary<int, CatalogDeal> DealOffers
         {
-            get { return this._dealOffers; }
-            private set { this._dealOffers = value; }
+            get => _dealOffers;
+            private set => _dealOffers = value;
         }
 
         public CatalogItem GetItem(int pId)
         {
-            if (this._items.ContainsKey(pId))
-                return (CatalogItem)this._items[pId];
+            if (_items.ContainsKey(pId))
+            {
+                return _items[pId];
+            }
+
             return null;
         }
     }

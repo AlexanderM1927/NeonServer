@@ -1,24 +1,21 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Data;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Items;
+﻿using Neon.Communication.Packets.Outgoing.Inventory.Furni;
 using Neon.Communication.Packets.Outgoing.Marketplace;
-using Neon.Communication.Packets.Outgoing.Inventory.Furni;
-
 using Neon.Database.Interfaces;
+using Neon.HabboHotel.Items;
+using System;
+using System.Data;
 
 
 namespace Neon.Communication.Packets.Incoming.Marketplace
 {
-    class CancelOfferEvent : IPacketEvent
+    internal class CancelOfferEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
             if (Session == null || Session.GetHabbo() == null)
+            {
                 return;
+            }
 
             DataRow Row = null;
             int OfferId = Packet.PopInt();
@@ -42,8 +39,7 @@ namespace Neon.Communication.Packets.Incoming.Marketplace
                 return;
             }
 
-            ItemData Item = null;
-            if (!NeonEnvironment.GetGame().GetItemManager().GetItem(Convert.ToInt32(Row["item_id"]), out Item))
+            if (!NeonEnvironment.GetGame().GetItemManager().GetItem(Convert.ToInt32(Row["item_id"]), out ItemData Item))
             {
                 Session.SendMessage(new MarketplaceCancelOfferResultComposer(OfferId, false));
                 return;

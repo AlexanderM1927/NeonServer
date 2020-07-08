@@ -1,11 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-namespace Neon.Communication.Packets.Outgoing.Marketplace
+﻿namespace Neon.Communication.Packets.Outgoing.Marketplace
 {
-    class MarketplaceCancelOfferResultComposer : ServerPacket
+    internal class MarketplaceCancelOfferResultComposer : ServerPacket
     {
         public MarketplaceCancelOfferResultComposer(int OfferId, bool Success)
             : base(ServerPacketHeader.MarketplaceCancelOfferResultMessageComposer)

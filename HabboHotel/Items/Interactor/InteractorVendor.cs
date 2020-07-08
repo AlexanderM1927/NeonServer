@@ -45,7 +45,9 @@ namespace Neon.HabboHotel.Items.Interactor
                 RoomUser User = Item.GetRoom().GetRoomUserManager().GetRoomUserByHabbo(Session.GetHabbo().Id);
 
                 if (User == null)
+                {
                     return;
+                }
 
                 if (!Gamemap.TilesTouching(User.X, User.Y, Item.GetX, Item.GetY))
                 {

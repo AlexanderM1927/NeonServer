@@ -1,17 +1,10 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
+﻿using Neon.HabboHotel.Items;
 using Neon.Utilities;
-using Neon.HabboHotel.Items;
-using Neon.HabboHotel.Groups;
-using Neon.HabboHotel.Users;
 
 
 namespace Neon.Communication.Packets.Outgoing.Rooms.Engine
 {
-    class ObjectUpdateComposer : ServerPacket
+    internal class ObjectUpdateComposer : ServerPacket
     {
         public ObjectUpdateComposer(Item Item, int UserId)
             : base(ServerPacketHeader.ObjectUpdateMessageComposer)
@@ -21,8 +14,8 @@ namespace Neon.Communication.Packets.Outgoing.Rooms.Engine
             base.WriteInteger(Item.GetX);
             base.WriteInteger(Item.GetY);
             base.WriteInteger(Item.Rotation);
-            base.WriteString(String.Format("{0:0.00}", TextHandling.GetString(Item.GetZ)));
-            base.WriteString(String.Empty);
+            base.WriteString(string.Format("{0:0.00}", TextHandling.GetString(Item.GetZ)));
+            base.WriteString(string.Empty);
 
             if (Item.LimitedNo > 0)
             {
@@ -87,8 +80,15 @@ namespace Neon.Communication.Packets.Outgoing.Rooms.Engine
                 base.WriteInteger(0);
                 base.WriteInteger(7);
                 base.WriteString((Item.ExtraData.Length <= 0) ? "0" : "2");
-                if (Item.ExtraData.Length <= 0) base.WriteInteger(0);
-                else base.WriteInteger(int.Parse(Item.ExtraData));
+                if (Item.ExtraData.Length <= 0)
+                {
+                    base.WriteInteger(0);
+                }
+                else
+                {
+                    base.WriteInteger(int.Parse(Item.ExtraData));
+                }
+
                 base.WriteInteger(1);
             }
 
@@ -180,7 +180,7 @@ namespace Neon.Communication.Packets.Outgoing.Rooms.Engine
         }
     }
 
-    class UpdateFootBallComposer : ServerPacket
+    internal class UpdateFootBallComposer : ServerPacket
     {
         public UpdateFootBallComposer(Item Item, int newX, int newY)
             : base(ServerPacketHeader.ObjectUpdateMessageComposer)
@@ -190,8 +190,8 @@ namespace Neon.Communication.Packets.Outgoing.Rooms.Engine
             WriteInteger(newX);
             WriteInteger(newY);
             WriteInteger(4); // rot;
-            WriteString((String.Format("{0:0.00}", TextHandling.GetString(Item.GetZ))));
-            WriteString((String.Format("{0:0.00}", TextHandling.GetString(Item.GetZ))));
+            WriteString((string.Format("{0:0.00}", TextHandling.GetString(Item.GetZ))));
+            WriteString((string.Format("{0:0.00}", TextHandling.GetString(Item.GetZ))));
             WriteInteger(0);
             WriteInteger(0);
             WriteString(Item.ExtraData);

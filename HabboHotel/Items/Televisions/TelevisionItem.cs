@@ -1,67 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Neon.HabboHotel.Items.Televisions
+﻿namespace Neon.HabboHotel.Items.Televisions
 {
     public class TelevisionItem
     {
-        private int _id;
-        private string _youtubeId;
-        private string _title;
-        private string _description;
-        private Boolean _enabled;
+        private readonly int _id;
+        private readonly string _youtubeId;
+        private readonly string _title;
+        private readonly string _description;
+        private readonly bool _enabled;
 
-        public TelevisionItem(int Id, string YouTubeId, string Title, string Description, Boolean Enabled)
+        public TelevisionItem(int Id, string YouTubeId, string Title, string Description, bool Enabled)
         {
-            this._id = Id;
-            this._youtubeId = YouTubeId;
-            this._title = Title;
-            this._description = Description;
-            this._enabled = Enabled;
+            _id = Id;
+            _youtubeId = YouTubeId;
+            _title = Title;
+            _description = Description;
+            _enabled = Enabled;
         }
 
-        public int Id
-        {
-            get
-            {
-                return this._id;
-            }
-        }
+        public int Id => _id;
 
-        public string YouTubeId
-        {
-            get
-            {
-                return this._youtubeId;
-            }
-        }
+        public string YouTubeId => _youtubeId;
 
 
-        public string Title
-        {
-            get
-            {
-                return this._title;
-            }
-        }
+        public string Title => _title;
 
-        public string Description
-        {
-            get
-            {
-                return this._description;
-            }
-        }
+        public string Description => _description;
 
-        public bool Enabled
-        {
-            get
-            {
-                return this._enabled;
-            }
-        }
+        public bool Enabled => _enabled;
     }
 }

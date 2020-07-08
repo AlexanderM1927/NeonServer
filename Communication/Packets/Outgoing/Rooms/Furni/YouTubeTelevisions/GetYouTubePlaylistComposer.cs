@@ -1,13 +1,10 @@
-﻿using System;
-using System.Linq;
-using System.Text;
+﻿using Neon.HabboHotel.Items.Televisions;
 using System.Collections.Generic;
-
-using Neon.HabboHotel.Items.Televisions;
+using System.Linq;
 
 namespace Neon.Communication.Packets.Outgoing.Rooms.Furni.YouTubeTelevisions
 {
-    class GetYouTubePlaylistComposer : ServerPacket
+    internal class GetYouTubePlaylistComposer : ServerPacket
     {
         public GetYouTubePlaylistComposer(int ItemId, ICollection<TelevisionItem> Videos)
             : base(ServerPacketHeader.GetYouTubePlaylistMessageComposer)
@@ -16,11 +13,11 @@ namespace Neon.Communication.Packets.Outgoing.Rooms.Furni.YouTubeTelevisions
             base.WriteInteger(Videos.Count);
             foreach (TelevisionItem Video in Videos.ToList())
             {
-               base.WriteString(Video.YouTubeId);
-               base.WriteString(Video.Title);//Title
-               base.WriteString(Video.Description);//Description
+                base.WriteString(Video.YouTubeId);
+                base.WriteString(Video.Title);//Title
+                base.WriteString(Video.Description);//Description
             }
-           base.WriteString("");
+            base.WriteString("");
         }
     }
 }

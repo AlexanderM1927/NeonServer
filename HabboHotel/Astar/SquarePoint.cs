@@ -1,74 +1,55 @@
-﻿using System;
+﻿using Neon.HabboHotel.Groups;
+using Neon.HabboHotel.Items;
+using Neon.HabboHotel.Pathfinding;
+using Neon.HabboHotel.Rooms;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
-using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Items;
-using Neon.HabboHotel.Pathfinding;
-using Neon.HabboHotel.Groups;
 
 namespace Neon.HabboHotel.Astar
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct SquarePoint
     {
-        private RoomUser mUser;
-        private int mX;
-        private int mY;
-        private double mDistance;
-        private byte mSquareData;
-        private bool mInUse;
-        private bool mOverride;
-        private bool mLastStep;
-        private Gamemap mMap;
+        private readonly RoomUser mUser;
+        private readonly int mX;
+        private readonly int mY;
+        private readonly double mDistance;
+        private readonly byte mSquareData;
+        private readonly bool mInUse;
+        private readonly bool mOverride;
+        private readonly bool mLastStep;
+        private readonly Gamemap mMap;
 
         public SquarePoint(RoomUser User, Vector2D From, int pTargetX, int pTargetY, byte SquareData, bool pOverride, Gamemap pGameMap)
         {
-            this.mUser = User;
-            this.mX = From.X;
-            this.mY = From.Y;
-            this.mSquareData = SquareData;
-            this.mInUse = true;
-            this.mOverride = pOverride;
-            this.mDistance = 0.0;
-            this.mLastStep = (From.X == pTargetX) && (From.Y == pTargetY);
-            this.mDistance = DreamPathfinder.GetDistance(From.X, From.Y, pTargetX, pTargetY);
-            this.mMap = pGameMap;
+            mUser = User;
+            mX = From.X;
+            mY = From.Y;
+            mSquareData = SquareData;
+            mInUse = true;
+            mOverride = pOverride;
+            mDistance = 0.0;
+            mLastStep = (From.X == pTargetX) && (From.Y == pTargetY);
+            mDistance = DreamPathfinder.GetDistance(From.X, From.Y, pTargetX, pTargetY);
+            mMap = pGameMap;
         }
 
-        public int X
-        {
-            get
-            {
-                return this.mX;
-            }
-        }
+        public int X => mX;
 
-        public int Y
-        {
-            get
-            {
-                return this.mY;
-            }
-        }
+        public int Y => mY;
 
-        public double GetDistance
-        {
-            get
-            {
-                return this.mDistance;
-            }
-        }
+        public double GetDistance => mDistance;
 
         public bool CanWalk
         {
             get
             {
-                if (!this.mLastStep)
+                if (!mLastStep)
                 {
-                    if (!this.mOverride)
+                    if (!mOverride)
                     {
-                        return ((this.mSquareData == 1) || (this.mSquareData == 4));
+                        return ((mSquareData == 1) || (mSquareData == 4));
                     }
 
                     return true;
@@ -87,12 +68,15 @@ namespace Neon.HabboHotel.Astar
                                 Item I = Items.FirstOrDefault(x => x.GetBaseItem().InteractionType == InteractionType.GUILD_GATE);
                                 if (I != null)
                                 {
-                                    Group Group = null;
-                                    if (!NeonEnvironment.GetGame().GetGroupManager().TryGetGroup(I.GroupId, out Group))
+                                    if (!NeonEnvironment.GetGame().GetGroupManager().TryGetGroup(I.GroupId, out Group Group))
+                                    {
                                         return false;
+                                    }
 
                                     if (mUser.GetClient() == null || mUser.GetClient().GetHabbo() == null)
+                                    {
                                         return false;
+                                    }
 
                                     if (Group.IsMember(mUser.GetClient().GetHabbo().Id))
                                     {
@@ -107,7 +91,10 @@ namespace Neon.HabboHotel.Astar
                                     else
                                     {
                                         if (mUser.Path.Count > 0)
+                                        {
                                             mUser.Path.Clear();
+                                        }
+
                                         mUser.PathRecalcNeeded = false;
                                         return false;
                                     }
@@ -121,49 +108,65 @@ namespace Neon.HabboHotel.Astar
                                 if (I != null)
                                 {
                                     if (mUser.GetClient() == null || mUser.GetClient().GetHabbo() == null)
+                                    {
                                         return false;
+                                    }
 
                                     bool IsHc = mUser.GetClient().GetHabbo().GetClubManager().HasSubscription("habbo_vip");
                                     if (!IsHc)
+                                    {
                                         return false;
-                                    
+                                    }
+
                                     if (mUser.GetClient().GetHabbo().GetClubManager().HasSubscription("habbo_vip"))
+                                    {
                                         return true;
+                                    }
                                     else
+                                    {
                                         return false;
+                                    }
                                 }
                             }
 
-                        bool HasVIPGate = Items.ToList().Where(x => x.GetBaseItem().InteractionType == InteractionType.VIPGATE).ToList().Count() > 0;
-                        if (HasVIPGate)
-                        {
-                            Item I = Items.FirstOrDefault(x => x.GetBaseItem().InteractionType == InteractionType.VIPGATE);
-                            if (I != null)
+                            bool HasVIPGate = Items.ToList().Where(x => x.GetBaseItem().InteractionType == InteractionType.VIPGATE).ToList().Count() > 0;
+                            if (HasVIPGate)
                             {
-                                var IsVIP = mUser.GetClient().GetHabbo().GetClubManager().HasSubscription("club_vip");
-                                if (!IsVIP)
-                                    return false;
+                                Item I = Items.FirstOrDefault(x => x.GetBaseItem().InteractionType == InteractionType.VIPGATE);
+                                if (I != null)
+                                {
+                                    bool IsVIP = mUser.GetClient().GetHabbo().GetClubManager().HasSubscription("club_vip");
+                                    if (!IsVIP)
+                                    {
+                                        return false;
+                                    }
 
-                                if (mUser.GetClient() == null || mUser.GetClient().GetHabbo() == null)
-                                    return false;
+                                    if (mUser.GetClient() == null || mUser.GetClient().GetHabbo() == null)
+                                    {
+                                        return false;
+                                    }
 
-                                if (mUser.GetClient().GetHabbo().GetClubManager().HasSubscription("club_vip"))
-                                    return true;
-                                else
-                                    return false;
+                                    if (mUser.GetClient().GetHabbo().GetClubManager().HasSubscription("club_vip"))
+                                    {
+                                        return true;
+                                    }
+                                    else
+                                    {
+                                        return false;
+                                    }
+                                }
                             }
                         }
                     }
-                    }
                 }
 
-                if (!this.mOverride)
+                if (!mOverride)
                 {
-                    if (this.mSquareData == 3)
+                    if (mSquareData == 3)
                     {
                         return true;
                     }
-                    if (this.mSquareData == 1)
+                    if (mSquareData == 1)
                     {
                         return true;
                     }
@@ -175,12 +178,6 @@ namespace Neon.HabboHotel.Astar
                 return false;
             }
         }
-        public bool InUse
-        {
-            get
-            {
-                return this.mInUse;
-            }
-        }
+        public bool InUse => mInUse;
     }
 }

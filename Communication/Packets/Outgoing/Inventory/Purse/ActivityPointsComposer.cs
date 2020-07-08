@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Neon.Communication.Packets.Outgoing.Inventory.Purse
+﻿namespace Neon.Communication.Packets.Outgoing.Inventory.Purse
 {
-    class ActivityPointsComposer : ServerPacket
+    internal class ActivityPointsComposer : ServerPacket
     {
         public ActivityPointsComposer(int PixelsBalance, int SeasionalCurrency, int GOTWPoints)
             : base(ServerPacketHeader.ActivityPointsMessageComposer)

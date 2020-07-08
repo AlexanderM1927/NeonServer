@@ -1,17 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-
-using Neon.HabboHotel.GameClients;
-using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Users;
-using Neon.Communication.Packets.Incoming;
-using System.Collections.Concurrent;
-
-using Neon.Database.Interfaces;
-using log4net;
+﻿using Neon.Database.Interfaces;
 using Neon.HabboHotel.Items;
+using Neon.HabboHotel.Users;
 
 namespace Neon.HabboHotel.Rooms.Music
 {
@@ -43,14 +32,15 @@ namespace Neon.HabboHotel.Rooms.Music
 
         public void SaveToDatabase(int roomID)
         {
-            Room Room = null;
-            if (NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(roomID, out Room))
+            if (NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(roomID, out Room Room))
             {
                 Item Jukebox = Room.GetRoomMusicManager().LinkedItem;
                 if (Jukebox != null)
                 {
                     using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
+                    {
                         dbClient.RunQuery("INSERT INTO room_items_songs (itemid, roomid, jukeboxid, songid) VALUES (" + itemID + "," + roomID + "," + Jukebox.Id + "," + songID + ")");
+                    }
                 }
             }
         }
@@ -58,7 +48,9 @@ namespace Neon.HabboHotel.Rooms.Music
         public void RemoveFromDatabase()
         {
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
+            {
                 dbClient.RunQuery("DELETE FROM room_items_songs WHERE itemid = " + itemID);
+            }
         }
     }
 }

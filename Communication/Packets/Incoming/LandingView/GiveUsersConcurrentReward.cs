@@ -1,14 +1,9 @@
 ﻿using Neon.Communication.Packets.Outgoing.Inventory.Purse;
 using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.Communication.Packets.Incoming.LandingView
 {
-    class GiveConcurrentUsersReward : IPacketEvent
+    internal class GiveConcurrentUsersReward : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {

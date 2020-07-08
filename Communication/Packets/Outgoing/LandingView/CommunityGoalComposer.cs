@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Neon.Communication.Packets.Outgoing.LandingView
+﻿namespace Neon.Communication.Packets.Outgoing.LandingView
 {
-    class CommunityGoalComposer : ServerPacket
+    internal class CommunityGoalComposer : ServerPacket
     {
         public CommunityGoalComposer()
             : base(ServerPacketHeader.CommunityGoalComposer)
         {
             int VOTE_LONG = NeonEnvironment.GetGame().GetCommunityGoalVS().GetLeftVotes();
-            int VOTE_SHORT = NeonEnvironment.GetGame().GetCommunityGoalVS().GetRightVotes(); 
+            int VOTE_SHORT = NeonEnvironment.GetGame().GetCommunityGoalVS().GetRightVotes();
 
             base.WriteBoolean(false); // Achieved?
             base.WriteInteger(0); // personalContributionScore (Si no es 0 no se muestran los botones)
@@ -28,7 +22,7 @@ namespace Neon.Communication.Packets.Outgoing.LandingView
             // base.WriteInteger(2); // Número de ganadores (ganador 1, 2, 3...)
         }
 
-        public CommunityGoalComposer(bool Whats): base(ServerPacketHeader.CommunityGoalComposer)
+        public CommunityGoalComposer(bool Whats) : base(ServerPacketHeader.CommunityGoalComposer)
         {
             base.WriteBoolean(true); //Achieved?
             base.WriteInteger(3); //User Amount
@@ -79,8 +73,8 @@ namespace Neon.Communication.Packets.Outgoing.LandingView
             base.WriteInteger(0); //Rank level
         }
 
-        private int[] array1 = { -3, -2, -1, 0, 1, 2, 3 };
-        private double[] array2 = { 0, 0, 4.75, 11.5, 16.25, 23, 23 };
+        private readonly int[] array1 = { -3, -2, -1, 0, 1, 2, 3 };
+        private readonly double[] array2 = { 0, 0, 4.75, 11.5, 16.25, 23, 23 };
 
         /// <summary>
         /// Obtiene un valor entre -3 y 3 para indicar la posición de la flecha en la votación.
@@ -102,19 +96,43 @@ namespace Neon.Communication.Packets.Outgoing.LandingView
             {
                 int IZQ_PERCENT = ((A * 100) / SUM_TOTAL);
 
-                if (IZQ_PERCENT == 100) POSITION = 0;
-                else if (IZQ_PERCENT > (DOS_TERCIOS * 100)) POSITION = 1;
-                else if (IZQ_PERCENT > (UN_TERCIO * 100)) POSITION = 2;
-                else POSITION = 3;
+                if (IZQ_PERCENT == 100)
+                {
+                    POSITION = 0;
+                }
+                else if (IZQ_PERCENT > (DOS_TERCIOS * 100))
+                {
+                    POSITION = 1;
+                }
+                else if (IZQ_PERCENT > (UN_TERCIO * 100))
+                {
+                    POSITION = 2;
+                }
+                else
+                {
+                    POSITION = 3;
+                }
             }
-            else if(B > A) // Movemos hacia la derecha
+            else if (B > A) // Movemos hacia la derecha
             {
                 int DER_PERCENT = ((B * 100) / SUM_TOTAL);
 
-                if (DER_PERCENT == 100) POSITION = 6;
-                else if (DER_PERCENT > (DOS_TERCIOS * 100)) POSITION = 5;
-                else if (DER_PERCENT > (UN_TERCIO * 100)) POSITION = 4;
-                else POSITION = 3;
+                if (DER_PERCENT == 100)
+                {
+                    POSITION = 6;
+                }
+                else if (DER_PERCENT > (DOS_TERCIOS * 100))
+                {
+                    POSITION = 5;
+                }
+                else if (DER_PERCENT > (UN_TERCIO * 100))
+                {
+                    POSITION = 4;
+                }
+                else
+                {
+                    POSITION = 3;
+                }
             }
             else // Centro
             {
@@ -137,19 +155,43 @@ namespace Neon.Communication.Packets.Outgoing.LandingView
             {
                 int IZQ_PERCENT = ((A * 100) / SUM_TOTAL);
 
-                if (IZQ_PERCENT == 100) return 100;
-                else if (IZQ_PERCENT > ((2 / 3) * 100)) return (100 - IZQ_PERCENT) * 3;
-                else if (IZQ_PERCENT > ((1 / 3) * 100)) return (int)(((DOS_TERCIOS * 100) - IZQ_PERCENT) * 3);
-                else return (int)(((UN_TERCIO * 100) - IZQ_PERCENT) * 3);
+                if (IZQ_PERCENT == 100)
+                {
+                    return 100;
+                }
+                else if (IZQ_PERCENT > ((2 / 3) * 100))
+                {
+                    return (100 - IZQ_PERCENT) * 3;
+                }
+                else if (IZQ_PERCENT > ((1 / 3) * 100))
+                {
+                    return (int)(((DOS_TERCIOS * 100) - IZQ_PERCENT) * 3);
+                }
+                else
+                {
+                    return (int)(((UN_TERCIO * 100) - IZQ_PERCENT) * 3);
+                }
             }
             else if (B > A) // Movemos hacia la derecha
             {
                 int DER_PERCENT = ((B * 100) / SUM_TOTAL);
 
-                if (DER_PERCENT == 100) return 100;
-                else if (DER_PERCENT > ((2 / 3) * 100)) return (100 - DER_PERCENT) * 3;
-                else if (DER_PERCENT > ((1 / 3) * 100)) return (int)(((DOS_TERCIOS * 100) - DER_PERCENT) * 3);
-                else return (int)(((UN_TERCIO * 100) - DER_PERCENT) * 3);
+                if (DER_PERCENT == 100)
+                {
+                    return 100;
+                }
+                else if (DER_PERCENT > ((2 / 3) * 100))
+                {
+                    return (100 - DER_PERCENT) * 3;
+                }
+                else if (DER_PERCENT > ((1 / 3) * 100))
+                {
+                    return (int)(((DOS_TERCIOS * 100) - DER_PERCENT) * 3);
+                }
+                else
+                {
+                    return (int)(((UN_TERCIO * 100) - DER_PERCENT) * 3);
+                }
             }
 
             return 0;

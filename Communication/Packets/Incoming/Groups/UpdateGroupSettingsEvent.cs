@@ -1,30 +1,28 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Groups;
-using Neon.Communication.Packets.Outgoing.Groups;
+﻿using Neon.Communication.Packets.Outgoing.Groups;
 using Neon.Communication.Packets.Outgoing.Rooms.Permissions;
-
 using Neon.Database.Interfaces;
+using Neon.HabboHotel.Groups;
+using Neon.HabboHotel.Rooms;
+using System.Linq;
 
 
 namespace Neon.Communication.Packets.Incoming.Groups
 {
-    class UpdateGroupSettingsEvent : IPacketEvent
+    internal class UpdateGroupSettingsEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
             int GroupId = Packet.PopInt();
 
-            Group Group = null;
-            if (!NeonEnvironment.GetGame().GetGroupManager().TryGetGroup(GroupId, out Group))
+            if (!NeonEnvironment.GetGame().GetGroupManager().TryGetGroup(GroupId, out Group Group))
+            {
                 return;
+            }
 
             if (Group.CreatorId != Session.GetHabbo().Id)
+            {
                 return;
+            }
 
             int Type = Packet.PopInt();
             int FurniOptions = Packet.PopInt();
@@ -66,14 +64,17 @@ namespace Neon.Communication.Packets.Incoming.Groups
 
             Group.AdminOnlyDeco = FurniOptions;
 
-            Room Room;
-            if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Group.RoomId, out Room))
+            if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Group.RoomId, out Room Room))
+            {
                 return;
+            }
 
             foreach (RoomUser User in Room.GetRoomUserManager().GetRoomUsers().ToList())
             {
                 if (Room.OwnerId == User.UserId || Group.IsAdmin(User.UserId) || !Group.IsMember(User.UserId))
+                {
                     continue;
+                }
 
                 if (FurniOptions == 1)
                 {

@@ -1,44 +1,46 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Groups;
-using Neon.Communication.Packets.Outgoing.Groups;
+﻿using Neon.Communication.Packets.Outgoing.Groups;
+using Neon.Communication.Packets.Outgoing.Messenger;
 using Neon.Communication.Packets.Outgoing.Rooms.Permissions;
 using Neon.Database.Interfaces;
-using Neon.HabboHotel.Users;
 using Neon.HabboHotel.Cache;
-using Neon.Communication.Packets.Outgoing.Messenger;
+using Neon.HabboHotel.Groups;
+using Neon.HabboHotel.Rooms;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Neon.Communication.Packets.Incoming.Groups
 {
-    class RemoveGroupMemberEvent : IPacketEvent
+    internal class RemoveGroupMemberEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
             int GroupId = Packet.PopInt();
             int UserId = Packet.PopInt();
 
-            Group Group = null;
-            if (!NeonEnvironment.GetGame().GetGroupManager().TryGetGroup(GroupId, out Group))
+            if (!NeonEnvironment.GetGame().GetGroupManager().TryGetGroup(GroupId, out Group Group))
+            {
                 return;
+            }
 
             if (UserId == Session.GetHabbo().Id)
             {
                 if (Group.IsMember(UserId))
+                {
                     Group.DeleteMember(UserId);
+                }
 
                 if (Group.IsAdmin(UserId))
                 {
                     if (Group.IsAdmin(UserId))
+                    {
                         Group.TakeAdmin(UserId);
+                    }
 
-                    Room Room;
 
-                    if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Group.RoomId, out Room))
+                    if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Group.RoomId, out Room Room))
+                    {
                         return;
+                    }
 
                     RoomUser User = Room.GetRoomUserManager().GetRoomUserByHabbo(Session.GetHabbo().Id);
                     if (User != null)
@@ -47,7 +49,9 @@ namespace Neon.Communication.Packets.Incoming.Groups
                         User.UpdateNeeded = true;
 
                         if (User.GetClient() != null)
+                        {
                             User.GetClient().SendMessage(new YouAreControllerComposer(0));
+                        }
                     }
                 }
 
@@ -70,9 +74,10 @@ namespace Neon.Communication.Packets.Incoming.Groups
 
                     if (Group.AdminOnlyDeco == 0)
                     {
-                        Room Room;
-                        if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Group.RoomId, out Room))
+                        if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Group.RoomId, out Room Room))
+                        {
                             return;
+                        }
 
                         RoomUser User = Room.GetRoomUserManager().GetRoomUserByHabbo(Session.GetHabbo().Id);
                         if (User != null)
@@ -81,7 +86,9 @@ namespace Neon.Communication.Packets.Incoming.Groups
                             User.UpdateNeeded = true;
 
                             if (User.GetClient() != null)
+                            {
                                 User.GetClient().SendMessage(new YouAreControllerComposer(0));
+                            }
                         }
                     }
 
@@ -89,15 +96,20 @@ namespace Neon.Communication.Packets.Incoming.Groups
                     {
                         RoomUser User = Session.GetHabbo().CurrentRoom.GetRoomUserManager().GetRoomUserByHabbo(Session.GetHabbo().Id);
                         if (User != null)
+                        {
                             Session.GetHabbo().CurrentRoom.SendMessage(new UpdateFavouriteGroupComposer(Session.GetHabbo().Id, Group, User.VirtualId));
+                        }
+
                         Session.GetHabbo().CurrentRoom.SendMessage(new RefreshFavouriteGroupComposer(Session.GetHabbo().Id));
                     }
                     else
+                    {
                         Session.SendMessage(new RefreshFavouriteGroupComposer(Session.GetHabbo().Id));
+                    }
                 }
                 if (Group.HasChat)
                 {
-                    var Client = NeonEnvironment.GetGame().GetClientManager().GetClientByUserID(UserId);
+                    HabboHotel.GameClients.GameClient Client = NeonEnvironment.GetGame().GetClientManager().GetClientByUserID(UserId);
                     if (Client != null)
                     {
                         Client.SendMessage(new FriendListUpdateComposer(Group, -1));
@@ -111,7 +123,9 @@ namespace Neon.Communication.Packets.Incoming.Groups
                 if (Group.CreatorId == Session.GetHabbo().Id || Group.IsAdmin(Session.GetHabbo().Id))
                 {
                     if (!Group.IsMember(UserId))
+                    {
                         return;
+                    }
 
                     if (Group.IsAdmin(UserId) && Group.CreatorId != Session.GetHabbo().Id)
                     {
@@ -120,10 +134,14 @@ namespace Neon.Communication.Packets.Incoming.Groups
                     }
 
                     if (Group.IsAdmin(UserId))
+                    {
                         Group.TakeAdmin(UserId);
+                    }
 
                     if (Group.IsMember(UserId))
+                    {
                         Group.DeleteMember(UserId);
+                    }
 
                     List<UserCache> Members = new List<UserCache>();
                     List<int> MemberIds = Group.GetAllMembers;
@@ -131,10 +149,14 @@ namespace Neon.Communication.Packets.Incoming.Groups
                     {
                         UserCache GroupMember = NeonEnvironment.GetGame().GetCacheManager().GenerateUser(Id);
                         if (GroupMember == null)
+                        {
                             continue;
+                        }
 
                         if (!Members.Contains(GroupMember))
+                        {
                             Members.Add(GroupMember);
+                        }
                     }
 
 
@@ -144,7 +166,7 @@ namespace Neon.Communication.Packets.Incoming.Groups
                     Session.SendMessage(new GroupMembersComposer(Group, Members.Take(FinishIndex).ToList(), MembersCount, 1, (Group.CreatorId == Session.GetHabbo().Id || Group.IsAdmin(Session.GetHabbo().Id)), 0, ""));
                     if (Group.HasChat)
                     {
-                        var Client = NeonEnvironment.GetGame().GetClientManager().GetClientByUserID(UserId);
+                        HabboHotel.GameClients.GameClient Client = NeonEnvironment.GetGame().GetClientManager().GetClientByUserID(UserId);
                         if (Client != null)
                         {
                             Client.SendMessage(new FriendListUpdateComposer(Group, -1));

@@ -1,54 +1,14 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Data;
-using System.Collections.Generic;
-
-using Neon.Communication.Packets.Outgoing.Users;
-using Neon.Communication.Packets.Outgoing.Notifications;
-
-
-using Neon.Communication.Packets.Outgoing.Handshake;
-using Neon.Communication.Packets.Outgoing.Quests;
-using Neon.HabboHotel.Items;
-using Neon.Communication.Packets.Outgoing.Inventory.Furni;
-using Neon.Communication.Packets.Outgoing.Catalog;
-using Neon.HabboHotel.Quests;
-using Neon.HabboHotel.Rooms;
-using System.Threading;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
 using Neon.HabboHotel.GameClients;
-using Neon.Communication.Packets.Outgoing.Rooms.Avatar;
-using Neon.Communication.Packets.Outgoing.Pets;
-using Neon.Communication.Packets.Outgoing.Messenger;
-using Neon.HabboHotel.Users.Messenger;
-using Neon.Communication.Packets.Outgoing.Rooms.Polls;
-using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
-using Neon.Communication.Packets.Outgoing.Availability;
-using Neon.Communication.Packets.Outgoing;
 
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.Events
 {
     internal class PubliAlert : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get
-            {
-                return "command_publi_alert";
-            }
-        }
-        public string Parameters
-        {
-            get { return "%message%"; }
-        }
-        public string Description
-        {
-            get
-            {
-                return "Manda un Evento a todo el Hotel!";
-            }
-        }
+        public string PermissionRequired => "command_publi_alert";
+        public string Parameters => "%message%";
+        public string Description => "Manda un Evento a todo el Hotel!";
         public void Execute(GameClient Session, Room Room, string[] Params)
         {
             string Message = CommandManager.MergeParams(Params, 1);

@@ -1,22 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Neon.Utilities;
-using Neon.Core;
-using Neon.Communication.Packets.Incoming;
-using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Quests;
-using Neon.HabboHotel.GameClients;
-using Neon.Communication.Packets.Outgoing.Rooms.Engine;
-
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Engine;
 using Neon.Database.Interfaces;
+using Neon.HabboHotel.GameClients;
+using Neon.HabboHotel.Quests;
+using Neon.HabboHotel.Rooms;
+using Neon.Utilities;
+using System;
 
 
 namespace Neon.Communication.Packets.Incoming.Rooms.Avatar
 {
-    class ChangeMottoEvent : IPacketEvent
+    internal class ChangeMottoEvent : IPacketEvent
     {
         public void Parse(GameClient Session, ClientPacket Packet)
         {
@@ -30,26 +23,36 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Avatar
             {
                 Session.GetHabbo().MottoUpdateWarnings += 1;
                 if (Session.GetHabbo().MottoUpdateWarnings >= 25)
+                {
                     Session.GetHabbo().SessionMottoBlocked = true;
+                }
+
                 return;
             }
 
             if (Session.GetHabbo().SessionMottoBlocked)
+            {
                 return;
+            }
 
             Session.GetHabbo().LastMottoUpdateTime = DateTime.Now;
 
             string newMotto = StringCharFilter.Escape(Packet.PopString().Trim());
 
             if (newMotto.Length > 38)
+            {
                 newMotto = newMotto.Substring(0, 38);
+            }
 
             if (newMotto == Session.GetHabbo().Motto)
+            {
                 return;
+            }
 
-            string word;
             if (!Session.GetHabbo().GetPermissions().HasRight("word_filter_override"))
-                newMotto = NeonEnvironment.GetGame().GetChatManager().GetFilter().IsUnnaceptableWord(newMotto, out word) ? "Spam" : newMotto;
+            {
+                newMotto = NeonEnvironment.GetGame().GetChatManager().GetFilter().IsUnnaceptableWord(newMotto, out string word) ? "Spam" : newMotto;
+            }
 
             Session.GetHabbo().Motto = newMotto;
 
@@ -67,11 +70,15 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Avatar
             {
                 Room Room = Session.GetHabbo().CurrentRoom;
                 if (Room == null)
+                {
                     return;
+                }
 
                 RoomUser User = Room.GetRoomUserManager().GetRoomUserByHabbo(Session.GetHabbo().Id);
                 if (User == null || User.GetClient() == null)
+                {
                     return;
+                }
 
                 Room.SendMessage(new UserChangeComposer(User, false));
             }

@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Neon.Communication.Packets.Outgoing.Rooms.Engine
+﻿namespace Neon.Communication.Packets.Outgoing.Rooms.Engine
 {
-    class FurnitureAliasesComposer : ServerPacket
+    internal class FurnitureAliasesComposer : ServerPacket
     {
         public FurnitureAliasesComposer()
             : base(ServerPacketHeader.FurnitureAliasesMessageComposer)
         {
-            base.WriteInteger(0);          
+            base.WriteInteger(0);
         }
     }
 }

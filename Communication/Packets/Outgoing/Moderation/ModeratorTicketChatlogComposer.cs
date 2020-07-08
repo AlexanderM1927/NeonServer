@@ -4,7 +4,7 @@ using Neon.Utilities;
 
 namespace Neon.Communication.Packets.Outgoing.Moderation
 {
-    class ModeratorTicketChatlogComposer : ServerPacket
+    internal class ModeratorTicketChatlogComposer : ServerPacket
     {
         public ModeratorTicketChatlogComposer(ModerationTicket ticket, RoomData roomData, double timestamp)
               : base(ServerPacketHeader.ModeratorTicketChatlogMessageComposer)

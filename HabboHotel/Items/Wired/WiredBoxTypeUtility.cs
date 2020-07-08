@@ -1,11 +1,9 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Collections.Generic;
 
 namespace Neon.HabboHotel.Items.Wired
 {
-    static class WiredBoxTypeUtility
+    internal static class WiredBoxTypeUtility
     {
         public static WiredBoxType FromWiredId(int Id)
         {
@@ -30,7 +28,7 @@ namespace Neon.HabboHotel.Items.Wired
                 case 8:
                     return WiredBoxType.TriggerWalkOnFurni;
                 case 9:
-                    return WiredBoxType.TriggerWalkOffFurni;        
+                    return WiredBoxType.TriggerWalkOffFurni;
                 case 10:
                     return WiredBoxType.EffectKickUser;
                 case 11:
@@ -197,6 +195,10 @@ namespace Neon.HabboHotel.Items.Wired
                     return WiredBoxType.EffectGiveUserCredits;
                 case 99:
                     return WiredBoxType.EffectSendYouTubeVideo;
+                case 100:
+                    return WiredBoxType.EffectShowAlertPHBox;
+                case 101:
+                    return WiredBoxType.TriggerScoreAchieved;
             }
         }
 
@@ -232,6 +234,7 @@ namespace Neon.HabboHotel.Items.Wired
                 case WiredBoxType.EffectAddRewardPoints:
                     return 6;
                 case WiredBoxType.TriggerRoomEnter:
+                case WiredBoxType.EffectShowAlertPHBox:
                 case WiredBoxType.EffectShowMessage:
                 case WiredBoxType.SendCustomMessageBox:
                 case WiredBoxType.EffectProgressUserAchievement:
@@ -331,17 +334,27 @@ namespace Neon.HabboHotel.Items.Wired
             List<int> BlockedItems = new List<int>();
 
             if (Box.Type != WiredBoxType.EffectShowMessage && Box.Type != WiredBoxType.EffectMuteTriggerer && Box.Type != WiredBoxType.EffectTeleportToFurni && Box.Type != WiredBoxType.EffectKickUser && Box.Type != WiredBoxType.ConditionTriggererOnFurni)
+            {
                 return BlockedItems;
+            }
 
             foreach (IWiredItem Item in Triggers)
             {
                 if (Item.Type == WiredBoxType.TriggerRepeat || Item.Type == WiredBoxType.TriggerLongRepeat)
                 {
                     if (!BlockedItems.Contains(Item.Item.GetBaseItem().SpriteId))
+                    {
                         BlockedItems.Add(Item.Item.GetBaseItem().SpriteId);
-                    else continue;
+                    }
+                    else
+                    {
+                        continue;
+                    }
                 }
-                else continue;
+                else
+                {
+                    continue;
+                }
             }
 
             return BlockedItems;
@@ -352,24 +365,37 @@ namespace Neon.HabboHotel.Items.Wired
             List<int> BlockedItems = new List<int>();
 
             if (Box.Type != WiredBoxType.TriggerRepeat || Box.Type != WiredBoxType.TriggerLongRepeat)
+            {
                 return BlockedItems;
+            }
 
             bool HasMoveRotate = Effects.Where(x => x.Type == WiredBoxType.EffectMoveAndRotate).ToList().Count > 0;
             bool HasMoveNear = Effects.Where(x => x.Type == WiredBoxType.EffectMoveFurniToNearestUser).ToList().Count > 0;
+            bool HasMoveToDir = Effects.Where(x => x.Type == WiredBoxType.EffectMoveToDir).ToList().Count > 0;
 
             foreach (IWiredItem Item in Effects)
             {
                 if (Item.Type == WiredBoxType.EffectKickUser || Item.Type == WiredBoxType.EffectMuteTriggerer || Item.Type == WiredBoxType.EffectShowMessage || Item.Type == WiredBoxType.SendCustomMessageBox || Item.Type == WiredBoxType.EffectProgressUserAchievement || Item.Type == WiredBoxType.EffectTeleportToFurni || Item.Type == WiredBoxType.EffectBotFollowsUserBox)
                 {
                     if (!BlockedItems.Contains(Item.Item.GetBaseItem().SpriteId))
+                    {
                         BlockedItems.Add(Item.Item.GetBaseItem().SpriteId);
-                    else continue;
+                    }
+                    else
+                    {
+                        continue;
+                    }
                 }
-                else if ((Item.Type == WiredBoxType.EffectMoveFurniToNearestUser && HasMoveRotate) || (Item.Type == WiredBoxType.EffectMoveAndRotate && HasMoveNear))
+                else if ((Item.Type == WiredBoxType.EffectMoveFurniToNearestUser && (HasMoveRotate || HasMoveNear || HasMoveToDir)) || (Item.Type == WiredBoxType.EffectMoveAndRotate && HasMoveNear))
                 {
                     if (!BlockedItems.Contains(Item.Item.GetBaseItem().SpriteId))
+                    {
                         BlockedItems.Add(Item.Item.GetBaseItem().SpriteId);
-                    else continue;
+                    }
+                    else
+                    {
+                        continue;
+                    }
                 }
             }
 

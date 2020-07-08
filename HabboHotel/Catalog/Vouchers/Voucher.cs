@@ -1,8 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using Neon.Database.Interfaces;
+﻿using Neon.Database.Interfaces;
 
 
 namespace Neon.HabboHotel.Catalog.Vouchers
@@ -17,50 +13,50 @@ namespace Neon.HabboHotel.Catalog.Vouchers
 
         public Voucher(string Code, string Type, int Value, int CurrentUses, int MaxUses)
         {
-            this._code = Code;
-            this._type = VoucherUtility.GetType(Type);
-            this._value = Value;
-            this._currentUses = CurrentUses;
-            this._maxUses = MaxUses;
+            _code = Code;
+            _type = VoucherUtility.GetType(Type);
+            _value = Value;
+            _currentUses = CurrentUses;
+            _maxUses = MaxUses;
         }
 
         public void UpdateUses()
         {
-            this.CurrentUses += 1;
+            CurrentUses += 1;
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
-                dbClient.RunQuery("UPDATE `catalog_vouchers` SET `current_uses` = `current_uses` + '1' WHERE `voucher` = '" + this._code + "' LIMIT 1");
+                dbClient.RunQuery("UPDATE `catalog_vouchers` SET `current_uses` = `current_uses` + '1' WHERE `voucher` = '" + _code + "' LIMIT 1");
             }
         }
 
         public string Code
         {
-            get { return this._code; }
-            set { this._code = value; }
+            get => _code;
+            set => _code = value;
         }
 
         public VoucherType Type
         {
-            get { return this._type; }
-            set { this._type = value; }
+            get => _type;
+            set => _type = value;
         }
 
         public int Value
         {
-            get { return this._value; }
-            set { this._value = value; }
+            get => _value;
+            set => _value = value;
         }
 
         public int CurrentUses
         {
-            get { return this._currentUses; }
-            set { this._currentUses = value; }
+            get => _currentUses;
+            set => _currentUses = value;
         }
 
         public int MaxUses
         {
-            get { return this._maxUses; }
-            set { this._maxUses = value; }
+            get => _maxUses;
+            set => _maxUses = value;
         }
     }
 }

@@ -1,12 +1,12 @@
-﻿using System.Linq;
-using System.Collections.Generic;
-using Neon.HabboHotel.Rooms;
+﻿using Neon.Communication.Packets.Outgoing.Catalog;
 using Neon.HabboHotel.GameClients;
-using Neon.Communication.Packets.Outgoing.Catalog;
+using Neon.HabboHotel.Rooms;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Neon.Communication.Packets.Incoming.Catalog
 {
-    class GetPromotableRoomsEvent : IPacketEvent
+    internal class GetPromotableRoomsEvent : IPacketEvent
     {
         public void Parse(GameClient Session, ClientPacket Packet)
         {

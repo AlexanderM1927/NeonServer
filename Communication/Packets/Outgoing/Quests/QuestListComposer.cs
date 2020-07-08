@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-using Neon.Communication.Packets.Incoming;
+﻿using Neon.HabboHotel.GameClients;
 using Neon.HabboHotel.Quests;
-using Neon.HabboHotel.GameClients;
+using System.Collections.Generic;
 
 namespace Neon.Communication.Packets.Outgoing.Quests
 {
@@ -15,19 +12,23 @@ namespace Neon.Communication.Packets.Outgoing.Quests
             base.WriteInteger(UserQuests.Count);
 
             // Active ones first
-            foreach (var UserQuest in UserQuests)
+            foreach (KeyValuePair<string, Quest> UserQuest in UserQuests)
             {
                 if (UserQuest.Value == null)
+                {
                     continue;
+                }
 
                 SerializeQuest(this, Session, UserQuest.Value, UserQuest.Key);
             }
 
             // Dead ones last
-            foreach (var UserQuest in UserQuests)
+            foreach (KeyValuePair<string, Quest> UserQuest in UserQuests)
             {
                 if (UserQuest.Value != null)
+                {
                     continue;
+                }
 
                 SerializeQuest(this, Session, UserQuest.Value, UserQuest.Key);
             }
@@ -38,14 +39,18 @@ namespace Neon.Communication.Packets.Outgoing.Quests
         private void SerializeQuest(ServerPacket Message, GameClient Session, Quest Quest, string Category)
         {
             if (Message == null || Session == null)
+            {
                 return;
+            }
 
             int AmountInCat = NeonEnvironment.GetGame().GetQuestManager().GetAmountOfQuestsInCategory(Category);
             int Number = Quest == null ? AmountInCat : Quest.Number - 1;
             int UserProgress = Quest == null ? 0 : Session.GetHabbo().GetQuestProgress(Quest.Id);
 
             if (Quest != null && Quest.IsCompleted(UserProgress))
+            {
                 Number++;
+            }
 
             Message.WriteString(Category);
             Message.WriteInteger(Number);  // Quest progress in this cat

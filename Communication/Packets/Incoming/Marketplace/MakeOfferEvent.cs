@@ -1,17 +1,13 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Items;
-using Neon.HabboHotel.Catalog.Utilities;
+﻿
 using Neon.Communication.Packets.Outgoing.Marketplace;
 using Neon.Database.Interfaces;
+using Neon.HabboHotel.Catalog.Utilities;
+using Neon.HabboHotel.Items;
 
 
 namespace Neon.Communication.Packets.Incoming.Marketplace
 {
-    class MakeOfferEvent : IPacketEvent
+    internal class MakeOfferEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
@@ -38,11 +34,13 @@ namespace Neon.Communication.Packets.Incoming.Marketplace
                 return;
             }
 
-            int Comission = NeonEnvironment.GetGame().GetCatalog().GetMarketplace().CalculateComissionPrice((float)SellingPrice);
+            int Comission = NeonEnvironment.GetGame().GetCatalog().GetMarketplace().CalculateComissionPrice(SellingPrice);
             int TotalPrice = SellingPrice + Comission;
             int ItemType = 1;
             if (Item.GetBaseItem().Type == 'i')
+            {
                 ItemType++;
+            }
 
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {

@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Neon.Communication.Packets.Outgoing.Marketplace
+﻿namespace Neon.Communication.Packets.Outgoing.Marketplace
 {
-    class MarketplaceCanMakeOfferResultComposer : ServerPacket
+    internal class MarketplaceCanMakeOfferResultComposer : ServerPacket
     {
         public MarketplaceCanMakeOfferResultComposer(int Result)
             : base(ServerPacketHeader.MarketplaceCanMakeOfferResultMessageComposer)

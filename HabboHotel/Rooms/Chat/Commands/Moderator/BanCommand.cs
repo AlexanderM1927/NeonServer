@@ -1,26 +1,17 @@
-﻿using System;
-using Neon.HabboHotel.Users;
+﻿using Neon.Database.Interfaces;
 using Neon.HabboHotel.GameClients;
-
-
 using Neon.HabboHotel.Moderation;
-
-using Neon.Database.Interfaces;
+using Neon.HabboHotel.Users;
+using System;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
 {
-    class BanCommand : IChatCommand
+    internal class BanCommand : IChatCommand
     {
 
-        public string PermissionRequired
-        {
-            get { return "command_ban"; }
-        }
+        public string PermissionRequired => "command_ban";
 
-        public string Parameters
-        {
-            get { return "%usuario% %duración% %razón% "; }
-        }
+        public string Parameters => "%usuario% %duración% %razón% ";
 
         public string Description
         {
@@ -44,7 +35,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
 
             if (Habbo.GetPermissions().HasRight("mod_soft_ban") && !Session.GetHabbo().GetPermissions().HasRight("mod_ban_any"))
             {
-                Session.SendWhisper("Vaya... al parecer no puedes banear a " + Params[1] +".");
+                Session.SendWhisper("Vaya... al parecer no puedes banear a " + Params[1] + ".");
                 return;
             }
 
@@ -52,15 +43,23 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
 
             double Expire;
             if (string.IsNullOrEmpty(Hours) || Hours == "perm")
+            {
                 Expire = NeonEnvironment.GetUnixTimestamp() + 78892200;
+            }
             else
+            {
                 Expire = (NeonEnvironment.GetUnixTimestamp() + (Convert.ToDouble(Hours) * 3600));
+            }
 
             string Reason;
             if (Params.Length >= 4)
+            {
                 Reason = CommandManager.MergeParams(Params, 3);
+            }
             else
+            {
                 Reason = "Sin razón.";
+            }
 
             string Username = Habbo.Username;
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
@@ -72,7 +71,9 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
 
             GameClient TargetClient = NeonEnvironment.GetGame().GetClientManager().GetClientByUsername(Username);
             if (TargetClient != null)
+            {
                 TargetClient.Disconnect();
+            }
 
             Session.SendWhisper("Excelente, ha sido baneado el usuario '" + Username + "' por " + Hours + " hhora(s) con la razon '" + Reason + "'!");
         }

@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
-
+﻿using Neon.HabboHotel.GameClients;
 using Neon.HabboHotel.Items;
-using Neon.HabboHotel.GameClients;
+using System.Collections.Generic;
 
 namespace Neon.HabboHotel.Rooms.Trading
 {
@@ -24,10 +23,11 @@ namespace Neon.HabboHotel.Rooms.Trading
 
         public RoomUser GetRoomUser()
         {
-            Room Room;
 
-            if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(RoomId, out Room))
+            if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(RoomId, out Room Room))
+            {
                 return null;
+            }
 
             return Room.GetRoomUserManager().GetRoomUserByHabbo(UserId);
         }

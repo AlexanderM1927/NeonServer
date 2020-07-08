@@ -1,9 +1,9 @@
-﻿using System;
-using Neon.HabboHotel.GameClients;
+﻿using Neon.HabboHotel.GameClients;
+using System;
 
 namespace Neon.HabboHotel.Items.Interactor
 {
-    class InteractorFreezeTimer : IFurniInteractor
+    internal class InteractorFreezeTimer : IFurniInteractor
     {
         public void OnPlace(GameClient Session, Item Item)
         {
@@ -22,9 +22,8 @@ namespace Neon.HabboHotel.Items.Interactor
                 return;
             }
 
-            int oldValue = 0;
 
-            if (!int.TryParse(Item.ExtraData, out oldValue))
+            if (!int.TryParse(Item.ExtraData, out int oldValue))
             {
                 Item.ExtraData = "30";
                 oldValue = 30;
@@ -44,25 +43,40 @@ namespace Neon.HabboHotel.Items.Interactor
                 else
                 {
                     if (oldValue < 30)
+                    {
                         oldValue = 30;
+                    }
                     else if (oldValue == 30)
+                    {
                         oldValue = 60;
+                    }
                     else if (oldValue == 60)
+                    {
                         oldValue = 120;
+                    }
                     else if (oldValue == 120)
+                    {
                         oldValue = 180;
+                    }
                     else if (oldValue == 180)
+                    {
                         oldValue = 300;
+                    }
                     else if (oldValue == 300)
+                    {
                         oldValue = 600;
+                    }
                     else
+                    {
                         oldValue = 0;
+                    }
+
                     Item.UpdateNeeded = false;
                 }
             }
             else if (Request == 1 || Request == 0)
             {
-                if(Request == 1 && oldValue == 0)
+                if (Request == 1 && oldValue == 0)
                 {
                     Item.ExtraData = "30";
                     oldValue = 30;
@@ -100,7 +114,9 @@ namespace Neon.HabboHotel.Items.Interactor
         public void OnWiredTrigger(Item Item)
         {
             if (Item.GetRoom().GetFreeze().GameIsStarted)
+            {
                 Item.GetRoom().GetFreeze().StopGame(true);
+            }
 
             Item.pendingReset = true;
             Item.UpdateNeeded = true;

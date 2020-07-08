@@ -1,19 +1,21 @@
-﻿using System.Linq;
+﻿using Neon.HabboHotel.Items;
 using Neon.HabboHotel.Rooms.Trading;
-using Neon.HabboHotel.Items;
+using System.Linq;
 
 
 namespace Neon.Communication.Packets.Outgoing.Inventory.Trading
 {
-    class TradingUpdateComposer : ServerPacket
+    internal class TradingUpdateComposer : ServerPacket
     {
         public TradingUpdateComposer(Trade Trade)
             : base(ServerPacketHeader.TradingUpdateMessageComposer)
         {
             if (Trade.Users.Count() < 2)
+            {
                 return;
-            
-            foreach(TradeUser user in Trade.Users)
+            }
+
+            foreach (TradeUser user in Trade.Users)
             {
                 base.WriteInteger(user.GetClient().GetHabbo().Id);
                 base.WriteInteger(user.OfferedItems.Count);
@@ -24,7 +26,7 @@ namespace Neon.Communication.Packets.Outgoing.Inventory.Trading
                 base.WriteInteger(0);
 
             }
-            
+
 
         }
         private void SerializeUserItems(TradeUser User)
@@ -48,7 +50,9 @@ namespace Neon.Communication.Packets.Outgoing.Inventory.Trading
                 base.WriteInteger(0);
                 base.WriteInteger(0);
                 if (Item.Data.Type.ToString().ToUpper() == "S")
+                {
                     base.WriteInteger(0);
+                }
             }
 
         }

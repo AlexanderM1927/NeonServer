@@ -1,9 +1,8 @@
-﻿using System;
+﻿using Neon.Database.Interfaces;
+using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Text;
-using System.Collections.Generic;
-
-using Neon.Database.Interfaces;
 
 
 
@@ -41,11 +40,12 @@ namespace Neon.HabboHotel.Items.Data.Moodlight
 
             Enabled = NeonEnvironment.EnumToBool(Row["enabled"].ToString());
             CurrentPreset = Convert.ToInt32(Row["current_preset"]);
-            Presets = new List<MoodlightPreset>();
-
-            Presets.Add(GeneratePreset(Convert.ToString(Row["preset_one"])));
-            Presets.Add(GeneratePreset(Convert.ToString(Row["preset_two"])));
-            Presets.Add(GeneratePreset(Convert.ToString(Row["preset_three"])));
+            Presets = new List<MoodlightPreset>
+            {
+                GeneratePreset(Convert.ToString(Row["preset_one"])),
+                GeneratePreset(Convert.ToString(Row["preset_two"])),
+                GeneratePreset(Convert.ToString(Row["preset_three"]))
+            };
         }
 
         public void Enable()
@@ -110,7 +110,7 @@ namespace Neon.HabboHotel.Items.Data.Moodlight
 
         public static MoodlightPreset GeneratePreset(string Data)
         {
-            String[] Bits = Data.Split(',');
+            string[] Bits = Data.Split(',');
 
             if (!IsValidColor(Bits[0]))
             {
@@ -165,7 +165,7 @@ namespace Neon.HabboHotel.Items.Data.Moodlight
         public string GenerateExtraData()
         {
             MoodlightPreset Preset = GetPreset(CurrentPreset);
-            var SB = new StringBuilder();
+            StringBuilder SB = new StringBuilder();
 
             SB.Append(Enabled == true ? 2 : 1);
 

@@ -1,15 +1,11 @@
-﻿using System;
-using System.Linq;
-using System.Text;
+﻿using Neon.Database.Interfaces;
+using System;
 using System.Data;
-using System.Collections.Generic;
-
-using Neon.Database.Interfaces;
 
 
 namespace Neon.Communication.Packets.Outgoing.Marketplace
 {
-    class MarketPlaceOwnOffersComposer : ServerPacket
+    internal class MarketPlaceOwnOffersComposer : ServerPacket
     {
         public MarketPlaceOwnOffersComposer(int UserId)
             : base(ServerPacketHeader.MarketPlaceOwnOffersMessageComposer)
@@ -43,7 +39,7 @@ namespace Neon.Communication.Packets.Outgoing.Marketplace
                         base.WriteInteger(Convert.ToInt32(row["sprite_id"]));
 
                         base.WriteInteger(256);
-                       base.WriteString("");
+                        base.WriteString("");
                         base.WriteInteger(Convert.ToInt32(row["limited_number"]));
                         base.WriteInteger(Convert.ToInt32(row["limited_stack"]));
 

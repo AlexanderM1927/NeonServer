@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Neon.Communication.Packets.Outgoing.Rooms.Avatar
+﻿namespace Neon.Communication.Packets.Outgoing.Rooms.Avatar
 {
-    class CarryObjectComposer : ServerPacket
+    internal class CarryObjectComposer : ServerPacket
     {
         public CarryObjectComposer(int virtualID, int itemID)
             : base(ServerPacketHeader.CarryObjectMessageComposer)

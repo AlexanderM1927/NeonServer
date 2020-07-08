@@ -1,13 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Text;
+﻿using Neon.HabboHotel.Catalog.Marketplace;
 using System.Collections.Generic;
-
-using Neon.HabboHotel.Catalog.Marketplace;
 
 namespace Neon.Communication.Packets.Outgoing.Marketplace
 {
-    class MarketPlaceOffersComposer : ServerPacket
+    internal class MarketPlaceOffersComposer : ServerPacket
     {
         public MarketPlaceOffersComposer(int MinCost, int MaxCost, Dictionary<int, MarketOffer> dictionary, Dictionary<int, int> dictionary2)
             : base(ServerPacketHeader.MarketPlaceOffersMessageComposer)
@@ -23,7 +19,7 @@ namespace Neon.Communication.Packets.Outgoing.Marketplace
                     base.WriteInteger(pair.Value.SpriteId);
 
                     base.WriteInteger(256);
-                   base.WriteString("");
+                    base.WriteString("");
                     base.WriteInteger(pair.Value.LimitedNumber);
                     base.WriteInteger(pair.Value.LimitedStack);
 

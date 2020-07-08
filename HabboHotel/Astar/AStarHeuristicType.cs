@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Neon.HabboHotel.Astar
+﻿namespace Neon.HabboHotel.Astar
 {
     public enum AStarHeuristicType
     {

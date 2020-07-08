@@ -1,11 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-namespace Neon.Communication.Packets.Outgoing.Inventory.Trading
+﻿namespace Neon.Communication.Packets.Outgoing.Inventory.Trading
 {
-    class TradingConfirmedComposer : ServerPacket
+    internal class TradingConfirmedComposer : ServerPacket
     {
         public TradingConfirmedComposer(int UserId, bool Confirmed)
             : base(ServerPacketHeader.TradingConfirmedMessageComposer)

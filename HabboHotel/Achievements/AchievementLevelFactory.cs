@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Neon.Database.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Data;
-using Neon.Database.Interfaces;
 
 namespace Neon.HabboHotel.Achievements
 {
@@ -37,7 +37,9 @@ namespace Neon.HabboHotel.Achievements
                             Achievements.Add(groupName, Achievement);
                         }
                         else
+                        {
                             Achievements[groupName].AddLevel(AchievementLevel);
+                        }
                     }
                 }
             }

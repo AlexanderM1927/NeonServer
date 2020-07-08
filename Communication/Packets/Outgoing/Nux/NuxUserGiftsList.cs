@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using Neon.Database.Interfaces;
-using Neon;
-using Neon.HabboHotel.Items;
-using Neon.Communication.Packets.Outgoing;
+﻿using Neon.Database.Interfaces;
 
 namespace Neon.Communication.Packets.Outgoing.Nux
 {
@@ -17,10 +11,12 @@ namespace Neon.Communication.Packets.Outgoing.Nux
             NuxUserGiftsList = null;
 
             dbClient.SetQuery("SELECT * FROM nuxgifts_presents");
-            var row = dbClient.getRow();
+            System.Data.DataRow row = dbClient.getRow();
 
             if (row == null)
+            {
                 return;
+            }
 
             NuxUserGiftsList = new NuxUserGiftsList((string)row["types"], (string)row["rewards"]);
         }

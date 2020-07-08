@@ -1,17 +1,10 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.Communication.Packets.Incoming;
+﻿using Neon.Database.Interfaces;
 using Neon.HabboHotel.GameClients;
-using Neon.Communication.Packets.Outgoing.Sound;
-using Neon.Database.Interfaces;
 
 
 namespace Neon.Communication.Packets.Incoming.Users
 {
-    class SetUserFocusPreferenceEvent : IPacketEvent
+    internal class SetUserFocusPreferenceEvent : IPacketEvent
     {
         public void Parse(GameClient Session, ClientPacket Packet)
         {

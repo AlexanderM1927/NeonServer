@@ -1,14 +1,9 @@
 ﻿using Neon.HabboHotel.GameClients;
 using Neon.HabboHotel.Rooms;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.HabboHotel.Items.Interactor
 {
-    class InteractorMuteSignal : IFurniInteractor
+    internal class InteractorMuteSignal : IFurniInteractor
     {
         private const int Modes = 1;
 
@@ -21,8 +16,8 @@ namespace Neon.HabboHotel.Items.Interactor
             {
                 return;
             }
-            var currentMode = 0;
-            var newMode = 0;
+            int currentMode = 0;
+            int newMode = 0;
 
             try
             {

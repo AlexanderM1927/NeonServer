@@ -1,29 +1,34 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Users;
+﻿using Neon.HabboHotel.Users;
 using Neon.HabboHotel.Users.Messenger;
 using Neon.HabboHotel.Users.Relationships;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Neon.Communication.Packets.Outgoing.Messenger
 {
-    class BuddyListComposer : ServerPacket
+    internal class BuddyListComposer : ServerPacket
     {
         public BuddyListComposer(ICollection<MessengerBuddy> Friends, Habbo Player)
             : base(ServerPacketHeader.BuddyListMessageComposer)
         {
-            var friendCount = Friends.Count;
-            if (Player._guidelevel >= 1) friendCount++;
-            if (Player.Rank >= 5) friendCount++;
+            int friendCount = Friends.Count;
+            if (Player._guidelevel >= 1)
+            {
+                friendCount++;
+            }
+
+            if (Player.Rank >= 5)
+            {
+                friendCount++;
+            }
 
             base.WriteInteger(1);
             base.WriteInteger(0);
-            var groups = NeonEnvironment.GetGame().GetGroupManager().GetGroupsForUser(Player.Id).Where(c => c.HasChat).ToList();
+            List<HabboHotel.Groups.Group> groups = NeonEnvironment.GetGame().GetGroupManager().GetGroupsForUser(Player.Id).Where(c => c.HasChat).ToList();
             base.WriteInteger(friendCount + groups.Count);
 
-            foreach (var gp in groups.ToList())
+            foreach (HabboHotel.Groups.Group gp in groups.ToList())
             {
                 base.WriteInteger(int.MinValue + gp.Id);
                 base.WriteString(gp.Name);
@@ -40,7 +45,7 @@ namespace Neon.Communication.Packets.Outgoing.Messenger
                 base.WriteBoolean(false);//Pocket Habbo user.
                 base.WriteShort(0);
 
-                var group = new ServerPacket(ServerPacketHeader.FriendListUpdateMessageComposer);
+                ServerPacket group = new ServerPacket(ServerPacketHeader.FriendListUpdateMessageComposer);
                 group.WriteInteger(1);//Category Count
                 group.WriteInteger(1);
                 group.WriteString("Chat de Grupos");

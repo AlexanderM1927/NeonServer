@@ -1,20 +1,15 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using System.Collections.Concurrent;
-
+﻿using Neon.Communication.Packets.Incoming;
 using Neon.HabboHotel.Rooms;
 using Neon.HabboHotel.Users;
-using Neon.Communication.Packets.Incoming;
+using System.Collections.Concurrent;
 
 namespace Neon.HabboHotel.Items.Wired.Boxes.Conditions
 {
-    class ActorHasHandItemBox : IWiredItem
+    internal class ActorHasHandItemBox : IWiredItem
     {
         public Room Instance { get; set; }
         public Item Item { get; set; }
-        public WiredBoxType Type { get { return WiredBoxType.ConditionActorHasHandItemBox; } }
+        public WiredBoxType Type => WiredBoxType.ConditionActorHasHandItemBox;
         public ConcurrentDictionary<int, Item> SetItems { get; set; }
         public string StringData { get; set; }
         public bool BoolData { get; set; }
@@ -25,32 +20,40 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Conditions
             this.Instance = Instance;
             this.Item = Item;
 
-            this.SetItems = new ConcurrentDictionary<int, Item>();
+            SetItems = new ConcurrentDictionary<int, Item>();
         }
 
         public void HandleSave(ClientPacket Packet)
         {
             int Unknown = Packet.PopInt();
             string Handitem = Packet.PopString();
-            
-            this.StringData = Handitem;
+
+            StringData = Handitem;
         }
 
         public bool Execute(params object[] Params)
         {
-            if (Params.Length == 0 || Instance == null || String.IsNullOrEmpty(this.StringData))
+            if (Params.Length == 0 || Instance == null || string.IsNullOrEmpty(StringData))
+            {
                 return false;
+            }
 
             Habbo Player = (Habbo)Params[0];
             if (Player == null)
+            {
                 return false;
+            }
 
             RoomUser User = Instance.GetRoomUserManager().GetRoomUserByHabbo(Player.Id);
             if (User == null)
+            {
                 return false;
+            }
 
-            if (User.CarryItemID != int.Parse(this.StringData))
+            if (User.CarryItemID != int.Parse(StringData))
+            {
                 return false;
+            }
 
             return true;
         }

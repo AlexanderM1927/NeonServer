@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Neon.Communication.Packets.Outgoing.Navigator;
 using Neon.HabboHotel.GameClients;
-using Neon.Communication.Packets.Incoming;
-using Neon.Communication.Packets.Outgoing.Navigator;
 using Neon.HabboHotel.Navigator;
+using System.Collections.Generic;
 
 namespace Neon.Communication.Packets.Incoming.Navigator
 {
-    class GetNavigatorFlatsEvent : IPacketEvent
+    internal class GetNavigatorFlatsEvent : IPacketEvent
     {
         public void Parse(GameClient Session, ClientPacket Packet)
         {

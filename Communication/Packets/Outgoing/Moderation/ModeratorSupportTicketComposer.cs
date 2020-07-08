@@ -1,11 +1,10 @@
-﻿using System;
-
+﻿using Neon.HabboHotel.Moderation;
 using Neon.Utilities;
-using Neon.HabboHotel.Moderation;
+using System;
 
 namespace Neon.Communication.Packets.Outgoing.Moderation
 {
-    class ModeratorSupportTicketComposer : ServerPacket
+    internal class ModeratorSupportTicketComposer : ServerPacket
     {
         public ModeratorSupportTicketComposer(int Id, ModerationTicket Ticket)
           : base(ServerPacketHeader.ModeratorSupportTicketMessageComposer)

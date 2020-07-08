@@ -1,32 +1,33 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
+﻿using Neon.Communication.Packets.Outgoing.Rooms.AI.Bots;
 using Neon.HabboHotel.Rooms;
-using Neon.Communication.Packets.Outgoing.Rooms.AI.Bots;
 using Neon.HabboHotel.Rooms.AI.Speech;
+using System.Linq;
 
 
 namespace Neon.Communication.Packets.Incoming.Rooms.AI.Bots
 {
-    class OpenBotActionEvent : IPacketEvent
+    internal class OpenBotActionEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
             if (!Session.GetHabbo().InRoom)
+            {
                 return;
+            }
 
             int BotId = Packet.PopInt();
             int ActionId = Packet.PopInt();
 
             Room Room = Session.GetHabbo().CurrentRoom;
             if (Room == null)
+            {
                 return;
+            }
 
-            RoomUser BotUser = null;
-            if (!Room.GetRoomUserManager().TryGetBot(BotId, out BotUser))
+            if (!Room.GetRoomUserManager().TryGetBot(BotId, out RoomUser BotUser))
+            {
                 return;
+            }
 
             string BotSpeech = "";
             foreach (RandomSpeech Speech in BotUser.BotData.RandomSpeech.ToList())
@@ -42,7 +43,9 @@ namespace Neon.Communication.Packets.Incoming.Rooms.AI.Bots
             BotSpeech += BotUser.BotData.MixSentences;
 
             if (ActionId == 2 || ActionId == 5)
+            {
                 Session.SendMessage(new OpenBotActionComposer(BotUser, ActionId, BotSpeech));
+            }
         }
     }
 }

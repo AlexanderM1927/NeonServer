@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Neon.Communication.Packets.Outgoing.Catalog
+﻿namespace Neon.Communication.Packets.Outgoing.Catalog
 {
-    class PurchaseErrorComposer : ServerPacket
+    internal class PurchaseErrorComposer : ServerPacket
     {
         public PurchaseErrorComposer(int ErrorCode)
             : base(ServerPacketHeader.PurchaseErrorMessageComposer)

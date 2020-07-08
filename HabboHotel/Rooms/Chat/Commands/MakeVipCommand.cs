@@ -5,20 +5,11 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands
 {
     internal class MakeVipCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_makevip"; }
-        }
+        public string PermissionRequired => "command_makevip";
 
-        public string Parameters
-        {
-            get { return "%username% %days%"; }
-        }
+        public string Parameters => "%username% %days%";
 
-        public string Description
-        {
-            get { return "Dale VIP a un usuario"; }
-        }
+        public string Description => "Dale VIP a un usuario";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {

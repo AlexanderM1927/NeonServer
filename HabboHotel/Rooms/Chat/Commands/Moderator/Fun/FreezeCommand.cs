@@ -1,29 +1,14 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.GameClients;
+﻿using Neon.HabboHotel.GameClients;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator.Fun
 {
-    class FreezeCommand : IChatCommand
+    internal class FreezeCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_freeze"; }
-        }
+        public string PermissionRequired => "command_freeze";
 
-        public string Parameters
-        {
-            get { return "%username%"; }
-        }
+        public string Parameters => "%username%";
 
-        public string Description
-        {
-            get { return "Congela a un usuario y no podra moverse"; }
-        }
+        public string Description => "Congela a un usuario y no podra moverse";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {
@@ -42,7 +27,9 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator.Fun
 
             RoomUser TargetUser = Session.GetHabbo().CurrentRoom.GetRoomUserManager().GetRoomUserByHabbo(Params[1]);
             if (TargetUser != null)
+            {
                 TargetUser.Frozen = true;
+            }
 
             Session.SendWhisper("Congelado correctamente " + TargetClient.GetHabbo().Username + "!");
         }

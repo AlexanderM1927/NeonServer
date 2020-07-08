@@ -1,32 +1,17 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.GameClients;
-using Neon.Communication.Packets.Outgoing.Rooms.Engine;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Engine;
 using Neon.Database.Interfaces;
+using Neon.HabboHotel.GameClients;
 
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.User.Fun
 {
-    class MimicCommand : IChatCommand
+    internal class MimicCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_mimic"; }
-        }
+        public string PermissionRequired => "command_mimic";
 
-        public string Parameters
-        {
-            get { return "%username%"; }
-        }
+        public string Parameters => "%username%";
 
-        public string Description
-        {
-            get { return "Copiar la ropa de otro usuario conectad@."; }
-        }
+        public string Description => "Copiar la ropa de otro usuario conectad@.";
 
         public void Execute(GameClient Session, Room Room, string[] Params)
         {

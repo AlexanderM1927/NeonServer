@@ -47,7 +47,7 @@ namespace Neon.HabboHotel.Items.Interactor
 
             if (NewMode == 0)
             {
-                if (!Item.GetRoom().GetGameMap().itemCanBePlacedHere(Item.GetX, Item.GetY))
+                if (!Item.GetRoom().GetGameMap().ItemCanBePlacedHere(Item.GetX, Item.GetY))
                 {
                     return;
                 }
@@ -55,7 +55,9 @@ namespace Neon.HabboHotel.Items.Interactor
 
             if (Item.GetRoom() == null || Item.GetRoom().GetGameMap() == null ||
                Item.GetRoom().GetGameMap().SquareHasUsers(Item.GetX, Item.GetY))
+            {
                 return;
+            }
 
             Item.ExtraData = NewMode.ToString();
             Item.UpdateState();
@@ -97,7 +99,7 @@ namespace Neon.HabboHotel.Items.Interactor
 
             if (NewMode == 0)
             {
-                if (!Item.GetRoom().GetGameMap().itemCanBePlacedHere(Item.GetX, Item.GetY))
+                if (!Item.GetRoom().GetGameMap().ItemCanBePlacedHere(Item.GetX, Item.GetY))
                 {
                     return;
                 }
@@ -105,7 +107,9 @@ namespace Neon.HabboHotel.Items.Interactor
 
             if (Item.GetRoom() == null || Item.GetRoom().GetGameMap() == null ||
                Item.GetRoom().GetGameMap().SquareHasUsers(Item.GetX, Item.GetY))
+            {
                 return;
+            }
 
             Item.ExtraData = NewMode.ToString();
             Item.UpdateState();

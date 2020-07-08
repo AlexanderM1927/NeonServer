@@ -1,14 +1,10 @@
 ﻿using Neon.HabboHotel.GameClients;
 using Neon.HabboHotel.Groups.Forums;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.Communication.Packets.Outgoing.Groups
 {
-    class ForumsListDataComposer : ServerPacket
+    internal class ForumsListDataComposer : ServerPacket
     {
         public ForumsListDataComposer(ICollection<GroupForum> Forums, GameClient Session, int ViewOrder = 0, int StartIndex = 0, int MaxLength = 20)
             : base(ServerPacketHeader.ForumsListDataMessageComposer)
@@ -19,10 +15,10 @@ namespace Neon.Communication.Packets.Outgoing.Groups
 
             base.WriteInteger(Forums.Count); // Forum List Count
 
-            foreach (var Forum in Forums)
+            foreach (GroupForum Forum in Forums)
             {
-                var lastpost = Forum.GetLastPost();
-                var isn = lastpost == null;
+                GroupForumThreadPost lastpost = Forum.GetLastPost();
+                bool isn = lastpost == null;
                 base.WriteInteger(Forum.Id); //Maybe ID
                 base.WriteString(Forum.Name); //Forum name
                 base.WriteString(Forum.Description); //idk

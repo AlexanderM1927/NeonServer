@@ -1,12 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Games;
-using Neon.HabboHotel.Users;
-
-namespace Neon.Communication.Packets.Outgoing.GameCenter
+﻿namespace Neon.Communication.Packets.Outgoing.GameCenter
 {
     public class GameCenterPrizeMessageComposer : ServerPacket
     {
@@ -21,7 +13,7 @@ namespace Neon.Communication.Packets.Outgoing.GameCenter
             base.WriteInteger(3);
             base.WriteBoolean(false);
             base.WriteInteger(10000);
-            base.WriteBoolean(true);        
+            base.WriteBoolean(true);
         }
     }
 }

@@ -1,21 +1,15 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
 using Neon.Database.Interfaces;
 using Neon.HabboHotel.Groups;
-using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
-
 using Neon.HabboHotel.Rooms;
 
 namespace Neon.Communication.Packets.Incoming.Groups
 {
-    class DeleteGroupEvent : IPacketEvent
+    internal class DeleteGroupEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
-            Group Group = null;
-            if (!NeonEnvironment.GetGame().GetGroupManager().TryGetGroup(Packet.PopInt(), out Group))
+            if (!NeonEnvironment.GetGame().GetGroupManager().TryGetGroup(Packet.PopInt(), out Group Group))
             {
                 Session.SendMessage(new RoomNotificationComposer("Oops!",
                  "¡No se ha encontrado este grupo!", "nothing", ""));

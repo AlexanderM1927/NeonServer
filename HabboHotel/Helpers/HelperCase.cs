@@ -1,10 +1,7 @@
 ﻿using Neon.Communication.Packets.Outgoing.Help.Helpers;
 using Neon.HabboHotel.GameClients;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.HabboHotel.Helpers
 {
@@ -14,26 +11,14 @@ namespace Neon.HabboHotel.Helpers
         public HelpCaseType Type;
         public string Message;
         public HabboHelper Helper;
-        int Expire;
+        private readonly int Expire;
 
 
-        public IHelperElement OtherElement
-        {
-            get
-            {
-                return Helper;
-            }
-        }
+        public IHelperElement OtherElement => Helper;
 
         public List<HabboHelper> DeclinedHelpers;
 
-        public int ReamingToExpire
-        {
-            get
-            {
-                return Expire - (int)NeonEnvironment.GetUnixTimestamp();
-            }
-        }
+        public int ReamingToExpire => Expire - (int)NeonEnvironment.GetUnixTimestamp();
 
         public HelperCase(GameClient client, string msg, int category)
         {
@@ -48,9 +33,11 @@ namespace Neon.HabboHotel.Helpers
         {
             DeclinedHelpers.Add(Helper);
 
-            var newhelper = HelperToolsManager.GetHelpersToCase(this).FirstOrDefault();
+            HabboHelper newhelper = HelperToolsManager.GetHelpersToCase(this).FirstOrDefault();
             if (newhelper != null)
+            {
                 HelperToolsManager.InvinteHelpCall(newhelper, this);
+            }
             else
             {
                 Session.SendMessage(new CallForHelperErrorComposer(1));

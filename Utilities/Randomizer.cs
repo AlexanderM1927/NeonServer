@@ -1,22 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.Utilities
 {
     public class Randomizer
     {
-        private static Random rand = new Random();
+        private static readonly Random rand = new Random();
 
-        public static Random GetRandom
-        {
-            get
-            {
-                return rand;
-            }
-        }
+        public static Random GetRandom => rand;
 
         public static int Next()
         {

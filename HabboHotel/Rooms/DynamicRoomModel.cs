@@ -36,7 +36,7 @@ namespace Neon.HabboHotel.Rooms
             MapSizeY = staticModel.MapSizeY;
             ClubOnly = staticModel.ClubOnly;
 
-            this.RelativeHeightmap = string.Empty;
+            RelativeHeightmap = string.Empty;
 
             Generate();
         }
@@ -64,12 +64,12 @@ namespace Neon.HabboHotel.Rooms
                 }
             }
 
-            this.Make();
+            Make();
         }
 
         private void Make()
         {
-            var FloorMap = new StringBuilder();
+            StringBuilder FloorMap = new StringBuilder();
 
             for (int y = 0; y < MapSizeY; y++)
             {
@@ -95,14 +95,14 @@ namespace Neon.HabboHotel.Rooms
                 FloorMap.Append(Convert.ToChar(13));
             }
 
-            this.RelativeHeightmap = FloorMap.ToString();
+            RelativeHeightmap = FloorMap.ToString();
         }
 
         public void refreshArrays()
         {
-            var newSqState = new SquareState[MapSizeX + 1, MapSizeY + 1];
-            var newSqFloorHeight = new short[MapSizeX + 1, MapSizeY + 1];
-            var newSqSeatRot = new byte[MapSizeX + 1, MapSizeY + 1];
+            SquareState[,] newSqState = new SquareState[MapSizeX + 1, MapSizeY + 1];
+            short[,] newSqFloorHeight = new short[MapSizeX + 1, MapSizeY + 1];
+            byte[,] newSqSeatRot = new byte[MapSizeX + 1, MapSizeY + 1];
 
             for (int y = 0; y < MapSizeY; y++)
             {
@@ -129,7 +129,7 @@ namespace Neon.HabboHotel.Rooms
 
         public string GetRelativeHeightmap()
         {
-            return this.RelativeHeightmap;
+            return RelativeHeightmap;
         }
 
 
@@ -143,9 +143,15 @@ namespace Neon.HabboHotel.Rooms
         public void OpenSquare(int x, int y, double z)
         {
             if (z > 9)
+            {
                 z = 9;
+            }
+
             if (z < 0)
+            {
                 z = 0;
+            }
+
             SqFloorHeight[x, y] = (short)z;
             SqState[x, y] = SquareState.OPEN;
         }
@@ -159,9 +165,13 @@ namespace Neon.HabboHotel.Rooms
         public bool DoorIsValid()
         {
             if (DoorX > SqFloorHeight.GetUpperBound(0) || DoorY > SqFloorHeight.GetUpperBound(1))
+            {
                 return false;
+            }
             else
+            {
                 return true;
+            }
         }
 
         public void SetMapsize(int x, int y)

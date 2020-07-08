@@ -1,19 +1,15 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
+﻿using Neon.Communication.Packets.Outgoing.Groups;
+using Neon.Communication.Packets.Outgoing.Rooms.Engine;
+using Neon.Database.Interfaces;
 using Neon.HabboHotel.Groups;
 using Neon.HabboHotel.Items;
-using Neon.Communication.Packets.Outgoing.Groups;
-using Neon.Communication.Packets.Outgoing.Rooms.Engine;
-
-using Neon.Database.Interfaces;
+using System;
+using System.Linq;
 
 
 namespace Neon.Communication.Packets.Incoming.Groups
 {
-    class UpdateGroupColoursEvent : IPacketEvent
+    internal class UpdateGroupColoursEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
@@ -21,12 +17,15 @@ namespace Neon.Communication.Packets.Incoming.Groups
             int Colour1 = Packet.PopInt();
             int Colour2 = Packet.PopInt();
 
-            Group Group = null;
-            if (!NeonEnvironment.GetGame().GetGroupManager().TryGetGroup(GroupId, out Group))
+            if (!NeonEnvironment.GetGame().GetGroupManager().TryGetGroup(GroupId, out Group Group))
+            {
                 return;
-          
+            }
+
             if (Group.CreatorId != Session.GetHabbo().Id)
+            {
                 return;
+            }
 
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
@@ -45,10 +44,14 @@ namespace Neon.Communication.Packets.Incoming.Groups
                 foreach (Item Item in Session.GetHabbo().CurrentRoom.GetRoomItemHandler().GetFloor.ToList())
                 {
                     if (Item == null || Item.GetBaseItem() == null)
+                    {
                         continue;
+                    }
 
                     if (Item.GetBaseItem().InteractionType != InteractionType.GUILD_ITEM && Item.GetBaseItem().InteractionType != InteractionType.GUILD_GATE || Item.GetBaseItem().InteractionType != InteractionType.GUILD_FORUM)
+                    {
                         continue;
+                    }
 
                     Session.GetHabbo().CurrentRoom.SendMessage(new ObjectUpdateComposer(Item, Convert.ToInt32(Item.UserID)));
                 }

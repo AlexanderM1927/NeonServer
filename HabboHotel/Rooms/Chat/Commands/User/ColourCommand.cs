@@ -1,30 +1,11 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.GameClients;
-using Neon.Communication.Packets.Outgoing.Rooms.Chat;
-using Neon.HabboHotel.Users;
-
-namespace Neon.HabboHotel.Rooms.Chat.Commands.User.Fun
+﻿namespace Neon.HabboHotel.Rooms.Chat.Commands.User.Fun
 {
-    class ColourCommand : IChatCommand
+    internal class ColourCommand : IChatCommand
     {
 
-        public string PermissionRequired
-        {
-            get { return "command_dnd"; }
-        }
-        public string Parameters
-        {
-            get { return ""; }
-        }
-        public string Description
-        {
-            get { return "off/red/green/blue/purple"; }
-        }
+        public string PermissionRequired => "command_dnd";
+        public string Parameters => "";
+        public string Description => "off/red/green/blue/purple";
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {
             if (Params.Length == 1)
@@ -48,7 +29,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User.Fun
                 case "purple":
                 case "green":
                     Session.GetHabbo().chatColour = chatColour;
-                    Session.SendWhisper("@"+ Colour +"@Has establecido tu color a: " + Colour + "");
+                    Session.SendWhisper("@" + Colour + "@Has establecido tu color a: " + Colour + "");
                     break;
                 default:
                     Session.SendWhisper("El color: " + Colour + " no existe.");

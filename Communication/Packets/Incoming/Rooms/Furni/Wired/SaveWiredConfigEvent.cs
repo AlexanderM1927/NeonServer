@@ -1,24 +1,24 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms;
+﻿
+using Neon.Communication.Packets.Outgoing.Rooms.Furni.Wired;
 using Neon.HabboHotel.Items;
 using Neon.HabboHotel.Items.Wired;
-using Neon.Communication.Packets.Outgoing.Rooms.Furni.Wired;
+using Neon.HabboHotel.Rooms;
 
 namespace Neon.Communication.Packets.Incoming.Rooms.Furni.Wired
 {
-    class SaveWiredConfigEvent : IPacketEvent
+    internal class SaveWiredConfigEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
             if (Session == null || Session.GetHabbo() == null)
+            {
                 return;
+            }
 
             if (!Session.GetHabbo().InRoom)
+            {
                 return;
+            }
 
             int ItemId = Packet.PopInt();
 
@@ -26,18 +26,25 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Furni.Wired
 
             Room Room = Session.GetHabbo().CurrentRoom;
             if (Room == null)
+            {
                 return;
+            }
 
             if (!Room.CheckRights(Session, false) && !Room.CheckRights(Session, true))
+            {
                 return;
+            }
 
             Item SelectedItem = Room.GetRoomItemHandler().GetItem(ItemId);
             if (SelectedItem == null)
+            {
                 return;
+            }
 
-            IWiredItem Box = null;
-            if (!Session.GetHabbo().CurrentRoom.GetWired().TryGet(ItemId, out Box))
+            if (!Session.GetHabbo().CurrentRoom.GetWired().TryGet(ItemId, out IWiredItem Box))
+            {
                 return;
+            }
 
             if (Box.Type == WiredBoxType.EffectGiveUserBadge && !Session.GetHabbo().GetPermissions().HasRight("room_item_wired_rewards"))
             {

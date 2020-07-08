@@ -9,27 +9,59 @@ namespace Neon.HabboHotel.Rooms.Games.Football
             try
             {
                 if (comeWith == Direction.Up)
+                {
                     return Direction.Down;
+                }
+
                 if (comeWith == Direction.UpRight)
+                {
                     if (room.GetGameMap().StaticModel.SqState[x, y] == SquareState.BLOCKED)
+                    {
                         return room.GetGameMap().StaticModel.SqState[x + 1, y] == SquareState.BLOCKED ? Direction.DownRight : Direction.UpLeft;
+                    }
                     else
+                    {
                         return Direction.DownRight;
+                    }
+                }
+
                 if (comeWith == Direction.Right)
+                {
                     return Direction.Left;
+                }
+
                 if (comeWith == Direction.DownRight)
+                {
                     if (room.GetGameMap().StaticModel.SqState[x, y] == SquareState.BLOCKED)
+                    {
                         return room.GetGameMap().StaticModel.SqState[x + 1, y] == SquareState.BLOCKED ? Direction.UpRight : Direction.DownLeft;
+                    }
                     else
+                    {
                         return Direction.UpRight;
+                    }
+                }
+
                 if (comeWith == Direction.Down)
+                {
                     return Direction.Up;
+                }
+
                 if (comeWith == Direction.DownLeft)
+                {
                     return room.GetGameMap().Model.MapSizeX - 1 <= x ? Direction.DownRight : Direction.UpLeft;
+                }
+
                 if (comeWith == Direction.Left)
+                {
                     return Direction.Right;
+                }
+
                 if (comeWith == Direction.UpLeft)
+                {
                     return room.GetGameMap().Model.MapSizeX - 1 <= x ? Direction.UpRight : Direction.DownLeft;
+                }
+
                 return Direction.Null;
             }
             catch
@@ -118,21 +150,45 @@ namespace Neon.HabboHotel.Rooms.Games.Football
             try
             {
                 if (user.X == ball.X && user.Y - 1 == ball.Y)
+                {
                     return Direction.Down;
+                }
+
                 if (user.X + 1 == ball.X && user.Y - 1 == ball.Y)
+                {
                     return Direction.DownLeft;
+                }
+
                 if (user.X + 1 == ball.X && user.Y == ball.Y)
+                {
                     return Direction.Left;
+                }
+
                 if (user.X + 1 == ball.X && user.Y + 1 == ball.Y)
+                {
                     return Direction.UpLeft;
+                }
+
                 if (user.X == ball.X && user.Y + 1 == ball.Y)
+                {
                     return Direction.Up;
+                }
+
                 if (user.X - 1 == ball.X && user.Y + 1 == ball.Y)
+                {
                     return Direction.UpRight;
+                }
+
                 if (user.X - 1 == ball.X && user.Y == ball.Y)
+                {
                     return Direction.Right;
+                }
+
                 if (user.X - 1 == ball.X && user.Y - 1 == ball.Y)
+                {
                     return Direction.DownRight;
+                }
+
                 return Direction.Null;
             }
             catch

@@ -1,32 +1,31 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms;
-using Neon.Communication.Packets.Outgoing.Rooms.Engine;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Engine;
 using Neon.Database.Interfaces;
+using Neon.HabboHotel.Rooms;
+using System;
 
 
 namespace Neon.Communication.Packets.Incoming.Navigator
 {
-    class EditRoomEventEvent : IPacketEvent
+    internal class EditRoomEventEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
             int RoomId = Packet.PopInt();
-            string word;
             string Name = Packet.PopString();
-            Name = NeonEnvironment.GetGame().GetChatManager().GetFilter().IsUnnaceptableWord(Name, out word) ? "Spam" : Name;
+            Name = NeonEnvironment.GetGame().GetChatManager().GetFilter().IsUnnaceptableWord(Name, out string word) ? "Spam" : Name;
             string Desc = Packet.PopString();
             Desc = NeonEnvironment.GetGame().GetChatManager().GetFilter().IsUnnaceptableWord(Desc, out word) ? "Spam" : Desc;
 
             RoomData Data = NeonEnvironment.GetGame().GetRoomManager().GenerateRoomData(RoomId);
             if (Data == null)
+            {
                 return;
+            }
 
             if (Data.OwnerId != Session.GetHabbo().Id)
+            {
                 return; //HAX
+            }
 
             if (Data.Promotion == null)
             {
@@ -42,9 +41,10 @@ namespace Neon.Communication.Packets.Incoming.Navigator
                 dbClient.RunQuery();
             }
 
-            Room Room;
-            if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Convert.ToInt32(RoomId), out Room))
+            if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Convert.ToInt32(RoomId), out Room Room))
+            {
                 return;
+            }
 
             Data.Promotion.Name = Name;
             Data.Promotion.Description = Desc;

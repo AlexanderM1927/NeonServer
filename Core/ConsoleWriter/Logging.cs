@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using System.Threading;
-
-using Neon;
 
 namespace ConsoleWriter
 {
@@ -15,8 +11,8 @@ namespace ConsoleWriter
 
         public static bool DisabledState
         {
-            get { return mDisabled; }
-            set { mDisabled = value; }
+            get => mDisabled;
+            set => mDisabled = value;
         }
 
         public static void WriteLine(string Line, ConsoleColor Colour = ConsoleColor.Gray)
@@ -81,7 +77,7 @@ namespace ConsoleWriter
 
         public static void HandleException(Exception pException, string pLocation)
         {
-            var ExceptionData = new StringBuilder();
+            StringBuilder ExceptionData = new StringBuilder();
             ExceptionData.AppendLine("Exception logged " + DateTime.Now.ToString() + " in " + pLocation + ":");
             ExceptionData.AppendLine(pException.ToString());
             if (pException.InnerException != null)
@@ -126,7 +122,9 @@ namespace ConsoleWriter
         {
             mDisabled = true;
             if (ClearConsole)
+            {
                 Console.Clear();
+            }
         }
 
         private static void WriteToFile(string path, string content)
@@ -146,7 +144,7 @@ namespace ConsoleWriter
 
         private static void WriteCallback(IAsyncResult callback)
         {
-            var stream = (FileStream)callback.AsyncState;
+            FileStream stream = (FileStream)callback.AsyncState;
             stream.EndWrite(callback);
             stream.Dispose();
         }

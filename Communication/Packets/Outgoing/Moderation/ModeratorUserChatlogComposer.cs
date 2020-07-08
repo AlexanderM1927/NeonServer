@@ -1,23 +1,18 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Data;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Users;
-using Neon.Database.Interfaces;
-using Neon.HabboHotel.Rooms;
+﻿using Neon.Database.Interfaces;
 using Neon.HabboHotel.Cache;
+using Neon.HabboHotel.Rooms;
+using System;
+using System.Data;
 
 namespace Neon.Communication.Packets.Outgoing.Moderation
 {
-    class ModeratorUserChatlogComposer : ServerPacket
+    internal class ModeratorUserChatlogComposer : ServerPacket
     {
         public ModeratorUserChatlogComposer(int UserId)
             : base(ServerPacketHeader.ModeratorUserChatlogMessageComposer)
         {
             base.WriteInteger(UserId);
-           base.WriteString(NeonEnvironment.GetGame().GetClientManager().GetNameById(UserId));
+            base.WriteString(NeonEnvironment.GetGame().GetClientManager().GetNameById(UserId));
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
                 dbClient.SetQuery("SELECT room_id,entry_timestamp,exit_timestamp FROM user_roomvisits WHERE `user_id` = " + UserId + " ORDER BY entry_timestamp DESC LIMIT 5");
@@ -33,7 +28,9 @@ namespace Neon.Communication.Packets.Outgoing.Moderation
                         Room Room = NeonEnvironment.GetGame().GetRoomManager().LoadRoom(Convert.ToInt32(Visit["room_id"]));
 
                         if (Room != null)
+                        {
                             RoomName = Room.Name;
+                        }
 
                         base.WriteByte(1);
                         base.WriteShort(2);//Count
@@ -45,12 +42,12 @@ namespace Neon.Communication.Packets.Outgoing.Moderation
                         base.WriteInteger(Convert.ToInt32(Visit["room_id"]));
 
                         DataTable Chatlogs = null;
-                        if ((Double)Visit["exit_timestamp"] <= 0)
+                        if ((double)Visit["exit_timestamp"] <= 0)
                         {
                             Visit["exit_timestamp"] = NeonEnvironment.GetUnixTimestamp();
                         }
 
-                        dbClient.SetQuery("SELECT user_id,timestamp,message FROM `chatlogs` WHERE room_id = " + Convert.ToInt32(Visit["room_id"]) + " AND timestamp > " + (Double)Visit["entry_timestamp"] + " AND timestamp < " + (Double)Visit["exit_timestamp"] + " ORDER BY timestamp DESC LIMIT 150");
+                        dbClient.SetQuery("SELECT user_id,timestamp,message FROM `chatlogs` WHERE room_id = " + Convert.ToInt32(Visit["room_id"]) + " AND timestamp > " + (double)Visit["entry_timestamp"] + " AND timestamp < " + (double)Visit["exit_timestamp"] + " ORDER BY timestamp DESC LIMIT 150");
                         Chatlogs = dbClient.getTable();
 
                         if (Chatlogs != null)
@@ -61,7 +58,9 @@ namespace Neon.Communication.Packets.Outgoing.Moderation
                                 UserCache Habbo = NeonEnvironment.GetGame().GetCacheManager().GenerateUser(Convert.ToInt32(Log["user_id"]));
 
                                 if (Habbo == null)
+                                {
                                     continue;
+                                }
 
                                 DateTime dDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
                                 dDateTime = dDateTime.AddSeconds(Convert.ToInt32(Log["timestamp"])).ToLocalTime();
@@ -74,11 +73,15 @@ namespace Neon.Communication.Packets.Outgoing.Moderation
                             }
                         }
                         else
+                        {
                             base.WriteInteger(0);
+                        }
                     }
                 }
                 else
+                {
                     base.WriteInteger(0);
+                }
             }
         }
     }

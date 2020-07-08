@@ -1,16 +1,12 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
+﻿using Neon.Communication.Packets.Outgoing.Inventory.Furni;
 using Neon.HabboHotel.Items;
-using Neon.Communication.Packets.Outgoing.Inventory.Furni;
+using System.Collections.Generic;
 
 
 
 namespace Neon.Communication.Packets.Incoming.Inventory.Furni
 {
-    class RequestFurniInventoryEvent : IPacketEvent
+    internal class RequestFurniInventoryEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
@@ -21,7 +17,7 @@ namespace Neon.Communication.Packets.Incoming.Inventory.Furni
             allItems.AddRange(FloorItems);
             allItems.AddRange(WallItems);
 
-            if(allItems.Count == 0)
+            if (allItems.Count == 0)
             {
                 Session.SendMessage(new FurniListComposer());
                 return;
@@ -32,7 +28,9 @@ namespace Neon.Communication.Packets.Incoming.Inventory.Furni
             foreach (Item item in allItems)
             {
                 if (!slots.ContainsKey(currentSlot))
+                {
                     slots.Add(currentSlot, new List<Item>());
+                }
 
                 List<Item> items = slots[currentSlot];
                 if (items.Count > 700)
@@ -48,7 +46,7 @@ namespace Neon.Communication.Packets.Incoming.Inventory.Furni
             }
             int i = 0;
 
-            foreach(List<Item> items in slots.Values)
+            foreach (List<Item> items in slots.Values)
             {
                 Session.SendMessage(new FurniListComposer(items, i, slots.Count));
                 i++;

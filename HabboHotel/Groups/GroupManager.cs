@@ -1,16 +1,10 @@
-﻿using System;
+﻿using log4net;
+using Neon.Database.Interfaces;
+using Neon.HabboHotel.Users;
+using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-
-using Neon.HabboHotel.GameClients;
-using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Users;
-using Neon.Communication.Packets.Incoming;
-using System.Collections.Concurrent;
-
-using Neon.Database.Interfaces;
-using log4net;
 
 namespace Neon.HabboHotel.Groups
 {
@@ -25,27 +19,31 @@ namespace Neon.HabboHotel.Groups
         public Dictionary<int, GroupSymbolColours> SymbolColours;
         public List<GroupSymbols> Symbols;
 
-        private readonly Object _groupLoadingSync;
+        private readonly object _groupLoadingSync;
         private ConcurrentDictionary<int, Group> _groups;
 
         public GroupManager()
         {
-            this._groupLoadingSync = new Object();
+            _groupLoadingSync = new object();
 
-            this.Init();
+            Init();
         }
 
         public bool TryGetGroup(int Id, out Group Group)
         {
             Group = null;
 
-            if (this._groups.ContainsKey(Id))
-                return this._groups.TryGetValue(Id, out Group);
-
-            lock (this._groupLoadingSync)
+            if (_groups.ContainsKey(Id))
             {
-                if (this._groups.ContainsKey(Id))
-                    return this._groups.TryGetValue(Id, out Group);
+                return _groups.TryGetValue(Id, out Group);
+            }
+
+            lock (_groupLoadingSync)
+            {
+                if (_groups.ContainsKey(Id))
+                {
+                    return _groups.TryGetValue(Id, out Group);
+                }
 
                 DataRow Row = null;
                 using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
@@ -65,7 +63,7 @@ namespace Neon.HabboHotel.Groups
                         Group = new Group(
                             Convert.ToInt32(Row["id"]), Convert.ToString(Row["name"]), Convert.ToString(Row["desc"]), Convert.ToString(Row["badge"]), Convert.ToInt32(Row["room_id"]), Convert.ToInt32(Row["owner_id"]),
                             created, Convert.ToInt32(Row["state"]), Convert.ToInt32(Row["colour1"]), Convert.ToInt32(Row["colour2"]), Convert.ToInt32(Row["admindeco"]), Convert.ToInt32(Row["has_forum"]) == 1, Convert.ToInt32(Row["has_chat"]) == 1);
-                        this._groups.TryAdd(Group.Id, Group);
+                        _groups.TryAdd(Group.Id, Group);
                         return true;
                     }
                 }
@@ -131,7 +129,9 @@ namespace Neon.HabboHotel.Groups
         {
             Group = new Group(0, Name, Description, Badge, RoomId, Player.Id, (int)NeonEnvironment.GetUnixTimestamp(), 0, Colour1, Colour2, 0, false, false);
             if (string.IsNullOrWhiteSpace(Name) || string.IsNullOrWhiteSpace(Badge))
+            {
                 return false;
+            }
 
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
@@ -148,8 +148,10 @@ namespace Neon.HabboHotel.Groups
                 Group.AddMember(Player.Id);
                 Group.MakeAdmin(Player.Id);
 
-                if (!this._groups.TryAdd(Group.Id, Group))
+                if (!_groups.TryAdd(Group.Id, Group))
+                {
                     return false;
+                }
                 else
                 {
                     dbClient.SetQuery("UPDATE `rooms` SET `group_id` = @gid WHERE `id` = @rid LIMIT 1");
@@ -196,8 +198,10 @@ namespace Neon.HabboHotel.Groups
         public void DeleteGroup(int Id)
         {
             Group Group = null;
-            if (this._groups.ContainsKey(Id))
-                this._groups.TryRemove(Id, out Group);
+            if (_groups.ContainsKey(Id))
+            {
+                _groups.TryRemove(Id, out Group);
+            }
 
             if (Group != null)
             {
@@ -218,9 +222,10 @@ namespace Neon.HabboHotel.Groups
                 {
                     foreach (DataRow Row in GetGroups.Rows)
                     {
-                        Group Group = null;
-                        if (this.TryGetGroup(Convert.ToInt32(Row["id"]), out Group))
+                        if (TryGetGroup(Convert.ToInt32(Row["id"]), out Group Group))
+                        {
                             Groups.Add(Group);
+                        }
                     }
                 }
             }

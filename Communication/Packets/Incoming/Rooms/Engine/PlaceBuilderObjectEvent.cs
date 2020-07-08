@@ -1,35 +1,34 @@
-﻿using System;
-using System.Linq;
-
-using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Items;
-using Neon.HabboHotel.Users;
-
-using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
-using Neon.HabboHotel.Items.Data.Moodlight;
-using Neon.HabboHotel.Items.Data.Toner;
-using Neon.HabboHotel.Catalog;
-using Neon.Communication.Packets.Outgoing.Catalog;
+﻿using Neon.Communication.Packets.Outgoing.Catalog;
 using Neon.Communication.Packets.Outgoing.Inventory.Furni;
 using Neon.Communication.Packets.Outgoing.Inventory.Purse;
+using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
+using Neon.HabboHotel.Catalog;
+using Neon.HabboHotel.Items;
+using Neon.HabboHotel.Rooms;
+using System;
 using System.Collections.Generic;
 
 namespace Neon.Communication.Packets.Incoming.Rooms.Engine
 {
-    class PlaceBuilderObjectEvent : IPacketEvent
+    internal class PlaceBuilderObjectEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
             if (Session == null || Session.GetHabbo() == null || !Session.GetHabbo().InRoom)
+            {
                 return;
+            }
 
-            Room Room = null;
-            if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Session.GetHabbo().CurrentRoomId, out Room))
+            if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Session.GetHabbo().CurrentRoomId, out Room Room))
+            {
                 return;
+            }
 
             bool HasRights = false;
             if (Room.CheckRights(Session, false, true))
+            {
                 HasRights = true;
+            }
 
             if (!HasRights)
             {
@@ -41,25 +40,35 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Engine
             int PageId = Packet.PopInt();
             int ItemId = Packet.PopInt();
 
-            BCCatalogPage Page = null;
-            if (!NeonEnvironment.GetGame().GetCatalog().TryGetBCPage(PageId, out Page))
+            if (!NeonEnvironment.GetGame().GetCatalog().TryGetBCPage(PageId, out BCCatalogPage Page))
+            {
                 return;
-            if (Session.GetHabbo().Rank > 8 && !Session.GetHabbo().StaffOk || NeonStaticGameSettings.IsGoingToBeClose)
-                return;
-            if (!Page.Enabled || !Page.Visible || Page.MinimumRank > Session.GetHabbo().Rank || (Page.MinimumVIP > Session.GetHabbo().VIPRank && Session.GetHabbo().Rank == 1))
-                return;
+            }
 
-            BCCatalogItem Item = null;
-            if (!Page.Items.TryGetValue(ItemId, out Item))
+            if (Session.GetHabbo().Rank > 8 && !Session.GetHabbo().StaffOk || NeonStaticGameSettings.IsGoingToBeClose)
+            {
+                return;
+            }
+
+            if (!Page.Enabled || !Page.Visible || Page.MinimumRank > Session.GetHabbo().Rank || (Page.MinimumVIP > Session.GetHabbo().VIPRank && Session.GetHabbo().Rank == 1))
+            {
+                return;
+            }
+
+            if (!Page.Items.TryGetValue(ItemId, out BCCatalogItem Item))
             {
                 if (Page.ItemOffers.ContainsKey(ItemId))
                 {
-                    Item = (BCCatalogItem)Page.ItemOffers[ItemId];
+                    Item = Page.ItemOffers[ItemId];
                     if (Item == null)
+                    {
                         return;
+                    }
                 }
                 else
+                {
                     return;
+                }
             }
 
             ItemData baseItem = Item.GetBaseItem(Item.ItemId);
@@ -99,16 +108,16 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Engine
             }
             int newID = 0;
             foreach (Item PurchasedItem in GeneratedGenericItems)
-               {
-                   if (Session.GetHabbo().GetInventoryComponent().TryAddItem(PurchasedItem))
-                   {
-                      // Session.SendMessage(new FurniListNotificationComposer(PurchasedItem.Id, 1));
+            {
+                if (Session.GetHabbo().GetInventoryComponent().TryAddItem(PurchasedItem))
+                {
+                    // Session.SendMessage(new FurniListNotificationComposer(PurchasedItem.Id, 1));
                     newID = PurchasedItem.Id;
-                   }
-               }
+                }
+            }
 
-             Session.SendMessage(new PurchaseOKComposer(Item, Item.Data));
-             Session.SendMessage(new FurniListUpdateComposer());
+            Session.SendMessage(new PurchaseOKComposer(Item, Item.Data));
+            Session.SendMessage(new FurniListUpdateComposer());
 
             string Unknown = Packet.PopString();
             int X = Packet.PopInt();
@@ -123,8 +132,9 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Engine
                 Session.GetHabbo().GetInventoryComponent().RemoveItem(newID);
 
                 if (Session.GetHabbo().Id == Room.OwnerId)
+                {
                     NeonEnvironment.GetGame().GetAchievementManager().ProgressAchievement(Session, "ACH_RoomDecoFurniCount", 1, false);
-
+                }
             }
             else
             {
@@ -135,7 +145,7 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Engine
 
             Console.WriteLine("Unknown: " + X + "|" + Y + "|" + Rot + "|");
 
-            
+
         }
     }
 }

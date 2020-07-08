@@ -1,26 +1,17 @@
-﻿using System.Linq;
-using Neon.HabboHotel.GameClients;
-using Neon.Communication.Packets.Outgoing.Inventory.Purse;
+﻿using Neon.Communication.Packets.Outgoing.Inventory.Purse;
 using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
+using Neon.HabboHotel.GameClients;
+using System.Linq;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
 {
-    class MassGiveCommand : IChatCommand
+    internal class MassGiveCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_massgive"; }
-        }
+        public string PermissionRequired => "command_massgive";
 
-        public string Parameters
-        {
-            get { return "%moneda% %cantidad%"; }
-        }
+        public string Parameters => "%moneda% %cantidad%";
 
-        public string Description
-        {
-            get { return ""; }
-        }
+        public string Description => "";
 
         public void Execute(GameClient Session, Room Room, string[] Params)
         {
@@ -42,13 +33,14 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
                         }
                         else
                         {
-                            int Amount;
-                            if (int.TryParse(Params[2], out Amount))
+                            if (int.TryParse(Params[2], out int Amount))
                             {
                                 foreach (GameClient Target in NeonEnvironment.GetGame().GetClientManager().GetClients.ToList())
                                 {
                                     if (Target == null || Target.GetHabbo() == null || Target.GetHabbo().Username == Session.GetHabbo().Username)
+                                    {
                                         continue;
+                                    }
 
                                     Target.GetHabbo().Credits = Target.GetHabbo().Credits += Amount;
                                     Target.SendMessage(new CreditBalanceComposer(Target.GetHabbo().Credits));
@@ -75,13 +67,14 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
                         }
                         else
                         {
-                            int Amount;
-                            if (int.TryParse(Params[2], out Amount))
+                            if (int.TryParse(Params[2], out int Amount))
                             {
                                 foreach (GameClient Target in NeonEnvironment.GetGame().GetClientManager().GetClients.ToList())
                                 {
                                     if (Target == null || Target.GetHabbo() == null || Target.GetHabbo().Username == Session.GetHabbo().Username)
+                                    {
                                         continue;
+                                    }
 
                                     Target.GetHabbo().Duckets += Amount;
                                     Target.SendMessage(new HabboActivityPointNotificationComposer(Target.GetHabbo().Duckets, Amount));
@@ -109,13 +102,14 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
                         }
                         else
                         {
-                            int Amount;
-                            if (int.TryParse(Params[2], out Amount))
+                            if (int.TryParse(Params[2], out int Amount))
                             {
                                 foreach (GameClient Target in NeonEnvironment.GetGame().GetClientManager().GetClients.ToList())
                                 {
                                     if (Target == null || Target.GetHabbo() == null || Target.GetHabbo().Username == Session.GetHabbo().Username)
+                                    {
                                         continue;
+                                    }
 
                                     Target.GetHabbo().Diamonds += Amount;
                                     Target.SendMessage(new HabboActivityPointNotificationComposer(Target.GetHabbo().Diamonds, Amount, 5));
@@ -145,7 +139,9 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
                             foreach (GameClient Target in NeonEnvironment.GetGame().GetClientManager().GetClients.ToList())
                             {
                                 if (Target == null || Target.GetHabbo() == null)
+                                {
                                     continue;
+                                }
 
                                 Target.SendMessage(NeonEnvironment.GetGame().GetNuxUserGiftsManager().NuxUserGifts.Serialize());
                             }
@@ -166,8 +162,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
 
                         else
                         {
-                            int Amount;
-                            if (int.TryParse(Params[2], out Amount))
+                            if (int.TryParse(Params[2], out int Amount))
                             {
                                 if (Amount > 50)
                                 {
@@ -178,7 +173,9 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
                                 foreach (GameClient Target in NeonEnvironment.GetGame().GetClientManager().GetClients.ToList())
                                 {
                                     if (Target == null || Target.GetHabbo() == null || Target.GetHabbo().Username == Session.GetHabbo().Username)
+                                    {
                                         continue;
+                                    }
 
                                     Target.GetHabbo().GOTWPoints = Target.GetHabbo().GOTWPoints + Amount;
                                     Target.GetHabbo().UserPoints = Target.GetHabbo().UserPoints + 1;

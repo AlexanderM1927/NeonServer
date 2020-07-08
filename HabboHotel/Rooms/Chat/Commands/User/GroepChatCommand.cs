@@ -1,33 +1,16 @@
-﻿using Neon;
-using Neon.Communication.Packets.Outgoing;
-using Neon.Communication.Packets.Outgoing.Messenger;
+﻿using Neon.Communication.Packets.Outgoing.Messenger;
 using Neon.Database.Interfaces;
 using Neon.HabboHotel.GameClients;
-using Neon.HabboHotel.Rooms;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.User
 {
-    class GroepChatCommand : IChatCommand
+    internal class GroepChatCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_groepchat"; }
-        }
+        public string PermissionRequired => "command_groepchat";
 
-        public string Parameters
-        {
-            get { return ""; }
-        }
+        public string Parameters => "";
 
-        public string Description
-        {
-            get { return "Activa los grupos ON/OFF"; }
-        }
+        public string Description => "Activa los grupos ON/OFF";
 
 
         public void Execute(GameClient Session, Room Room, string[] Params)
@@ -56,8 +39,8 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User
                 return;
             }
 
-            var mode = Params[1].ToLower();
-            var group = Room.Group;
+            string mode = Params[1].ToLower();
+            Groups.Group group = Room.Group;
 
             if (mode == "on")
             {
@@ -76,7 +59,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User
                     dbClient.RunQuery();
                 }
 
-                var Client = NeonEnvironment.GetGame().GetClientManager().GetClientByUserID(Session.GetHabbo().Id);
+                GameClient Client = NeonEnvironment.GetGame().GetClientManager().GetClientByUserID(Session.GetHabbo().Id);
                 if (Client != null)
                 {
                     Client.SendMessage(new FriendListUpdateComposer(group, 1));
@@ -93,13 +76,13 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User
 
                 group.HasChat = false;
 
-                using (var adap = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
+                using (IQueryAdapter adap = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
                 {
                     adap.SetQuery("UPDATE groups SET has_chat = '0' WHERE id = @id");
                     adap.AddParameter("id", group.Id);
                     adap.RunQuery();
                 }
-                var Client = NeonEnvironment.GetGame().GetClientManager().GetClientByUserID(Session.GetHabbo().Id);
+                GameClient Client = NeonEnvironment.GetGame().GetClientManager().GetClientByUserID(Session.GetHabbo().Id);
                 if (Client != null)
                 {
                     Client.SendMessage(new FriendListUpdateComposer(group, -1));

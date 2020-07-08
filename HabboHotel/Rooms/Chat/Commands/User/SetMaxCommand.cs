@@ -1,33 +1,22 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
 using Neon.Database.Interfaces;
-using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.User
 {
-    class SetMaxCommand : IChatCommand
+    internal class SetMaxCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_setmax"; }
-        }
+        public string PermissionRequired => "command_setmax";
 
-        public string Parameters
-        {
-            get { return "%límite%"; }
-        }
+        public string Parameters => "%límite%";
 
-        public string Description
-        {
-            get { return "Aumenta o reduce el aforo máximo en tu sala."; }
-        }
+        public string Description => "Aumenta o reduce el aforo máximo en tu sala.";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {
             if (!Room.CheckRights(Session, true))
+            {
                 return;
+            }
 
             if (Params.Length == 1)
             {
@@ -35,8 +24,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User
                 return;
             }
 
-            int MaxAmount;
-            if (int.TryParse(Params[1], out MaxAmount))
+            if (int.TryParse(Params[1], out int MaxAmount))
             {
                 if (MaxAmount <= 0)
                 {
@@ -49,8 +37,10 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User
                     Session.SendWhisper("Cantidad de visitantes demasiado alta, la cantidad de visitantes se ha establecido en 250.");
                 }
                 else
+                {
+                    Room.UsersMax = MaxAmount;
+                }
 
-                Room.UsersMax = MaxAmount;
                 Room.RoomData.UsersMax = MaxAmount;
                 Room.SendMessage(RoomNotificationComposer.SendBubble("setmax", "" + Session.GetHabbo().Username + " ha establecido el límite de aforo a " + MaxAmount + ".", ""));
 
@@ -60,7 +50,9 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User
                 }
             }
             else
+            {
                 Session.SendWhisper("Cantidad invalida, solo es permitidos numeros.");
+            }
         }
     }
 }

@@ -1,31 +1,15 @@
-﻿using System;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
 using Neon.HabboHotel.GameClients;
-using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
-using Neon.Communication.Packets.Outgoing.Nux;
-using Neon.Communication.Packets.Outgoing.Rooms.Furni.RentableSpaces;
-using Neon.Communication.Packets.Outgoing.Moderation;
-using Neon.Communication.Packets.Outgoing.Catalog;
-using Neon.Communication.Packets.Outgoing.Users;
-using Neon.Database.Interfaces;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.User
 {
-    class ControlCommand : IChatCommand
+    internal class ControlCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_control"; }
-        }
+        public string PermissionRequired => "command_control";
 
-        public string Parameters
-        {
-            get { return "<usuario>"; }
-        }
+        public string Parameters => "<usuario>";
 
-        public string Description
-        {
-            get { return "Controla al usuario que selecciones."; }
-        }
+        public string Description => "Controla al usuario que selecciones.";
 
         public void Execute(GameClient Session, Room Room, string[] Params)
         {
@@ -37,7 +21,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User
 
             if (Params.Length == 2 && Params[1] == "end")
             {
-                Session.SendWhisper("Has dejado de controlar a " + Session.GetHabbo().Opponent +".", 34);
+                Session.SendWhisper("Has dejado de controlar a " + Session.GetHabbo().Opponent + ".", 34);
                 Session.GetHabbo().IsControlling = false;
                 return;
             }
@@ -51,7 +35,10 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User
                 return;
             }
 
-            else Session.SendMessage(RoomNotificationComposer.SendBubble("definitions", "No se ha encontrado el usuario " + Params[1] + ".", ""));
+            else
+            {
+                Session.SendMessage(RoomNotificationComposer.SendBubble("definitions", "No se ha encontrado el usuario " + Params[1] + ".", ""));
+            }
         }
     }
 }

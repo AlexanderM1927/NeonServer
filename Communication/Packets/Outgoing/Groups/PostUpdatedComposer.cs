@@ -1,14 +1,9 @@
 ﻿using Neon.HabboHotel.GameClients;
 using Neon.HabboHotel.Groups.Forums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.Communication.Packets.Outgoing.Groups
 {
-    class PostUpdatedComposer : ServerPacket
+    internal class PostUpdatedComposer : ServerPacket
     {
         public PostUpdatedComposer(GameClient Session, GroupForumThreadPost Post)
             : base(ServerPacketHeader.PostUpdatedMessageComposer)

@@ -1,21 +1,17 @@
 ﻿using Neon.HabboHotel.Club;
 using Neon.HabboHotel.GameClients;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.Communication.Packets.Outgoing.Catalog
 {
-    class ClubGiftsComposer : ServerPacket
+    internal class ClubGiftsComposer : ServerPacket
     {
         public ClubGiftsComposer(GameClient Session)
             : base(ServerPacketHeader.ClubGiftsMessageComposer)
         {
             Subscription Sub = Session.GetHabbo().GetClubManager().GetSubscription("club_vip");
 
-            Double TimeLeft = Sub.ExpireTime - NeonEnvironment.GetUnixTimestamp();
+            double TimeLeft = Sub.ExpireTime - NeonEnvironment.GetUnixTimestamp();
             int TotalDaysLeft = (int)Math.Ceiling(TimeLeft / 86400);
             base.WriteInteger(TotalDaysLeft); // Días hasta la siguiente recarga
 
@@ -40,7 +36,7 @@ namespace Neon.Communication.Packets.Outgoing.Catalog
             base.WriteInteger(0);//0 = TOUT LE MONDE, 1= MEMBRE HABBO CLUB
             base.WriteBoolean(false);//Offer?
             base.WriteBoolean(false);
-            base.WriteString(String.Empty);
+            base.WriteString(string.Empty);
             /////////////////////////////////////////////////////////////////////////////////////////
             base.WriteInteger(230);//SPRITE_ID DU MOBI QUE VOUS VOULEZ
             base.WriteString("a0 throne");//ITEM_NAME DU MOBI
@@ -60,7 +56,7 @@ namespace Neon.Communication.Packets.Outgoing.Catalog
             base.WriteInteger(0);//0 = TOUT LE MONDE, 1= MEMBRE HABBO CLUB
             base.WriteBoolean(false);//Offer?
             base.WriteBoolean(false);
-            base.WriteString(String.Empty);
+            base.WriteString(string.Empty);
             //}
 
             base.WriteInteger(2);//Nombre de cadeaux à remettre

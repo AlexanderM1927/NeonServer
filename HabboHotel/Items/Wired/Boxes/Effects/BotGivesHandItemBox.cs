@@ -2,20 +2,15 @@
 using Neon.Communication.Packets.Outgoing.Rooms.Chat;
 using Neon.HabboHotel.Rooms;
 using Neon.HabboHotel.Users;
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
 {
-    class BotGivesHandItemBox : IWiredItem
+    internal class BotGivesHandItemBox : IWiredItem
     {
         public Room Instance { get; set; }
         public Item Item { get; set; }
-        public WiredBoxType Type { get { return WiredBoxType.EffectBotGivesHanditemBox; } }
+        public WiredBoxType Type => WiredBoxType.EffectBotGivesHanditemBox;
         public ConcurrentDictionary<int, Item> SetItems { get; set; }
         public string StringData { get; set; }
         public bool BoolData { get; set; }
@@ -25,7 +20,7 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
         {
             this.Instance = Instance;
             this.Item = Item;
-            this.SetItems = new ConcurrentDictionary<int, Item>();
+            SetItems = new ConcurrentDictionary<int, Item>();
         }
 
         public void HandleSave(ClientPacket Packet)
@@ -34,34 +29,46 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
             int DrinkID = Packet.PopInt();
             string BotName = Packet.PopString();
 
-            if (this.SetItems.Count > 0)
-                this.SetItems.Clear();
+            if (SetItems.Count > 0)
+            {
+                SetItems.Clear();
+            }
 
-            this.StringData = BotName.ToString() + ";" + DrinkID.ToString();
+            StringData = BotName.ToString() + ";" + DrinkID.ToString();
         }
 
         public bool Execute(params object[] Params)
         {
             if (Params == null || Params.Length == 0)
+            {
                 return false;
+            }
 
-            if (String.IsNullOrEmpty(this.StringData))
+            if (string.IsNullOrEmpty(StringData))
+            {
                 return false;
+            }
 
             Habbo Player = (Habbo)Params[0];
 
             if (Player == null)
+            {
                 return false;
+            }
 
-            RoomUser Actor = this.Instance.GetRoomUserManager().GetRoomUserByHabbo(Player.Id);
+            RoomUser Actor = Instance.GetRoomUserManager().GetRoomUserByHabbo(Player.Id);
 
             if (Actor == null)
+            {
                 return false;
+            }
 
-            RoomUser User = this.Instance.GetRoomUserManager().GetBotByName(this.StringData.Split(';')[0]);
+            RoomUser User = Instance.GetRoomUserManager().GetBotByName(StringData.Split(';')[0]);
 
             if (User == null)
+            {
                 return false;
+            }
 
             if (User.BotData.TargetUser == 0)
             {
@@ -71,7 +78,7 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
                 }
                 else
                 {
-                    string[] Data = this.StringData.Split(';');
+                    string[] Data = StringData.Split(';');
 
                     int DrinkId = int.Parse(Data[1]);
 

@@ -1,29 +1,16 @@
 ﻿using Neon.Communication.Packets.Outgoing.Rooms.Chat;
 using Neon.HabboHotel.GameClients;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.User.Fun
 {
-    class BurnCommand : IChatCommand
+    internal class BurnCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_golpe"; }
-        }
+        public string PermissionRequired => "command_golpe";
 
-        public string Parameters
-        {
-            get { return "%target%"; }
-        }
+        public string Parameters => "%target%";
 
-        public string Description
-        {
-            get { return "Quemar a alguien si la sala lo permite."; }
-        }
+        public string Description => "Quemar a alguien si la sala lo permite.";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {
@@ -67,7 +54,9 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User.Fun
 
             RoomUser ThisUser = Room.GetRoomUserManager().GetRoomUserByHabbo(Session.GetHabbo().Id);
             if (ThisUser == null)
+            {
                 return;
+            }
 
             if (!((Math.Abs(TargetUser.X - ThisUser.X) >= 2) || (Math.Abs(TargetUser.Y - ThisUser.Y) >= 2)))
             {

@@ -1,21 +1,13 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Support;
-using Neon.HabboHotel.Rooms.Chat.Moderation;
-using Neon.Communication.Packets.Outgoing.Moderation;
-using Neon.HabboHotel.Moderation;
-
-namespace Neon.Communication.Packets.Incoming.Moderation
+﻿namespace Neon.Communication.Packets.Incoming.Moderation
 {
-    class ReportCameraPhotoEvent : IPacketEvent
+    internal class ReportCameraPhotoEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
             if (Session == null || Session.GetHabbo() == null)
+            {
                 return;
+            }
 
             //if (NeonEnvironment.GetGame().GetModerationManager().(Session.GetHabbo().Id))
             //{
@@ -23,9 +15,8 @@ namespace Neon.Communication.Packets.Incoming.Moderation
             //    return;
             //}
 
-            int photoId;
 
-            if (!int.TryParse(Packet.PopString(), out photoId))
+            if (!int.TryParse(Packet.PopString(), out int photoId))
             {
                 return;
             }
@@ -34,7 +25,7 @@ namespace Neon.Communication.Packets.Incoming.Moderation
             int creatorId = Packet.PopInt();
             int categoryId = Packet.PopInt();
 
-           // NeonEnvironment.GetGame().GetModerationTool().SendNewTicket(Session, categoryId, creatorId, "", new List<string>(), (int) ModerationSupportTicketType.PHOTO, photoId);
+            // NeonEnvironment.GetGame().GetModerationTool().SendNewTicket(Session, categoryId, creatorId, "", new List<string>(), (int) ModerationSupportTicketType.PHOTO, photoId);
             NeonEnvironment.GetGame().GetClientManager().ModAlert("A new support ticket has been submitted!");
         }
     }

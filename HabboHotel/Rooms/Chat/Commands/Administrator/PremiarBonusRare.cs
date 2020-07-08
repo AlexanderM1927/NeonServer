@@ -1,32 +1,18 @@
 ﻿using Neon.Communication.Packets.Outgoing.Inventory.Purse;
 using Neon.Communication.Packets.Outgoing.LandingView;
 using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
-using Neon.Core;
 using Neon.HabboHotel.GameClients;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
 {
-    class PremiarBonusRare : IChatCommand
+    internal class PremiarBonusRare : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_alert_user"; }
-        }
+        public string PermissionRequired => "command_alert_user";
 
-        public string Parameters
-        {
-            get { return "%username%"; }
-        }
+        public string Parameters => "%username%";
 
-        public string Description
-        {
-            get { return "Recompense a un usuario con bonificaciones."; }
-        }
+        public string Description => "Recompense a un usuario con bonificaciones.";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {

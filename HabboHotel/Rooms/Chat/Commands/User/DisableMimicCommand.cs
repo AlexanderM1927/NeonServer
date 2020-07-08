@@ -1,29 +1,16 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using Neon.Database.Interfaces;
+﻿using Neon.Database.Interfaces;
 
 
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.User
 {
-    class DisableMimicCommand : IChatCommand
+    internal class DisableMimicCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_disable_mimic"; }
-        }
+        public string PermissionRequired => "command_disable_mimic";
 
-        public string Parameters
-        {
-            get { return ""; }
-        }
+        public string Parameters => "";
 
-        public string Description
-        {
-            get { return "Activar o desactivar la opción de que copien tu ropa."; }
-        }
+        public string Description => "Activar o desactivar la opción de que copien tu ropa.";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {

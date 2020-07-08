@@ -1,31 +1,35 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
+﻿using Neon.HabboHotel.Items;
 using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Items;
+using System;
 
 namespace Neon.Communication.Packets.Incoming.Rooms.Furni
 {
-    class SaveBrandingItemEvent : IPacketEvent
+    internal class SaveBrandingItemEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
             if (Session == null || Session.GetHabbo() == null || !Session.GetHabbo().InRoom)
+            {
                 return;
+            }
 
             Room Room = Session.GetHabbo().CurrentRoom;
             if (Room == null)
+            {
                 return;
+            }
 
             if (!Room.CheckRights(Session, true)/* || !Session.GetHabbo().GetPermissions().HasRight("room_item_save_branding_items")*/)
+            {
                 return;
+            }
 
             int ItemId = Packet.PopInt();
             Item Item = Room.GetRoomItemHandler().GetItem(ItemId);
             if (Item == null)
+            {
                 return;
+            }
 
             if (Item.Data.InteractionType == InteractionType.BACKGROUND)
             {

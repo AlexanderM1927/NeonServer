@@ -1,22 +1,18 @@
-﻿using Neon.Communication.Packets.Outgoing;
-using Neon.Communication.Packets.Outgoing.Groups;
+﻿using Neon.Communication.Packets.Outgoing.Groups;
 using Neon.HabboHotel.GameClients;
 using Neon.HabboHotel.Groups.Forums;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.Communication.Packets.Incoming.Groups
 {
-    class GetForumsListDataEvent : IPacketEvent
+    internal class GetForumsListDataEvent : IPacketEvent
     {
         public void Parse(GameClient Session, ClientPacket Packet)
         {
-            var int1 = Packet.PopInt(); // View Order ID
-            var int2 = Packet.PopInt(); // Forum List Index
+            int int1 = Packet.PopInt(); // View Order ID
+            int int2 = Packet.PopInt(); // Forum List Index
             int int3 = Packet.PopInt(); //Forum List Length
 
             /*
@@ -25,13 +21,13 @@ namespace Neon.Communication.Packets.Incoming.Groups
              * Most views = 1
              */
 
-            var forums = new List<GroupForum>();
+            List<GroupForum> forums = new List<GroupForum>();
             DataTable table;
 
             switch (int1)
             {
                 case 2:
-                    var Forums = NeonEnvironment.GetGame().GetGroupForumManager().GetForumsByUserId(Session.GetHabbo().Id);
+                    List<GroupForum> Forums = NeonEnvironment.GetGame().GetGroupForumManager().GetForumsByUserId(Session.GetHabbo().Id);
 
                     if (Forums.Count - 1 >= int2)
                     {
@@ -43,7 +39,7 @@ namespace Neon.Communication.Packets.Incoming.Groups
                 case 0:
 
 
-                    using (var adap = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
+                    using (Database.Interfaces.IQueryAdapter adap = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
                     {
                         adap.SetQuery("SELECT g.id FROM groups as g INNER JOIN group_forums_thread_posts as posts, group_forums_threads as threads WHERE posts.thread_id = threads.id AND @now - posts.`timestamp`<= @sdays AND threads.forum_id = g.id GROUP BY g.id ORDER BY posts.`timestamp` DESC LIMIT @index, @limit");
                         adap.AddParameter("limit", int3);
@@ -57,14 +53,15 @@ namespace Neon.Communication.Packets.Incoming.Groups
 
                     foreach (DataRow Row in table.Rows)
                     {
-                        GroupForum forum;
-                        if (NeonEnvironment.GetGame().GetGroupForumManager().TryGetForum(Convert.ToInt32(Row["id"]), out forum))
+                        if (NeonEnvironment.GetGame().GetGroupForumManager().TryGetForum(Convert.ToInt32(Row["id"]), out GroupForum forum))
+                        {
                             forums.Add(forum);
+                        }
                     }
                     break;
 
                 case 1:
-                    using (var adap = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
+                    using (Database.Interfaces.IQueryAdapter adap = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
                     {
                         adap.SetQuery("SELECT g.id FROM groups as g INNER JOIN group_forums_thread_views as v, group_forums_threads as threads WHERE v.thread_id = threads.id AND threads.forum_id = g.id AND  @now - v.`timestamp` <= @sdays GROUP BY g.id ORDER BY v.`timestamp` DESC LIMIT @index, @limit");
                         adap.AddParameter("limit", int3);
@@ -79,9 +76,10 @@ namespace Neon.Communication.Packets.Incoming.Groups
 
                     foreach (DataRow Row in table.Rows)
                     {
-                        GroupForum forum;
-                        if (NeonEnvironment.GetGame().GetGroupForumManager().TryGetForum(Convert.ToInt32(Row["id"]), out forum))
+                        if (NeonEnvironment.GetGame().GetGroupForumManager().TryGetForum(Convert.ToInt32(Row["id"]), out GroupForum forum))
+                        {
                             forums.Add(forum);
+                        }
                     }
                     break;
             }

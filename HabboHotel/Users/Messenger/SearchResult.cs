@@ -1,6 +1,4 @@
-﻿using Neon.Communication.Packets.Incoming;
-
-namespace Neon.HabboHotel.Users.Messenger
+﻿namespace Neon.HabboHotel.Users.Messenger
 {
     public struct SearchResult
     {

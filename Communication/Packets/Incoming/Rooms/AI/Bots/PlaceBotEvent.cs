@@ -1,32 +1,34 @@
-﻿using System;
+﻿using Neon.Communication.Packets.Outgoing.Inventory.Bots;
+using Neon.Database.Interfaces;
+using Neon.HabboHotel.Rooms;
+using Neon.HabboHotel.Rooms.AI;
+using Neon.HabboHotel.Rooms.AI.Speech;
+using Neon.HabboHotel.Users.Inventory.Bots;
+using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Users.Inventory.Bots;
-using Neon.Communication.Packets.Outgoing.Inventory.Bots;
-using Neon.Database.Interfaces;
-using Neon.HabboHotel.Rooms.AI.Speech;
-using Neon.HabboHotel.Rooms.AI;
-using Neon.HabboHotel.Rooms.AI.Responses;
 
 namespace Neon.Communication.Packets.Incoming.Rooms.AI.Bots
 {
-    class PlaceBotEvent : IPacketEvent
+    internal class PlaceBotEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
             if (!Session.GetHabbo().InRoom)
+            {
                 return;
-
+            }
 
             if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Session.GetHabbo().CurrentRoomId, out Room Room))
+            {
                 return;
+            }
 
             if (!Room.CheckRights(Session, true))
+            {
                 return;
+            }
 
             int BotId = Packet.PopInt();
             int X = Packet.PopInt();
@@ -39,13 +41,17 @@ namespace Neon.Communication.Packets.Incoming.Rooms.AI.Bots
             }
 
             if (!Session.GetHabbo().GetInventoryComponent().TryGetBot(BotId, out Bot Bot))
+            {
                 return;
+            }
 
             int BotCount = 0;
             foreach (RoomUser User in Room.GetRoomUserManager().GetUserList().ToList())
             {
                 if (User == null || User.IsPet || !User.IsBot)
+                {
                     continue;
+                }
 
                 BotCount += 1;
             }
@@ -90,7 +96,7 @@ namespace Neon.Communication.Packets.Incoming.Rooms.AI.Bots
             BotUser.ApplyEffect(187);
             BotUser.Chat("¡Hola " + Session.GetHabbo().Username + "!", false, 0);
 
-            Room.GetGameMap().UpdateUserMovement(new System.Drawing.Point(X,Y), new System.Drawing.Point(X, Y), BotUser);
+            Room.GetGameMap().UpdateUserMovement(new System.Drawing.Point(X, Y), new System.Drawing.Point(X, Y), BotUser);
 
 
             if (!Session.GetHabbo().GetInventoryComponent().TryRemoveBot(BotId, out Bot ToRemove))

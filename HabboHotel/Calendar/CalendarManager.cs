@@ -1,11 +1,7 @@
 ﻿using log4net;
 using Neon.Database.Interfaces;
-using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.HabboHotel.Calendar
 {
@@ -13,33 +9,36 @@ namespace Neon.HabboHotel.Calendar
     {
         private static readonly ILog log = LogManager.GetLogger("Neon.HabboHotel.Calendar.CalendarManager");
 
-        private string CampaignName;
+        private readonly string CampaignName;
         private double StartUnix;
 
-        private Dictionary<int, CalendarDay> CalendarDays;
+        private readonly Dictionary<int, CalendarDay> CalendarDays;
 
         public string GetCampaignName()
         {
-            return this.CampaignName;
+            return CampaignName;
         }
 
         public bool CampaignEnable()
         {
-            return this.StartUnix > 0;
+            return StartUnix > 0;
         }
 
         public CalendarDay GetCampaignDay(int Day)
         {
             if (CalendarDays.ContainsKey(Day))
+            {
                 return CalendarDays[Day];
+            }
+
             return null;
         }
 
         public CalendarManager()
         {
-            this.CampaignName = NeonEnvironment.GetDBConfig().DBData["advent.calendar.campaign"];
-            this.StartUnix = 0;
-            this.CalendarDays = new Dictionary<int, CalendarDay>();
+            CampaignName = NeonEnvironment.GetDBConfig().DBData["advent.calendar.campaign"];
+            StartUnix = 0;
+            CalendarDays = new Dictionary<int, CalendarDay>();
         }
 
         public void Init()
@@ -51,7 +50,9 @@ namespace Neon.HabboHotel.Calendar
 
                 // Si no está activado no cargamos los días.
                 if (StartUnix == 0)
+                {
                     return;
+                }
 
                 // Cargamos los premios de todos los días.
                 LoadCampaignDays(dbClient);
@@ -84,22 +85,24 @@ namespace Neon.HabboHotel.Calendar
                     string ImageLink = (string)Row["imagelink"];
                     string ItemName = (string)Row["itemname"];
 
-                    this.CalendarDays.Add(Day, new CalendarDay(Day, Gift, ProductName, ImageLink, ItemName));
+                    CalendarDays.Add(Day, new CalendarDay(Day, Gift, ProductName, ImageLink, ItemName));
                 }
             }
         }
 
         public string GetGiftByDay(int Day)
         {
-            if (this.CalendarDays.ContainsKey(Day))
-                return this.CalendarDays[Day].Gift;
+            if (CalendarDays.ContainsKey(Day))
+            {
+                return CalendarDays[Day].Gift;
+            }
 
             return "";
         }
 
         public int GetTotalDays()
         {
-            return this.CalendarDays.Count;
+            return CalendarDays.Count;
         }
 
         public int GetUnlockDays()

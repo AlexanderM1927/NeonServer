@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Neon.HabboHotel.Games
 {
@@ -22,7 +18,7 @@ namespace Neon.HabboHotel.Games
         public bool GameEnabled { get; set; }
         public Dictionary<int, LeaderBoardData> LeaderBoard { get; set; }
 
-        public GameData(int GameId, string GameName, string ColourOne, string ColourTwo, string ResourcePath, string StringThree, string GameSWF, string GameAssets, string GameServerHost, string GameServerPort, string SocketPolicyPort, Boolean GameEnabled, Dictionary<int, LeaderBoardData> LeaderBoard)
+        public GameData(int GameId, string GameName, string ColourOne, string ColourTwo, string ResourcePath, string StringThree, string GameSWF, string GameAssets, string GameServerHost, string GameServerPort, string SocketPolicyPort, bool GameEnabled, Dictionary<int, LeaderBoardData> LeaderBoard)
         {
             this.GameId = GameId;
             this.GameName = GameName;

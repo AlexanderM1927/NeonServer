@@ -1,18 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-
-using Neon.HabboHotel.GameClients;
-using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Users;
-using Neon.Communication.Packets.Incoming;
-using System.Collections.Concurrent;
-
-using Neon.Database.Interfaces;
-using log4net;
-
-namespace Neon.HabboHotel.Rooms.Music
+﻿namespace Neon.HabboHotel.Rooms.Music
 {
     public class SongData
     {
@@ -31,34 +17,16 @@ namespace Neon.HabboHotel.Rooms.Music
             mLength = Length;
         }
 
-        public double LengthSeconds
-        {
-            get { return mLength; }
-        }
+        public double LengthSeconds => mLength;
 
-        public int LengthMiliseconds
-        {
-            get { return (int)(mLength * 1000.0); }
-        }
+        public int LengthMiliseconds => (int)(mLength * 1000.0);
 
-        public string Name
-        {
-            get { return mName; }
-        }
+        public string Name => mName;
 
-        public string Artist
-        {
-            get { return mArtist; }
-        }
+        public string Artist => mArtist;
 
-        public string Data
-        {
-            get { return mData; }
-        }
+        public string Data => mData;
 
-        public int Id
-        {
-            get { return mID; }
-        }
+        public int Id => mID;
     }
 }

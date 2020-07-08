@@ -1,7 +1,5 @@
-﻿using System;
-using Neon.Database.Interfaces;
+﻿using Neon.Communication.Packets.Outgoing.Handshake;
 using Neon.HabboHotel.GameClients;
-using Neon.Communication.Packets.Outgoing.Handshake;
 
 namespace Neon.Communication.Packets.Incoming.Handshake
 {

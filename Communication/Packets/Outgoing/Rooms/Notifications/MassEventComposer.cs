@@ -1,11 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-namespace Neon.Communication.Packets.Outgoing.Rooms.Notifications
+﻿namespace Neon.Communication.Packets.Outgoing.Rooms.Notifications
 {
-    class MassEventComposer : ServerPacket
+    internal class MassEventComposer : ServerPacket
     {
         public MassEventComposer(string Message)
             : base(ServerPacketHeader.MassEventComposer)

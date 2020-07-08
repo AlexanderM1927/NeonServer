@@ -1,24 +1,24 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
+﻿using Neon.Communication.Packets.Outgoing.Help;
 using Neon.HabboHotel.GameClients;
-using Neon.Communication.Packets.Outgoing.Help;
+using System;
 
 namespace Neon.Communication.Packets.Incoming.Help
 {
-    class SubmitBullyReportEvent : IPacketEvent
+    internal class SubmitBullyReportEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
             //0 = sent, 1 = blocked, 2 = no chat, 3 = already reported.
             if (Session == null)
+            {
                 return;
+            }
 
             int UserId = Packet.PopInt();
             if (UserId == Session.GetHabbo().Id)//Hax
+            {
                 return;
+            }
 
             if (Session.GetHabbo().AdvertisingReportedBlocked)
             {
@@ -60,14 +60,18 @@ namespace Neon.Communication.Packets.Incoming.Help
             }
 
             if (Session.GetHabbo().Rank <= 1)
+            {
                 Session.GetHabbo().LastAdvertiseReport = NeonEnvironment.GetUnixTimestamp() + 300;
+            }
             else
+            {
                 Session.GetHabbo().LastAdvertiseReport = NeonEnvironment.GetUnixTimestamp();
+            }
 
             Client.GetHabbo().AdvertisingReported = true;
             Session.SendMessage(new SubmitBullyReportComposer(0));
             //NeonEnvironment.GetGame().GetClientManager().ModAlert("New advertising report! " + Client.GetHabbo().Username + " has been reported for advertising by " + Session.GetHabbo().Username +".");
-            NeonEnvironment.GetGame().GetClientManager().DoAdvertisingReport(Session, Client);     
+            NeonEnvironment.GetGame().GetClientManager().DoAdvertisingReport(Session, Client);
             return;
         }
     }

@@ -11,32 +11,25 @@ using System.Text;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.Administrator
 {
-    class DevelopperCommand : IChatCommand
+    internal class DevelopperCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_developer"; }
-        }
+        public string PermissionRequired => "command_developer";
 
-        public string Parameters
-        {
-            get { return "%acción%"; }
-        }
+        public string Parameters => "%acción%";
 
-        public string Description
-        {
-            get { return "Actualiza una característica de Neon."; }
-        }
+        public string Description => "Actualiza una característica de Neon.";
 
         public void Execute(GameClient Session, Room Room, string[] Params)
         {
             RoomUser User = Room.GetRoomUserManager().GetRoomUserByHabbo(Session.GetHabbo().Id);
             if (User == null)
+            {
                 return;
+            }
 
             if (Session.GetHabbo().isDeveloping == false)
             {
-                var _cache = new Random().Next(0, 300);
+                int _cache = new Random().Next(0, 300);
                 Session.SendMessage(new MassEventComposer("habbopages/developer.txt?" + _cache));
                 Session.GetHabbo().isDeveloping = true;
                 return;

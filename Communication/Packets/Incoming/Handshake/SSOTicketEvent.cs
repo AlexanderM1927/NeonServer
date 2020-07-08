@@ -1,8 +1,4 @@
-﻿using System;
-
-using Neon.Communication.Packets.Incoming;
-using Neon.HabboHotel.GameClients;
-using Neon.Communication.Packets.Outgoing.Handshake;
+﻿using Neon.HabboHotel.GameClients;
 
 namespace Neon.Communication.Packets.Incoming.Handshake
 
@@ -12,12 +8,16 @@ namespace Neon.Communication.Packets.Incoming.Handshake
         public void Parse(GameClient Session, ClientPacket Packet)
         {
             if (Session == null || Session.RC4Client == null || Session.GetHabbo() != null)
+            {
                 return;
+            }
 
             string SSO = Packet.PopString();
 
             if (string.IsNullOrEmpty(SSO) /*|| SSO.Length < 15*/)
+            {
                 return;
+            }
 
             Session.TryAuthenticate(SSO);
         }

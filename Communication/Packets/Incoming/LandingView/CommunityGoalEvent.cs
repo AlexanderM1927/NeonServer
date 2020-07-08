@@ -1,13 +1,8 @@
 ﻿using Neon.Communication.Packets.Outgoing.LandingView;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.Communication.Packets.Incoming.LandingView
 {
-    class CommunityGoalEvent : IPacketEvent
+    internal class CommunityGoalEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {

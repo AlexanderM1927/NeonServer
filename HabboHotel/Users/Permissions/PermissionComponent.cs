@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Neon.HabboHotel.Users.Permissions
 {
@@ -20,8 +16,8 @@ namespace Neon.HabboHotel.Users.Permissions
 
         public PermissionComponent()
         {
-            this._permissions = new List<string>();
-            this._commands = new List<string>();
+            _permissions = new List<string>();
+            _commands = new List<string>();
         }
 
         /// <summary>
@@ -30,14 +26,18 @@ namespace Neon.HabboHotel.Users.Permissions
         /// <param name="Player"></param>
         public bool Init(Habbo Player)
         {
-            if (this._permissions.Count > 0)
-                this._permissions.Clear();
+            if (_permissions.Count > 0)
+            {
+                _permissions.Clear();
+            }
 
-            if (this._commands.Count > 0)
-                this._commands.Clear();
+            if (_commands.Count > 0)
+            {
+                _commands.Clear();
+            }
 
-            this._permissions.AddRange(NeonEnvironment.GetGame().GetPermissionManager().GetPermissionsForPlayer(Player));
-            this._commands.AddRange(NeonEnvironment.GetGame().GetPermissionManager().GetCommandsForPlayer(Player));
+            _permissions.AddRange(NeonEnvironment.GetGame().GetPermissionManager().GetPermissionsForPlayer(Player));
+            _commands.AddRange(NeonEnvironment.GetGame().GetPermissionManager().GetCommandsForPlayer(Player));
             return true;
         }
 
@@ -48,7 +48,7 @@ namespace Neon.HabboHotel.Users.Permissions
         /// <returns></returns>
         public bool HasRight(string Right)
         {
-            return this._permissions.Contains(Right);
+            return _permissions.Contains(Right);
         }
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace Neon.HabboHotel.Users.Permissions
         /// <returns></returns>
         public bool HasCommand(string Command)
         {
-            return this._commands.Contains(Command);
+            return _commands.Contains(Command);
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace Neon.HabboHotel.Users.Permissions
         /// </summary>
         public void Dispose()
         {
-            this._permissions.Clear();
+            _permissions.Clear();
         }
     }
 }

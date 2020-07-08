@@ -1,11 +1,11 @@
 ﻿#region
 
-using System;
-using System.Data;
-using System.Text;
 using Neon.Communication.Packets.Outgoing.GameCenter;
 using Neon.HabboHotel.GameClients;
 using Neon.HabboHotel.Games;
+using System;
+using System.Data;
+using System.Text;
 
 #endregion
 
@@ -16,29 +16,32 @@ namespace Neon.Communication.Packets.Incoming.GameCenter
         public void Parse(GameClient Session, ClientPacket Packet)
         {
             if ((Session == null) || (Session.GetHabbo() == null))
+            {
                 return;
+            }
 
-            var GameId = Packet.PopInt();
+            int GameId = Packet.PopInt();
 
-            GameData GameData = null;
-            if (NeonEnvironment.GetGame().GetGameDataManager().TryGetGame(GameId, out GameData))
+            if (NeonEnvironment.GetGame().GetGameDataManager().TryGetGame(GameId, out GameData GameData))
             {
                 Session.SendMessage(new JoinQueueComposer(GameData.GameId));
-                var HabboID = Session.GetHabbo().Id;
-                using (var dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
+                int HabboID = Session.GetHabbo().Id;
+                using (Database.Interfaces.IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
                 {
                     DataTable data;
                     dbClient.SetQuery("SELECT user_id FROM user_auth_ticket WHERE user_id = '" + HabboID + "'");
                     data = dbClient.getTable();
-                    var count = 0;
+                    int count = 0;
                     foreach (DataRow row in data.Rows)
                     {
                         if (Convert.ToInt32(row["userid"]) == HabboID)
+                        {
                             count++;
+                        }
                     }
                     if (count == 0)
                     {
-                        var SSOTicket = "Fastfood-" + GenerateSSO(32) + "-" + Session.GetHabbo().Id;
+                        string SSOTicket = "Fastfood-" + GenerateSSO(32) + "-" + Session.GetHabbo().Id;
                         dbClient.RunQuery("INSERT INTO user_tickets(userid, sessionticket) VALUES ('" + HabboID +
                                           "', '" +
                                           SSOTicket + "')");
@@ -50,7 +53,7 @@ namespace Neon.Communication.Packets.Incoming.GameCenter
                         data = dbClient.getTable();
                         foreach (DataRow dRow in data.Rows)
                         {
-                            var SSOTicket = dRow["sessionticket"];
+                            object SSOTicket = dRow["sessionticket"];
                             Session.SendMessage(new LoadGameComposer(GameData, (string)SSOTicket));
                         }
                     }
@@ -60,11 +63,14 @@ namespace Neon.Communication.Packets.Incoming.GameCenter
 
         private string GenerateSSO(int length)
         {
-            var random = new Random();
-            var characters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-            var result = new StringBuilder(length);
-            for (var i = 0; i < length; i++)
+            Random random = new Random();
+            string characters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+            StringBuilder result = new StringBuilder(length);
+            for (int i = 0; i < length; i++)
+            {
                 result.Append(characters[random.Next(characters.Length)]);
+            }
+
             return result.ToString();
         }
     }

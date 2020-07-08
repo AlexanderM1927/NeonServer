@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Neon.Communication.Packets.Outgoing.Users
+﻿namespace Neon.Communication.Packets.Outgoing.Users
 {
-    class UpdateUsernameComposer : ServerPacket
+    internal class UpdateUsernameComposer : ServerPacket
     {
         public UpdateUsernameComposer(string User)
             : base(ServerPacketHeader.UpdateUsernameMessageComposer)

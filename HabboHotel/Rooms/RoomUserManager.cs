@@ -1,43 +1,30 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Concurrent;
-using System.Drawing;
-using System.Linq;
-
+﻿using Neon.Communication.Packets.Outgoing.Handshake;
 using Neon.Communication.Packets.Outgoing.Rooms.Avatar;
+using Neon.Communication.Packets.Outgoing.Rooms.Engine;
+using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
+using Neon.Communication.Packets.Outgoing.Rooms.Permissions;
+using Neon.Communication.Packets.Outgoing.Rooms.Session;
 using Neon.Core;
+using Neon.Database.Interfaces;
+using Neon.HabboHotel.Astar;
 using Neon.HabboHotel.GameClients;
 using Neon.HabboHotel.Items;
-using Neon.HabboHotel.Global;
 using Neon.HabboHotel.Pathfinding;
 using Neon.HabboHotel.Rooms.AI;
-using Neon.HabboHotel.Quests;
-using Neon.HabboHotel.Rooms.Games;
-using Neon.HabboHotel.Astar;
-using Neon.HabboHotel.Users;
-using Neon.HabboHotel.Users.Inventory;
-using Neon.Communication.Packets.Incoming;
-
-using Neon.Utilities;
-
-using System.Data;
-using Neon.Communication.Packets.Outgoing.Rooms.Session;
-using Neon.Communication.Packets.Outgoing.Rooms.Engine;
-using Neon.Communication.Packets.Outgoing.Rooms.Permissions;
-using Neon.Communication.Packets.Outgoing.Handshake;
-using System.Text.RegularExpressions;
 using Neon.HabboHotel.Rooms.Games.Teams;
-
-using Neon.Database.Interfaces;
-using System.Threading.Tasks;
-using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
+using Neon.Utilities;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Data;
+using System.Drawing;
+using System.Linq;
 
 namespace Neon.HabboHotel.Rooms
 {
     public class RoomUserManager
     {
-        private Room _room;
+        private readonly Room _room;
         private ConcurrentDictionary<int, RoomUser> _users;
         private ConcurrentDictionary<int, RoomUser> _bots;
         private ConcurrentDictionary<int, RoomUser> _pets;
@@ -51,32 +38,32 @@ namespace Neon.HabboHotel.Rooms
 
         public RoomUserManager(Room room)
         {
-            this._room = room;
-            this._users = new ConcurrentDictionary<int, RoomUser>();
-            this._pets = new ConcurrentDictionary<int, RoomUser>();
-            this._bots = new ConcurrentDictionary<int, RoomUser>();
+            _room = room;
+            _users = new ConcurrentDictionary<int, RoomUser>();
+            _pets = new ConcurrentDictionary<int, RoomUser>();
+            _bots = new ConcurrentDictionary<int, RoomUser>();
 
-            this.primaryPrivateUserID = 0;
-            this.secondaryPrivateUserID = 0;
+            primaryPrivateUserID = 0;
+            secondaryPrivateUserID = 0;
 
-            this.petCount = 0;
-            this.userCount = 0;
+            petCount = 0;
+            userCount = 0;
         }
 
         public void Dispose()
         {
-            this._users.Clear();
-            this._pets.Clear();
-            this._bots.Clear();
+            _users.Clear();
+            _pets.Clear();
+            _bots.Clear();
 
-            this._users = null;
-            this._pets = null;
-            this._bots = null;
+            _users = null;
+            _pets = null;
+            _bots = null;
         }
 
         public RoomUser DeployBot(RoomBot Bot, Pet PetData)
         {
-            var BotUser = new RoomUser(0, _room.RoomId, primaryPrivateUserID++, _room);
+            RoomUser BotUser = new RoomUser(0, _room.RoomId, primaryPrivateUserID++, _room);
             Bot.VirtualId = primaryPrivateUserID;
 
             int PersonalID = secondaryPrivateUserID++;
@@ -109,7 +96,9 @@ namespace Neon.HabboHotel.Rooms
                 BotUser.PetData.VirtualId = BotUser.VirtualId;
             }
             else
+            {
                 BotUser.BotAI.Init(Bot.BotId, BotUser.VirtualId, _room.RoomId, BotUser, _room);
+            }
 
             //UpdateUserStatus(BotUser, false);
             BotUser.UpdateNeeded = true;
@@ -119,18 +108,27 @@ namespace Neon.HabboHotel.Rooms
             if (BotUser.IsPet)
             {
                 if (_pets.ContainsKey(BotUser.PetData.PetId)) //Pet allready placed
+                {
                     _pets[BotUser.PetData.PetId] = BotUser;
+                }
                 else
+                {
                     _pets.TryAdd(BotUser.PetData.PetId, BotUser);
+                }
 
                 petCount++;
             }
             else if (BotUser.IsBot)
             {
                 if (_bots.ContainsKey(BotUser.BotData.BotId))
+                {
                     _bots[BotUser.BotData.BotId] = BotUser;
+                }
                 else
+                {
                     _bots.TryAdd(BotUser.BotData.Id, BotUser);
+                }
+
                 _room.SendMessage(new DanceComposer(BotUser, BotUser.BotData.DanceId));
             }
             return BotUser;
@@ -140,7 +138,9 @@ namespace Neon.HabboHotel.Rooms
         {
             RoomUser User = GetRoomUserByVirtualId(VirtualId);
             if (User == null || !User.IsBot)
+            {
                 return;
+            }
 
             if (User.IsPet)
             {
@@ -159,32 +159,43 @@ namespace Neon.HabboHotel.Rooms
 
             _room.SendMessage(new UserRemoveComposer(User.VirtualId));
 
-            RoomUser toRemove;
 
             if (_users != null)
-                _users.TryRemove(User.InternalRoomID, out toRemove);
+            {
+                _users.TryRemove(User.InternalRoomID, out RoomUser toRemove);
+            }
 
             onRemove(User);
         }
 
         public RoomUser GetUserForSquare(int x, int y)
-            => _room.GetGameMap().GetRoomUsers(new Point(x, y)).FirstOrDefault();
+        {
+            return _room.GetGameMap().GetRoomUsers(new Point(x, y)).FirstOrDefault();
+        }
 
         public bool AddAvatarToRoom(GameClient Session)
         {
             if (_room == null)
+            {
                 return false;
+            }
 
             if (Session == null)
+            {
                 return false;
+            }
 
             if (Session.GetHabbo().CurrentRoom == null)
+            {
                 return false;
+            }
 
             RoomUser User = new RoomUser(Session.GetHabbo().Id, _room.RoomId, primaryPrivateUserID++, _room);
 
             if (User == null || User.GetClient() == null)
+            {
                 return false;
+            }
 
             User.UserId = Session.GetHabbo().Id;
             Session.GetHabbo().TentId = 0;
@@ -195,14 +206,20 @@ namespace Neon.HabboHotel.Rooms
             Session.GetHabbo().CurrentRoomId = _room.RoomId;
 
             if (!_users.TryAdd(PersonalID, User))
+            {
                 return false;
+            }
 
             DynamicRoomModel Model = _room.GetGameMap().Model;
             if (Model == null)
+            {
                 return false;
+            }
 
             if (!_room.PetMorphsAllowed && Session.GetHabbo().PetId != 0)
+            {
                 Session.GetHabbo().PetId = 0;
+            }
 
             if (!Session.GetHabbo().IsTeleporting && !Session.GetHabbo().IsHopping)
             {
@@ -221,9 +238,13 @@ namespace Neon.HabboHotel.Rooms
             {
                 Item Item = null;
                 if (Session.GetHabbo().IsTeleporting)
+                {
                     Item = _room.GetRoomItemHandler().GetItem(Session.GetHabbo().TeleporterId);
+                }
                 else if (Session.GetHabbo().IsHopping)
+                {
                     Item = _room.GetRoomItemHandler().GetItem(Session.GetHabbo().HopperId);
+                }
 
                 if (Item != null)
                 {
@@ -276,19 +297,32 @@ namespace Neon.HabboHotel.Rooms
                     Session.SendMessage(new YouAreControllerComposer(3));
                 }
                 else
+                {
                     Session.SendMessage(new YouAreNotControllerComposer());
+                }
 
                 User.UpdateNeeded = true;
             }
 
             if (Session.GetHabbo().GetPermissions().HasRight("autoeffect_102") && !Session.GetHabbo().DisableForcedEffects)
+            {
                 Session.GetHabbo().Effects().ApplyEffect(102);
+            }
+
             if (Session.GetHabbo().GetPermissions().HasRight("autoeffect_178") && !Session.GetHabbo().DisableForcedEffects)
+            {
                 Session.GetHabbo().Effects().ApplyEffect(178);
+            }
+
             if (Session.GetHabbo()._guidelevel == 1 && _room.Id == 72 && !Session.GetHabbo().DisableForcedEffects)
+            {
                 Session.GetHabbo().Effects().ApplyEffect(597);
+            }
+
             if (Session.GetHabbo()._guidelevel == 2 && _room.Id == 72 && !Session.GetHabbo().DisableForcedEffects)
+            {
                 Session.GetHabbo().Effects().ApplyEffect(595);
+            }
 
             if (_room.ForSale && _room.SalePrice > 0 && (_room.GetRoomUserManager().GetRoomUserByHabbo(_room.OwnerName) != null))
             {
@@ -307,10 +341,12 @@ namespace Neon.HabboHotel.Rooms
                 _room.SalePrice = 0;
             }
 
-            foreach (RoomUser Bot in this._bots.Values.ToList())
+            foreach (RoomUser Bot in _bots.Values.ToList())
             {
                 if (Bot == null || Bot.BotAI == null)
+                {
                     continue;
+                }
 
                 Bot.BotAI.OnUserEnterRoom(User);
 
@@ -325,24 +361,34 @@ namespace Neon.HabboHotel.Rooms
             return true;
         }
 
-        public void RemoveUserFromRoom(GameClient Session, Boolean NotifyClient, Boolean NotifyKick = false)
+        public void RemoveUserFromRoom(GameClient Session, bool NotifyClient, bool NotifyKick = false)
         {
             try
             {
                 if (_room == null)
+                {
                     return;
+                }
 
                 if (Session == null || Session.GetHabbo() == null)
+                {
                     return;
+                }
 
                 if (NotifyKick)
+                {
                     Session.SendMessage(new GenericErrorComposer(4008));
+                }
 
                 if (NotifyClient)
+                {
                     Session.SendMessage(new CloseConnectionComposer());
+                }
 
                 if (Session.GetHabbo().TentId > 0)
+                {
                     Session.GetHabbo().TentId = 0;
+                }
 
                 RoomUser User = GetRoomUserByHabbo(Session.GetHabbo().Id);
                 if (User != null)
@@ -360,7 +406,7 @@ namespace Neon.HabboHotel.Rooms
 
                     if (User.Team != TEAM.NONE)
                     {
-                        TeamManager Team = this._room.GetTeamManagerForFreeze();
+                        TeamManager Team = _room.GetTeamManagerForFreeze();
                         if (Team != null)
                         {
                             Team.OnUserLeave(User);
@@ -368,7 +414,9 @@ namespace Neon.HabboHotel.Rooms
                             User.Team = TEAM.NONE;
 
                             if (User.GetClient().GetHabbo().Effects().CurrentEffect != 0)
+                            {
                                 User.GetClient().GetHabbo().Effects().ApplyEffect(0);
+                            }
                         }
                     }
 
@@ -378,19 +426,25 @@ namespace Neon.HabboHotel.Rooms
                     if (User.CurrentItemEffect != ItemEffectType.NONE)
                     {
                         if (Session.GetHabbo().Effects() != null)
+                        {
                             Session.GetHabbo().Effects().CurrentEffect = -1;
+                        }
                     }
 
                     if (_room != null)
                     {
                         if (_room.HasActiveTrade(Session.GetHabbo().Id))
+                        {
                             _room.TryStopTrade(Session.GetHabbo().Id);
+                        }
                     }
 
                     //Session.GetHabbo().CurrentRoomId = 0;
 
                     if (Session.GetHabbo().GetMessenger() != null)
+                    {
                         Session.GetHabbo().GetMessenger().OnStatusChanged(true);
+                    }
 
                     using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
                     {
@@ -399,7 +453,9 @@ namespace Neon.HabboHotel.Rooms
                     }
 
                     if (User != null)
+                    {
                         User.Dispose();
+                    }
                 }
             }
             catch (Exception e)
@@ -428,7 +484,9 @@ namespace Neon.HabboHotel.Rooms
 
                 GameClient session = user.GetClient();
                 if (session == null)
+                {
                     return;
+                }
 
                 List<RoomUser> Bots = new List<RoomUser>();
 
@@ -437,12 +495,16 @@ namespace Neon.HabboHotel.Rooms
                     foreach (RoomUser roomUser in GetUserList().ToList())
                     {
                         if (roomUser == null)
+                        {
                             continue;
+                        }
 
                         if (roomUser.IsBot && !roomUser.IsPet)
                         {
                             if (!Bots.Contains(roomUser))
+                            {
                                 Bots.Add(roomUser);
+                            }
                         }
                     }
                 }
@@ -452,24 +514,32 @@ namespace Neon.HabboHotel.Rooms
                 foreach (RoomUser Bot in Bots.ToList())
                 {
                     if (Bot == null || Bot.BotAI == null)
+                    {
                         continue;
+                    }
 
                     Bot.BotAI.OnUserLeaveRoom(session);
 
                     if (Bot.IsPet && Bot.PetData.OwnerId == user.UserId && !_room.CheckRights(session, true))
                     {
                         if (!PetsToRemove.Contains(Bot))
+                        {
                             PetsToRemove.Add(Bot);
+                        }
                     }
                 }
 
                 foreach (RoomUser toRemove in PetsToRemove.ToList())
                 {
                     if (toRemove == null)
+                    {
                         continue;
+                    }
 
                     if (user.GetClient() == null || user.GetClient().GetHabbo() == null || user.GetClient().GetHabbo().GetInventoryComponent() == null)
+                    {
                         continue;
+                    }
 
                     user.GetClient().GetHabbo().GetInventoryComponent().TryAddPet(toRemove.PetData);
                     RemoveBot(toRemove.VirtualId, false);
@@ -486,15 +556,18 @@ namespace Neon.HabboHotel.Rooms
         private void RemoveRoomUser(RoomUser user)
         {
             if (user.SetStep)
+            {
                 _room.GetGameMap().GameMap[user.SetX, user.SetY] = user.SqState;
+            }
             else
+            {
                 _room.GetGameMap().GameMap[user.X, user.Y] = user.SqState;
+            }
 
             _room.GetGameMap().RemoveUserFromMap(user, new Point(user.X, user.Y));
             _room.SendMessage(new UserRemoveComposer(user.VirtualId));
 
-            RoomUser toRemove = null;
-            if (this._users.TryRemove(user.InternalRoomID, out toRemove))
+            if (_users.TryRemove(user.InternalRoomID, out RoomUser toRemove))
             {
                 //uhmm, could put the below stuff in but idk.
             }
@@ -505,22 +578,22 @@ namespace Neon.HabboHotel.Rooms
 
         public bool TryGetPet(int PetId, out RoomUser Pet)
         {
-            return this._pets.TryGetValue(PetId, out Pet);
+            return _pets.TryGetValue(PetId, out Pet);
         }
 
         public bool TryGetBot(int BotId, out RoomUser Bot)
         {
-            return this._bots.TryGetValue(BotId, out Bot);
+            return _bots.TryGetValue(BotId, out Bot);
         }
 
         public RoomUser GetBotByName(string Name)
         {
-            bool FoundBot = this._bots.Where(x => x.Value.BotData != null && x.Value.BotData.Name.ToLower() == Name.ToLower()).ToList().Count() > 0;
+            bool FoundBot = _bots.Where(x => x.Value.BotData != null && x.Value.BotData.Name.ToLower() == Name.ToLower()).ToList().Count() > 0;
             if (FoundBot)
             {
-                int Id = this._bots.FirstOrDefault(x => x.Value.BotData != null && x.Value.BotData.Name.ToLower() == Name.ToLower()).Value.BotData.Id;
+                int Id = _bots.FirstOrDefault(x => x.Value.BotData != null && x.Value.BotData.Name.ToLower() == Name.ToLower()).Value.BotData.Id;
 
-                return this._bots[Id];
+                return _bots[Id];
             }
 
             return null;
@@ -539,22 +612,31 @@ namespace Neon.HabboHotel.Rooms
 
         public RoomUser GetRoomUserByVirtualId(int VirtualId)
         {
-            RoomUser User = null;
-            if (!_users.TryGetValue(VirtualId, out User))
+            if (!_users.TryGetValue(VirtualId, out RoomUser User))
+            {
                 return null;
+            }
+
             return User;
         }
-        public ConcurrentDictionary<int, RoomUser> GetUsers() => _users;
+        public ConcurrentDictionary<int, RoomUser> GetUsers()
+        {
+            return _users;
+        }
 
         public RoomUser GetRoomUserByHabbo(int Id)
         {
             if (this == null)
+            {
                 return null;
+            }
 
-            RoomUser User = this.GetUserList().Where(x => x != null && x.GetClient() != null && x.GetClient().GetHabbo() != null && x.GetClient().GetHabbo().Id == Id).FirstOrDefault();
+            RoomUser User = GetUserList().Where(x => x != null && x.GetClient() != null && x.GetClient().GetHabbo() != null && x.GetClient().GetHabbo().Id == Id).FirstOrDefault();
 
             if (User != null)
+            {
                 return User;
+            }
 
             return null;
         }
@@ -562,12 +644,16 @@ namespace Neon.HabboHotel.Rooms
         public RoomUser GetRoomUserByUsername(string Username)
         {
             if (this == null)
+            {
                 return null;
+            }
 
-            RoomUser User = this.GetUserList().Where(x => x != null && x.GetClient() != null && x.GetClient().GetHabbo() != null && x.GetClient().GetHabbo().Username == Username).FirstOrDefault();
+            RoomUser User = GetUserList().Where(x => x != null && x.GetClient() != null && x.GetClient().GetHabbo() != null && x.GetClient().GetHabbo().Username == Username).FirstOrDefault();
 
             if (User != null)
+            {
                 return User;
+            }
 
             return null;
         }
@@ -576,21 +662,25 @@ namespace Neon.HabboHotel.Rooms
         {
             List<RoomUser> List = new List<RoomUser>();
 
-            List = this.GetUserList().Where(x => (!x.IsBot)).ToList();
+            List = GetUserList().Where(x => (!x.IsBot)).ToList();
 
             return List;
         }
 
         public List<RoomUser> GetRoomusersByChat(bool chat)
         {
-            var returnList = new List<RoomUser>();
+            List<RoomUser> returnList = new List<RoomUser>();
             foreach (RoomUser user in GetUserList().ToList())
             {
                 if (user == null)
+                {
                     continue;
+                }
 
                 if (!user.IsBot && user.GetClient() != null && user.GetClient().GetHabbo() != null && user.GetClient().GetHabbo().ChatPreference == false)
+                {
                     returnList.Add(user);
+                }
             }
 
             return returnList;
@@ -598,14 +688,18 @@ namespace Neon.HabboHotel.Rooms
 
         public List<RoomUser> GetRoomUserByRank(int minRank)
         {
-            var returnList = new List<RoomUser>();
+            List<RoomUser> returnList = new List<RoomUser>();
             foreach (RoomUser user in GetUserList().ToList())
             {
                 if (user == null)
+                {
                     continue;
+                }
 
                 if (!user.IsBot && user.GetClient() != null && user.GetClient().GetHabbo() != null && user.GetClient().GetHabbo().Rank >= minRank)
+                {
                     returnList.Add(user);
+                }
             }
 
             return returnList;
@@ -613,10 +707,12 @@ namespace Neon.HabboHotel.Rooms
 
         public RoomUser GetRoomUserByHabbo(string pName)
         {
-            RoomUser User = this.GetUserList().Where(x => x != null && x.GetClient() != null && x.GetClient().GetHabbo() != null && x.GetClient().GetHabbo().Username.Equals(pName, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+            RoomUser User = GetUserList().Where(x => x != null && x.GetClient() != null && x.GetClient().GetHabbo() != null && x.GetClient().GetHabbo().Username.Equals(pName, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
 
             if (User != null)
+            {
                 return User;
+            }
 
             return null;
         }
@@ -626,7 +722,9 @@ namespace Neon.HabboHotel.Rooms
             foreach (Pet Pet in GetPets().ToList())
             {
                 if (Pet == null)
+                {
                     continue;
+                }
 
                 using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
                 {
@@ -658,10 +756,12 @@ namespace Neon.HabboHotel.Rooms
         public List<Pet> GetPets()
         {
             List<Pet> Pets = new List<Pet>();
-            foreach (RoomUser User in this._pets.Values.ToList())
+            foreach (RoomUser User in _pets.Values.ToList())
             {
                 if (User == null || !User.IsPet)
+                {
                     continue;
+                }
 
                 Pets.Add(User.PetData);
             }
@@ -675,19 +775,25 @@ namespace Neon.HabboHotel.Rooms
             ICollection<RoomUser> RoomUsers = GetUserList();
 
             if (RoomUsers == null)
+            {
                 return;
+            }
 
             foreach (RoomUser User in RoomUsers.ToList())
             {
                 if (User == null || !User.UpdateNeeded || Users.Contains(User))
+                {
                     continue;
+                }
 
                 User.UpdateNeeded = false;
                 Users.Add(User);
             }
 
             if (Users.Count > 0)
+            {
                 _room.SendMessage(new UserUpdateComposer(Users));
+            }
         }
 
         public void UpdateUserStatusses()
@@ -695,7 +801,9 @@ namespace Neon.HabboHotel.Rooms
             foreach (RoomUser user in GetUserList().ToList())
             {
                 if (user == null)
+                {
                     continue;
+                }
 
                 UpdateUserStatus(user, false);
             }
@@ -704,15 +812,30 @@ namespace Neon.HabboHotel.Rooms
         private bool isValid(RoomUser user)
         {
             if (user == null)
+            {
                 return false;
+            }
+
             if (user.IsBot)
+            {
                 return true;
+            }
+
             if (user.GetClient() == null)
+            {
                 return false;
+            }
+
             if (user.GetClient().GetHabbo() == null)
+            {
                 return false;
+            }
+
             if (user.GetClient().GetHabbo().CurrentRoomId != _room.RoomId)
+            {
                 return false;
+            }
+
             return true;
         }
 
@@ -728,14 +851,20 @@ namespace Neon.HabboHotel.Rooms
                 foreach (RoomUser User in GetUserList().ToList())
                 {
                     if (User == null)
+                    {
                         continue;
+                    }
 
                     if (!isValid(User))
                     {
                         if (User.GetClient() != null)
+                        {
                             RemoveUserFromRoom(User.GetClient(), false, false);
+                        }
                         else
+                        {
                             RemoveRoomUser(User);
+                        }
                     }
 
                     if (User.NeedsAutokick && !ToRemove.Contains(User))
@@ -757,11 +886,15 @@ namespace Neon.HabboHotel.Rooms
                     {
                         User.CarryTimer--;
                         if (User.CarryTimer <= 0)
+                        {
                             User.CarryItem(0);
+                        }
                     }
 
                     if (_room.GotFreeze())
+                    {
                         _room.GetFreeze().CycleUser(User);
+                    }
 
                     bool InvalidStep = false;
 
@@ -773,7 +906,9 @@ namespace Neon.HabboHotel.Rooms
                             User.isRolling = false;
                         }
                         else
+                        {
                             User.rollerDelay--;
+                        }
                     }
 
                     if (User.SetStep)
@@ -783,7 +918,9 @@ namespace Neon.HabboHotel.Rooms
                         if (_room.GetGameMap().IsValidWalk(User, new Vector2D(User.X, User.Y), new Vector2D(User.SetX, User.SetY), User.AllowOverride) || User.RidingHorse)
                         {
                             if (!User.RidingHorse)
+                            {
                                 _room.GetGameMap().UpdateUserMovement(new Point(User.Coordinate.X, User.Coordinate.Y), new Point(User.SetX, User.SetY), User);
+                            }
 
                             List<Item> items = _room.GetGameMap().GetCoordinatedItems(new Point(User.X, User.Y));
                             foreach (Item Item in items.ToList())
@@ -820,34 +957,20 @@ namespace Neon.HabboHotel.Rooms
                                 continue;
                             }
 
-                            Item iitem;
-                            if (_room.GetGameMap().GetHighestItemForSquare(new Point(User.X, User.Y), out iitem))
-                                iitem.UserWalksOnFurni(User);
+                            List<Item> Items = _room.GetGameMap().GetCoordinatedItems(new Point(User.X, User.Y));
+                            foreach (Item Item in Items.ToList())
+                            {
+                                Item.UserWalksOnFurni(User);
+                            }
+
                             UpdateUserStatus(User, true);
                         }
                         else
+                        {
                             InvalidStep = true;
+                        }
+
                         User.SetStep = false;
-                    }
-
-                    if (User.PathRecalcNeeded)
-                    {
-                        User.Path.Clear();
-
-                        User.Path = PathFinder.FindPath(User, _room.GetGameMap().DiagonalEnabled, _room.GetGameMap(),
-                            new Vector2D(User.X, User.Y), new Vector2D(User.GoalX, User.GoalY));
-
-                        if (User.Path.Count > 1)
-                        {
-                            User.PathStep = 1;
-                            User.IsWalking = true;
-                            User.PathRecalcNeeded = false;
-                        }
-                        else
-                        {
-                            User.PathRecalcNeeded = false;
-                            User.Path.Clear();
-                        }
                     }
 
                     if (User.IsWalking && !User.Freezed)
@@ -860,7 +983,9 @@ namespace Neon.HabboHotel.Rooms
                             User.handelingBallStatus = 0;
 
                             if (User.Statusses.ContainsKey("sign"))
+                            {
                                 User.RemoveStatus("sign");
+                            }
 
                             if (User.IsBot && User.BotData.TargetUser > 0)
                             {
@@ -939,7 +1064,9 @@ namespace Neon.HabboHotel.Rooms
                             {
                                 RoomUser Horse = GetRoomUserByVirtualId(User.HorseID);
                                 if (Horse != null)
+                                {
                                     Horse.AddStatus("mv", nextX + "," + nextY + "," + TextHandling.GetString(nextZ));
+                                }
 
                                 User.AddStatus("mv", +nextX + "," + nextY + "," + TextHandling.GetString(nextZ + 1));
 
@@ -947,7 +1074,9 @@ namespace Neon.HabboHotel.Rooms
                                 Horse.UpdateNeeded = true;
                             }
                             else
+                            {
                                 User.AddStatus("mv", nextX + "," + nextY + "," + TextHandling.GetString(nextZ));
+                            }
 
                             int newRot = Rotation.Calculate(User.X, User.Y, nextX, nextY, User.moonwalkEnabled);
 
@@ -985,14 +1114,19 @@ namespace Neon.HabboHotel.Rooms
                                 _room.GetGameMap().GameMap[nextX, nextY] = 0;
                             }
                             else
+                            {
                                 _room.GetGameMap().GameMap[nextX, nextY] = 1;
-
+                            }
                         }
                         if (!User.RidingHorse)
+                        {
                             User.UpdateNeeded = true;
+                        }
 
                         if (_room.GotSoccer())
+                        {
                             _room.GetSoccer().OnUserWalk(User);
+                        }
                     }
                     else
                     {
@@ -1014,12 +1148,18 @@ namespace Neon.HabboHotel.Rooms
                     }
 
                     if (User.RidingHorse)
+                    {
                         User.ApplyEffect(77);
+                    }
 
                     if (User.IsBot && User.BotAI != null)
+                    {
                         User.BotAI.OnTimerTick();
+                    }
                     else
+                    {
                         userCounter++;
+                    }
 
                     if (!updated)
                     {
@@ -1035,17 +1175,23 @@ namespace Neon.HabboHotel.Rooms
                         RemoveUserFromRoom(client, true, false);
                     }
                     else
+                    {
                         RemoveRoomUser(toRemove);
+                    }
                 }
 
                 if (userCount != userCounter)
+                {
                     UpdateUserCount(userCounter);
+                }
             }
             catch (Exception e)
             {
                 int rId = 0;
                 if (_room != null)
+                {
                     rId = _room.Id;
+                }
 
                 Logging.LogCriticalException("Affected Room - ID: " + rId + " - " + e.ToString());
             }
@@ -1054,13 +1200,17 @@ namespace Neon.HabboHotel.Rooms
         public void UpdateUserStatus(RoomUser User, bool cyclegameitems)
         {
             if (User == null)
+            {
                 return;
+            }
 
             try
             {
                 bool isBot = User.IsBot;
                 if (isBot)
+                {
                     cyclegameitems = false;
+                }
 
                 if (NeonEnvironment.GetUnixTimestamp() > NeonEnvironment.GetUnixTimestamp() + User.SignTime)
                 {
@@ -1074,22 +1224,34 @@ namespace Neon.HabboHotel.Rooms
                 if ((User.Statusses.ContainsKey("lay") && !User.isLying) || (User.Statusses.ContainsKey("sit") && !User.isSitting))
                 {
                     if (User.Statusses.ContainsKey("lay"))
+                    {
                         User.Statusses.Remove("lay");
+                    }
+
                     if (User.Statusses.ContainsKey("sit"))
+                    {
                         User.Statusses.Remove("sit");
+                    }
+
                     User.UpdateNeeded = true;
                 }
                 else if (User.isLying || User.isSitting)
+                {
                     return;
+                }
 
                 double newZ;
                 List<Item> ItemsOnSquare = _room.GetGameMap().GetAllRoomItemForSquare(User.X, User.Y);
                 if (ItemsOnSquare != null || ItemsOnSquare.Count != 0)
                 {
                     if (User.RidingHorse && User.IsPet == false)
+                    {
                         newZ = _room.GetGameMap().SqAbsoluteHeight(User.X, User.Y, ItemsOnSquare.ToList()) + 1;
+                    }
                     else
+                    {
                         newZ = _room.GetGameMap().SqAbsoluteHeight(User.X, User.Y, ItemsOnSquare.ToList());
+                    }
                 }
                 else
                 {
@@ -1106,7 +1268,10 @@ namespace Neon.HabboHotel.Rooms
                 if (Model.SqState[User.X, User.Y] == SquareState.SEAT)
                 {
                     if (!User.Statusses.ContainsKey("sit"))
+                    {
                         User.Statusses.Add("sit", "1.0");
+                    }
+
                     User.Z = Model.SqFloorHeight[User.X, User.Y];
                     User.RotHead = Model.SqSeatRot[User.X, User.Y];
                     User.RotBody = Model.SqSeatRot[User.X, User.Y];
@@ -1116,20 +1281,25 @@ namespace Neon.HabboHotel.Rooms
 
 
                 if (ItemsOnSquare.Count == 0)
+                {
                     User.LastItem = null;
-
+                }
 
                 foreach (Item Item in ItemsOnSquare.ToList())
                 {
                     if (Item == null)
+                    {
                         continue;
+                    }
 
                     if (Item.GetBaseItem().IsSeat)
                     {
                         if (!User.Statusses.ContainsKey("sit"))
                         {
                             if (!User.Statusses.ContainsKey("sit"))
+                            {
                                 User.Statusses.Add("sit", TextHandling.GetString(Item.GetBaseItem().Height));
+                            }
                         }
 
                         User.Z = Item.GetZ;
@@ -1146,7 +1316,9 @@ namespace Neon.HabboHotel.Rooms
                         case InteractionType.TENT_SMALL:
                             {
                                 if (!User.Statusses.ContainsKey("lay"))
+                                {
                                     User.Statusses.Add("lay", TextHandling.GetString(Item.GetBaseItem().Height) + " null");
+                                }
 
                                 User.Z = Item.GetZ;
                                 User.RotHead = Item.Rotation;
@@ -1173,13 +1345,18 @@ namespace Neon.HabboHotel.Rooms
                                         if (t.CanEnterOnTeam(Item.team))
                                         {
                                             if (User.Team != TEAM.NONE)
+                                            {
                                                 t.OnUserLeave(User);
+                                            }
+
                                             User.Team = Item.team;
 
                                             t.AddUser(User);
 
                                             if (User.GetClient().GetHabbo().Effects().CurrentEffect != effectID)
+                                            {
                                                 User.GetClient().GetHabbo().Effects().ApplyEffect(effectID);
+                                            }
                                         }
                                     }
                                     else if (User.Team != TEAM.NONE && User.Team != Item.team)
@@ -1193,7 +1370,10 @@ namespace Neon.HabboHotel.Rooms
                                         //usersOnTeam--;
                                         t.OnUserLeave(User);
                                         if (User.GetClient().GetHabbo().Effects().CurrentEffect == effectID)
+                                        {
                                             User.GetClient().GetHabbo().Effects().ApplyEffect(0);
+                                        }
+
                                         User.Team = TEAM.NONE;
                                     }
                                     //Item.ExtraData = usersOnTeam.ToString();
@@ -1219,12 +1399,17 @@ namespace Neon.HabboHotel.Rooms
                                         if (t.CanEnterOnTeam(Item.team))
                                         {
                                             if (User.Team != TEAM.NONE)
+                                            {
                                                 t.OnUserLeave(User);
+                                            }
+
                                             User.Team = Item.team;
                                             t.AddUser(User);
 
                                             if (User.GetClient().GetHabbo().Effects().CurrentEffect != effectID)
+                                            {
                                                 User.GetClient().GetHabbo().Effects().ApplyEffect(effectID);
+                                            }
                                         }
                                     }
                                     else if (User.Team != TEAM.NONE && User.Team != Item.team)
@@ -1238,7 +1423,10 @@ namespace Neon.HabboHotel.Rooms
                                         //usersOnTeam--;
                                         t.OnUserLeave(User);
                                         if (User.GetClient().GetHabbo().Effects().CurrentEffect == effectID)
+                                        {
                                             User.GetClient().GetHabbo().Effects().ApplyEffect(0);
+                                        }
+
                                         User.Team = TEAM.NONE;
                                     }
                                     //Item.ExtraData = usersOnTeam.ToString();
@@ -1252,7 +1440,10 @@ namespace Neon.HabboHotel.Rooms
                         case InteractionType.banzaitele:
                             {
                                 if (User.Statusses.ContainsKey("mv"))
+                                {
                                     _room.GetGameItemHandler().onTeleportRoomUserEnter(User, Item);
+                                }
+
                                 break;
                             }
                         #endregion
@@ -1265,11 +1456,13 @@ namespace Neon.HabboHotel.Rooms
                         case InteractionType.HI_PROVIDER:
                             {
                                 if (User == null)
+                                {
                                     return;
+                                }
 
                                 if (!User.IsBot)
                                 {
-                                    var handitem = int.Parse(Item.ExtraData);
+                                    int handitem = int.Parse(Item.ExtraData);
                                     User.CarryItem(handitem);
                                     Item.UpdateState(false, true);
                                     Item.RequestUpdate(2, true);
@@ -1283,7 +1476,9 @@ namespace Neon.HabboHotel.Rooms
                         case InteractionType.SILLAGUIA:
                             {
                                 if (User == null)
+                                {
                                     return;
+                                }
 
                                 if (!User.IsBot)
                                 {
@@ -1300,12 +1495,14 @@ namespace Neon.HabboHotel.Rooms
                         case InteractionType.DA_PROVIDER:
                             {
                                 if (User == null)
+                                {
                                     return;
+                                }
 
                                 if (!User.IsBot)
                                 {
                                     RoomUser ThisUser = User.GetClient().GetHabbo().CurrentRoom.GetRoomUserManager().GetRoomUserByHabbo(User.GetClient().GetHabbo().Id);
-                                    var dance = int.Parse(Item.ExtraData);
+                                    int dance = int.Parse(Item.ExtraData);
                                     User.GetClient().GetHabbo().CurrentRoom.SendMessage(new DanceComposer(ThisUser, dance));
                                     Item.UpdateState(false, true);
                                     Item.RequestUpdate(2, true);
@@ -1319,11 +1516,13 @@ namespace Neon.HabboHotel.Rooms
                             {
                                 {
                                     if (User == null)
+                                    {
                                         return;
+                                    }
 
                                     if (!User.IsBot)
                                     {
-                                        var effect = int.Parse(Item.ExtraData);
+                                        int effect = int.Parse(Item.ExtraData);
                                         User.GetClient().GetHabbo().Effects().ApplyEffect(effect);
                                         Item.UpdateState(false, true);
                                         Item.RequestUpdate(4, true);
@@ -1338,12 +1537,14 @@ namespace Neon.HabboHotel.Rooms
                             {
                                 {
                                     if (User == null)
+                                    {
                                         return;
+                                    }
 
                                     if (!User.IsBot)
                                     {
-                                        var room = Item.ExtraData;
-                                        User.GetClient().SendMessage(new MassEventComposer("habbopages/" + room +".txt"));
+                                        string room = Item.ExtraData;
+                                        User.GetClient().SendMessage(new MassEventComposer("habbopages/" + room + ".txt"));
                                     }
                                     break;
                                 }
@@ -1356,15 +1557,20 @@ namespace Neon.HabboHotel.Rooms
                                 if (User.GoalX == Item.GetX && User.GoalY == Item.GetY)
                                 {
                                     if (User == null || User.GetClient() == null || User.GetClient().GetHabbo() == null)
+                                    {
                                         continue;
+                                    }
 
-                                    Room Room;
 
-                                    if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(User.GetClient().GetHabbo().CurrentRoomId, out Room))
+                                    if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(User.GetClient().GetHabbo().CurrentRoomId, out Room Room))
+                                    {
                                         return;
+                                    }
 
                                     if (!ItemTeleporterFinder.IsTeleLinked(Item.Id, Room))
+                                    {
                                         User.UnlockWalking();
+                                    }
                                     else
                                     {
                                         int LinkedTele = ItemTeleporterFinder.GetLinkedTele(Item.Id, Room);
@@ -1376,7 +1582,10 @@ namespace Neon.HabboHotel.Rooms
                                             if (TargetItem == null)
                                             {
                                                 if (User.GetClient() != null)
+                                                {
                                                     User.GetClient().SendWhisper("Ei, algum erro aconteceu avise um administrador!");
+                                                }
+
                                                 return;
                                             }
                                             else
@@ -1395,13 +1604,15 @@ namespace Neon.HabboHotel.Rooms
                                                 User.GetClient().GetHabbo().PrepareRoom(TeleRoomId, "");
                                             }
                                         }
-                                        else if (this._room.GetRoomItemHandler().GetItem(LinkedTele) != null)
+                                        else if (_room.GetRoomItemHandler().GetItem(LinkedTele) != null)
                                         {
                                             User.SetPos(Item.GetX, Item.GetY, Item.GetZ);
                                             User.SetRot(Item.Rotation, false);
                                         }
                                         else
+                                        {
                                             User.UnlockWalking();
+                                        }
                                     }
                                 }
                                 break;
@@ -1413,14 +1624,17 @@ namespace Neon.HabboHotel.Rooms
                             {
                                 if (User.IsWalking && Item.ExtraData.Length > 0)
                                 {
-                                    var givenHits = int.Parse(Item.ExtraData);
+                                    int givenHits = int.Parse(Item.ExtraData);
                                     if (givenHits < 1 && User.CurrentEffect == 158)
                                     {
                                         givenHits++;
                                         Item.ExtraData = givenHits.ToString();
                                         Item.UpdateState();
 
-                                        if (givenHits == 1) NeonEnvironment.GetGame().GetPinataManager().ReceiveCrackableReward(User, _room, Item);
+                                        if (givenHits == 1)
+                                        {
+                                            NeonEnvironment.GetGame().GetPinataManager().ReceiveCrackableReward(User, _room, Item);
+                                        }
 
                                         #region Achievements
                                         NeonEnvironment.GetGame().GetAchievementManager().ProgressAchievement(User.GetClient(), "ACH_PinataWhacker", 1);
@@ -1438,14 +1652,18 @@ namespace Neon.HabboHotel.Rooms
                             {
                                 if (User.IsWalking && Item.ExtraData.Length > 0)
                                 {
-                                    var givenHits = int.Parse(Item.ExtraData);
+                                    int givenHits = int.Parse(Item.ExtraData);
                                     if (givenHits < 1 && User.CurrentEffect == 192)
                                     {
                                         givenHits++;
                                         Item.ExtraData = givenHits.ToString();
                                         Item.UpdateState();
 
-                                        if (givenHits > 5) NeonEnvironment.GetGame().GetPinataManager().ReceiveCrackableReward(User, _room, Item);
+                                        if (givenHits > 5)
+                                        {
+                                            NeonEnvironment.GetGame().GetPinataManager().ReceiveCrackableReward(User, _room, Item);
+                                        }
+
                                         {
                                             givenHits = 0;
                                             Item.ExtraData = givenHits.ToString();
@@ -1474,17 +1692,23 @@ namespace Neon.HabboHotel.Rooms
                                     foreach (string part in _gateLook.Split('.'))
                                     {
                                         if (part.StartsWith("hd"))
+                                        {
                                             continue;
+                                        }
+
                                         gateLook += part + ".";
                                     }
                                     gateLook = gateLook.Substring(0, gateLook.Length - 1);
 
-                                    var Parts = User.GetClient().GetHabbo().Look.Split('.');
-                                    var NewLook = "";
-                                    foreach (var Part in Parts)
+                                    string[] Parts = User.GetClient().GetHabbo().Look.Split('.');
+                                    string NewLook = "";
+                                    foreach (string Part in Parts)
                                     {
                                         if (/*Part.StartsWith("hd") || */Part.StartsWith("sh") || Part.StartsWith("cp") || Part.StartsWith("cc") || Part.StartsWith("ch") || Part.StartsWith("lg") || Part.StartsWith("ca") || Part.StartsWith("wa"))
+                                        {
                                             continue;
+                                        }
+
                                         NewLook += Part + ".";
                                     }
                                     NewLook += gateLook;
@@ -1510,9 +1734,11 @@ namespace Neon.HabboHotel.Rooms
                 if (User.PathRecalcNeeded)
                 {
                     if (User.Path.Count > 1)
+                    {
                         User.Path.Clear();
+                    }
 
-                    User.Path = PathFinder.FindPath(User, this._room.GetGameMap().DiagonalEnabled, this._room.GetGameMap(), new Vector2D(User.X, User.Y), new Vector2D(User.GoalX, User.GoalY));
+                    User.Path = PathFinder.FindPath(User, _room.GetGameMap().DiagonalEnabled, _room.GetGameMap(), new Vector2D(User.X, User.Y), new Vector2D(User.GoalX, User.GoalY));
 
                     if (User.Path.Count > 1)
                     {
@@ -1524,7 +1750,9 @@ namespace Neon.HabboHotel.Rooms
                     {
                         User.PathRecalcNeeded = false;
                         if (User.Path.Count > 1)
+                        {
                             User.Path.Clear();
+                        }
                     }
                 }
 
@@ -1537,13 +1765,19 @@ namespace Neon.HabboHotel.Rooms
                 if (cyclegameitems)
                 {
                     if (_room.GotSoccer())
+                    {
                         _room.GetSoccer().OnUserWalk(User);
+                    }
 
                     if (_room.GotBanzai())
+                    {
                         _room.GetBanzai().OnUserWalk(User);
+                    }
 
                     if (_room.GotFreeze())
+                    {
                         _room.GetFreeze().OnUserWalk(User);
+                    }
                 }
             }
             catch (Exception e)
@@ -1555,7 +1789,9 @@ namespace Neon.HabboHotel.Rooms
         private void UpdateUserEffect(RoomUser User, int x, int y)
         {
             if (User == null || User.IsBot || User.GetClient() == null || User.GetClient().GetHabbo() == null)
+            {
                 return;
+            }
 
             try
             {
@@ -1563,7 +1799,9 @@ namespace Neon.HabboHotel.Rooms
                 if (NewCurrentUserItemEffect > 0)
                 {
                     if (User.GetClient().GetHabbo().Effects().CurrentEffect == 0)
+                    {
                         User.CurrentItemEffect = ItemEffectType.NONE;
+                    }
 
                     ItemEffectType Type = ByteToItemEffectEnum.Parse(NewCurrentUserItemEffect);
                     if (Type != User.CurrentItemEffect)
@@ -1639,10 +1877,7 @@ namespace Neon.HabboHotel.Rooms
             }
         }
 
-        public int PetCount
-        {
-            get { return petCount; }
-        }
+        public int PetCount => petCount;
 
         public ICollection<RoomUser> GetUserList()
         {

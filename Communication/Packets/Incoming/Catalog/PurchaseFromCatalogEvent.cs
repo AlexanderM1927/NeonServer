@@ -1,29 +1,28 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-
-using Neon.Core;
-using Neon.HabboHotel.Catalog;
-using Neon.HabboHotel.GameClients;
-using Neon.HabboHotel.Items;
-using Neon.HabboHotel.Groups;
-using Neon.HabboHotel.Users.Effects;
-using Neon.HabboHotel.Items.Utilities;
-using Neon.HabboHotel.Users.Inventory.Bots;
+﻿using Neon.Communication.Packets.Outgoing.Catalog;
 using Neon.Communication.Packets.Outgoing.Handshake;
-using Neon.HabboHotel.Rooms.AI;
-using Neon.Communication.Packets.Outgoing.Catalog;
+using Neon.Communication.Packets.Outgoing.Inventory.AvatarEffects;
 using Neon.Communication.Packets.Outgoing.Inventory.Bots;
+using Neon.Communication.Packets.Outgoing.Inventory.Furni;
 using Neon.Communication.Packets.Outgoing.Inventory.Pets;
 using Neon.Communication.Packets.Outgoing.Inventory.Purse;
-using Neon.Communication.Packets.Outgoing.Inventory.Furni;
-using Neon.Communication.Packets.Outgoing.Inventory.AvatarEffects;
-using Neon.Database.Interfaces;
 using Neon.Communication.Packets.Outgoing.Moderation;
-using Neon.Utilities;
 using Neon.Communication.Packets.Outgoing.Navigator;
-using Neon.Communication.Packets.Outgoing.Users;
 using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
+using Neon.Communication.Packets.Outgoing.Users;
+using Neon.Core;
+using Neon.Database.Interfaces;
+using Neon.HabboHotel.Catalog;
+using Neon.HabboHotel.GameClients;
+using Neon.HabboHotel.Groups;
+using Neon.HabboHotel.Items;
+using Neon.HabboHotel.Items.Utilities;
+using Neon.HabboHotel.Rooms.AI;
+using Neon.HabboHotel.Users.Effects;
+using Neon.HabboHotel.Users.Inventory.Bots;
+using Neon.Utilities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Neon.Communication.Packets.Incoming.Catalog
 {
@@ -36,18 +35,26 @@ namespace Neon.Communication.Packets.Incoming.Catalog
                 Session.SendNotification("The hotel managers have disabled the catalogue");
                 return;
             }
-            
+
             int PageId = Packet.PopInt();
             int ItemId = Packet.PopInt();
             string ExtraData = Packet.PopString();
             int Amount = Packet.PopInt();
 
             if (!NeonEnvironment.GetGame().GetCatalog().TryGetPage(PageId, out CatalogPage Page))
+            {
                 return;
+            }
+
             if (Session.GetHabbo().Rank > 8 && !Session.GetHabbo().StaffOk || NeonStaticGameSettings.IsGoingToBeClose)
+            {
                 return;
-            if (!Page.Enabled || !Page.Visible || Page.MinimumRank > Session.GetHabbo().Rank || (Page.MinimumVIP > Session.GetHabbo().VIPRank && Session.GetHabbo().Rank == 1))
+            }
+
+            if (!Page.Enabled || !Page.Visible || Page.MinimumRank > Session.GetHabbo().CatRank || (Page.MinimumVIP > Session.GetHabbo().VIPRank && Session.GetHabbo().Rank == 1))
+            {
                 return;
+            }
 
             bool ValidItem = true;
 
@@ -57,10 +64,14 @@ namespace Neon.Communication.Packets.Incoming.Catalog
                 {
                     Item = Page.ItemOffers[ItemId];
                     if (Item == null)
+                    {
                         ValidItem = false;
+                    }
                 }
                 else
+                {
                     ValidItem = false;
+                }
             }
 
             if (!ValidItem)
@@ -75,7 +86,9 @@ namespace Neon.Communication.Packets.Incoming.Catalog
                 if (baseItem.InteractionType == InteractionType.club_1_month || baseItem.InteractionType == InteractionType.club_3_month || baseItem.InteractionType == InteractionType.club_6_month)
                 {
                     if (Item.CostCredits > Session.GetHabbo().Credits)
+                    {
                         return;
+                    }
 
                     int Months = 0;
 
@@ -115,7 +128,9 @@ namespace Neon.Communication.Packets.Incoming.Catalog
                 if (baseItem.InteractionType == InteractionType.namecolor)
                 {
                     if (Item.CostGOTWPoints > Session.GetHabbo().GOTWPoints)
+                    {
                         return;
+                    }
 
                     if (Item.CostGOTWPoints > 0)
                     {
@@ -138,7 +153,9 @@ namespace Neon.Communication.Packets.Incoming.Catalog
                 if (baseItem.InteractionType == InteractionType.changename)
                 {
                     if (Item.CostDiamonds > Session.GetHabbo().Diamonds)
+                    {
                         return;
+                    }
 
                     if (Item.CostDiamonds > 0)
                     {
@@ -172,7 +189,7 @@ namespace Neon.Communication.Packets.Incoming.Catalog
                         Session.SendNotification("Lo sentimos, tienes que introducir un tag entre 1 y 8 Carácteres");
                         return;
                     }
-                    else if (ExtraData.Contains("<br>") || ExtraData.Contains("<b>") || ExtraData.Contains("<i>") || ExtraData.Contains("<Br>") || ExtraData.Contains("<BR>") || 
+                    else if (ExtraData.Contains("<br>") || ExtraData.Contains("<b>") || ExtraData.Contains("<i>") || ExtraData.Contains("<Br>") || ExtraData.Contains("<BR>") ||
                         ExtraData.Contains("<bR>") || ExtraData.Contains("<B>") || ExtraData.Contains("<I>"))
                     {
                         Session.SendNotification("Lo sentimos, no está permitido añadir etiquetas HTML en los prefijos.");
@@ -191,13 +208,15 @@ namespace Neon.Communication.Packets.Incoming.Catalog
 
                     if (string.IsNullOrEmpty(ExtraData))
                     {
-                        Session.SendNotification("Lo sentimos, pero la plabara " + character + " no es una palabra permitida dentro de los filtros de "+NeonEnvironment.GetDBConfig().DBData["hotel.name"]+", por ello no puedes ponerlo");
+                        Session.SendNotification("Lo sentimos, pero la plabara " + character + " no es una palabra permitida dentro de los filtros de " + NeonEnvironment.GetDBConfig().DBData["hotel.name"] + ", por ello no puedes ponerlo");
                         return;
                     }
-                    
+
 
                     if (Item.CostGOTWPoints > Session.GetHabbo().GOTWPoints)
+                    {
                         return;
+                    }
 
                     if (Item.CostGOTWPoints > 0)
                     {
@@ -223,9 +242,11 @@ namespace Neon.Communication.Packets.Incoming.Catalog
 
 
                 if (baseItem.InteractionType == InteractionType.tagcolor)
-                    {
+                {
                     if (Item.CostGOTWPoints > Session.GetHabbo().GOTWPoints)
+                    {
                         return;
+                    }
 
                     if (Item.CostGOTWPoints > 0)
                     {
@@ -248,7 +269,9 @@ namespace Neon.Communication.Packets.Incoming.Catalog
                 if (baseItem.InteractionType == InteractionType.tagrainbow)
                 {
                     if (Item.CostDiamonds > Session.GetHabbo().Diamonds)
+                    {
                         return;
+                    }
 
                     if (Item.CostDiamonds > 0)
                     {
@@ -273,7 +296,9 @@ namespace Neon.Communication.Packets.Incoming.Catalog
                 if (baseItem.InteractionType == InteractionType.club_vip || baseItem.InteractionType == InteractionType.club_vip2)
                 {
                     if (Item.CostDiamonds > Session.GetHabbo().Diamonds)
+                    {
                         return;
+                    }
 
                     switch (baseItem.InteractionType)
                     {
@@ -287,7 +312,7 @@ namespace Neon.Communication.Packets.Incoming.Catalog
                     Session.GetHabbo().Diamonds -= Item.CostDiamonds;
                     Session.SendMessage(new HabboActivityPointNotificationComposer(Session.GetHabbo().Diamonds, 0, 5));
 
-                    var IsVIP = Session.GetHabbo().GetClubManager().HasSubscription("club_vip");
+                    bool IsVIP = Session.GetHabbo().GetClubManager().HasSubscription("club_vip");
                     if (IsVIP)
                     {
                         Session.SendMessage(new AlertNotificationHCMessageComposer(4));
@@ -327,7 +352,9 @@ namespace Neon.Communication.Packets.Incoming.Catalog
             }
 
             if (Amount < 1 || Amount > 100)
+            {
                 Amount = 1;
+            }
 
             int AmountPurchase = Item.Amount > 1 ? Item.Amount : Amount;
             int TotalCreditsCost = Amount > 1 ? ((Item.CostCredits * Amount) - ((int)Math.Floor((double)Amount / 6) * Item.CostCredits)) : Item.CostCredits;
@@ -337,7 +364,9 @@ namespace Neon.Communication.Packets.Incoming.Catalog
             //int TotalPumpkinsCost = Amount > 1 ? ((Item.CostPumpkins * Amount) - ((int)Math.Floor((double)Amount / 6) * Item.CostPumpkins)) : Item.CostPumpkins;
 
             if (Session.GetHabbo().Credits < TotalCreditsCost || Session.GetHabbo().Duckets < TotalPixelCost || Session.GetHabbo().Diamonds < TotalDiamondCost || Session.GetHabbo().GOTWPoints < TotalGOTWPointsCost)
+            {
                 return;
+            }
 
             int LimitedEditionSells = 0;
             int LimitedEditionStack = 0;
@@ -402,10 +431,10 @@ namespace Neon.Communication.Packets.Incoming.Catalog
             if (Item.PredesignedId > 0 && NeonEnvironment.GetGame().GetCatalog().GetPredesignedRooms().predesignedRoom.ContainsKey((uint)Item.PredesignedId))
             {
                 #region SELECT ROOM AND CREATE NEW
-                var predesigned = NeonEnvironment.GetGame().GetCatalog().GetPredesignedRooms().predesignedRoom[(uint)Item.PredesignedId];
-                var decoration = predesigned.RoomDecoration;
+                HabboHotel.Catalog.PredesignedRooms.PredesignedRooms predesigned = NeonEnvironment.GetGame().GetCatalog().GetPredesignedRooms().predesignedRoom[(uint)Item.PredesignedId];
+                string[] decoration = predesigned.RoomDecoration;
 
-                var createRoom = NeonEnvironment.GetGame().GetRoomManager().CreateRoom(Session, Session.GetHabbo().Username + "'s room", "Una Sala pre-decorada :)", predesigned.RoomModel, 1, 25, 1);
+                HabboHotel.Rooms.RoomData createRoom = NeonEnvironment.GetGame().GetRoomManager().CreateRoom(Session, Session.GetHabbo().Username + "'s room", "Una Sala pre-decorada :)", predesigned.RoomModel, 1, 25, 1);
 
                 createRoom.FloorThickness = int.Parse(decoration[0]);
                 createRoom.WallThickness = int.Parse(decoration[1]);
@@ -414,37 +443,60 @@ namespace Neon.Communication.Packets.Incoming.Catalog
                 createRoom.Wallpaper = decoration[4];
                 createRoom.Landscape = decoration[5];
                 createRoom.Floor = decoration[6];
-                var newRoom = NeonEnvironment.GetGame().GetRoomManager().LoadRoom(createRoom.Id);
+                HabboHotel.Rooms.Room newRoom = NeonEnvironment.GetGame().GetRoomManager().LoadRoom(createRoom.Id);
                 #endregion
 
                 #region CREATE FLOOR ITEMS
                 if (predesigned.FloorItems != null)
-                    foreach (var floorItems in predesigned.FloorItemData)
-                        using (var dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
+                {
+                    foreach (HabboHotel.Catalog.PredesignedRooms.PredesignedFloorItems floorItems in predesigned.FloorItemData)
+                    {
+                        using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
+                        {
                             dbClient.runFastQuery("INSERT INTO items VALUES (null, " + Session.GetHabbo().Id + ", " + newRoom.RoomId + ", " + floorItems.BaseItem + ", '" + floorItems.ExtraData + "', " +
                                 floorItems.X + ", " + floorItems.Y + ", " + TextHandling.GetString(floorItems.Z) + ", " + floorItems.Rot + ", '', 0, 0);");
+                        }
+                    }
+                }
                 #endregion
 
                 #region CREATE WALL ITEMS
                 if (predesigned.WallItems != null)
-                    foreach (var wallItems in predesigned.WallItemData)
-                        using (var dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
+                {
+                    foreach (HabboHotel.Catalog.PredesignedRooms.PredesignedWallItems wallItems in predesigned.WallItemData)
+                    {
+                        using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
+                        {
                             dbClient.runFastQuery("INSERT INTO items VALUES (null, " + Session.GetHabbo().Id + ", " + newRoom.RoomId + ", " + wallItems.BaseItem + ", '" + wallItems.ExtraData +
                                 "', 0, 0, 0, 0, '" + wallItems.WallCoord + "', 0, 0);");
+                        }
+                    }
+                }
                 #endregion
 
                 #region VERIFY IF CONTAINS BADGE AND GIVE
-                if (Item.Badge != string.Empty) Session.GetHabbo().GetBadgeComponent().GiveBadge(Item.Badge, true, Session);
+                if (Item.Badge != string.Empty)
+                {
+                    Session.GetHabbo().GetBadgeComponent().GiveBadge(Item.Badge, true, Session);
+                }
                 #endregion
 
                 #region GENERATE ROOM AND SEND PACKET
                 Session.SendMessage(new PurchaseOKComposer());
                 Session.GetHabbo().GetInventoryComponent().UpdateItems(false);
                 NeonEnvironment.GetGame().GetRoomManager().LoadRoom(newRoom.Id).GetRoomItemHandler().LoadFurniture();
-                var newFloorItems = newRoom.GetRoomItemHandler().GetFloor;
-                foreach (var roomItem in newFloorItems) newRoom.GetRoomItemHandler().SetFloorItem(roomItem, roomItem.GetX, roomItem.GetY, roomItem.GetZ);
-                var newWallItems = newRoom.GetRoomItemHandler().GetWall;
-                foreach (var roomItem in newWallItems) newRoom.GetRoomItemHandler().SetWallItem(Session, roomItem);
+                ICollection<Item> newFloorItems = newRoom.GetRoomItemHandler().GetFloor;
+                foreach (Item roomItem in newFloorItems)
+                {
+                    newRoom.GetRoomItemHandler().SetFloorItem(roomItem, roomItem.GetX, roomItem.GetY, roomItem.GetZ);
+                }
+
+                ICollection<Item> newWallItems = newRoom.GetRoomItemHandler().GetWall;
+                foreach (Item roomItem in newWallItems)
+                {
+                    newRoom.GetRoomItemHandler().SetWallItem(Session, roomItem);
+                }
+
                 Session.SendMessage(new FlatCreatedComposer(newRoom.Id, newRoom.Name));
                 #endregion
                 return;
@@ -463,16 +515,22 @@ namespace Neon.Communication.Packets.Incoming.Catalog
                 case InteractionType.GUILD_FORUM:
                     int GroupId;
                     if (!int.TryParse(ExtraData, out GroupId))
+                    {
                         break;
+                    }
 
                     Group gp;
                     if (!NeonEnvironment.GetGame().GetGroupManager().TryGetGroup(GroupId, out gp))
+                    {
                         break;
+                    }
 
                     if (gp.HasForum)
+                    {
                         break;
+                    }
 
-                    var forum = NeonEnvironment.GetGame().GetGroupForumManager().CreateGroupForum(gp);
+                    HabboHotel.Groups.Forums.GroupForum forum = NeonEnvironment.GetGame().GetGroupForumManager().CreateGroupForum(gp);
 
 
 
@@ -538,13 +596,19 @@ namespace Neon.Communication.Packets.Incoming.Catalog
                         int.Parse(Race); // to trigger any possible errors
 
                         if (!PetUtility.CheckPetName(PetName))
+                        {
                             return;
+                        }
 
                         if (Race.Length > 2)
+                        {
                             return;
+                        }
 
                         if (Color.Length != 6)
+                        {
                             return;
+                        }
 
                         NeonEnvironment.GetGame().GetAchievementManager().ProgressAchievement(Session, "ACH_PetLover", 1);
                     }
@@ -562,14 +626,18 @@ namespace Neon.Communication.Packets.Incoming.Catalog
                 case InteractionType.WALLPAPER:
                 case InteractionType.LANDSCAPE:
 
-                    Double Number = 0;
+                    double Number = 0;
 
                     try
                     {
                         if (string.IsNullOrEmpty(ExtraData))
+                        {
                             Number = 0;
+                        }
                         else
-                            Number = Double.Parse(ExtraData, NeonEnvironment.CultureInfo);
+                        {
+                            Number = double.Parse(ExtraData, NeonEnvironment.CultureInfo);
+                        }
                     }
                     catch (Exception e)
                     {
@@ -872,7 +940,7 @@ namespace Neon.Communication.Packets.Incoming.Catalog
 
                         case InteractionType.DEAL:
                             {
-                                var DealItems = (from d in Page.Deals.Values.ToList() where d.Id == Item.Id select d);
+                                IEnumerable<CatalogDeal> DealItems = (from d in Page.Deals.Values.ToList() where d.Id == Item.Id select d);
                                 foreach (CatalogDeal DealItem in DealItems.ToList())
                                 {
                                     foreach (CatalogItem CatalogItem in DealItem.ItemDataList.ToList())
@@ -912,7 +980,9 @@ namespace Neon.Communication.Packets.Incoming.Catalog
                         }
                     }
                     else
+                    {
                         Effect = AvatarEffectFactory.CreateNullable(Session.GetHabbo(), Item.Data.SpriteId, 3600);
+                    }
 
                     if (Effect != null)// && Session.GetHabbo().Effects().TryAdd(Effect))
                     {
@@ -929,7 +999,10 @@ namespace Neon.Communication.Packets.Incoming.Catalog
                         Session.SendMessage(new FurniListNotificationComposer(Bot.Id, 5));
                     }
                     else
+                    {
                         Session.SendNotification("Oops! Ha ocurrido un error mientras comprabas el Bot, al parecer no hay datos acerca de el, Reportalo!!");
+                    }
+
                     break;
 
                 case "b":
@@ -1386,7 +1459,11 @@ namespace Neon.Communication.Packets.Incoming.Catalog
                     }
             }
 
-            if (Item.Badge != string.Empty) Session.GetHabbo().GetBadgeComponent().GiveBadge(Item.Badge, true, Session);
+            if (Item.Badge != string.Empty)
+            {
+                Session.GetHabbo().GetBadgeComponent().GiveBadge(Item.Badge, true, Session);
+            }
+
             Session.SendMessage(new PurchaseOKComposer(Item, Item.Data));
             Session.SendMessage(new FurniListUpdateComposer());
         }

@@ -1,13 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
+﻿
 using Neon.HabboHotel.Users.Effects;
 
 namespace Neon.Communication.Packets.Outgoing.Inventory.AvatarEffects
 {
-    class AvatarEffectActivatedComposer : ServerPacket
+    internal class AvatarEffectActivatedComposer : ServerPacket
     {
         public AvatarEffectActivatedComposer(AvatarEffect Effect)
             : base(ServerPacketHeader.AvatarEffectActivatedMessageComposer)

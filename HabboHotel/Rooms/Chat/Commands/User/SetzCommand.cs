@@ -1,4 +1,4 @@
-﻿using System;
+﻿/*using System;
 using System.Linq;
 using System.Text;
 using System.Collections.Generic;
@@ -80,4 +80,4 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User
             Session.SendWhisper("La altura es: " + Convert.ToString(HeightValue), 34);
         }
     }
-}
+}*/

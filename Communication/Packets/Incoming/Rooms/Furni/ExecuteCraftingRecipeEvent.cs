@@ -1,17 +1,13 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Items;
+﻿
 using Neon.Communication.Packets.Outgoing.Inventory.Furni;
-
 using Neon.Communication.Packets.Outgoing.Rooms.Furni;
+using Neon.HabboHotel.Items;
 using Neon.HabboHotel.Items.Crafting;
 using Neon.HabboHotel.Rooms;
 
 namespace Neon.Communication.Packets.Incoming.Rooms.Furni
 {
-    class ExecuteCraftingRecipeEvent : IPacketEvent
+    internal class ExecuteCraftingRecipeEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
@@ -20,13 +16,21 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Furni
 
             CraftingRecipe recipe = NeonEnvironment.GetGame().GetCraftingManager().GetRecipeByPrize(RecetaFinal);
 
-            if (recipe == null) return;
-            ItemData resultItem = NeonEnvironment.GetGame().GetItemManager().GetItemByName(recipe.Result);
-            if (resultItem == null) return;
-            bool success = true;
-            foreach (var need in recipe.ItemsNeeded)
+            if (recipe == null)
             {
-                for (var i = 1; i <= need.Value; i++)
+                return;
+            }
+
+            ItemData resultItem = NeonEnvironment.GetGame().GetItemManager().GetItemByName(recipe.Result);
+            if (resultItem == null)
+            {
+                return;
+            }
+
+            bool success = true;
+            foreach (System.Collections.Generic.KeyValuePair<string, int> need in recipe.ItemsNeeded)
+            {
+                for (int i = 1; i <= need.Value; i++)
                 {
                     ItemData item = NeonEnvironment.GetGame().GetItemManager().GetItemByName(need.Key);
                     if (item == null)
@@ -35,14 +39,18 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Furni
                         continue;
                     }
 
-                    var inv = Session.GetHabbo().GetInventoryComponent().GetFirstItemByBaseId(item.Id);
+                    Item inv = Session.GetHabbo().GetInventoryComponent().GetFirstItemByBaseId(item.Id);
                     if (inv == null)
                     {
                         success = false;
                         continue;
                     }
 
-                    using (var dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor()) dbClient.RunQuery("DELETE FROM `items` WHERE `id` = '" + inv.Id + "' AND `user_id` = '" + Session.GetHabbo().Id + "' LIMIT 1");
+                    using (Database.Interfaces.IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
+                    {
+                        dbClient.RunQuery("DELETE FROM `items` WHERE `id` = '" + inv.Id + "' AND `user_id` = '" + Session.GetHabbo().Id + "' LIMIT 1");
+                    }
+
                     Session.GetHabbo().GetInventoryComponent().RemoveItem(inv.Id);
                 }
             }

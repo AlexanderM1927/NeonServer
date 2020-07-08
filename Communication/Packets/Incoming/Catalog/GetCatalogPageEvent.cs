@@ -10,16 +10,20 @@ namespace Neon.Communication.Packets.Incoming.Catalog
         {
             int PageId = Packet.PopInt();
             _ = Packet.PopInt();
-            string CataMode = Packet.PopString();            
+            string CataMode = Packet.PopString();
 
             CatalogPage Page = null;
             if (CataMode == "NORMAL")
             {
                 if (!NeonEnvironment.GetGame().GetCatalog().TryGetPage(PageId, out Page))
+                {
                     return;
+                }
 
-                if (!Page.Enabled || !Page.Visible || Page.MinimumRank > Session.GetHabbo().Rank || (Page.MinimumVIP > Session.GetHabbo().VIPRank && Session.GetHabbo().Rank == 1))
+                if (!Page.Enabled || !Page.Visible || Page.MinimumRank > Session.GetHabbo().CatRank || (Page.MinimumVIP > Session.GetHabbo().VIPRank && Session.GetHabbo().Rank == 1))
+                {
                     return;
+                }
 
                 Session.SendMessage(new CatalogPageComposer(Page, CataMode, Session));
             }
@@ -27,16 +31,20 @@ namespace Neon.Communication.Packets.Incoming.Catalog
             if (CataMode == "BUILDERS_CLUB")
             {
                 if (!NeonEnvironment.GetGame().GetCatalog().TryGetBCPage(PageId, out BCCatalogPage BCPage))
+                {
                     return;
+                }
 
-                if (!BCPage.Enabled || !BCPage.Visible || BCPage.MinimumRank > Session.GetHabbo().Rank || (BCPage.MinimumVIP > Session.GetHabbo().VIPRank && Session.GetHabbo().Rank == 1))
+                if (!BCPage.Enabled || !BCPage.Visible || BCPage.MinimumRank > Session.GetHabbo().CatRank || (BCPage.MinimumVIP > Session.GetHabbo().VIPRank && Session.GetHabbo().Rank == 1))
+                {
                     return;
+                }
 
                 Session.SendMessage(new BCCatalogPageComposer(BCPage, CataMode));
             }
 
             Session.GetHabbo().lastLayout = Page.Template;
-           
+
         }
     }
 }

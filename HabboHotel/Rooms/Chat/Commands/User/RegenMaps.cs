@@ -1,26 +1,12 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-namespace Neon.HabboHotel.Rooms.Chat.Commands.User
+﻿namespace Neon.HabboHotel.Rooms.Chat.Commands.User
 {
-    class RegenMaps : IChatCommand
+    internal class RegenMaps : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_regen_maps"; }
-        }
+        public string PermissionRequired => "command_regen_maps";
 
-        public string Parameters
-        {
-            get { return ""; }
-        }
+        public string Parameters => "";
 
-        public string Description
-        {
-            get { return "Regenerar el mapa de la sala en la que estás."; }
-        }
+        public string Description => "Regenerar el mapa de la sala en la que estás.";
 
         public void Execute(GameClients.GameClient Session, Room Room, string[] Params)
         {

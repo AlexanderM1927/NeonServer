@@ -1,18 +1,23 @@
-﻿using Neon.HabboHotel.Groups;
+﻿using Neon.Communication.Packets.Outgoing.Groups;
 using Neon.Database.Interfaces;
-using Neon.Communication.Packets.Outgoing.Groups;
+using Neon.HabboHotel.Groups;
 namespace Neon.Communication.Packets.Incoming.Groups
 {
-    class UpdateGroupBadgeEvent : IPacketEvent
+    internal class UpdateGroupBadgeEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
             int GroupId = Packet.PopInt();
-            Group Group = null;
-            if (!NeonEnvironment.GetGame().GetGroupManager().TryGetGroup(GroupId, out Group))
+            if (!NeonEnvironment.GetGame().GetGroupManager().TryGetGroup(GroupId, out Group Group))
+            {
                 return;
+            }
+
             if (Group.CreatorId != Session.GetHabbo().Id)
+            {
                 return;
+            }
+
             int Count = Packet.PopInt();
             string Badge = "";
             for (int i = 0; i < Count; i++)

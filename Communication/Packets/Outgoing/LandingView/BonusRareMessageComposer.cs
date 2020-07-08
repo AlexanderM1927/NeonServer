@@ -3,22 +3,17 @@ using Neon.Communication.Packets.Outgoing.Inventory.Purse;
 using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
 using Neon.HabboHotel.GameClients;
 using Neon.HabboHotel.Items;
-using Neon.HabboHotel.Users;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 
 namespace Neon.Communication.Packets.Outgoing.LandingView
 {
-    class BonusRareMessageComposer : ServerPacket
+    internal class BonusRareMessageComposer : ServerPacket
     {
         public BonusRareMessageComposer(GameClient Session)
             : base(ServerPacketHeader.BonusRareMessageComposer)
         {
-            
+
             string product = NeonEnvironment.GetDBConfig().DBData["bonus_rare_productdata_name"];
             int baseid = int.Parse(NeonEnvironment.GetDBConfig().DBData["bonus_rare_item_baseid"]);
             int score = Convert.ToInt32(NeonEnvironment.GetDBConfig().DBData["bonus_rare_total_score"]);
@@ -32,8 +27,7 @@ namespace Neon.Communication.Packets.Outgoing.LandingView
                 Session.GetHabbo().BonusPoints -= score;
                 Session.SendMessage(new HabboActivityPointNotificationComposer(Session.GetHabbo().BonusPoints, score, 101));
                 Session.SendMessage(new RoomCustomizedAlertComposer("Has completado tu Bonus Rare ¡ya tienes tu premio en el inventario! Recibirás otro cuando vuelvas a acumular 120 puntos."));
-                ItemData Item = null;
-                if (!NeonEnvironment.GetGame().GetItemManager().GetItem((baseid), out Item))
+                if (!NeonEnvironment.GetGame().GetItemManager().GetItem((baseid), out ItemData Item))
                 {
                     // No existe este ItemId.
                     return;

@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Neon.HabboHotel.Moderation
+﻿namespace Neon.HabboHotel.Moderation
 {
-    class ModerationPresetActionCategories
+    internal class ModerationPresetActionCategories
     {
         public int Id { get; set; }
         public string Caption { get; set; }

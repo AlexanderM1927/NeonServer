@@ -1,18 +1,12 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
+﻿
 using Neon.HabboHotel.Items;
 using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Groups;
-using Neon.HabboHotel.Users;
 
 using Neon.Utilities;
 
 namespace Neon.Communication.Packets.Outgoing.Rooms.Engine
 {
-    class ObjectAddComposer : ServerPacket
+    internal class ObjectAddComposer : ServerPacket
     {
         public ObjectAddComposer(Item Item, Room Room)
             : base(ServerPacketHeader.ObjectAddMessageComposer)
@@ -55,8 +49,15 @@ namespace Neon.Communication.Packets.Outgoing.Rooms.Engine
                 base.WriteInteger(0);
                 base.WriteInteger(7);
                 base.WriteString("6");
-                if (Item.ExtraData.Length <= 0) base.WriteInteger(0);
-                else base.WriteInteger(int.Parse(Item.ExtraData));
+                if (Item.ExtraData.Length <= 0)
+                {
+                    base.WriteInteger(0);
+                }
+                else
+                {
+                    base.WriteInteger(int.Parse(Item.ExtraData));
+                }
+
                 base.WriteInteger(100);
             }
 
@@ -81,8 +82,15 @@ namespace Neon.Communication.Packets.Outgoing.Rooms.Engine
                 base.WriteInteger(0);
                 base.WriteInteger(7);
                 base.WriteString("0");
-                if (Item.ExtraData.Length <= 0) base.WriteInteger(0);
-                else base.WriteInteger(int.Parse(Item.ExtraData));
+                if (Item.ExtraData.Length <= 0)
+                {
+                    base.WriteInteger(0);
+                }
+                else
+                {
+                    base.WriteInteger(int.Parse(Item.ExtraData));
+                }
+
                 base.WriteInteger(1);
             }
 

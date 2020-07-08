@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using Neon.Core;
+﻿using Neon.Communication.Packets.Outgoing;
 using Neon.HabboHotel.Items;
-using Neon.Communication.Packets.Incoming;
-using Neon.Communication.Packets.Outgoing;
+using System;
 
 namespace Neon.HabboHotel.Catalog
 {
@@ -33,10 +29,10 @@ namespace Neon.HabboHotel.Catalog
             int CostDiamonds, int Amount, int LimitedEditionSells, int LimitedEditionStack, bool HaveOffer, string ExtraData, string Badge, int OfferId, int CostGOTWPoints, int PredesignedId)
         {
             this.Id = Id;
-            this.Name = CatalogName;
+            Name = CatalogName;
             this.ItemId = ItemId;
             this.Data = Data;
-            this.PageID = PageId;
+            PageID = PageId;
             this.CostCredits = CostCredits;
             this.CostPixels = CostPixels;
             this.CostDiamonds = CostDiamonds;
@@ -44,7 +40,7 @@ namespace Neon.HabboHotel.Catalog
             this.Amount = Amount;
             this.LimitedEditionSells = LimitedEditionSells;
             this.LimitedEditionStack = LimitedEditionStack;
-            this.IsLimited = (LimitedEditionStack > 0);
+            IsLimited = (LimitedEditionStack > 0);
             this.HaveOffer = HaveOffer;
             this.ExtraData = ExtraData;
             this.Badge = Badge;
@@ -54,12 +50,15 @@ namespace Neon.HabboHotel.Catalog
 
         internal ItemData GetBaseItem(int ItemIds)
         {
-            ItemData obj = null;
-            if (!NeonEnvironment.GetGame().GetItemManager().GetItem(ItemIds, out obj))
+            if (!NeonEnvironment.GetGame().GetItemManager().GetItem(ItemIds, out ItemData obj))
+            {
                 return null;
+            }
 
-            if (obj == null && this.Name != "room_ad_Neon_badge")
+            if (obj == null && Name != "room_ad_Neon_badge")
+            {
                 Console.WriteLine("UNKNOWN ItemIds: " + ItemIds);
+            }
 
             return obj;
         }
@@ -106,15 +105,15 @@ namespace Neon.HabboHotel.Catalog
             DateTime future = DateTime.Now;
             if (PageID == 699 && Session.GetHabbo().GetClubManager().HasSubscription("habbo_vip"))
             {
-                Double Expire = Session.GetHabbo().GetClubManager().GetSubscription("habbo_vip").ExpireTime;
-                Double TimeLeft = Expire - NeonEnvironment.GetUnixTimestamp();
+                double Expire = Session.GetHabbo().GetClubManager().GetSubscription("habbo_vip").ExpireTime;
+                double TimeLeft = Expire - NeonEnvironment.GetUnixTimestamp();
                 int TotalDaysLeft = (int)Math.Ceiling(TimeLeft / 86400);
                 future = DateTime.Now.AddDays(TotalDaysLeft);
             }
             else if (Session.GetHabbo().GetClubManager().HasSubscription("club_vip"))
             {
-                Double Expire = Session.GetHabbo().GetClubManager().GetSubscription("club_vip").ExpireTime;
-                Double TimeLeft = Expire - NeonEnvironment.GetUnixTimestamp();
+                double Expire = Session.GetHabbo().GetClubManager().GetSubscription("club_vip").ExpireTime;
+                double TimeLeft = Expire - NeonEnvironment.GetUnixTimestamp();
                 int TotalDaysLeft = (int)Math.Ceiling(TimeLeft / 86400);
                 future = DateTime.Now.AddDays(TotalDaysLeft);
             }

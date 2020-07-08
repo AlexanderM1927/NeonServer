@@ -1,6 +1,5 @@
-﻿using System;
-using System.Text;
-using ConsoleWriter;
+﻿using ConsoleWriter;
+using System;
 
 namespace Neon.Core
 {
@@ -8,8 +7,8 @@ namespace Neon.Core
     {
         public static bool DisabledState
         {
-            get { return Writer.DisabledState; }
-            set { Writer.DisabledState = value; }
+            get => Writer.DisabledState;
+            set => Writer.DisabledState = value;
         }
 
         public static void WriteLine(string Line, ConsoleColor Colour = ConsoleColor.Gray)

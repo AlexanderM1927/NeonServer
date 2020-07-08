@@ -1,24 +1,20 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using System.Collections.Concurrent;
-
-using Neon.Communication.Packets.Incoming;
+﻿using Neon.Communication.Packets.Incoming;
 using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Users;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Neon.HabboHotel.Items.Wired.Boxes.Triggers
 {
-    class RepeaterBox : IWiredItem, IWiredCycle
+    internal class RepeaterBox : IWiredItem, IWiredCycle
     {
         public Room Instance { get; set; }
         public Item Item { get; set; }
-        public WiredBoxType Type { get { return WiredBoxType.TriggerRepeat; } }
+        public WiredBoxType Type => WiredBoxType.TriggerRepeat;
         public ConcurrentDictionary<int, Item> SetItems { get; set; }
         public string StringData { get; set; }
         public bool BoolData { get; set; }
-        public int Delay { get { return this._delay; } set { this._delay = value; this.TickCount = value; } }
+        public int Delay { get => _delay; set { _delay = value; TickCount = value; } }
         public int TickCount { get; set; }
         public string ItemsData { get; set; }
 
@@ -28,7 +24,7 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Triggers
         {
             this.Instance = Instance;
             this.Item = Item;
-            this.SetItems = new ConcurrentDictionary<int, Item>();
+            SetItems = new ConcurrentDictionary<int, Item>();
         }
 
         public void HandleSave(ClientPacket Packet)
@@ -37,7 +33,7 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Triggers
             int Delay = Packet.PopInt();
 
             this.Delay = Delay;
-            this.TickCount = Delay;
+            TickCount = Delay;
         }
 
         public bool Execute(params object[] Params)
@@ -57,16 +53,22 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Triggers
                 foreach (RoomUser Avatar in Avatars.ToList())
                 {
                     if (Avatar == null || Avatar.GetClient() == null || Avatar.GetClient().GetHabbo() == null)
+                    {
                         continue;
+                    }
 
                     if (!Condition.Execute(Avatar.GetClient().GetHabbo()))
+                    {
                         continue;
+                    }
 
                     Success = true;
                 }
 
                 if (!Success)
+                {
                     return false;
+                }
 
                 Success = false;
                 Instance.GetWired().OnEvent(Condition.Item);
@@ -81,12 +83,16 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Triggers
                 //Okay, so we have a random addon effect, now lets get the IWiredItem and attempt to execute it.
                 IWiredItem RandomBox = Effects.FirstOrDefault(x => x.Type == WiredBoxType.AddonRandomEffect);
                 if (!RandomBox.Execute())
+                {
                     return false;
+                }
 
                 //Success! Let's get our selected box and continue.
                 IWiredItem SelectedBox = Instance.GetWired().GetRandomEffect(Effects.ToList());
                 if (!SelectedBox.Execute())
+                {
                     return false;
+                }
 
                 //Woo! Almost there captain, now lets broadcast the update to the room instance.
                 if (Instance != null)
@@ -100,19 +106,25 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Triggers
                 foreach (IWiredItem Effect in Effects.ToList())
                 {
                     if (!Effect.Execute())
+                    {
                         continue;
+                    }
 
                     Success = true;
 
                     if (!Success)
+                    {
                         return false;
+                    }
 
                     if (Instance != null)
+                    {
                         Instance.GetWired().OnEvent(Effect.Item);
+                    }
                 }
             }
 
-            this.TickCount = Delay;
+            TickCount = Delay;
 
             return true;
         }

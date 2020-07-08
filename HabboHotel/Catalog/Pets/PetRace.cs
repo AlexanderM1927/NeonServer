@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Neon.HabboHotel.Catalog.Pets
+﻿namespace Neon.HabboHotel.Catalog.Pets
 {
     public class PetRace
     {
@@ -16,41 +10,41 @@ namespace Neon.HabboHotel.Catalog.Pets
 
         public PetRace(int RaceId, int PrimaryColour, int SecondaryColour, bool HasPrimaryColour, bool HasSecondaryColour)
         {
-            this._raceId = RaceId;
-            this._primaryColour = PrimaryColour;
-            this._secondaryColour = SecondaryColour;
-            this._hasPrimaryColour = HasPrimaryColour;
-            this._hasSecondaryColour = HasSecondaryColour;
+            _raceId = RaceId;
+            _primaryColour = PrimaryColour;
+            _secondaryColour = SecondaryColour;
+            _hasPrimaryColour = HasPrimaryColour;
+            _hasSecondaryColour = HasSecondaryColour;
         }
 
         public int RaceId
         {
-            get { return this._raceId; }
-            set { this._raceId = value; }
+            get => _raceId;
+            set => _raceId = value;
         }
 
         public int PrimaryColour
         {
-            get { return this._primaryColour; }
-            set { this._primaryColour = value; }
+            get => _primaryColour;
+            set => _primaryColour = value;
         }
 
         public int SecondaryColour
         {
-            get { return this._secondaryColour; }
-            set { this._secondaryColour = value; }
+            get => _secondaryColour;
+            set => _secondaryColour = value;
         }
 
         public bool HasPrimaryColour
         {
-            get { return this._hasPrimaryColour; }
-            set { this._hasPrimaryColour = value; }
+            get => _hasPrimaryColour;
+            set => _hasPrimaryColour = value;
         }
 
         public bool HasSecondaryColour
         {
-            get { return this._hasSecondaryColour; }
-            set { this._hasSecondaryColour = value; }
+            get => _hasSecondaryColour;
+            set => _hasSecondaryColour = value;
         }
     }
 }

@@ -1,22 +1,19 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using System.Collections.Concurrent;
-
-using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Users;
-using Neon.Communication.Packets.Incoming;
+﻿using Neon.Communication.Packets.Incoming;
 using Neon.Communication.Packets.Outgoing.Rooms.Chat;
+using Neon.HabboHotel.Rooms;
 using Neon.HabboHotel.Rooms.Chat.Commands;
+using Neon.HabboHotel.Users;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Neon.HabboHotel.Items.Wired.Boxes.Triggers
 {
-    class UserSaysCommandBox : IWiredItem
+    internal class UserSaysCommandBox : IWiredItem
     {
         public Room Instance { get; set; }
         public Item Item { get; set; }
-        public WiredBoxType Type { get { return WiredBoxType.TriggerUserSaysCommand; } }
+        public WiredBoxType Type => WiredBoxType.TriggerUserSaysCommand;
         public ConcurrentDictionary<int, Item> SetItems { get; set; }
         public string StringData { get; set; }
         public bool BoolData { get; set; }
@@ -26,8 +23,8 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Triggers
         {
             this.Instance = Instance;
             this.Item = Item;
-            this.StringData = "";
-            this.SetItems = new ConcurrentDictionary<int, Item>();
+            StringData = "";
+            SetItems = new ConcurrentDictionary<int, Item>();
         }
 
         public void HandleSave(ClientPacket Packet)
@@ -36,26 +33,33 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Triggers
             int OwnerOnly = Packet.PopInt();
             string Message = Packet.PopString();
 
-            this.BoolData = OwnerOnly == 1;
-            this.StringData = Message;
+            BoolData = OwnerOnly == 1;
+            StringData = Message;
         }
 
         public bool Execute(params object[] Params)
         {
             Habbo Player = (Habbo)Params[0];
             if (Player == null || Player.CurrentRoom == null || !Player.InRoom)
+            {
                 return false;
+            }
 
             RoomUser User = Player.CurrentRoom.GetRoomUserManager().GetRoomUserByHabbo(Player.Username);
             if (User == null)
+            {
                 return false;
+            }
 
-            if ((BoolData && Instance.OwnerId != Player.Id) || string.IsNullOrWhiteSpace(this.StringData))
+            if ((BoolData && Instance.OwnerId != Player.Id) || string.IsNullOrWhiteSpace(StringData))
+            {
                 return false;
+            }
 
-            IChatCommand ChatCommand = null;
-            if (!NeonEnvironment.GetGame().GetChatManager().GetCommands().TryGetCommand(this.StringData.Replace(":", "").ToLower(), out ChatCommand))
+            if (!NeonEnvironment.GetGame().GetChatManager().GetCommands().TryGetCommand(StringData.Replace(":", "").ToLower(), out IChatCommand ChatCommand))
+            {
                 return false;
+            }
 
             if (Player.IChatCommand == ChatCommand)
             {
@@ -66,12 +70,14 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Triggers
                 foreach (IWiredItem Condition in Conditions.ToList())
                 {
                     if (!Condition.Execute(Player))
+                    {
                         return false;
+                    }
 
                     Instance.GetWired().OnEvent(Condition.Item);
                 }
 
-                Player.GetClient().SendMessage(new WhisperComposer(User.VirtualId, this.StringData, 0, 0));
+                Player.GetClient().SendMessage(new WhisperComposer(User.VirtualId, StringData, 0, 0));
                 //Check the ICollection to find the random addon effect.
                 bool HasRandomEffectAddon = Effects.Where(x => x.Type == WiredBoxType.AddonRandomEffect).ToList().Count() > 0;
                 if (HasRandomEffectAddon)
@@ -79,12 +85,16 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Triggers
                     //Okay, so we have a random addon effect, now lets get the IWiredItem and attempt to execute it.
                     IWiredItem RandomBox = Effects.FirstOrDefault(x => x.Type == WiredBoxType.AddonRandomEffect);
                     if (!RandomBox.Execute())
+                    {
                         return false;
+                    }
 
                     //Success! Let's get our selected box and continue.
                     IWiredItem SelectedBox = Instance.GetWired().GetRandomEffect(Effects.ToList());
                     if (!SelectedBox.Execute())
+                    {
                         return false;
+                    }
 
                     //Woo! Almost there captain, now lets broadcast the update to the room instance.
                     if (Instance != null)
@@ -98,7 +108,9 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Triggers
                     foreach (IWiredItem Effect in Effects.ToList())
                     {
                         if (!Effect.Execute(Player))
+                        {
                             return false;
+                        }
 
                         Instance.GetWired().OnEvent(Effect.Item);
                     }

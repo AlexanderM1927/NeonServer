@@ -1,9 +1,5 @@
-﻿using System;
-using System.Linq;
-using System.Text;
+﻿using Neon.HabboHotel.Items;
 using System.Collections.Generic;
-
-using Neon.HabboHotel.Items;
 
 namespace Neon.HabboHotel.Catalog
 {
@@ -21,26 +17,27 @@ namespace Neon.HabboHotel.Catalog
             this.Id = Id;
             this.PageId = PageId;
             this.DisplayName = DisplayName;
-            this.ItemDataList = new List<CatalogItem>();
+            ItemDataList = new List<CatalogItem>();
 
             string[] SplitItems = Items.Split(';');
             foreach (string Split in SplitItems)
             {
                 string[] Item = Split.Split('*');
-                int ItemId = 0;
-                int Amount = 0;
-                if (!int.TryParse(Item[0], out ItemId) || !int.TryParse(Item[1], out Amount))
+                if (!int.TryParse(Item[0], out int ItemId) || !int.TryParse(Item[1], out int Amount))
+                {
                     continue;
+                }
 
-                ItemData Data = null;
-                if (!ItemDataManager.GetItem(ItemId, out Data))
+                if (!ItemDataManager.GetItem(ItemId, out ItemData Data))
+                {
                     continue;
+                }
 
                 ItemDataList.Add(new CatalogItem(0, ItemId, Data, string.Empty, PageId, CostCredits, CostPixels, 0, Amount, 0, 0, false, "", "", 0, 0, 0));
             }
 
-            this.CostCredits = Credits;
-            this.CostPixels = Pixels;
+            CostCredits = Credits;
+            CostPixels = Pixels;
         }
     }
 }

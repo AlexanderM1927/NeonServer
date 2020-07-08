@@ -1,11 +1,9 @@
-﻿using System;
-using System.Linq;
+﻿using Neon.Communication.Packets.Outgoing;
 using Neon.HabboHotel.GameClients;
 using Neon.HabboHotel.Rooms;
 using Neon.HabboHotel.Users.Relationships;
-using Neon.Communication.Packets.Incoming;
-using Neon.Communication.Packets.Outgoing;
-using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
+using System;
+using System.Linq;
 
 namespace Neon.HabboHotel.Users.Messenger
 {
@@ -28,36 +26,23 @@ namespace Neon.HabboHotel.Users.Messenger
 
         #region Return values
 
-        public int Id
-        {
-            get { return UserId; }
-        }
+        public int Id => UserId;
 
-        public bool IsOnline
-        {
-            get
-            {
-                return (client != null && client.GetHabbo() != null && client.GetHabbo().GetMessenger() != null &&
-                        !client.GetHabbo().GetMessenger().AppearOffline);       
-
-            }
-        }
+        public bool IsOnline => (client != null && client.GetHabbo() != null && client.GetHabbo().GetMessenger() != null &&
+                        !client.GetHabbo().GetMessenger().AppearOffline);
 
         private GameClient Client
         {
-            get { return client; }
-            set { client = value; }
+            get => client;
+            set => client = value;
         }
 
-        public bool InRoom
-        {
-            get { return (currentRoom != null); }
-        }
+        public bool InRoom => (currentRoom != null);
 
         public Room CurrentRoom
         {
-            get { return currentRoom; }
-            set { currentRoom = value; }
+            get => currentRoom;
+            set => currentRoom = value;
         }
 
         #endregion
@@ -83,15 +68,19 @@ namespace Neon.HabboHotel.Users.Messenger
         {
             this.client = client;
             if (client != null && client.GetHabbo() != null)
+            {
                 currentRoom = client.GetHabbo().CurrentRoom;
+            }
         }
 
         public void Serialize(ServerPacket Message, GameClient Session)
         {
             Relationship Relationship = null;
 
-            if(Session != null && Session.GetHabbo() != null && Session.GetHabbo().Relationships != null)
+            if (Session != null && Session.GetHabbo() != null && Session.GetHabbo().Relationships != null)
+            {
                 Relationship = Session.GetHabbo().Relationships.FirstOrDefault(x => x.Value.UserId == Convert.ToInt32(UserId)).Value;
+            }
 
             int y = Relationship == null ? 0 : Relationship.Type;
 

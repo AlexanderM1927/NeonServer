@@ -1,28 +1,14 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using Neon.Communication.Packets.Outgoing.Inventory.Furni;
-using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.User
 {
-    class EmptyItems : IChatCommand
+    internal class EmptyItems : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_empty_items"; }
-        }
+        public string PermissionRequired => "command_empty_items";
 
-        public string Parameters
-        {
-            get { return "%yes%"; }
-        }
+        public string Parameters => "%yes%";
 
-        public string Description
-        {
-            get { return "Vaciar el inventario de tu personaje."; }
-        }
+        public string Description => "Vaciar el inventario de tu personaje.";
 
         public void Execute(GameClients.GameClient Session, Room Room, string[] Params)
         {
@@ -40,7 +26,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User
                     Session.GetHabbo().GetInventoryComponent().ClearItems();
                     Session.GetHabbo().GetInventoryComponent().ClearBots();
                     Session.GetHabbo().GetInventoryComponent().ClearPets();
-                    Session.SendNotification("Su inventario se vació correctamente.");   
+                    Session.SendNotification("Su inventario se vació correctamente.");
                     return;
                 }
                 else if (Params.Length == 2 && Params[1].ToString() != "yes")

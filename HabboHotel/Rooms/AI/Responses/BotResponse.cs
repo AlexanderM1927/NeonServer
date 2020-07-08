@@ -1,5 +1,4 @@
 ﻿using Neon.HabboHotel.Items.Utilities;
-using System;
 using System.Collections.Generic;
 
 namespace Neon.HabboHotel.Rooms.AI.Responses
@@ -15,7 +14,7 @@ namespace Neon.HabboHotel.Rooms.AI.Responses
         public BotResponse(string BotAi, string Keywords, string ResponseText, string ResponseMode, string ResponseBeverages)
         {
             AiType = BotUtility.GetAIFromString(BotAi);
-           
+
             this.Keywords = new List<string>();
             foreach (string Keyword in Keywords.Split(','))
             {
@@ -25,7 +24,7 @@ namespace Neon.HabboHotel.Rooms.AI.Responses
             this.ResponseText = ResponseText;
             ResponseType = ResponseMode;
 
-            BeverageIds = new List<int>(); 
+            BeverageIds = new List<int>();
             if (ResponseBeverages.Contains(","))
             {
                 foreach (string VendingId in ResponseBeverages.Split(','))
@@ -41,15 +40,19 @@ namespace Neon.HabboHotel.Rooms.AI.Responses
                 }
             }
             else if (!string.IsNullOrEmpty(ResponseBeverages) && (int.Parse(ResponseBeverages)) > 0)
+            {
                 BeverageIds.Add(int.Parse(ResponseBeverages));
+            }
         }
 
         public bool KeywordMatched(string Message)
-        { 
+        {
             foreach (string Keyword in Keywords)
             {
                 if (Message.ToLower().Equals(Keyword.ToLower()))
+                {
                     return true;
+                }
             }
             return false;
         }

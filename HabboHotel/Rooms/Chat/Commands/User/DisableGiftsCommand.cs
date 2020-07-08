@@ -1,29 +1,16 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using Neon.Database.Interfaces;
+﻿using Neon.Database.Interfaces;
 
 
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.User
 {
-    class DisableGiftsCommand : IChatCommand
+    internal class DisableGiftsCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_disable_gifts"; }
-        }
+        public string PermissionRequired => "command_disable_gifts";
 
-        public string Parameters
-        {
-            get { return ""; }
-        }
+        public string Parameters => "";
 
-        public string Description
-        {
-            get { return "Activar o desactivar la recepción de regalos."; }
-        }
+        public string Description => "Activar o desactivar la recepción de regalos.";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {

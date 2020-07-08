@@ -1,50 +1,35 @@
-﻿using System;
-
-using Neon.Net;
-using System.Linq;
-using Neon.Core;
-using Neon.Communication.Packets.Incoming;
-using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Users;
-using Neon.Communication.Interfaces;
-using Neon.HabboHotel.Users.UserDataManagement;
-using ConnectionManager;
-
-using Neon.Communication.Packets.Outgoing.Sound;
-using Neon.Communication.Packets.Outgoing.Rooms.Chat;
-using Neon.Communication.Packets.Outgoing.Handshake;
-using Neon.Communication.Packets.Outgoing.Navigator;
-using Neon.Communication.Packets.Outgoing.Moderation;
-using Neon.Communication.Packets.Outgoing.Inventory.AvatarEffects;
-using Neon.Communication.Packets.Outgoing.Inventory.Achievements;
-
-
+﻿using ConnectionManager;
 using Neon.Communication.Encryption.Crypto.Prng;
-using Neon.HabboHotel.Users.Messenger.FriendBar;
+using Neon.Communication.Interfaces;
+using Neon.Communication.Packets.Incoming;
 using Neon.Communication.Packets.Outgoing.BuildersClub;
-using Neon.HabboHotel.Moderation;
-
-using Neon.Database.Interfaces;
-using Neon.HabboHotel.Subscriptions;
-using Neon.HabboHotel.Permissions;
-using Neon.Communication.Packets.Outgoing;
-using Neon.Communication.Packets.Outgoing.Nux;
-using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
-using System.Collections.Generic;
-using Neon.HabboHotel.Catalog;
-using Neon.Communication.Packets.Outgoing.Talents;
-using Neon.HabboHotel.Users.Messenger;
-using System.Xml;
-using System.Net;
-using System.IO;
-using Neon.Communication.Packets.Outgoing.Campaigns;
-using Neon.Communication.Packets.Outgoing.Notifications;
-using System.Threading;
-using Neon.Communication.Packets.Outgoing.Messenger;
-using Neon.Communication.Packets.Outgoing.Rooms.Furni;
-using Neon.HabboHotel.Helpers;
+using Neon.Communication.Packets.Outgoing.Handshake;
 using Neon.Communication.Packets.Outgoing.Help.Helpers;
+using Neon.Communication.Packets.Outgoing.Inventory.Achievements;
+using Neon.Communication.Packets.Outgoing.Inventory.AvatarEffects;
+using Neon.Communication.Packets.Outgoing.Messenger;
+using Neon.Communication.Packets.Outgoing.Moderation;
+using Neon.Communication.Packets.Outgoing.Navigator;
+using Neon.Communication.Packets.Outgoing.Rooms.Chat;
+using Neon.Communication.Packets.Outgoing.Rooms.Furni;
+using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
+using Neon.Communication.Packets.Outgoing.Sound;
+using Neon.Core;
+using Neon.Database.Interfaces;
+using Neon.HabboHotel.Catalog;
+using Neon.HabboHotel.Helpers;
+using Neon.HabboHotel.Moderation;
+using Neon.HabboHotel.Permissions;
+using Neon.HabboHotel.Rooms;
+using Neon.HabboHotel.Subscriptions;
+using Neon.HabboHotel.Users;
+using Neon.HabboHotel.Users.Messenger.FriendBar;
+using Neon.HabboHotel.Users.UserDataManagement;
+using Neon.Net;
 using Neon.Utilities;
+using System;
+using System.Collections.Generic;
+using System.Threading;
 
 namespace Neon.HabboHotel.GameClients
 {
@@ -64,10 +49,10 @@ namespace Neon.HabboHotel.GameClients
 
         public GameClient(int ClientId, ConnectionInformation pConnection)
         {
-            this._id = ClientId;
-            this._connection = pConnection;
-            this._packetParser = new GamePacketParser(this);
-            this.PingCount = 0;
+            _id = ClientId;
+            _connection = pConnection;
+            _packetParser = new GamePacketParser(this);
+            PingCount = 0;
         }
 
         private void SwitchParserRequest()
@@ -110,9 +95,11 @@ namespace Neon.HabboHotel.GameClients
         public void StartConnection()
         {
             if (_connection == null)
+            {
                 return;
+            }
 
-            this.PingCount = 0;
+            PingCount = 0;
 
             (_connection.parser as InitialPacketParser).PolicyRequest += PolicyRequest;
             (_connection.parser as InitialPacketParser).SwitchParserRequest += SwitchParserRequest;
@@ -123,13 +110,9 @@ namespace Neon.HabboHotel.GameClients
         {
             try
             {
-                var userData = UserDataFactory.GetUserData(AuthTicket, out byte errorCode);
-                if (userData?.user == null)
-                    return false;
-
+                UserData userData = UserDataFactory.GetUserData(AuthTicket, out byte errorCode);
                 if (errorCode == 1 || errorCode == 2)
                 {
-                    Console.WriteLine("Can't login " + errorCode);
                     Disconnect();
                     return false;
                 }
@@ -139,32 +122,38 @@ namespace Neon.HabboHotel.GameClients
                 //Let's have a quick search for a ban before we successfully authenticate..
                 ModerationBan BanRecord;
                 if (!string.IsNullOrEmpty(MachineId))
+                {
                     if (NeonEnvironment.GetGame().GetModerationManager().IsBanned(MachineId, out BanRecord))
+                    {
                         if (NeonEnvironment.GetGame().GetModerationManager().MachineBanCheck(MachineId))
                         {
                             Disconnect();
                             return false;
                         }
+                    }
+                }
 
                 if (NeonEnvironment.GetGame().GetModerationManager().IsBanned(userData.user.Username, out BanRecord))
+                {
                     if (NeonEnvironment.GetGame().GetModerationManager().UsernameBanCheck(userData.user.Username))
                     {
                         Disconnect();
                         return false;
                     }
+                }
 
                 #endregion
 
                 NeonEnvironment.GetGame().GetClientManager().RegisterClient(this, userData.userID, userData.user.Username);
                 _habbo = userData.user;
-                
+
 
                 if (_habbo != null)
                 {
                     ssoTicket = AuthTicket;
                     userData.user.Init(this, userData);
 
-                    
+
                     SendMessage(new AuthenticationOKComposer());
                     SendMessage(new AvatarEffectsComposer(_habbo.Effects().GetAllEffects));
                     SendMessage(new NavigatorSettingsComposer(_habbo.HomeRoom));
@@ -173,7 +162,7 @@ namespace Neon.HabboHotel.GameClients
                     SendMessage(new UserRightsComposer(_habbo));
                     SendMessage(new AvailabilityStatusComposer());
                     SendMessage(new AchievementScoreComposer(_habbo.GetStats().AchievementPoints));
-                    
+
 
                     //var habboClubSubscription = new ServerPacket(ServerPacketHeader.HabboClubSubscriptionComposer);
                     //habboClubSubscription.WriteString("club_habbo");
@@ -195,7 +184,9 @@ namespace Neon.HabboHotel.GameClients
                     SendMessage(new SoundSettingsComposer(_habbo.ClientVolume, _habbo.ChatPreference, _habbo.AllowMessengerInvites, _habbo.FocusPreference, FriendBarStateUtility.GetInt(_habbo.FriendbarState)));
 
                     if (GetHabbo().GetMessenger() != null)
+                    {
                         GetHabbo().GetMessenger().OnStatusChanged(true);
+                    }
 
                     if (_habbo.Rank < 2 && !NeonStaticGameSettings.HotelOpenForUsers)
                     {
@@ -207,7 +198,7 @@ namespace Neon.HabboHotel.GameClients
 
                     if (!string.IsNullOrEmpty(MachineId))
                     {
-                        if (this._habbo.MachineId != MachineId)
+                        if (_habbo.MachineId != MachineId)
                         {
                             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
                             {
@@ -223,25 +214,33 @@ namespace Neon.HabboHotel.GameClients
                     if (NeonEnvironment.GetGame().GetPermissionManager().TryGetGroup(_habbo.Rank, out PermissionGroup PermissionGroup))
                     {
                         if (!string.IsNullOrEmpty(PermissionGroup.Badge))
+                        {
                             if (!_habbo.GetBadgeComponent().HasBadge(PermissionGroup.Badge))
+                            {
                                 _habbo.GetBadgeComponent().GiveBadge(PermissionGroup.Badge, true, this);
+                            }
+                        }
                     }
 
-                    SubscriptionData SubData = null;
-                    if (NeonEnvironment.GetGame().GetSubscriptionManager().TryGetSubscriptionData(this._habbo.VIPRank, out SubData))
+                    if (NeonEnvironment.GetGame().GetSubscriptionManager().TryGetSubscriptionData(_habbo.VIPRank, out SubscriptionData SubData))
                     {
                         if (!string.IsNullOrEmpty(SubData.Badge))
                         {
                             if (!_habbo.GetBadgeComponent().HasBadge(SubData.Badge))
+                            {
                                 _habbo.GetBadgeComponent().GiveBadge(SubData.Badge, true, this);
+                            }
                         }
                     }
 
                     if (!NeonEnvironment.GetGame().GetCacheManager().ContainsUser(_habbo.Id))
+                    {
                         NeonEnvironment.GetGame().GetCacheManager().GenerateUser(_habbo.Id);
-                   
+                    }
+
                     _habbo.InitProcess();
 
+                    GetHabbo()._lastitems = new Dictionary<int, CatalogItem>();
                     //ICollection<MessengerBuddy> Friends = new List<MessengerBuddy>();
                     //foreach (MessengerBuddy Buddy in this.GetHabbo().GetMessenger().GetFriends().ToList())
                     //{
@@ -260,19 +259,21 @@ namespace Neon.HabboHotel.GameClients
 
                     if (GetHabbo()._NUX) { SendMessage(new MassEventComposer("habbopages/bienvenida.txt")); }
                     else { SendMessage(new MassEventComposer("habbopages/welk.txt?249")); }
-                
+
 
                     if (NeonEnvironment.GetDBConfig().DBData["pin.system.enable"] == "0")
+                    {
                         GetHabbo().StaffOk = true;
+                    }
 
-                    if(GetHabbo().StaffOk)
+                    if (GetHabbo().StaffOk)
                     {
                         if (GetHabbo().GetPermissions().HasRight("mod_tickets"))
                         {
-                              SendMessage(new ModeratorInitComposer(
-                              NeonEnvironment.GetGame().GetModerationManager().UserMessagePresets,
-                              NeonEnvironment.GetGame().GetModerationManager().RoomMessagePresets,
-                              NeonEnvironment.GetGame().GetModerationManager().GetTickets));
+                            SendMessage(new ModeratorInitComposer(
+                            NeonEnvironment.GetGame().GetModerationManager().UserMessagePresets,
+                            NeonEnvironment.GetGame().GetModerationManager().RoomMessagePresets,
+                            NeonEnvironment.GetGame().GetModerationManager().GetTickets));
                         }
                     }
 
@@ -311,16 +312,21 @@ namespace Neon.HabboHotel.GameClients
                         }
                         else
                         {
-                            using (var dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
+                            using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
+                            {
                                 dbClient.runFastQuery("UPDATE targeted_offers SET active = 'false'");
-                            using (var dbClient2 = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
+                            }
+
+                            using (IQueryAdapter dbClient2 = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
+                            {
                                 dbClient2.runFastQuery("UPDATE users SET targeted_buy = '0' WHERE targeted_buy > 0");
+                            }
                         }
                     }
 
                     if (_habbo.MysticBoxes.Count == 0 && _habbo.MysticKeys.Count == 0)
                     {
-                        var box = RandomNumber.GenerateRandom(1, 8);
+                        int box = RandomNumber.GenerateRandom(1, 8);
                         string boxcolor = "";
                         switch (box)
                         {
@@ -350,7 +356,7 @@ namespace Neon.HabboHotel.GameClients
                                 break;
                         }
 
-                        var key = RandomNumber.GenerateRandom(1, 8);
+                        int key = RandomNumber.GenerateRandom(1, 8);
                         string keycolor = "";
                         switch (key)
                         {
@@ -383,8 +389,10 @@ namespace Neon.HabboHotel.GameClients
                         _habbo.MysticKeys.Add(keycolor);
                         _habbo.MysticBoxes.Add(boxcolor);
 
-                        using (var dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
-                            dbClient.runFastQuery("INSERT INTO user_mystic_data(user_id, mystic_keys, mystic_boxes) VALUES(" + GetHabbo().Id + ", '" + keycolor + "', '" + boxcolor +"');");
+                        using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
+                        {
+                            dbClient.runFastQuery("INSERT INTO user_mystic_data(user_id, mystic_keys, mystic_boxes) VALUES(" + GetHabbo().Id + ", '" + keycolor + "', '" + boxcolor + "');");
+                        }
                     }
 
                     SendMessage(new MysteryBoxDataComposer(_habbo.GetClient()));
@@ -413,7 +421,7 @@ namespace Neon.HabboHotel.GameClients
                     //        }
                     //    }
                     //}
-                    
+
 
                     NeonEnvironment.GetGame().GetRewardManager().CheckRewards(this);
 
@@ -422,8 +430,10 @@ namespace Neon.HabboHotel.GameClients
                         NeonEnvironment.GetGame().GetClientManager().StaffAlert(new RoomInviteComposer(int.MinValue, GetHabbo().Username + " acaba de registrarse en Keko."));
 
                         GetHabbo()._NUX = false;
-                        using (var dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
+                        using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
+                        {
                             dbClient.runFastQuery("UPDATE users SET nux_user = 'false' WHERE id = " + GetHabbo().Id + ";");
+                        }
                     }
 
                     return true;
@@ -439,11 +449,15 @@ namespace Neon.HabboHotel.GameClients
         public void SendWhisper(string Message, int Colour = 0)
         {
             if (this == null || GetHabbo() == null || GetHabbo().CurrentRoom == null)
+            {
                 return;
+            }
 
             RoomUser User = GetHabbo().CurrentRoom.GetRoomUserManager().GetRoomUserByHabbo(GetHabbo().Username);
             if (User == null)
+            {
                 return;
+            }
 
             SendMessage(new WhisperComposer(User.VirtualId, Message, 0, (Colour == 0 ? User.LastBubble : Colour)));
         }
@@ -451,11 +465,15 @@ namespace Neon.HabboHotel.GameClients
         public void SendChat(string Message, int Colour = 0)
         {
             if (this == null || GetHabbo() == null || GetHabbo().CurrentRoom == null)
+            {
                 return;
+            }
 
             RoomUser User = GetHabbo().CurrentRoom.GetRoomUserManager().GetRoomUserByHabbo(GetHabbo().Username);
             if (User == null)
+            {
                 return;
+            }
 
             SendMessage(new ChatComposer(User.VirtualId, Message, 0, (Colour == 0 ? User.LastBubble : Colour)));
         }
@@ -470,10 +488,14 @@ namespace Neon.HabboHotel.GameClients
             byte[] bytes = Message.GetBytes();
 
             if (Message == null)
+            {
                 return;
+            }
 
             if (GetConnection() == null)
+            {
                 return;
+            }
 
             GetConnection().SendData(bytes);
         }
@@ -481,19 +503,20 @@ namespace Neon.HabboHotel.GameClients
         public void SendShout(string Message, int Colour = 0)
         {
             if (this == null || GetHabbo() == null || GetHabbo().CurrentRoom == null)
+            {
                 return;
+            }
 
             RoomUser User = GetHabbo().CurrentRoom.GetRoomUserManager().GetRoomUserByHabbo(GetHabbo().Username);
             if (User == null)
+            {
                 return;
+            }
 
             SendMessage(new ShoutComposer(User.VirtualId, Message, 0, (Colour == 0 ? User.LastBubble : Colour)));
         }
 
-        public int ConnectionID
-        {
-            get { return _id; }
-        }
+        public int ConnectionID => _id;
 
         public ConnectionInformation GetConnection()
         {
@@ -517,7 +540,7 @@ namespace Neon.HabboHotel.GameClients
                     }
 
                     GetHabbo().OnDisconnect();
-                   
+
 
                 }
             }
@@ -530,7 +553,10 @@ namespace Neon.HabboHotel.GameClients
             if (!_disconnected)
             {
                 if (_connection != null)
-                _connection.Dispose();
+                {
+                    _connection.Dispose();
+                }
+
                 _disconnected = true;
             }
         }
@@ -538,14 +564,16 @@ namespace Neon.HabboHotel.GameClients
         public void Dispose()
         {
             if (GetHabbo() != null)
+            {
                 GetHabbo().OnDisconnect();
+            }
 
-            this.MachineId = string.Empty;
-            this._disconnected = true;
-            this._habbo = null;
-            this._connection = null;
-            this.RC4Client = null;
-            this._packetParser = null;
+            MachineId = string.Empty;
+            _disconnected = true;
+            _habbo = null;
+            _connection = null;
+            RC4Client = null;
+            _packetParser = null;
         }
 
         public class Meteorologia

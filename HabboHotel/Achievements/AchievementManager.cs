@@ -1,16 +1,11 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.GameClients;
-
-using Neon.Communication.Packets.Outgoing.Inventory.Purse;
+﻿using log4net;
 using Neon.Communication.Packets.Outgoing.Inventory.Achievements;
-
+using Neon.Communication.Packets.Outgoing.Inventory.Purse;
 using Neon.Database.Interfaces;
-using log4net;
-
-using Neon.HabboHotel.Users;
+using Neon.HabboHotel.GameClients;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 
 namespace Neon.HabboHotel.Achievements
@@ -23,8 +18,8 @@ namespace Neon.HabboHotel.Achievements
 
         public AchievementManager()
         {
-            this._achievements = new Dictionary<string, Achievement>();
-            this.LoadAchievements();
+            _achievements = new Dictionary<string, Achievement>();
+            LoadAchievements();
             log.Info(">> Achievements Manager -> READY!");
         }
 
@@ -36,7 +31,9 @@ namespace Neon.HabboHotel.Achievements
         public bool ProgressAchievement(GameClient Session, string AchievementGroup, int ProgressAmount, bool FromZero = false)
         {
             if (!_achievements.ContainsKey(AchievementGroup) || Session == null)
+            {
                 return false;
+            }
 
             Achievement AchievementData = null;
             AchievementData = _achievements[AchievementGroup];
@@ -51,25 +48,35 @@ namespace Neon.HabboHotel.Achievements
             int TotalLevels = AchievementData.Levels.Count;
 
             if (UserData != null && UserData.Level == TotalLevels)
+            {
                 return false; // done, no more.
+            }
 
             int TargetLevel = (UserData != null ? UserData.Level + 1 : 1);
 
             if (TargetLevel > TotalLevels)
+            {
                 TargetLevel = TotalLevels;
+            }
 
             AchievementLevel TargetLevelData = AchievementData.Levels[TargetLevel];
             int NewProgress = 0;
             if (FromZero)
+            {
                 NewProgress = ProgressAmount;
+            }
             else
+            {
                 NewProgress = (UserData != null ? UserData.Progress + ProgressAmount : ProgressAmount);
+            }
 
             int NewLevel = (UserData != null ? UserData.Level : 0);
             int NewTarget = NewLevel + 1;
 
             if (NewTarget > TotalLevels)
+            {
                 NewTarget = TotalLevels;
+            }
 
             if (NewProgress >= TargetLevelData.Requirement)
             {
@@ -81,7 +88,9 @@ namespace Neon.HabboHotel.Achievements
                 NewProgress = 0;
 
                 if (TargetLevel == 1)
+                {
                     Session.GetHabbo().GetBadgeComponent().GiveBadge(AchievementGroup + TargetLevel, true, Session);
+                }
                 else
                 {
                     Session.GetHabbo().GetBadgeComponent().RemoveBadge(Convert.ToString(AchievementGroup + (TargetLevel - 1)), Session);
@@ -139,14 +148,16 @@ namespace Neon.HabboHotel.Achievements
             foreach (Achievement Achievement in _achievements.Values.ToList())
             {
                 if (Achievement.Category == "games" && Achievement.GameId == GameId)
+                {
                     GameAchievements.Add(Achievement);
+                }
             }
             return GameAchievements;
         }
 
         public bool ContainsAchievement(string AchievementGroup, int Level, GameClient Session)
         {
-            if (this._achievements.ContainsKey(AchievementGroup))
+            if (_achievements.ContainsKey(AchievementGroup))
             {
                 UserAchievement achievementData = Session.GetHabbo().GetAchievementData(AchievementGroup);
                 return ((achievementData != null) && (achievementData.Level >= Level));
@@ -162,9 +173,9 @@ namespace Neon.HabboHotel.Achievements
             }
             foreach (KeyValuePair<string, int> pair in AchievementGroup)
             {
-                if (!this._achievements.ContainsKey(pair.Key) || (pair.Value != 1))
+                if (!_achievements.ContainsKey(pair.Key) || (pair.Value != 1))
                 {
-                    if (!this._achievements.ContainsKey(pair.Key))
+                    if (!_achievements.ContainsKey(pair.Key))
                     {
                         return false;
                     }

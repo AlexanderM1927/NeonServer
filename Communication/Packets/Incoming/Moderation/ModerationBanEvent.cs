@@ -1,23 +1,18 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using Neon.Database.Interfaces;
-using Neon.HabboHotel.Users;
-using Neon.HabboHotel.Support;
-
-
+﻿using Neon.Database.Interfaces;
 using Neon.HabboHotel.GameClients;
 using Neon.HabboHotel.Moderation;
+using Neon.HabboHotel.Users;
 
 namespace Neon.Communication.Packets.Incoming.Moderation
 {
-    class ModerationBanEvent : IPacketEvent
+    internal class ModerationBanEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
             if (Session == null || Session.GetHabbo() == null || !Session.GetHabbo().GetPermissions().HasRight("mod_soft_ban"))
+            {
                 return;
+            }
 
             int UserId = Packet.PopInt();
             string Message = Packet.PopString();
@@ -28,7 +23,9 @@ namespace Neon.Communication.Packets.Incoming.Moderation
             bool MachineBan = Packet.PopBoolean();
 
             if (MachineBan)
+            {
                 IPBan = false;
+            }
 
             Habbo Habbo = NeonEnvironment.GetHabboById(UserId);
 
@@ -53,9 +50,13 @@ namespace Neon.Communication.Packets.Incoming.Moderation
             }
 
             if (IPBan == false && MachineBan == false)
+            {
                 NeonEnvironment.GetGame().GetModerationManager().BanUser(Session.GetHabbo().Username, ModerationBanType.USERNAME, Habbo.Username, Message, Length);
+            }
             else if (IPBan == true)
+            {
                 NeonEnvironment.GetGame().GetModerationManager().BanUser(Session.GetHabbo().Username, ModerationBanType.IP, Habbo.Username, Message, Length);
+            }
             else if (MachineBan == true)
             {
                 NeonEnvironment.GetGame().GetModerationManager().BanUser(Session.GetHabbo().Username, ModerationBanType.IP, Habbo.Username, Message, Length);
@@ -65,7 +66,9 @@ namespace Neon.Communication.Packets.Incoming.Moderation
 
             GameClient TargetClient = NeonEnvironment.GetGame().GetClientManager().GetClientByUsername(Habbo.Username);
             if (TargetClient != null)
+            {
                 TargetClient.Disconnect();
+            }
         }
     }
 }

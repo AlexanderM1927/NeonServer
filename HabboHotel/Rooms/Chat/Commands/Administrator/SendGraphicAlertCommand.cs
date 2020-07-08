@@ -3,22 +3,13 @@ using Neon.Communication.Packets.Outgoing.Notifications;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.Administrator
 {
-    class SendGraphicAlertCommand : IChatCommand
+    internal class SendGraphicAlertCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_ha"; }
-        }
+        public string PermissionRequired => "command_ha";
 
-        public string Parameters
-        {
-            get { return "%image%"; }
-        }
+        public string Parameters => "%image%";
 
-        public string Description
-        {
-            get { return "Envía un mensaje de alerta con imagen a todo el hotel."; }
-        }
+        public string Description => "Envía un mensaje de alerta con imagen a todo el hotel.";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {

@@ -1,6 +1,6 @@
 ﻿namespace Neon
 {
-    class NeonStaticGameSettings
+    internal class NeonStaticGameSettings
     {
         /// <summary>
         ///     The amount of credits a user will recieve every x minutes
@@ -10,7 +10,7 @@
         /// <summary>
         ///     The amount of pixels a user will recieve every x minutes
         /// </summary>
-        public const int UserPixelsUpdateAmount = 1;
+        public const int UserDiamondUpdateAmount = 5;
 
         /// <summary>
         ///     The amount of pixels extra to VIP Users
@@ -18,9 +18,9 @@
         public const int UserVipPixelsUpdateAmount = 3;
 
         /// <summary>
-        ///     The time a user will have to wait for Credits/Pixels update in minutes
+        ///     The time a user will have to wait for Credits/Diamonds update in minutes
         /// </summary>
-        public const int UserCreditsUpdateTimer = 15;
+        public const int UserCreditsUpdateTimer = 30;
 
         /// <summary>
         /// 

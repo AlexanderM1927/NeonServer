@@ -16,7 +16,7 @@ namespace Neon.HabboHotel.Users.Authenticator
                 NeonEnvironment.EnumToBool(Row["advertising_report_blocked"].ToString()), Convert.ToDouble(Row["last_change"].ToString()), Convert.ToInt32(Row["gotw_points"]), Convert.ToInt32(Row["user_points"]),
                 NeonEnvironment.EnumToBool(Convert.ToString(Row["ignore_invites"])), Convert.ToDouble(Row["time_muted"]), Convert.ToDouble(UserInfo["trading_locked"]),
                 NeonEnvironment.EnumToBool(Row["allow_gifts"].ToString()), Convert.ToInt32(Row["friend_bar_state"]), NeonEnvironment.EnumToBool(Row["disable_forced_effects"].ToString()),
-                NeonEnvironment.EnumToBool(Row["allow_mimic"].ToString()), Convert.ToInt32(Row["rank_vip"]), Convert.ToByte(Row["guia"].ToString()), Convert.ToByte(Row["publi"].ToString()), Convert.ToByte(Row["builder"].ToString()), Convert.ToByte(Row["croupier"].ToString()), (Row["nux_user"].ToString() == "true"), Convert.ToByte(Row["targeted_buy"]), Convert.ToString(Row["namecolor"]), Convert.ToString(Row["tag"]), Convert.ToString(Row["tagcolor"]), Convert.ToByte(Row["changename"]), Convert.ToString(Row["pin_client"]));
+                NeonEnvironment.EnumToBool(Row["allow_mimic"].ToString()), Convert.ToInt32(Row["rank_vip"]), Convert.ToByte(Row["guia"].ToString()), Convert.ToByte(Row["publi"].ToString()), Convert.ToByte(Row["builder"].ToString()), Convert.ToByte(Row["croupier"].ToString()), (Row["nux_user"].ToString() == "true"), Convert.ToByte(Row["targeted_buy"]), Convert.ToString(Row["namecolor"]), Convert.ToString(Row["tag"]), Convert.ToString(Row["tagcolor"]), Convert.ToByte(Row["changename"]), Convert.ToString(Row["pin_client"]), Convert.ToInt32(Row["cata_rank"]));
         }
     }
 }

@@ -1,14 +1,10 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
+﻿using Neon.HabboHotel.GameClients;
 using Neon.HabboHotel.Talents;
-using Neon.HabboHotel.GameClients;
+using System.Collections.Generic;
 
 namespace Neon.Communication.Packets.Outgoing.Talents
 {
-    class TalentTrackComposer : ServerPacket
+    internal class TalentTrackComposer : ServerPacket
     {
         public TalentTrackComposer(ICollection<TalentTrackLevel> Levels, string Type, GameClient Session)
             : base(ServerPacketHeader.TalentTrackMessageComposer)

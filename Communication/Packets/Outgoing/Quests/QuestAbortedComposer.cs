@@ -1,11 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-namespace Neon.Communication.Packets.Outgoing.Quests
+﻿namespace Neon.Communication.Packets.Outgoing.Quests
 {
-    class QuestAbortedComposer : ServerPacket
+    internal class QuestAbortedComposer : ServerPacket
     {
         public QuestAbortedComposer()
             : base(ServerPacketHeader.QuestAbortedMessageComposer)

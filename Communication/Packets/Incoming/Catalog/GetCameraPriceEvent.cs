@@ -1,9 +1,9 @@
-﻿using Neon.HabboHotel.GameClients;
-using Neon.Communication.Packets.Outgoing.Rooms.Camera;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Camera;
+using Neon.HabboHotel.GameClients;
 
 namespace Neon.Communication.Packets.Incoming.Catalog
 {
-    class GetCameraPriceEvent : IPacketEvent
+    internal class GetCameraPriceEvent : IPacketEvent
     {
         public void Parse(GameClient Session, ClientPacket Packet)
         {

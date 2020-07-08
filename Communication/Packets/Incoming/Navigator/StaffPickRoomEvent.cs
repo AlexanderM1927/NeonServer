@@ -1,27 +1,29 @@
-﻿using Neon.HabboHotel.Navigator;
-using Neon.HabboHotel.GameClients;
-using Neon.Database.Interfaces;
-using Neon.HabboHotel.Rooms;
-using Neon.Communication.Packets.Outgoing.Navigator;
+﻿using Neon.Communication.Packets.Outgoing.Navigator;
 using Neon.Communication.Packets.Outgoing.Rooms.Settings;
+using Neon.Database.Interfaces;
+using Neon.HabboHotel.GameClients;
+using Neon.HabboHotel.Navigator;
+using Neon.HabboHotel.Rooms;
 
 namespace Neon.Communication.Packets.Incoming.Navigator
 {
-    class StaffPickRoomEvent : IPacketEvent
+    internal class StaffPickRoomEvent : IPacketEvent
     {
         public void Parse(GameClient session, ClientPacket packet)
         {
             GameClient TargetClient = NeonEnvironment.GetGame().GetClientManager().GetClientByUsername(session.GetHabbo().CurrentRoom.OwnerName);
-        
+
             if (!session.GetHabbo().GetPermissions().HasRight("room.staff_picks.management"))
+            {
                 return;
+            }
 
-            Room room = null;
-            if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(packet.PopInt(), out room))
+            if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(packet.PopInt(), out Room room))
+            {
                 return;
+            }
 
-            StaffPick staffPick = null;
-            if (!NeonEnvironment.GetGame().GetNavigator().TryGetStaffPickedRoom(room.Id, out staffPick))
+            if (!NeonEnvironment.GetGame().GetNavigator().TryGetStaffPickedRoom(room.Id, out StaffPick staffPick))
             {
                 if (NeonEnvironment.GetGame().GetNavigator().TryAddStaffPickedRoom(room.Id))
                 {

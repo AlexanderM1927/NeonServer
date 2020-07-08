@@ -1,11 +1,10 @@
-﻿using System;
-using Neon.HabboHotel.GameClients;
-using Neon.Communication.Packets.Outgoing.Rooms.Furni;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Furni;
 using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
+using Neon.HabboHotel.GameClients;
 
 namespace Neon.HabboHotel.Items.Interactor
 {
-    class InteractorCrafting : IFurniInteractor
+    internal class InteractorCrafting : IFurniInteractor
     {
         public void OnPlace(GameClient Session, Item Item)
         {

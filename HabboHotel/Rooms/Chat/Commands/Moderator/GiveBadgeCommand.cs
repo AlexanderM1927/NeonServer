@@ -1,28 +1,15 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
+﻿
 using Neon.HabboHotel.GameClients;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
 {
-    class GiveBadgeCommand : IChatCommand
+    internal class GiveBadgeCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_give_badge"; }
-        }
+        public string PermissionRequired => "command_give_badge";
 
-        public string Parameters
-        {
-            get { return "%username% %badge%"; }
-        }
+        public string Parameters => "%username% %badge%";
 
-        public string Description
-        {
-            get { return "Dar una placa a un usuario"; }
-        }
+        public string Description => "Dar una placa a un usuario";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {
@@ -39,12 +26,19 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
                 {
                     TargetClient.GetHabbo().GetBadgeComponent().GiveBadge(Params[2], true, TargetClient);
                     if (TargetClient.GetHabbo().Id != Session.GetHabbo().Id)
+                    {
                         TargetClient.SendNotification("You have just been given a badge!");
+                    }
                     else
+                    {
                         Session.SendWhisper("Ha enviado correctamente la placa  " + Params[2] + "!");
+                    }
                 }
                 else
+                {
                     Session.SendWhisper("Oops, este usuario ya tiene la placa  (" + Params[2] + ") !");
+                }
+
                 return;
             }
             else

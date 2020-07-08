@@ -1,28 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Neon.Communication.Packets.Outgoing.Inventory.Purse;
 using Neon.HabboHotel.GameClients;
-using Neon.Communication.Packets.Outgoing.Inventory.Purse;
-using Neon.Communication.Packets.Outgoing.Rooms.Chat;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.User.Fun
 {
-    class PayCommand : IChatCommand
+    internal class PayCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_pagar"; }
-        }
-        public string Parameters
-        {
-            get { return "%username% %type% %amount%"; }
-        }
-        public string Description
-        {
-            get { return "Pagar a un usuario créditos/diamantes/duckets"; }
-        }
+        public string PermissionRequired => "command_pagar";
+        public string Parameters => "%username% %type% %amount%";
+        public string Description => "Pagar a un usuario créditos/diamantes/duckets";
         public void Execute(GameClient Session, Room Room, string[] Params)
         {
             if (Params.Length == 1)
@@ -36,7 +21,8 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User.Fun
             {
                 Session.SendWhisper("¡Ese usuario no se puede encontrar!", 34);
                 return;
-            }else if(TargetClient.GetHabbo().Username == Session.GetHabbo().Username)
+            }
+            else if (TargetClient.GetHabbo().Username == Session.GetHabbo().Username)
             {
                 Session.SendWhisper("No puedes pagar a ti mismmo", 34);
                 return;
@@ -44,7 +30,10 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User.Fun
 
             RoomUser User = Room.GetRoomUserManager().GetRoomUserByHabbo(Session.GetHabbo().Id);
             if (User == null)
+            {
                 return;
+            }
+
             string Currenices = Params[2];
             switch (Currenices.ToLower())
             {
@@ -56,8 +45,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User.Fun
                 case "credito":
                 case "c":
                     {
-                        int Amount;
-                        if (int.TryParse(Params[3], out Amount))
+                        if (int.TryParse(Params[3], out int Amount))
                         {
                             if (Session.GetHabbo().Credits < Amount)
                             {
@@ -84,8 +72,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User.Fun
                 case "diamonds":
                 case "dm":
                     {
-                        int Amount;
-                        if (int.TryParse(Params[3], out Amount))
+                        if (int.TryParse(Params[3], out int Amount))
                         {
                             if (Session.GetHabbo().Diamonds < Amount)
                             {
@@ -110,8 +97,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User.Fun
 
                 case "duckets":
                     {
-                        int Amount;
-                        if (int.TryParse(Params[3], out Amount))
+                        if (int.TryParse(Params[3], out int Amount))
                         {
                             if (Session.GetHabbo().Duckets < Amount)
                             {
@@ -137,8 +123,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User.Fun
                 case "keko":
                 case "kks":
                     {
-                        int Amount;
-                        if (int.TryParse(Params[3], out Amount))
+                        if (int.TryParse(Params[3], out int Amount))
                         {
                             if (Session.GetHabbo().GOTWPoints < Amount)
                             {

@@ -11,8 +11,8 @@ namespace Neon.HabboHotel.Rewards
         public string Message { get; set; }
         public Reward(double Start, double End, string Type, string RewardData, string Message)
         {
-            this.RewardStart = Start;
-            this.RewardEnd = End;
+            RewardStart = Start;
+            RewardEnd = End;
             this.Type = RewardTypeUtility.GetType(Type);
             this.RewardData = RewardData;
             this.Message = Message;

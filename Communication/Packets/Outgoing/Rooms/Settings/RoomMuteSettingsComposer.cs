@@ -1,11 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-namespace Neon.Communication.Packets.Outgoing.Rooms.Settings
+﻿namespace Neon.Communication.Packets.Outgoing.Rooms.Settings
 {
-    class RoomMuteSettingsComposer : ServerPacket
+    internal class RoomMuteSettingsComposer : ServerPacket
     {
         public RoomMuteSettingsComposer(bool Status)
             : base(ServerPacketHeader.RoomMuteSettingsMessageComposer)

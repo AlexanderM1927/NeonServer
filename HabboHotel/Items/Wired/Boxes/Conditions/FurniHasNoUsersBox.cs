@@ -1,22 +1,18 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using System.Collections.Concurrent;
-
-using Neon.Communication.Packets.Incoming;
-using Neon.HabboHotel.Rooms;
+﻿using Neon.Communication.Packets.Incoming;
 using Neon.HabboHotel.Pathfinding;
+using Neon.HabboHotel.Rooms;
+using System.Collections.Concurrent;
+using System.Linq;
 
 namespace Neon.HabboHotel.Items.Wired.Boxes.Conditions
 {
-    class FurniHasNoUsersBox : IWiredItem
+    internal class FurniHasNoUsersBox : IWiredItem
     {
         public Room Instance { get; set; }
 
         public Item Item { get; set; }
 
-        public WiredBoxType Type { get { return WiredBoxType.ConditionFurniHasNoUsers; } }
+        public WiredBoxType Type => WiredBoxType.ConditionFurniHasNoUsers;
 
         public ConcurrentDictionary<int, Item> SetItems { get; set; }
 
@@ -29,7 +25,7 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Conditions
         {
             this.Instance = Instance;
             this.Item = Item;
-            this.SetItems = new ConcurrentDictionary<int, Item>();
+            SetItems = new ConcurrentDictionary<int, Item>();
         }
 
         public void HandleSave(ClientPacket Packet)
@@ -37,37 +33,49 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Conditions
             int Unknown = Packet.PopInt();
             string Unknown2 = Packet.PopString();
 
-            if (this.SetItems.Count > 0)
-                this.SetItems.Clear();
+            if (SetItems.Count > 0)
+            {
+                SetItems.Clear();
+            }
 
             int FurniCount = Packet.PopInt();
             for (int i = 0; i < FurniCount; i++)
             {
                 Item SelectedItem = Instance.GetRoomItemHandler().GetItem(Packet.PopInt());
                 if (SelectedItem != null)
+                {
                     SetItems.TryAdd(SelectedItem.Id, SelectedItem);
+                }
             }
         }
 
         public bool Execute(params object[] Params)
         {
-            foreach (Item Item in this.SetItems.Values.ToList())
+            foreach (Item Item in SetItems.Values.ToList())
             {
                 if (Item == null || !Instance.GetRoomItemHandler().GetFloor.Contains(Item))
+                {
                     continue;
+                }
 
                 bool HasUsers = false;
                 foreach (ThreeDCoord Tile in Item.GetAffectedTiles.Values)
                 {
                     if (Instance.GetGameMap().SquareHasUsers(Tile.X, Tile.Y))
+                    {
                         HasUsers = true;
+                    }
                 }
 
                 if (Instance.GetGameMap().SquareHasUsers(Item.GetX, Item.GetY))
+                {
                     HasUsers = true;
+                }
 
                 if (HasUsers)
+                {
                     return false;
+                }
             }
             return true;
         }

@@ -1,11 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-namespace Neon.Communication.Packets.Outgoing.Rooms.Music
+﻿namespace Neon.Communication.Packets.Outgoing.Rooms.Music
 {
-    class SyncMusicComposer : ServerPacket
+    internal class SyncMusicComposer : ServerPacket
     {
         public SyncMusicComposer(int SongId, int PlaylistItemNumber, int SyncTimestampMs)
             : base(ServerPacketHeader.SyncMusicMessageComposer)

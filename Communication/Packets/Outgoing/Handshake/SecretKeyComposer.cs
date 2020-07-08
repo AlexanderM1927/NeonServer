@@ -5,7 +5,7 @@
         public SecretKeyComposer(string PublicKey)
             : base(ServerPacketHeader.SecretKeyMessageComposer)
         {
-           WriteString(PublicKey);
+            WriteString(PublicKey);
         }
     }
 }

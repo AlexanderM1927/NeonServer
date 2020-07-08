@@ -1,26 +1,12 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-namespace Neon.HabboHotel.Rooms.Chat.Commands.User
+﻿namespace Neon.HabboHotel.Rooms.Chat.Commands.User
 {
-    class DNDCommand : IChatCommand
+    internal class DNDCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_dnd"; }
-        }
+        public string PermissionRequired => "command_dnd";
 
-        public string Parameters
-        {
-            get { return ""; }
-        }
+        public string Parameters => "";
 
-        public string Description
-        {
-            get { return "Activar o desactivar los mensajes de consola."; }
-        }
+        public string Description => "Activar o desactivar los mensajes de consola.";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {

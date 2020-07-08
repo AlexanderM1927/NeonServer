@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.HabboHotel.Groups.Forums
 {
     public class GroupForumManager
     {
-        List<GroupForum> Forums;
+        private readonly List<GroupForum> Forums;
 
         public GroupForumManager()
         {
@@ -18,17 +15,17 @@ namespace Neon.HabboHotel.Groups.Forums
 
         public GroupForum GetForum(int GroupId)
         {
-            GroupForum f = null;
-            return TryGetForum(GroupId, out f) ? f : null;
+            return TryGetForum(GroupId, out GroupForum f) ? f : null;
         }
 
         public GroupForum CreateGroupForum(Group Gp)
         {
-            GroupForum GF;
-            if (TryGetForum(Gp.Id, out GF))
+            if (TryGetForum(Gp.Id, out GroupForum GF))
+            {
                 return GF;
+            }
 
-            using (var adap = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
+            using (Database.Interfaces.IQueryAdapter adap = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
                 adap.SetQuery("REPLACE INTO group_forums_settings (group_id) VALUES (@gp)");
                 adap.AddParameter("gp", Gp.Id);
@@ -48,14 +45,19 @@ namespace Neon.HabboHotel.Groups.Forums
         public bool TryGetForum(int Id, out GroupForum Forum)
         {
             if ((Forum = Forums.FirstOrDefault(c => c.Id == Id)) != null)
+            {
                 return true;
+            }
 
-            Group Gp;
-            if (!NeonEnvironment.GetGame().GetGroupManager().TryGetGroup(Id, out Gp))
+            if (!NeonEnvironment.GetGame().GetGroupManager().TryGetGroup(Id, out Group Gp))
+            {
                 return false;
+            }
 
             if (!Gp.HasForum)
+            {
                 return false;
+            }
 
             Forum = new GroupForum(Gp);
             Forums.Add(Forum);
@@ -64,13 +66,12 @@ namespace Neon.HabboHotel.Groups.Forums
 
         public List<GroupForum> GetForumsByUserId(int Userid)
         {
-            GroupForum F;
-            return NeonEnvironment.GetGame().GetGroupManager().GetGroupsForUser(Userid).Where(c => TryGetForum(c.Id, out F)).Select(c => GetForum(c.Id)).ToList();
+            return NeonEnvironment.GetGame().GetGroupManager().GetGroupsForUser(Userid).Where(c => TryGetForum(c.Id, out GroupForum F)).Select(c => GetForum(c.Id)).ToList();
         }
 
         public void RemoveGroup(Group Group)
         {
-            using (var dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
+            using (Database.Interfaces.IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
                 dbClient.RunQuery("DELETE FROM `group_forums_settings` WHERE `group_id` = '" + Group.Id + "'");
 
@@ -84,7 +85,7 @@ namespace Neon.HabboHotel.Groups.Forums
 
         public int GetUnreadThreadForumsByUserId(int Id)
         {
-            return this.GetForumsByUserId(Id).Where(c => c.UnreadMessages(Id) > 0).Count();
+            return GetForumsByUserId(Id).Where(c => c.UnreadMessages(Id) > 0).Count();
         }
     }
 }

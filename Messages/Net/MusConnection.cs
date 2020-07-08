@@ -1,24 +1,18 @@
-﻿using System;
-using System.Linq;
-using System.Net;
-using System.Net.Sockets;
-using System.Collections.Generic;
-
-using log4net;
-using Neon.Core;
-using System.Text;
-using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.GameClients;
-
+﻿using log4net;
 using Neon.Communication.Packets.Outgoing.Catalog;
-using Neon.Communication.Packets.Outgoing.Moderation;
-using Neon.Communication.Packets.Outgoing.Inventory.Purse;
 using Neon.Communication.Packets.Outgoing.Inventory.Badges;
+using Neon.Communication.Packets.Outgoing.Inventory.Purse;
+using Neon.Communication.Packets.Outgoing.Moderation;
 using Neon.Communication.Packets.Outgoing.Rooms.Engine;
-
-using Neon.Database.Interfaces;
 using Neon.Communication.Packets.Outgoing.Rooms.Session;
-using Neon.HabboHotel.Camera;
+using Neon.Core;
+using Neon.Database.Interfaces;
+using Neon.HabboHotel.GameClients;
+using Neon.HabboHotel.Rooms;
+using System;
+using System.Linq;
+using System.Net.Sockets;
+using System.Text;
 
 namespace Neon.Messages.Net
 {
@@ -32,29 +26,29 @@ namespace Neon.Messages.Net
 
         public MusConnection(Socket Socket)
         {
-            this._socket = Socket;
+            _socket = Socket;
 
             try
             {
-                this._socket.BeginReceive(_buffer, 0, _buffer.Length, SocketFlags.None, OnEvent_RecieveData, _socket);
+                _socket.BeginReceive(_buffer, 0, _buffer.Length, SocketFlags.None, OnEvent_RecieveData, _socket);
             }
-            catch { this.tryClose(); }
+            catch { tryClose(); }
         }
 
         public void tryClose()
         {
             try
             {
-                this._socket.Shutdown(SocketShutdown.Both);
-                this._socket.Close();
-                this._socket.Dispose();
+                _socket.Shutdown(SocketShutdown.Both);
+                _socket.Close();
+                _socket.Dispose();
             }
             catch
             {
             }
 
-            this._socket = null;
-            this._buffer = null;
+            _socket = null;
+            _buffer = null;
         }
 
         public void OnEvent_RecieveData(IAsyncResult iAr)
@@ -73,10 +67,12 @@ namespace Neon.Messages.Net
                     return;
                 }
 
-                String data = Encoding.Default.GetString(_buffer, 0, bytes);
+                string data = Encoding.Default.GetString(_buffer, 0, bytes);
 
                 if (data.Length > 0)
+                {
                     processCommand(data);
+                }
             }
             catch (Exception e)
             {
@@ -96,7 +92,10 @@ namespace Neon.Messages.Net
             for (int i = 1; i < data.Split().Length; i++)
             {
                 param += data.Split()[i];
-                if (i < data.Split().Length - 1) param += " ";
+                if (i < data.Split().Length - 1)
+                {
+                    param += " ";
+                }
             }
 
             string[] Params = param.Split(':');
@@ -110,7 +109,9 @@ namespace Neon.Messages.Net
                         int UserId = Convert.ToInt32(Params[0]);
                         Client = NeonEnvironment.GetGame().GetClientManager().GetClientByUserID(UserId);
                         if (Client == null || Client.GetHabbo() == null)
+                        {
                             break;
+                        }
 
                         int Credits = 0;
                         using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
@@ -131,7 +132,9 @@ namespace Neon.Messages.Net
                         int UserId = Convert.ToInt32(Params[0]);
                         Client = NeonEnvironment.GetGame().GetClientManager().GetClientByUserID(UserId);
                         if (Client == null || Client.GetHabbo() == null)
+                        {
                             break;
+                        }
 
                         int Pixels = 0;
                         using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
@@ -152,7 +155,9 @@ namespace Neon.Messages.Net
                         int UserId = Convert.ToInt32(Params[0]);
                         Client = NeonEnvironment.GetGame().GetClientManager().GetClientByUserID(UserId);
                         if (Client == null || Client.GetHabbo() == null)
+                        {
                             break;
+                        }
 
                         int Diamonds = 0;
                         using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
@@ -173,7 +178,9 @@ namespace Neon.Messages.Net
                         int UserId = Convert.ToInt32(Params[0]);
                         Client = NeonEnvironment.GetGame().GetClientManager().GetClientByUserID(UserId);
                         if (Client == null || Client.GetHabbo() == null)
+                        {
                             break;
+                        }
 
                         int GOTWPoints = 0;
                         using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
@@ -195,7 +202,9 @@ namespace Neon.Messages.Net
 
                         Client = NeonEnvironment.GetGame().GetClientManager().GetClientByUserID(UserId);
                         if (Client == null || Client.GetHabbo() == null)
+                        {
                             break;
+                        }
 
                         using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
                         {
@@ -213,7 +222,9 @@ namespace Neon.Messages.Net
 
                         Client = NeonEnvironment.GetGame().GetClientManager().GetClientByUserID(UserId);
                         if (Client == null || Client.GetHabbo() == null)
+                        {
                             break;
+                        }
 
                         using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
                         {
@@ -231,7 +242,9 @@ namespace Neon.Messages.Net
 
                         Client = NeonEnvironment.GetGame().GetClientManager().GetClientByUserID(UserId);
                         if (Client == null || Client.GetHabbo() == null)
+                        {
                             break;
+                        }
 
                         using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
                         {
@@ -244,11 +257,15 @@ namespace Neon.Messages.Net
                         {
                             Room Room = Client.GetHabbo().CurrentRoom;
                             if (Room == null)
+                            {
                                 return;
+                            }
 
                             RoomUser User = Room.GetRoomUserManager().GetRoomUserByHabbo(Client.GetHabbo().Id);
                             if (User == null || User.GetClient() == null)
+                            {
                                 return;
+                            }
 
                             Room.SendMessage(new UserChangeComposer(User, false));
                         }
@@ -264,7 +281,9 @@ namespace Neon.Messages.Net
 
                         Client = NeonEnvironment.GetGame().GetClientManager().GetClientByUserID(UserId);
                         if (Client == null || Client.GetHabbo() == null)
+                        {
                             break;
+                        }
 
                         Client.SendMessage(new BroadcastMessageAlertComposer(alertMessage));
                         break;
@@ -311,7 +330,9 @@ namespace Neon.Messages.Net
                         {
                             GameClient TargetClient = NeonEnvironment.GetGame().GetClientManager().GetClientByUserID(Convert.ToInt32(Params[0]));
                             if (TargetClient != null && TargetClient.GetConnection() != null)
+                            {
                                 TargetClient.GetConnection().Dispose();
+                            }
                         }
                         catch
                         {
@@ -327,7 +348,9 @@ namespace Neon.Messages.Net
 
                         Client = NeonEnvironment.GetGame().GetClientManager().GetClientByUserID(UserId);
                         if (Client == null || Client.GetHabbo() == null)
+                        {
                             break;
+                        }
 
                         using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
                         {
@@ -346,21 +369,31 @@ namespace Neon.Messages.Net
 
                         Client = NeonEnvironment.GetGame().GetClientManager().GetClientByUserID(UserId);
                         if (Client == null || Client.GetHabbo() == null)
+                        {
                             break;
+                        }
 
                         if (!int.TryParse(Params[1], out RoomId))
+                        {
                             break;
+                        }
                         else
                         {
                             Room _room = NeonEnvironment.GetGame().GetRoomManager().LoadRoom(RoomId);
                             if (_room == null)
+                            {
                                 Client.SendNotification("Failed to find the requested room!");
+                            }
                             else
                             {
                                 if (!Client.GetHabbo().InRoom)
+                                {
                                     Client.SendMessage(new RoomForwardComposer(_room.Id));
+                                }
                                 else
+                                {
                                     Client.GetHabbo().PrepareRoom(_room.Id, "");
+                                }
                             }
                         }
                     }
@@ -375,7 +408,9 @@ namespace Neon.Messages.Net
                         int UserId = Convert.ToInt32(Params[0]);
                         Client = NeonEnvironment.GetGame().GetClientManager().GetClientByUserID(UserId);
                         if (Client == null || Client.GetHabbo() == null)
+                        {
                             break;
+                        }
 
                         string Achievement = Convert.ToString(Params[1]);
                         int Progress = Convert.ToInt32(Params[2]);
@@ -444,7 +479,9 @@ namespace Neon.Messages.Net
                         foreach (GameClient C in NeonEnvironment.GetGame().GetClientManager().GetClients.ToList())
                         {
                             if (C == null || C.GetHabbo() == null || C.GetHabbo().GetPermissions() == null)
+                            {
                                 continue;
+                            }
 
                             C.GetHabbo().GetPermissions().Init(Client.GetHabbo());
                         }
@@ -484,33 +521,33 @@ namespace Neon.Messages.Net
                         NeonEnvironment.GetGame().GetModerationManager().ReCacheBans();
                         break;
                     }
-                    #endregion
-                    #endregion
-                
-                    
+                #endregion
+                #endregion
+
+
                 //#region Camera related
-                    
+
                 //    #region :add_preview <photo_id> <user_id> <created_at>
                 //    case "add_preview":
                 //    {
                 //        int PhotoId = Convert.ToInt32(Params[0]);
                 //        int UserId = Convert.ToInt32(Params[1]);
                 //        long CreatedAt = Convert.ToInt64(Params[2]);
-                        
+
                 //        Client = NeonEnvironment.GetGame().GetClientManager().GetClientByUserID(UserId);
-                        
+
                 //                    if (Client == null || Client.GetHabbo() == null || Client.GetHabbo().CurrentRoomId < 1)
                 //                           break;
-                        
+
                 //        NeonEnvironment.GetGame().GetCameraManager().AddPreview(new CameraPhotoPreview(PhotoId, UserId, CreatedAt));
                 //                    break;
                 //    }
-                    
-                //    #endregion
 
                 //    #endregion
 
-                                    default:
+                //    #endregion
+
+                default:
                     {
                         log.Error("Unrecognized MUS packet: '" + header + "'");
                         return;

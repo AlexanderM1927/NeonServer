@@ -1,11 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-namespace Neon.Communication.Packets.Outgoing.Catalog
+﻿namespace Neon.Communication.Packets.Outgoing.Catalog
 {
-    class PresentDeliverErrorMessageComposer : ServerPacket
+    internal class PresentDeliverErrorMessageComposer : ServerPacket
     {
         public PresentDeliverErrorMessageComposer(bool CreditError, bool DucketError)
             : base(ServerPacketHeader.PresentDeliverErrorMessageComposer)

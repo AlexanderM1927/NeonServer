@@ -1,6 +1,6 @@
-﻿using Neon.HabboHotel.GameClients;
+﻿using Neon.Communication.Packets.Outgoing.BuildersClub;
 using Neon.Communication.Packets.Outgoing.Catalog;
-using Neon.Communication.Packets.Outgoing.BuildersClub;
+using Neon.HabboHotel.GameClients;
 
 namespace Neon.Communication.Packets.Incoming.Catalog
 {

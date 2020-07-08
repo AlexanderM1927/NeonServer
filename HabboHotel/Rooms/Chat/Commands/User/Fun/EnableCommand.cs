@@ -1,30 +1,14 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Rooms.Games;
-using Neon.HabboHotel.Rooms.Games.Teams;
+﻿using Neon.HabboHotel.Rooms.Games.Teams;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.User.Fun
 {
-    class EnableCommand : IChatCommand
+    internal class EnableCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_enable"; }
-        }
+        public string PermissionRequired => "command_enable";
 
-        public string Parameters
-        {
-            get { return "%EffectId%"; }
-        }
+        public string Parameters => "%EffectId%";
 
-        public string Description
-        {
-            get { return "Habilitar un efecto en tu personaje."; }
-        }
+        public string Description => "Habilitar un efecto en tu personaje.";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {
@@ -36,7 +20,9 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User.Fun
 
             RoomUser ThisUser = Session.GetHabbo().CurrentRoom.GetRoomUserManager().GetRoomUserByHabbo(Session.GetHabbo().Username);
             if (ThisUser == null)
+            {
                 return;
+            }
 
             if (ThisUser.RidingHorse)
             {
@@ -44,16 +30,24 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User.Fun
                 return;
             }
             else if (ThisUser.Team != TEAM.NONE)
+            {
                 return;
+            }
             else if (ThisUser.isLying)
+            {
                 return;
+            }
 
-            int EffectId = 0;
-            if (!int.TryParse(Params[1], out EffectId))
+            if (!int.TryParse(Params[1], out int EffectId))
+            {
                 return;
+            }
 
             if (EffectId > int.MaxValue || EffectId < int.MinValue)
+            {
                 return;
+            }
+
             if (Session.GetHabbo().Rank > 8)
             {
                 Session.GetHabbo().LastEffect = EffectId;

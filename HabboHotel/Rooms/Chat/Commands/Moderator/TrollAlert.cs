@@ -3,22 +3,13 @@ using Neon.HabboHotel.GameClients;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
 {
-    class TrollAlert : IChatCommand
+    internal class TrollAlert : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_staff_alert"; }
-        }
+        public string PermissionRequired => "command_staff_alert";
 
-        public string Parameters
-        {
-            get { return "%message%"; }
-        }
+        public string Parameters => "%message%";
 
-        public string Description
-        {
-            get { return "Enviale un mensaje de alerta a todos los staff online."; }
-        }
+        public string Description => "Enviale un mensaje de alerta a todos los staff online.";
 
         public void Execute(GameClient Session, Rooms.Room Room, string[] Params)
         {

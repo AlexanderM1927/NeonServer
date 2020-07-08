@@ -1,16 +1,14 @@
-﻿using System;
+﻿using Neon.Communication.Packets.Outgoing;
+using Neon.Communication.Packets.Outgoing.Messenger;
+using Neon.Database.Interfaces;
+using Neon.HabboHotel.Cache;
+using Neon.HabboHotel.GameClients;
+using Neon.HabboHotel.Quests;
+using Neon.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-
-using Neon.HabboHotel.GameClients;
-using Neon.HabboHotel.Quests;
-
-using Neon.Communication.Packets.Outgoing.Messenger;
-using Neon.Communication.Packets.Outgoing;
-using Neon.Utilities;
-using Neon.Database.Interfaces;
-using Neon.HabboHotel.Cache;
 
 namespace Neon.HabboHotel.Users.Messenger
 {
@@ -24,27 +22,27 @@ namespace Neon.HabboHotel.Users.Messenger
 
         public HabboMessenger(int UserId)
         {
-            this._userId = UserId;
+            _userId = UserId;
 
-            this._requests = new Dictionary<int, MessengerRequest>();
-            this._friends = new Dictionary<int, MessengerBuddy>();
+            _requests = new Dictionary<int, MessengerRequest>();
+            _friends = new Dictionary<int, MessengerBuddy>();
         }
 
 
         public void Init(Dictionary<int, MessengerBuddy> friends, Dictionary<int, MessengerRequest> requests)
         {
-            this._requests = new Dictionary<int, MessengerRequest>(requests);
-            this._friends = new Dictionary<int, MessengerBuddy>(friends);
+            _requests = new Dictionary<int, MessengerRequest>(requests);
+            _friends = new Dictionary<int, MessengerBuddy>(friends);
         }
 
         public bool TryGetRequest(int senderID, out MessengerRequest Request)
         {
-            return this._requests.TryGetValue(senderID, out Request);
+            return _requests.TryGetValue(senderID, out Request);
         }
 
         public bool TryGetFriend(int UserId, out MessengerBuddy Buddy)
         {
-            return this._friends.TryGetValue(UserId, out Buddy);
+            return _friends.TryGetValue(UserId, out Buddy);
         }
 
         public void ProcessOfflineMessages()
@@ -53,14 +51,16 @@ namespace Neon.HabboHotel.Users.Messenger
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
                 dbClient.SetQuery("SELECT * FROM `messenger_offline_messages` WHERE `to_id` = @id;");
-                dbClient.AddParameter("id", this._userId);
+                dbClient.AddParameter("id", _userId);
                 GetMessages = dbClient.getTable();
 
                 if (GetMessages != null)
                 {
-                    GameClient Client = NeonEnvironment.GetGame().GetClientManager().GetClientByUserID(this._userId);
+                    GameClient Client = NeonEnvironment.GetGame().GetClientManager().GetClientByUserID(_userId);
                     if (Client == null)
+                    {
                         return;
+                    }
 
                     foreach (DataRow Row in GetMessages.Rows)
                     {
@@ -68,7 +68,7 @@ namespace Neon.HabboHotel.Users.Messenger
                     }
 
                     dbClient.SetQuery("DELETE FROM `messenger_offline_messages` WHERE `to_id` = @id");
-                    dbClient.AddParameter("id", this._userId);
+                    dbClient.AddParameter("id", _userId);
                     dbClient.RunQuery();
                 }
             }
@@ -81,7 +81,9 @@ namespace Neon.HabboHotel.Users.Messenger
             foreach (GameClient client in onlineUsers)
             {
                 if (client.GetHabbo() == null || client.GetHabbo().GetMessenger() == null)
+                {
                     continue;
+                }
 
                 client.GetHabbo().GetMessenger().UpdateFriend(_userId, null, true);
             }
@@ -90,26 +92,36 @@ namespace Neon.HabboHotel.Users.Messenger
         public void OnStatusChanged(bool notification)
         {
             if (GetClient() == null || GetClient().GetHabbo() == null || GetClient().GetHabbo().GetMessenger() == null)
+            {
                 return;
+            }
 
             if (_friends == null)
+            {
                 return;
+            }
 
             IEnumerable<GameClient> onlineUsers = NeonEnvironment.GetGame().GetClientManager().GetClientsById(_friends.Keys);
             if (onlineUsers.Count() == 0)
+            {
                 return;
+            }
 
             foreach (GameClient client in onlineUsers.ToList())
             {
                 try
                 {
                     if (client == null || client.GetHabbo() == null || client.GetHabbo().GetMessenger() == null)
+                    {
                         continue;
+                    }
 
                     client.GetHabbo().GetMessenger().UpdateFriend(_userId, client, true);
 
                     if (this == null || client == null || client.GetHabbo() == null)
+                    {
                         continue;
+                    }
 
                     UpdateFriend(client.GetHabbo().Id, client, notification);
                 }
@@ -130,7 +142,9 @@ namespace Neon.HabboHotel.Users.Messenger
                 {
                     GameClient Userclient = GetClient();
                     if (Userclient != null)
+                    {
                         Userclient.SendMessage(SerializeUpdate(_friends[userid]));
+                    }
                 }
             }
         }
@@ -172,11 +186,15 @@ namespace Neon.HabboHotel.Users.Messenger
             }
 
             if (User != null)
+            {
                 NeonEnvironment.GetGame().GetAchievementManager().ProgressAchievement(User, "ACH_FriendListSize", 1);
+            }
 
             GameClient thisUser = NeonEnvironment.GetGame().GetClientManager().GetClientByUserID(_userId);
             if (thisUser != null)
+            {
                 NeonEnvironment.GetGame().GetAchievementManager().ProgressAchievement(thisUser, "ACH_FriendListSize", 1);
+            }
         }
 
         public void DestroyFriendship(int friendID)
@@ -192,7 +210,9 @@ namespace Neon.HabboHotel.Users.Messenger
             GameClient User = NeonEnvironment.GetGame().GetClientManager().GetClientByUserID(friendID);
 
             if (User != null && User.GetHabbo().GetMessenger() != null)
+            {
                 User.GetHabbo().GetMessenger().OnDestroyFriendship(_userId);
+            }
         }
 
         public void OnNewFriendship(int friendID)
@@ -223,7 +243,9 @@ namespace Neon.HabboHotel.Users.Messenger
             }
 
             if (!_friends.ContainsKey(friendID))
+            {
                 _friends.Add(friendID, newFriend);
+            }
 
             GetClient().SendMessage(SerializeUpdate(newFriend));
         }
@@ -231,7 +253,9 @@ namespace Neon.HabboHotel.Users.Messenger
         public bool RequestExists(int requestID)
         {
             if (_requests.ContainsKey(requestID))
+            {
                 return true;
+            }
 
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
@@ -251,7 +275,9 @@ namespace Neon.HabboHotel.Users.Messenger
         public void OnDestroyFriendship(int Friend)
         {
             if (_friends.ContainsKey(Friend))
+            {
                 _friends.Remove(Friend);
+            }
 
             GetClient().SendMessage(new FriendListUpdateComposer(Friend));
         }
@@ -273,7 +299,9 @@ namespace Neon.HabboHotel.Users.Messenger
                 }
 
                 if (Row == null)
+                {
                     return false;
+                }
 
                 userID = Convert.ToInt32(Row["id"]);
                 hasFQDisabled = NeonEnvironment.EnumToBool(Row["block_newfriends"].ToString());
@@ -292,7 +320,9 @@ namespace Neon.HabboHotel.Users.Messenger
 
             int ToId = userID;
             if (RequestExists(ToId))
+            {
                 return true;
+            }
 
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
@@ -303,7 +333,9 @@ namespace Neon.HabboHotel.Users.Messenger
 
             GameClient ToUser = NeonEnvironment.GetGame().GetClientManager().GetClientByUserID(ToId);
             if (ToUser == null || ToUser.GetHabbo() == null)
+            {
                 return true;
+            }
 
             MessengerRequest Request = new MessengerRequest(ToId, _userId, NeonEnvironment.GetGame().GetClientManager().GetNameById(_userId));
 
@@ -312,7 +344,9 @@ namespace Neon.HabboHotel.Users.Messenger
             UserCache ThisUser = NeonEnvironment.GetGame().GetCacheManager().GenerateUser(_userId);
 
             if (ThisUser != null)
+            {
                 ToUser.SendMessage(new NewBuddyRequestComposer(ThisUser));
+            }
 
             _requests.Add(ToId, Request);
             return true;
@@ -321,23 +355,31 @@ namespace Neon.HabboHotel.Users.Messenger
         public void OnNewRequest(int friendID)
         {
             if (!_requests.ContainsKey(friendID))
+            {
                 _requests.Add(friendID, new MessengerRequest(_userId, friendID, NeonEnvironment.GetGame().GetClientManager().GetNameById(friendID)));
+            }
         }
 
         public void SendInstantMessage(int ToId, string Message)
         {
             if (ToId == 0)
+            {
                 return;
+            }
 
             if (GetClient() == null)
+            {
                 return;
+            }
 
             if (GetClient().GetHabbo() == null)
+            {
                 return;
+            }
 
             #region Custom Chats
-            var Group = NeonEnvironment.GetGame().GetGroupManager().GetGroupsForUser(GetClient().GetHabbo().Id).Where(c => c.HasChat).ToList();
-            foreach (var gp in Group)
+            List<Groups.Group> Group = NeonEnvironment.GetGame().GetGroupManager().GetGroupsForUser(GetClient().GetHabbo().Id).Where(c => c.HasChat).ToList();
+            foreach (Groups.Group gp in Group)
             {
                 if (ToId == int.MinValue + gp.Id) // int.MaxValue
                 {
@@ -413,8 +455,10 @@ namespace Neon.HabboHotel.Users.Messenger
                 GetClient().SendMessage(new InstantMessageErrorComposer(MessengerMessageErrors.FRIEND_MUTED, ToId));
             }
 
-            if (String.IsNullOrEmpty(Message))
+            if (string.IsNullOrEmpty(Message))
+            {
                 return;
+            }
 
             Client.SendMessage(new NewConsoleMessageComposer(_userId, Message));
             LogPM(_userId, ToId, Message);
@@ -448,7 +492,7 @@ namespace Neon.HabboHotel.Users.Messenger
 
         public void BroadcastAchievement(int UserId, MessengerEventTypes Type, string Data)
         {
-            IEnumerable<GameClient> MyFriends = NeonEnvironment.GetGame().GetClientManager().GetClientsById(this._friends.Keys);
+            IEnumerable<GameClient> MyFriends = NeonEnvironment.GetGame().GetClientManager().GetClientsById(_friends.Keys);
 
             foreach (GameClient Client in MyFriends.ToList())
             {
@@ -462,22 +506,22 @@ namespace Neon.HabboHotel.Users.Messenger
 
         public void ClearRequests()
         {
-            this._requests.Clear();
+            _requests.Clear();
         }
 
         private GameClient GetClient()
         {
-            return NeonEnvironment.GetGame().GetClientManager().GetClientByUserID(this._userId);
+            return NeonEnvironment.GetGame().GetClientManager().GetClientByUserID(_userId);
         }
 
         public ICollection<MessengerRequest> GetRequests()
         {
-            return this._requests.Values;
+            return _requests.Values;
         }
 
         public ICollection<MessengerBuddy> GetFriends()
         {
-            return this._friends.Values;
+            return _friends.Values;
         }
     }
 }

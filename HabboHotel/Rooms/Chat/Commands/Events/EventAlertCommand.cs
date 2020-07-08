@@ -1,31 +1,16 @@
-﻿using Neon.HabboHotel.GameClients;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Chat;
 using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
-using Neon.Communication.Packets.Outgoing.Rooms.Chat;
-using System;
 using Neon.Database.Interfaces;
+using Neon.HabboHotel.GameClients;
+using System;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.Events
 {
     internal class EventAlertCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get
-            {
-                return "command_event_alert";
-            }
-        }
-        public string Parameters
-        {
-            get { return "%message%"; }
-        }
-        public string Description
-        {
-            get
-            {
-                return "Abre un evento en todo el hotel.";
-            }
-        }
+        public string PermissionRequired => "command_event_alert";
+        public string Parameters => "%message%";
+        public string Description => "Abre un evento en todo el hotel.";
         public void Execute(GameClient Session, Room Room, string[] Params)
         {
 

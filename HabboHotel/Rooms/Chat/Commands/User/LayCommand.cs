@@ -1,34 +1,20 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms;
-
-namespace Neon.HabboHotel.Rooms.Chat.Commands.User
+﻿namespace Neon.HabboHotel.Rooms.Chat.Commands.User
 {
-    class LayCommand : IChatCommand
+    internal class LayCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_lay"; }
-        }
+        public string PermissionRequired => "command_lay";
 
-        public string Parameters
-        {
-            get { return ""; }
-        }
+        public string Parameters => "";
 
-        public string Description
-        {
-            get { return "Tumbarse en el suelo."; }
-        }
+        public string Description => "Tumbarse en el suelo.";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {
             RoomUser User = Room.GetRoomUserManager().GetRoomUserByHabbo(Session.GetHabbo().Id);
             if (User == null)
+            {
                 return;
+            }
 
             if (!Room.GetGameMap().ValidTile(User.X + 2, User.Y + 2) && !Room.GetGameMap().ValidTile(User.X + 1, User.Y + 1))
             {
@@ -37,17 +23,23 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User
             }
 
             if (User.Statusses.ContainsKey("sit") || User.isSitting || User.RidingHorse || User.IsWalking)
+            {
                 return;
+            }
 
             if (Session.GetHabbo().Effects().CurrentEffect > 0)
+            {
                 Session.GetHabbo().Effects().ApplyEffect(0);
+            }
 
             if (!User.Statusses.ContainsKey("lay"))
             {
                 if ((User.RotBody % 2) == 0)
                 {
                     if (User == null)
+                    {
                         return;
+                    }
 
                     try
                     {

@@ -1,16 +1,13 @@
 ﻿using log4net;
+using Neon.Communication.Packets.Outgoing.Inventory.Purse;
+using Neon.Communication.Packets.Outgoing.Rooms.Furni.RentableSpaces;
 using Neon.Database.Interfaces;
-using Neon.HabboHotel.Rooms;
+using Neon.HabboHotel.GameClients;
 using Neon.HabboHotel.Users;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Neon.HabboHotel.GameClients;
-using Neon.Communication.Packets.Outgoing.Inventory.Purse;
-using Neon.Communication.Packets.Outgoing.Rooms.Furni.RentableSpaces;
 
 namespace Neon.HabboHotel.Items.RentableSpaces
 {
@@ -22,12 +19,12 @@ namespace Neon.HabboHotel.Items.RentableSpaces
 
         public RentableSpaceManager()
         {
-            this.Init();
+            Init();
         }
 
         public void Init()
         {
-            this._items = new Dictionary<int, RentableSpaceItem>();
+            _items = new Dictionary<int, RentableSpaceItem>();
 
             using (IQueryAdapter con = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
@@ -47,11 +44,13 @@ namespace Neon.HabboHotel.Items.RentableSpaces
                             {
                                 Habbo owner = NeonEnvironment.GetHabboById(ownerid);
                                 if (owner != null)
+                                {
                                     ownername = owner.Username;
+                                }
                             }
                             int expirestamp = Convert.ToInt32(row["expire"].ToString());
                             int price = Convert.ToInt32(row["price"].ToString());
-                            this.AddItem(new RentableSpaceItem(id, ownerid, ownername, expirestamp, price));
+                            AddItem(new RentableSpaceItem(id, ownerid, ownername, expirestamp, price));
                         }
                     }
                 }
@@ -61,15 +60,29 @@ namespace Neon.HabboHotel.Items.RentableSpaces
         public bool ConfirmCancel(GameClient Session, RentableSpaceItem RentableSpace)
         {
             if (Session == null)
+            {
                 return false;
+            }
+
             if (Session.GetHabbo() == null)
+            {
                 return false;
+            }
+
             if (RentableSpace == null)
+            {
                 return false;
+            }
+
             if (!RentableSpace.IsRented())
+            {
                 return false;
+            }
+
             if (RentableSpace.OwnerId != Session.GetHabbo().Id)
+            {
                 return false;
+            }
 
             RentableSpace.OwnerId = 0;
             RentableSpace.OwnerUsername = "";
@@ -92,15 +105,29 @@ namespace Neon.HabboHotel.Items.RentableSpaces
         {
 
             if (Session == null)
+            {
                 return false;
+            }
+
             if (Session.GetHabbo() == null)
+            {
                 return false;
+            }
+
             if (RentableSpace == null)
+            {
                 return false;
+            }
+
             if (Session.GetHabbo().Credits < RentableSpace.Price)
+            {
                 return false;
+            }
+
             if (ExpireSeconds < 1)
+            {
                 return false;
+            }
 
             Session.GetHabbo().Credits -= RentableSpace.Price;
             RentableSpace.OwnerId = Session.GetHabbo().Id;
@@ -124,22 +151,40 @@ namespace Neon.HabboHotel.Items.RentableSpaces
         public int GetBuyErrorCode(GameClient Session, RentableSpaceItem RentableSpace)
         {
             if (Session == null || Session.GetHabbo() == null)
+            {
                 return 400;
+            }
+
             if (RentableSpace.Rented)
+            {
                 return 100;
+            }
+
             if (Session.GetHabbo().Credits < RentableSpace.Price)
+            {
                 return 200;
+            }
+
             return 0;
         }
 
         public int GetCancelErrorCode(GameClient Session, RentableSpaceItem RentableSpace)
         {
             if (Session == null || Session.GetHabbo() == null)
+            {
                 return 400;
+            }
+
             if (!RentableSpace.IsRented())
+            {
                 return 101;
+            }
+
             if (RentableSpace.OwnerId != Session.GetHabbo().Id)
+            {
                 return 102;
+            }
+
             return 0;
         }
 
@@ -147,25 +192,37 @@ namespace Neon.HabboHotel.Items.RentableSpaces
         {
 
             if (Session == null)
+            {
                 return 400;
+            }
+
             if (Session.GetHabbo() == null)
+            {
                 return 400;
+            }
+
             if (RentableSpace.Rented)
+            {
                 return 100;
+            }
+
             if (Session.GetHabbo().Credits < RentableSpace.Price)
+            {
                 return 201;
+            }
+
             return 0;
         }
 
         public RentableSpaceItem[] GetArray()
         {
-            return this._items.Values.ToArray();
+            return _items.Values.ToArray();
         }
 
         public RentableSpaceItem CreateAndAddItem(int ItemId, GameClient Session)
         {
-            RentableSpaceItem i = this.CreateItem(ItemId);
-            this.AddItem(i);
+            RentableSpaceItem i = CreateItem(ItemId);
+            AddItem(i);
             using (IQueryAdapter con = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
                 con.SetQuery("INSERT INTO `items_rentablespace` (item_id, owner, expire, price) VAlUES (@id, @ownerid, @expire, @price)");
@@ -185,9 +242,12 @@ namespace Neon.HabboHotel.Items.RentableSpaces
 
         public void AddItem(RentableSpaceItem SpaceItem)
         {
-            if (this._items.ContainsKey(SpaceItem.ItemId))
-                this._items.Remove(SpaceItem.ItemId);
-            this._items.Add(SpaceItem.ItemId, SpaceItem);
+            if (_items.ContainsKey(SpaceItem.ItemId))
+            {
+                _items.Remove(SpaceItem.ItemId);
+            }
+
+            _items.Add(SpaceItem.ItemId, SpaceItem);
         }
 
         public bool GetRentableSpaceItem(int Id, out RentableSpaceItem rsitem)

@@ -5,7 +5,7 @@
         public VoucherRedeemErrorComposer(int Type)
             : base(ServerPacketHeader.VoucherRedeemErrorMessageComposer)
         {
-           base.WriteString(Type.ToString());
+            base.WriteString(Type.ToString());
         }
     }
 }

@@ -21,18 +21,18 @@
 
         public HabboStats(int roomVisits, double onlineTime, int Respect, int respectGiven, int giftsGiven, int giftsReceived, int dailyRespectPoints, int dailyPetRespectPoints, int achievementPoints, int questID, int questProgress, int groupID, string RespectsTimestamp, int ForumPosts, bool PurchaseUsersConcurrent, int vipGifts)
         {
-            this.RoomVisits = roomVisits;
-            this.OnlineTime = onlineTime;
+            RoomVisits = roomVisits;
+            OnlineTime = onlineTime;
             this.Respect = Respect;
-            this.RespectGiven = respectGiven;
-            this.GiftsGiven = giftsGiven;
-            this.GiftsReceived = giftsReceived;
-            this.DailyRespectPoints = dailyRespectPoints;
-            this.DailyPetRespectPoints = dailyPetRespectPoints;
-            this.AchievementPoints = achievementPoints;
-            this.QuestID = questID;
-            this.QuestProgress = questProgress;
-            this.FavouriteGroupId = groupID;
+            RespectGiven = respectGiven;
+            GiftsGiven = giftsGiven;
+            GiftsReceived = giftsReceived;
+            DailyRespectPoints = dailyRespectPoints;
+            DailyPetRespectPoints = dailyPetRespectPoints;
+            AchievementPoints = achievementPoints;
+            QuestID = questID;
+            QuestProgress = questProgress;
+            FavouriteGroupId = groupID;
             this.RespectsTimestamp = RespectsTimestamp;
             this.ForumPosts = ForumPosts;
             this.PurchaseUsersConcurrent = PurchaseUsersConcurrent;

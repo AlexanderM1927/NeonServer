@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Neon.HabboHotel.Navigator
+﻿namespace Neon.HabboHotel.Navigator
 {
     public class StaffPick
     {
@@ -13,8 +7,8 @@ namespace Neon.HabboHotel.Navigator
 
         public StaffPick(int roomId, string image)
         {
-            this.RoomId = roomId;
-            this.Image = image;
+            RoomId = roomId;
+            Image = image;
         }
     }
 }

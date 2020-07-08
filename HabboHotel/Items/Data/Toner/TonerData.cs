@@ -1,7 +1,6 @@
-﻿using System;
+﻿using Neon.Database.Interfaces;
+using System;
 using System.Data;
-using Neon.Database.Interfaces;
-using Neon.Communication.Packets.Incoming;
 
 
 namespace Neon.HabboHotel.Items.Data.Toner
@@ -22,7 +21,7 @@ namespace Neon.HabboHotel.Items.Data.Toner
 
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
-                dbClient.SetQuery("SELECT enabled,data1,data2,data3 FROM room_items_toner WHERE id=" + ItemId +" LIMIT 1");
+                dbClient.SetQuery("SELECT enabled,data1,data2,data3 FROM room_items_toner WHERE id=" + ItemId + " LIMIT 1");
                 Row = dbClient.getRow();
             }
 

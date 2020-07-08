@@ -1,12 +1,12 @@
-﻿using System.Data;
-using Neon.HabboHotel.GameClients;
-using Neon.HabboHotel.Catalog.Vouchers;
-using Neon.Communication.Packets.Outgoing.Catalog;
-using Neon.Communication.Packets.Outgoing.Inventory.Purse;
-using Neon.Database.Interfaces;
-using Neon.HabboHotel.Items;
+﻿using Neon.Communication.Packets.Outgoing.Catalog;
 using Neon.Communication.Packets.Outgoing.Inventory.Furni;
+using Neon.Communication.Packets.Outgoing.Inventory.Purse;
 using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
+using Neon.Database.Interfaces;
+using Neon.HabboHotel.Catalog.Vouchers;
+using Neon.HabboHotel.GameClients;
+using Neon.HabboHotel.Items;
+using System.Data;
 
 namespace Neon.Communication.Packets.Incoming.Catalog
 {
@@ -57,7 +57,7 @@ namespace Neon.Communication.Packets.Incoming.Catalog
             {
                 Session.GetHabbo().Credits += Voucher.Value;
                 Session.SendMessage(new CreditBalanceComposer(Session.GetHabbo().Credits));
-                Session.SendMessage(RoomNotificationComposer.SendBubble("voucher", "Acabas de recibir un premio voucher por el valor de "+ Voucher.Value +" créditos. ¡Úsalos con cabeza, " + Session.GetHabbo().Username +".", ""));
+                Session.SendMessage(RoomNotificationComposer.SendBubble("voucher", "Acabas de recibir un premio voucher por el valor de " + Voucher.Value + " créditos. ¡Úsalos con cabeza, " + Session.GetHabbo().Username + ".", ""));
             }
             else if (Voucher.Type == VoucherType.DUCKET)
             {

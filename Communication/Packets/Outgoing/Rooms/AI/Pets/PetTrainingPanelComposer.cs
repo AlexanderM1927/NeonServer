@@ -1,12 +1,8 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using Neon.HabboHotel.Rooms.AI;
+﻿using Neon.HabboHotel.Rooms.AI;
 
 namespace Neon.Communication.Packets.Outgoing.Rooms.AI.Pets
 {
-    class PetTrainingPanelComposer : ServerPacket
+    internal class PetTrainingPanelComposer : ServerPacket
     {
         public PetTrainingPanelComposer(Pet pet)
             : base(ServerPacketHeader.PetTrainingPanelMessageComposer)
@@ -42,7 +38,7 @@ namespace Neon.Communication.Packets.Outgoing.Rooms.AI.Pets
 
         public int GetCount(int Level)
         {
-            switch(Level)
+            switch (Level)
             {
                 case 1:
                 case 2:

@@ -1,11 +1,5 @@
 ﻿using Neon.Communication.Packets.Outgoing;
 using Neon.HabboHotel.Users;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.HabboHotel.Groups.Forums
 {
@@ -47,8 +41,8 @@ namespace Neon.HabboHotel.Groups.Forums
         public void SerializeData(ServerPacket Packet)
         {
 
-            var User = GetAuthor();
-            var oculterData = GetDeleter();
+            Habbo User = GetAuthor();
+            Habbo oculterData = GetDeleter();
             Packet.WriteInteger(Id); //Post Id
             Packet.WriteInteger(ParentThread.Posts.IndexOf(this)); //Post Index
 
@@ -67,7 +61,7 @@ namespace Neon.HabboHotel.Groups.Forums
 
         internal void Save()
         {
-            using (var adap = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
+            using (Database.Interfaces.IQueryAdapter adap = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
                 adap.SetQuery("UPDATE group_forums_threads SET deleted_level = @dl, deleter_user_id = @duid WHERE id = @id");
                 adap.AddParameter("dl", DeletedLevel);

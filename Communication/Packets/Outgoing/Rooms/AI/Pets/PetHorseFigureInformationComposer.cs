@@ -1,13 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
+﻿
 using Neon.HabboHotel.Rooms;
 
 namespace Neon.Communication.Packets.Outgoing.Rooms.AI.Pets
 {
-    class PetHorseFigureInformationComposer : ServerPacket
+    internal class PetHorseFigureInformationComposer : ServerPacket
     {
         public PetHorseFigureInformationComposer(RoomUser PetUser)
             : base(ServerPacketHeader.PetHorseFigureInformationMessageComposer)
@@ -16,7 +12,7 @@ namespace Neon.Communication.Packets.Outgoing.Rooms.AI.Pets
             base.WriteInteger(PetUser.PetData.PetId);
             base.WriteInteger(PetUser.PetData.Type);
             base.WriteInteger(int.Parse(PetUser.PetData.Race));
-           base.WriteString(PetUser.PetData.Color.ToLower());
+            base.WriteString(PetUser.PetData.Color.ToLower());
             if (PetUser.PetData.Saddle > 0)
             {
                 base.WriteInteger(4);

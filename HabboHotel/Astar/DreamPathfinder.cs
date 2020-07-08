@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Neon.HabboHotel.Pathfinding;
 using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Pathfinding;
+using System;
 
 namespace Neon.HabboHotel.Astar
 {
@@ -30,7 +30,7 @@ namespace Neon.HabboHotel.Astar
 
         public static double GetDistance(int x1, int y1, int x2, int y2)
         {
-            return Math.Sqrt(Math.Pow((double)(x1 - x2), 2.0) + Math.Pow((double)(y1 - y2), 2.0));
+            return Math.Sqrt(Math.Pow(x1 - x2, 2.0) + Math.Pow(y1 - y2, 2.0));
         }
 
         public static SquarePoint GetNextStep(RoomUser User, Vector2D From, Vector2D To, Gamemap mMap)

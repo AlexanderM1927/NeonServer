@@ -1,29 +1,14 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.Communication.Packets.Outgoing.Moderation;
-using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
 {
-    class MassiveEventCommand : IChatCommand
+    internal class MassiveEventCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_massevent"; }
-        }
+        public string PermissionRequired => "command_massevent";
 
-        public string Parameters
-        {
-            get { return "%event%"; }
-        }
+        public string Parameters => "%event%";
 
-        public string Description
-        {
-            get { return "Ejecuta un EVENT a todos los usuarios en línea."; }
-        }
+        public string Description => "Ejecuta un EVENT a todos los usuarios en línea.";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {

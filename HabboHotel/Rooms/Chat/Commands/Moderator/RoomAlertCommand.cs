@@ -1,28 +1,12 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms;
-
-namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
+﻿namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
 {
-    class RoomAlertCommand : IChatCommand
+    internal class RoomAlertCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_room_alert"; }
-        }
+        public string PermissionRequired => "command_room_alert";
 
-        public string Parameters
-        {
-            get { return "%message%"; }
-        }
+        public string Parameters => "%message%";
 
-        public string Description
-        {
-            get { return "Enviar un mensaje a todos los usuarios en una sala."; }
-        }
+        public string Description => "Enviar un mensaje a todos los usuarios en una sala.";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {
@@ -32,7 +16,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
                 return;
             }
 
-            if(!Session.GetHabbo().GetPermissions().HasRight("mod_alert") && Room.OwnerId != Session.GetHabbo().Id)
+            if (!Session.GetHabbo().GetPermissions().HasRight("mod_alert") && Room.OwnerId != Session.GetHabbo().Id)
             {
                 Session.SendWhisper("Solo puede hacerlo en su propia habitacion..");
                 return;
@@ -42,7 +26,9 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
             foreach (RoomUser RoomUser in Room.GetRoomUserManager().GetRoomUsers())
             {
                 if (RoomUser == null || RoomUser.GetClient() == null || Session.GetHabbo().Id == RoomUser.UserId)
+                {
                     continue;
+                }
 
                 RoomUser.GetClient().SendNotification(Message + "\n\n - " + Session.GetHabbo().Username);
             }

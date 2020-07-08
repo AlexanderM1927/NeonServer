@@ -1,8 +1,6 @@
-﻿using System;
-using System.Linq;
+﻿using Neon.HabboHotel.Catalog.Pets;
 using System.Collections.Generic;
-
-using Neon.HabboHotel.Catalog.Pets;
+using System.Linq;
 
 namespace Neon.Communication.Packets.Outgoing.Catalog
 {
@@ -11,7 +9,7 @@ namespace Neon.Communication.Packets.Outgoing.Catalog
         public SellablePetBreedsComposer(string PetType, int PetId, ICollection<PetRace> Races)
             : base(ServerPacketHeader.SellablePetBreedsMessageComposer)
         {
-           base.WriteString(PetType);
+            base.WriteString(PetType);
 
             base.WriteInteger(Races.Count);
             foreach (PetRace Race in Races.ToList())

@@ -1,20 +1,13 @@
-﻿using System;
-using System.Drawing;
-
+﻿using Neon.Database.Interfaces;
 using Neon.HabboHotel.GameClients;
-using Neon.HabboHotel.Rooms.AI.Speech;
-using Neon.Communication.Packets.Outgoing.Rooms.Chat;
-using Neon.HabboHotel.Rooms.AI.Responses;
-using Neon.Utilities;
-using Neon.Core;
+using System;
 using System.Data;
-using Neon.Database.Interfaces;
 
 namespace Neon.HabboHotel.Rooms.AI.Types
 {
-    class VisitorLogger : BotAI
+    internal class VisitorLogger : BotAI
     {
-        private int VirtualId;
+        private readonly int VirtualId;
 
         public VisitorLogger(int VirtualId)
         {
@@ -32,7 +25,9 @@ namespace Neon.HabboHotel.Rooms.AI.Types
         public override void OnUserEnterRoom(RoomUser User)
         {
             if (GetBotData() == null)
+            {
                 return;
+            }
 
             RoomUser Bot = GetRoomUser();
 
@@ -73,7 +68,10 @@ namespace Neon.HabboHotel.Rooms.AI.Types
         public override void OnUserLeaveRoom(GameClient Client)
         {
             if (GetBotData() == null)
+            {
                 return;
+            }
+
             _ = GetRoomUser();
 
             if (Client.GetHabbo().CurrentRoom.OwnerId == Client.GetHabbo().Id)
@@ -102,17 +100,23 @@ namespace Neon.HabboHotel.Rooms.AI.Types
         public override void OnUserSay(RoomUser User, string Message)
         {
             if (User == null || User.GetClient() == null || User.GetClient().GetHabbo() == null)
+            {
                 return;
+            }
 
             if (Gamemap.TileDistance(GetRoomUser().X, GetRoomUser().Y, User.X, User.Y) > 8)
+            {
                 return;
+            }
 
             switch (Message.ToLower())
             {
                 case "si":
                 case "yes":
                     if (GetBotData() == null)
+                    {
                         return;
+                    }
 
                     if (User.GetClient().GetHabbo().CurrentRoom.OwnerId == User.GetClient().GetHabbo().Id)
                     {
@@ -127,8 +131,8 @@ namespace Neon.HabboHotel.Rooms.AI.Types
 
                         foreach (DataRow Row in getRoomVisit.Rows)
                         {
-                            var gone = Convert.ToString(Row["gone"]);
-                            var username = Convert.ToString(Row["username"]);
+                            string gone = Convert.ToString(Row["gone"]);
+                            string username = Convert.ToString(Row["username"]);
 
                             GetRoomUser().Chat(username + " " + gone, false);
                         }

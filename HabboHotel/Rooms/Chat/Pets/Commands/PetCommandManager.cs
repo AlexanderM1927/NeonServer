@@ -1,31 +1,31 @@
-﻿using System;
-using System.Data;
+﻿using Neon.Database.Interfaces;
+using System;
 using System.Collections.Generic;
-using Neon.Database.Interfaces;
+using System.Data;
 
 
 namespace Neon.HabboHotel.Rooms.Chat.Pets.Commands
 {
     public class PetCommandManager
     {
-        private Dictionary<int, string> _commandRegister;
-        private Dictionary<string, string> _commandDatabase;
-        private Dictionary<string, PetCommand> _petCommands;
+        private readonly Dictionary<int, string> _commandRegister;
+        private readonly Dictionary<string, string> _commandDatabase;
+        private readonly Dictionary<string, PetCommand> _petCommands;
 
         public PetCommandManager()
         {
-            this._petCommands = new Dictionary<string, PetCommand>();
-            this._commandRegister = new Dictionary<int, string>();
-            this._commandDatabase = new Dictionary<string, string>();
+            _petCommands = new Dictionary<string, PetCommand>();
+            _commandRegister = new Dictionary<int, string>();
+            _commandDatabase = new Dictionary<string, string>();
 
-            this.Init();
+            Init();
         }
 
         public void Init()
         {
-            this._petCommands.Clear();
-            this._commandRegister.Clear();
-            this._commandDatabase.Clear();
+            _petCommands.Clear();
+            _commandRegister.Clear();
+            _commandDatabase.Clear();
 
             DataTable Table = null;
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
@@ -43,24 +43,26 @@ namespace Neon.HabboHotel.Rooms.Chat.Pets.Commands
                 }
             }
 
-            foreach (var pair in _commandRegister)
+            foreach (KeyValuePair<int, string> pair in _commandRegister)
             {
                 int commandID = pair.Key;
                 string commandStringedID = pair.Value;
-                string[] commandInput = this._commandDatabase[commandStringedID + ".input"].Split(',');
+                string[] commandInput = _commandDatabase[commandStringedID + ".input"].Split(',');
 
                 foreach (string command in commandInput)
                 {
-                    this._petCommands.Add(command, new PetCommand(commandID, command));
+                    _petCommands.Add(command, new PetCommand(commandID, command));
                 }
             }
         }
 
         public int TryInvoke(string Input)
         {
-            PetCommand Command = null;
-            if (this._petCommands.TryGetValue(Input.ToLower(), out Command))
+            if (_petCommands.TryGetValue(Input.ToLower(), out PetCommand Command))
+            {
                 return Command.Id;
+            }
+
             return 0;
         }
     }

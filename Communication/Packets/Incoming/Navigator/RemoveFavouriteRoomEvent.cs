@@ -3,8 +3,6 @@ using Neon.Communication.Packets.Outgoing.Navigator;
 
 using Neon.Database.Interfaces;
 using Neon.HabboHotel.GameClients;
-using Neon.HabboHotel.Users;
-using Neon.Communication.Packets.Incoming;
 
 namespace Neon.Communication.Packets.Incoming.Navigator
 {

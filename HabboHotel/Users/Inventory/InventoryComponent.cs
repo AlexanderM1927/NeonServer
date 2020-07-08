@@ -1,34 +1,23 @@
-﻿using System;
+﻿using Neon.Communication.Packets.Outgoing.Inventory.Bots;
+using Neon.Communication.Packets.Outgoing.Inventory.Furni;
+using Neon.Communication.Packets.Outgoing.Inventory.Pets;
+using Neon.Database.Interfaces;
+using Neon.HabboHotel.GameClients;
+using Neon.HabboHotel.Items;
+using Neon.HabboHotel.Rooms.AI;
+using Neon.HabboHotel.Users.Inventory.Bots;
+using Neon.HabboHotel.Users.Inventory.Pets;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Concurrent;
-
-using Neon.Core;
-using Neon.Utilities;
-using Neon.Communication.Packets.Incoming;
-
-using Neon.HabboHotel.Rooms.AI;
-using Neon.HabboHotel.Items;
-using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Catalog;
-using Neon.HabboHotel.GameClients;
-using Neon.HabboHotel.Users.UserDataManagement;
-using Neon.HabboHotel.Users.Inventory.Pets;
-using Neon.HabboHotel.Users.Inventory.Bots;
-using Neon.Communication.Packets.Outgoing.Inventory.Bots;
-using Neon.Communication.Packets.Outgoing.Inventory.Furni;
-using Neon.Communication.Packets.Outgoing.Inventory.Purse;
-
-using Neon.Database.Interfaces;
-using Neon.Communication.Packets.Outgoing.Inventory.Pets;
 
 namespace Neon.HabboHotel.Users.Inventory
 {
     public class InventoryComponent
     {
-        private int _userId;
+        private readonly int _userId;
         private GameClient _client;
 
         public int InventaryUserId;
@@ -41,31 +30,45 @@ namespace Neon.HabboHotel.Users.Inventory
 
         public InventoryComponent(int UserId, GameClient Client)
         {
-            this._client = Client;
-            this._userId = UserId;
-            this.InventaryUserId = 0;
+            _client = Client;
+            _userId = UserId;
+            InventaryUserId = 0;
 
-            this._floorItems = new ConcurrentDictionary<int, Item>();
-            this._wallItems = new ConcurrentDictionary<int, Item>();
-            this._petsItems = new ConcurrentDictionary<int, Pet>();
-            this._botItems = new ConcurrentDictionary<int, Bot>();
-            this._songDisks = new ConcurrentDictionary<int, Item>();
+            _floorItems = new ConcurrentDictionary<int, Item>();
+            _wallItems = new ConcurrentDictionary<int, Item>();
+            _petsItems = new ConcurrentDictionary<int, Pet>();
+            _botItems = new ConcurrentDictionary<int, Bot>();
+            _songDisks = new ConcurrentDictionary<int, Item>();
 
-            this.Init();
+            Init();
         }
 
         public void Init()
         {
-            if (this._floorItems.Count > 0)
-                this._floorItems.Clear();
-            if (this._wallItems.Count > 0)
-                this._wallItems.Clear();
-            if (this._petsItems.Count > 0)
-                this._petsItems.Clear();
-            if (this._botItems.Count > 0)
-                this._botItems.Clear();
-            if (this._songDisks.Count > 0)
-                this._songDisks.Clear();
+            if (_floorItems.Count > 0)
+            {
+                _floorItems.Clear();
+            }
+
+            if (_wallItems.Count > 0)
+            {
+                _wallItems.Clear();
+            }
+
+            if (_petsItems.Count > 0)
+            {
+                _petsItems.Clear();
+            }
+
+            if (_botItems.Count > 0)
+            {
+                _botItems.Clear();
+            }
+
+            if (_songDisks.Count > 0)
+            {
+                _songDisks.Clear();
+            }
 
             List<Item> Items = ItemLoader.GetItemsForUser(GetUserInventaryId());
             foreach (Item Item in Items.ToList())
@@ -73,21 +76,27 @@ namespace Neon.HabboHotel.Users.Inventory
                 if (Item.IsFloorItem)
                 {
                     if (!_floorItems.TryAdd(Item.Id, Item))
+                    {
                         continue;
+                    }
                 }
                 else if (Item.IsWallItem)
                 {
                     if (!_wallItems.TryAdd(Item.Id, Item))
+                    {
                         continue;
+                    }
                 }
                 else
+                {
                     continue;
+                }
             }
 
             List<Pet> Pets = PetLoader.GetPetsForUser(Convert.ToInt32(_userId));
             foreach (Pet Pet in Pets)
             {
-                if (!this._petsItems.TryAdd(Pet.PetId, Pet))
+                if (!_petsItems.TryAdd(Pet.PetId, Pet))
                 {
                     Console.WriteLine("Error whilst loading pet x1: " + Pet.PetId);
                 }
@@ -96,7 +105,7 @@ namespace Neon.HabboHotel.Users.Inventory
             List<Bot> Bots = BotLoader.GetBotsForUser(Convert.ToInt32(_userId));
             foreach (Bot Bot in Bots)
             {
-                if (!this._botItems.TryAdd(Bot.Id, Bot))
+                if (!_botItems.TryAdd(Bot.Id, Bot))
                 {
                     Console.WriteLine("Error whilst loading bot x1: " + Bot.Id);
                 }
@@ -112,10 +121,12 @@ namespace Neon.HabboHotel.Users.Inventory
                 dbClient.RunQuery("DELETE FROM bots WHERE room_id='0' AND `ai_type` != 'pet' AND user_id = " + _userId); //Do join 
             }
 
-            this._botItems.Clear();
+            _botItems.Clear();
 
             if (_client != null)
+            {
                 _client.SendMessage(new BotInventoryComposer(_client.GetHabbo().GetInventoryComponent().GetBots()));
+            }
         }
 
         public void ClearPets()
@@ -127,10 +138,12 @@ namespace Neon.HabboHotel.Users.Inventory
                 dbClient.RunQuery("DELETE FROM bots WHERE room_id='0' AND `ai_type` = 'pet' AND user_id = " + _userId); //Do join 
             }
 
-            this._petsItems.Clear();
+            _petsItems.Clear();
 
             if (_client != null)
+            {
                 _client.SendMessage(new PetInventoryComposer(_client.GetHabbo().GetInventoryComponent().GetPets()));
+            }
         }
 
         public void ClearLTDS()
@@ -145,7 +158,9 @@ namespace Neon.HabboHotel.Users.Inventory
             foreach (KeyValuePair<int, Item> Fi in _floorItems)
             {
                 if (Fi.Value.LimitedNo < 1)
+                {
                     continue;
+                }
 
                 _floorItems.Clear();
 
@@ -154,13 +169,18 @@ namespace Neon.HabboHotel.Users.Inventory
             foreach (KeyValuePair<int, Item> Wi in _wallItems)
             {
                 if (Wi.Value.LimitedNo < 1)
+                {
                     continue;
+                }
+
                 _wallItems.Clear();
             }
 
 
             if (_client != null)
+            {
                 _client.SendMessage(new FurniListUpdateComposer());
+            }
         }
 
 
@@ -173,30 +193,42 @@ namespace Neon.HabboHotel.Users.Inventory
                 dbClient.RunQuery("DELETE FROM items WHERE room_id='0' AND user_id = " + _userId); //Do join 
             }
 
-            this._floorItems.Clear();
-            this._wallItems.Clear();
-            this._songDisks.Clear();
+            _floorItems.Clear();
+            _wallItems.Clear();
+            _songDisks.Clear();
 
             if (_client != null)
+            {
                 _client.SendMessage(new FurniListUpdateComposer());
+            }
         }
 
         public void SetIdleState()
         {
             if (_botItems != null)
+            {
                 _botItems.Clear();
+            }
 
             if (_petsItems != null)
+            {
                 _petsItems.Clear();
+            }
 
             if (_floorItems != null)
+            {
                 _floorItems.Clear();
+            }
 
             if (_wallItems != null)
+            {
                 _wallItems.Clear();
+            }
 
             if (_songDisks != null)
+            {
                 _songDisks.Clear();
+            }
 
             _botItems = null;
             _songDisks = null;
@@ -211,7 +243,9 @@ namespace Neon.HabboHotel.Users.Inventory
         public void UpdateItems(bool FromDatabase)
         {
             if (FromDatabase)
+            {
                 Init();
+            }
 
             if (_client != null)
             {
@@ -221,24 +255,24 @@ namespace Neon.HabboHotel.Users.Inventory
 
         public Item GetItem(int Id)
         {
-       
+
             if (_floorItems.ContainsKey(Id))
-                return (Item) _floorItems[Id];
+            {
+                return _floorItems[Id];
+            }
             else if (_wallItems.ContainsKey(Id))
-                return (Item) _wallItems[Id];
+            {
+                return _wallItems[Id];
+            }
             else if (_songDisks.ContainsKey(Id))
-                return (Item)_songDisks[Id];
+            {
+                return _songDisks[Id];
+            }
 
             return null;
         }
 
-        public IEnumerable<Item> GetItems
-        {
-            get
-            {
-                return this._floorItems.Values.Concat(this._wallItems.Values);
-            }
-        }
+        public IEnumerable<Item> GetItems => _floorItems.Values.Concat(_wallItems.Values);
 
         public Item AddNewItem(int Id, int BaseItem, string ExtraData, int Group, bool ToInsert, bool FromRoom, int LimitedNumber, int LimitedStack)
         {
@@ -255,8 +289,10 @@ namespace Neon.HabboHotel.Users.Inventory
                 {
                     using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
                     {
-                      if (Id > 0)
+                        if (Id > 0)
+                        {
                             dbClient.RunQuery("INSERT INTO `items` (`id`,`base_item`, `extradata`,  `user_id`, `limited_number`, `limited_stack`) VALUES ('" + Id + "', '" + BaseItem + "', '" + ExtraData + "', '" + _userId + "', '" + LimitedNumber + "', '" + LimitedStack + "')");
+                        }
                         else
                         {
                             dbClient.SetQuery("INSERT INTO `items` (`base_item`, `user_id`, `extra_data`, `limited_number`, `limited_stack`) VALUES ('" + BaseItem + "', '" + _userId + "', '" + ExtraData + "', '" + LimitedNumber + "', '" + LimitedStack + "')");
@@ -266,7 +302,9 @@ namespace Neon.HabboHotel.Users.Inventory
                         SendNewItems(Convert.ToInt32(Id));
 
                         if (Group > 0)
+                        {
                             dbClient.RunQuery("INSERT INTO `items_groups` VALUES (" + Id + ", " + Group + ")");
+                        }
 
                         if (!string.IsNullOrEmpty(ExtraData))
                         {
@@ -279,24 +317,37 @@ namespace Neon.HabboHotel.Users.Inventory
             }
 
             Item ItemToAdd = new Item(Id, 0, BaseItem, ExtraData, 0, 0, 0, 0, _userId, Group, LimitedNumber, LimitedStack, string.Empty);
- 
+
             if (UserHoldsItem(Id))
+            {
                 RemoveItem(Id);
+            }
 
             if (ItemToAdd.IsWallItem)
-                this._wallItems.TryAdd(ItemToAdd.Id, ItemToAdd);
+            {
+                _wallItems.TryAdd(ItemToAdd.Id, ItemToAdd);
+            }
             else
-                this._floorItems.TryAdd(ItemToAdd.Id, ItemToAdd);
+            {
+                _floorItems.TryAdd(ItemToAdd.Id, ItemToAdd);
+            }
+
             return ItemToAdd;
         }
 
         private bool UserHoldsItem(int itemID)
         {
-         
+
             if (_floorItems.ContainsKey(itemID))
+            {
                 return true;
+            }
+
             if (_wallItems.ContainsKey(itemID))
+            {
                 return true;
+            }
+
             return false;
         }
 
@@ -305,7 +356,7 @@ namespace Neon.HabboHotel.Users.Inventory
             get
             {
                 Dictionary<int, Item> discs = new Dictionary<int, Item>();
-                
+
                 foreach (Item item in _floorItems.Values)
                 {
                     if (item.GetBaseItem().InteractionType == InteractionType.MUSIC_DISC)
@@ -320,31 +371,34 @@ namespace Neon.HabboHotel.Users.Inventory
 
         public bool TryAddFloorItem(int itemId, Item item)
         {
-            return this._floorItems.TryAdd(itemId, item);
+            return _floorItems.TryAdd(itemId, item);
         }
 
         public bool TryAddWallItem(int itemId, Item item)
         {
-            return this._floorItems.TryAdd(itemId, item);
+            return _floorItems.TryAdd(itemId, item);
         }
 
         public void RemoveItem(int Id)
         {
             if (GetClient() == null)
-                return;
-            
-            if(GetClient().GetHabbo() == null || GetClient().GetHabbo().GetInventoryComponent() == null)
-                GetClient().Disconnect();
-
-            if (this._floorItems.ContainsKey(Id))
             {
-                this._floorItems.TryRemove(Id, out Item ToRemove);
+                return;
             }
 
-            if (this._wallItems.ContainsKey(Id))
+            if (GetClient().GetHabbo() == null || GetClient().GetHabbo().GetInventoryComponent() == null)
             {
-                Item ToRemove = null;
-                this._wallItems.TryRemove(Id, out ToRemove);
+                GetClient().Disconnect();
+            }
+
+            if (_floorItems.ContainsKey(Id))
+            {
+                _floorItems.TryRemove(Id, out Item ToRemove);
+            }
+
+            if (_wallItems.ContainsKey(Id))
+            {
+                _wallItems.TryRemove(Id, out Item ToRemove);
             }
 
             GetClient().SendMessage(new FurniListRemoveComposer(Id));
@@ -363,7 +417,7 @@ namespace Neon.HabboHotel.Users.Inventory
         #region Pet Handling
         public ICollection<Pet> GetPets()
         {
-            return this._petsItems.Values;
+            return _petsItems.Values;
         }
 
         public bool TryAddPet(Pet Pet)
@@ -372,13 +426,15 @@ namespace Neon.HabboHotel.Users.Inventory
             Pet.RoomId = 0;
             Pet.PlacedInRoom = false;
 
-            return this._petsItems.TryAdd(Pet.PetId, Pet);
+            return _petsItems.TryAdd(Pet.PetId, Pet);
         }
 
         public bool TryRemovePet(int PetId, out Pet PetItem)
         {
-            if (this._petsItems.ContainsKey(PetId))
-                return this._petsItems.TryRemove(PetId, out PetItem);
+            if (_petsItems.ContainsKey(PetId))
+            {
+                return _petsItems.TryRemove(PetId, out PetItem);
+            }
             else
             {
                 PetItem = null;
@@ -388,8 +444,10 @@ namespace Neon.HabboHotel.Users.Inventory
 
         public bool TryGetPet(int PetId, out Pet Pet)
         {
-            if (this._petsItems.ContainsKey(PetId))
-                return this._petsItems.TryGetValue(PetId, out Pet);
+            if (_petsItems.ContainsKey(PetId))
+            {
+                return _petsItems.TryGetValue(PetId, out Pet);
+            }
             else
             {
                 Pet = null;
@@ -401,18 +459,20 @@ namespace Neon.HabboHotel.Users.Inventory
         #region Bot Handling
         public ICollection<Bot> GetBots()
         {
-            return this._botItems.Values;
+            return _botItems.Values;
         }
 
         public bool TryAddBot(Bot Bot)
         {
-            return this._botItems.TryAdd(Bot.Id, Bot);
+            return _botItems.TryAdd(Bot.Id, Bot);
         }
 
         public bool TryRemoveBot(int BotId, out Bot Bot)
         {
-            if (this._botItems.ContainsKey(BotId))
-                return this._botItems.TryRemove(BotId, out Bot);
+            if (_botItems.ContainsKey(BotId))
+            {
+                return _botItems.TryRemove(BotId, out Bot);
+            }
             else
             {
                 Bot = null;
@@ -422,8 +482,10 @@ namespace Neon.HabboHotel.Users.Inventory
 
         public bool TryGetBot(int BotId, out Bot Bot)
         {
-            if (this._botItems.ContainsKey(BotId))
-                return this._botItems.TryGetValue(BotId, out Bot);
+            if (_botItems.ContainsKey(BotId))
+            {
+                return _botItems.TryGetValue(BotId, out Bot);
+            }
             else
             {
                 Bot = null;
@@ -443,9 +505,13 @@ namespace Neon.HabboHotel.Users.Inventory
         private int GetUserInventaryId()
         {
             if (InventaryUserId > 0)
+            {
                 return InventaryUserId;
+            }
             else
+            {
                 return _userId;
+            }
         }
 
         internal Item GetFirstItemByBaseId(int id)
@@ -457,12 +523,12 @@ namespace Neon.HabboHotel.Users.Inventory
         {
             if (item.Data.Type.ToString().ToLower() == "s")// ItemType.FLOOR)
             {
-                return this._floorItems.TryAdd(item.Id, item);
+                return _floorItems.TryAdd(item.Id, item);
             }
 
             else if (item.Data.Type.ToString().ToLower() == "i")//ItemType.WALL)
             {
-                return this._wallItems.TryAdd(item.Id, item);
+                return _wallItems.TryAdd(item.Id, item);
             }
             else
             {
@@ -472,17 +538,17 @@ namespace Neon.HabboHotel.Users.Inventory
 
         public ICollection<Item> GetFloorItems()
         {
-            return this._floorItems.Values;
+            return _floorItems.Values;
         }
 
         public ICollection<Item> GetWallItems()
         {
-            return this._wallItems.Values;
+            return _wallItems.Values;
         }
 
         public ICollection<Item> GetSongDisks()
         {
-            return this._songDisks.Values;
+            return _songDisks.Values;
         }
     }
 }

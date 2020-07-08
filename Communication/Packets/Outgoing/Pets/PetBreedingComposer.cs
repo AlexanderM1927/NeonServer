@@ -1,11 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-namespace Neon.Communication.Packets.Outgoing.Pets
+﻿namespace Neon.Communication.Packets.Outgoing.Pets
 {
-    class PetBreedingComposer : ServerPacket
+    internal class PetBreedingComposer : ServerPacket
     {
         public PetBreedingComposer()
             : base(ServerPacketHeader.PetBreedingMessageComposer)

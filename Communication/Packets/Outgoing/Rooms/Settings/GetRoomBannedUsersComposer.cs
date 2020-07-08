@@ -1,15 +1,10 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
+﻿using Neon.HabboHotel.Cache;
 using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Users;
-using Neon.HabboHotel.Cache;
+using System.Linq;
 
 namespace Neon.Communication.Packets.Outgoing.Rooms.Settings
 {
-    class GetRoomBannedUsersComposer : ServerPacket
+    internal class GetRoomBannedUsersComposer : ServerPacket
     {
         public GetRoomBannedUsersComposer(Room Instance)
             : base(ServerPacketHeader.GetRoomBannedUsersMessageComposer)

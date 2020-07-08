@@ -1,15 +1,10 @@
-﻿using Neon.Communication.Packets.Outgoing;
-using Neon.Communication.Packets.Outgoing.LandingView;
+﻿using Neon.Communication.Packets.Outgoing.LandingView;
 using Neon.HabboHotel.GameClients;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.Communication.Packets.Incoming.LandingView
 {
-    class ConcurrentUsersCompetition : IPacketEvent
+    internal class ConcurrentUsersCompetition : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {

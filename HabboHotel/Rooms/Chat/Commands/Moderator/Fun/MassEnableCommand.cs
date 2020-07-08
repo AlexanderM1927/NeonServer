@@ -1,28 +1,15 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator.Fun
 {
-    class MassEnableCommand : IChatCommand
+    internal class MassEnableCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_massenable"; }
-        }
+        public string PermissionRequired => "command_massenable";
 
-        public string Parameters
-        {
-            get { return "%EffectId%"; }
-        }
+        public string Parameters => "%EffectId%";
 
-        public string Description
-        {
-            get { return "Coloca a todos los de la sala con un efecto."; }
-        }
+        public string Description => "Coloca a todos los de la sala con un efecto.";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {
@@ -32,8 +19,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator.Fun
                 return;
             }
 
-            int EnableId = 0;
-            if (int.TryParse(Params[1], out EnableId))
+            if (int.TryParse(Params[1], out int EnableId))
             {
                 if (EnableId == 102 || EnableId == 178)
                 {
@@ -53,7 +39,9 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator.Fun
                     foreach (RoomUser U in Users.ToList())
                     {
                         if (U == null || U.RidingHorse)
+                        {
                             continue;
+                        }
 
                         U.ApplyEffect(EnableId);
                     }
@@ -64,7 +52,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator.Fun
                 Session.SendWhisper("Por favor introduce el efecto ID.");
                 return;
             }
-            
+
         }
     }
 }

@@ -1,15 +1,10 @@
 ﻿using Neon.Communication.Packets.Outgoing.Rooms.Camera;
-using Neon.HabboHotel.Camera;
 using Neon.HabboHotel.GameClients;
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.Communication.Packets.Incoming.Rooms.Camera
 {
@@ -31,7 +26,7 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Camera
         }
     }
 
-    class Camera
+    internal class Camera
     {
         internal static string Decompiler(byte[] input)
         {
@@ -41,16 +36,16 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Camera
 
         private static string DecompressBytes(byte[] bytes)
         {
-            using (var stream = new MemoryStream(bytes, 2, bytes.Length - 2))
-            using (var inflater = new DeflateStream(stream, CompressionMode.Decompress))
-            using (var streamReader = new StreamReader(inflater))
+            using (MemoryStream stream = new MemoryStream(bytes, 2, bytes.Length - 2))
+            using (DeflateStream inflater = new DeflateStream(stream, CompressionMode.Decompress))
+            using (StreamReader streamReader = new StreamReader(inflater))
             {
                 return streamReader.ReadToEnd();
             }
         }
     }
 
-    class URLPost
+    internal class URLPost
     {
         internal static void Web_POST_JSON(string URL, string JSON)
         {
@@ -58,7 +53,7 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Camera
             httpWebRequest.ContentType = "text/json";
             httpWebRequest.Method = "POST";
 
-            using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
+            using (StreamWriter streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
             {
                 streamWriter.Write(JSON);
                 streamWriter.Flush();
@@ -100,7 +95,11 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Camera
             byte[] stream = null;
             StringBuilder sb = new StringBuilder();
             stream = md5.ComputeHash(encoding.GetBytes(str));
-            for (int i = 0; i < stream.Length; i++) sb.AppendFormat("{0:x2}", stream[i]);
+            for (int i = 0; i < stream.Length; i++)
+            {
+                sb.AppendFormat("{0:x2}", stream[i]);
+            }
+
             return sb.ToString();
         }
 

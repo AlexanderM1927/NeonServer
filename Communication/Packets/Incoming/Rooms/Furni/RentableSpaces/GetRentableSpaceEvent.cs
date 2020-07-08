@@ -1,38 +1,40 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
+﻿
 using Neon.Communication.Packets.Outgoing.Rooms.Furni.RentableSpaces;
 using Neon.HabboHotel.Items;
-using Neon.HabboHotel.Rooms;
 using Neon.HabboHotel.Items.RentableSpaces;
+using Neon.HabboHotel.Rooms;
 
 namespace Neon.Communication.Packets.Incoming.Rooms.Furni.RentableSpaces
 {
-    class GetRentableSpaceEvent : IPacketEvent
+    internal class GetRentableSpaceEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
             int ItemId = Packet.PopInt();
 
-            Room room;
-            if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Session.GetHabbo().CurrentRoomId, out room))
+            if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Session.GetHabbo().CurrentRoomId, out Room room))
+            {
                 return;
+            }
 
             Item item = room.GetRoomItemHandler().GetItem(ItemId);
 
             if (item == null)
+            {
                 return;
+            }
 
             if (item.GetBaseItem() == null)
+            {
                 return;
+            }
 
             if (item.GetBaseItem().InteractionType != InteractionType.RENTABLE_SPACE)
+            {
                 return;
+            }
 
-            RentableSpaceItem _rentableSpace;
-            if (!NeonEnvironment.GetGame().GetRentableSpaceManager().GetRentableSpaceItem(ItemId, out _rentableSpace))
+            if (!NeonEnvironment.GetGame().GetRentableSpaceManager().GetRentableSpaceItem(ItemId, out RentableSpaceItem _rentableSpace))
             {
                 _rentableSpace = NeonEnvironment.GetGame().GetRentableSpaceManager().CreateAndAddItem(ItemId, Session);
             }

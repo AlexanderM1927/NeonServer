@@ -1,27 +1,22 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Data;
-using System.Collections.Generic;
-
-using log4net;
+﻿using log4net;
 using Neon.Database.Interfaces;
-
-using Neon.HabboHotel.Achievements;
+using System;
+using System.Collections.Generic;
+using System.Data;
 
 namespace Neon.HabboHotel.Talents
 {
     public class TalentTrackManager
     {
-        private static ILog log = LogManager.GetLogger("Neon.HabboHotel.Talents.TalentManager");
+        private static readonly ILog log = LogManager.GetLogger("Neon.HabboHotel.Talents.TalentManager");
 
         private readonly Dictionary<int, TalentTrackLevel> _citizenshipLevels;
 
         public TalentTrackManager()
         {
-            this._citizenshipLevels = new Dictionary<int, TalentTrackLevel>();
+            _citizenshipLevels = new Dictionary<int, TalentTrackLevel>();
 
-            this.Init();
+            Init();
         }
 
         public void Init()
@@ -37,14 +32,14 @@ namespace Neon.HabboHotel.Talents
             {
                 foreach (DataRow Row in GetTable.Rows)
                 {
-                    this._citizenshipLevels.Add(Convert.ToInt32(Row["level"]), new TalentTrackLevel(Convert.ToString(Row["type"]), Convert.ToInt32(Row["level"]), Convert.ToString(Row["data_actions"]), Convert.ToString(Row["data_gifts"])));
+                    _citizenshipLevels.Add(Convert.ToInt32(Row["level"]), new TalentTrackLevel(Convert.ToString(Row["type"]), Convert.ToInt32(Row["level"]), Convert.ToString(Row["data_actions"]), Convert.ToString(Row["data_gifts"])));
                 }
             }
         }
 
         public ICollection<TalentTrackLevel> GetLevels()
         {
-            return this._citizenshipLevels.Values;
+            return _citizenshipLevels.Values;
         }
     }
 }

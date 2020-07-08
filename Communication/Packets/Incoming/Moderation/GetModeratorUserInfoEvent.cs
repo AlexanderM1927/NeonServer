@@ -1,22 +1,18 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Data;
-using System.Collections.Generic;
-
-using Neon.Core;
-using Neon.Communication.Packets.Outgoing.Moderation;
+﻿using Neon.Communication.Packets.Outgoing.Moderation;
 using Neon.Database.Interfaces;
+using System.Data;
 
 
 namespace Neon.Communication.Packets.Incoming.Moderation
 {
-    class GetModeratorUserInfoEvent : IPacketEvent
+    internal class GetModeratorUserInfoEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
             if (!Session.GetHabbo().GetPermissions().HasRight("mod_tool"))
+            {
                 return;
+            }
 
             int UserId = Packet.PopInt();
 

@@ -1,16 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Items;
-using Neon.Communication.Packets.Outgoing.Inventory.Furni;
-
-using Neon.Communication.Packets.Outgoing.Rooms.Furni;
-using Neon.HabboHotel.Items.Crafting;
-
-namespace Neon.Communication.Packets.Incoming.Rooms.Furni
+﻿namespace Neon.Communication.Packets.Incoming.Rooms.Furni
 {
-    class GetCraftingItemEvent : IPacketEvent
+    internal class GetCraftingItemEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {

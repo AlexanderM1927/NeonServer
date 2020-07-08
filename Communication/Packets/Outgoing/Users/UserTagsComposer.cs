@@ -1,14 +1,8 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using System.Data;
-using Neon.Database.Interfaces;
-using Neon.HabboHotel.GameClients;
+﻿using Neon.HabboHotel.GameClients;
 
 namespace Neon.Communication.Packets.Outgoing.Users
 {
-    class UserTagsComposer : ServerPacket
+    internal class UserTagsComposer : ServerPacket
     {
         public UserTagsComposer(int UserId, GameClient Session)
             : base(ServerPacketHeader.UserTagsMessageComposer)

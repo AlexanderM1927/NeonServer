@@ -1,13 +1,12 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-
-using Neon.Core;
-using Neon.HabboHotel.Items;
-using Neon.Communication.Packets.Outgoing.Inventory.Trading;
-using Neon.Communication.Packets.Outgoing;
-using Neon.Database.Interfaces;
+﻿using Neon.Communication.Packets.Outgoing;
 using Neon.Communication.Packets.Outgoing.Inventory.Furni;
+using Neon.Communication.Packets.Outgoing.Inventory.Trading;
+using Neon.Core;
+using Neon.Database.Interfaces;
+using Neon.HabboHotel.Items;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Neon.HabboHotel.Rooms.Trading
 {
@@ -50,9 +49,14 @@ namespace Neon.HabboHotel.Rooms.Trading
                 for (int i = 0; i < Users.Length; i++)
                 {
                     if (Users[i] == null)
+                    {
                         continue;
+                    }
+
                     if (!Users[i].HasAccepted)
+                    {
                         return false;
+                    }
                 }
 
                 return true;
@@ -64,9 +68,14 @@ namespace Neon.HabboHotel.Rooms.Trading
             for (int i = 0; i < Users.Length; i++)
             {
                 if (Users[i] == null)
+                {
                     continue;
+                }
+
                 if (Users[i].UserId == Id)
+                {
                     return true;
+                }
             }
 
             return false;
@@ -77,9 +86,14 @@ namespace Neon.HabboHotel.Rooms.Trading
             for (int i = 0; i < Users.Length; i++)
             {
                 if (Users[i] == null)
+                {
                     continue;
+                }
+
                 if (Users[i].UserId == Id)
+                {
                     return Users[i];
+                }
             }
 
             return null;
@@ -97,7 +111,9 @@ namespace Neon.HabboHotel.Rooms.Trading
             ClearAccepted();
 
             if (!User.OfferedItems.Contains(Item))
+            {
                 User.OfferedItems.Add(Item);
+            }
 
             UpdateTradeWindow();
         }
@@ -196,10 +212,12 @@ namespace Neon.HabboHotel.Rooms.Trading
 
         public void UpdateTradeWindow()
         {
-            foreach (TradeUser User in this.Users.ToList())
+            foreach (TradeUser User in Users.ToList())
             {
                 if (User == null)
+                {
                     continue;
+                }
 
                 SendMessageToUsers(new TradingUpdateComposer(this));
             }
@@ -218,7 +236,9 @@ namespace Neon.HabboHotel.Rooms.Trading
             foreach (Item I in ItemsOne.ToList())
             {
                 if (I == null)
+                {
                     continue;
+                }
 
                 if (GetTradeUser(oneId).GetClient().GetHabbo().GetInventoryComponent().GetItem(I.Id) == null)
                 {
@@ -232,7 +252,9 @@ namespace Neon.HabboHotel.Rooms.Trading
             foreach (Item I in ItemsTwo.ToList())
             {
                 if (I == null)
+                {
                     continue;
+                }
 
                 if (GetTradeUser(twoId).GetClient().GetHabbo().GetInventoryComponent().GetItem(I.Id) == null)
                 {
@@ -252,7 +274,9 @@ namespace Neon.HabboHotel.Rooms.Trading
                     foreach (Item I in ItemsOne.ToList())
                     {
                         if (I == null)
+                        {
                             continue;
+                        }
 
                         GetTradeUser(oneId).GetClient().GetHabbo().GetInventoryComponent().RemoveItem(I.Id);
 
@@ -269,7 +293,9 @@ namespace Neon.HabboHotel.Rooms.Trading
                     foreach (Item I in ItemsTwo.ToList())
                     {
                         if (I == null)
+                        {
                             continue;
+                        }
 
                         GetTradeUser(twoId).GetClient().GetHabbo().GetInventoryComponent().RemoveItem(I.Id);
 
@@ -372,10 +398,12 @@ namespace Neon.HabboHotel.Rooms.Trading
 
         public void CloseTradeClean()
         {
-            foreach (TradeUser User in this.Users.ToList())
+            foreach (TradeUser User in Users.ToList())
             {
                 if (User == null || User.GetRoomUser() == null)
+                {
                     continue;
+                }
 
                 if (User.GetRoomUser().Statusses.ContainsKey("trd"))
                 {
@@ -390,10 +418,12 @@ namespace Neon.HabboHotel.Rooms.Trading
 
         public void CloseTrade(int UserId)
         {
-            foreach (TradeUser User in this.Users.ToList())
+            foreach (TradeUser User in Users.ToList())
             {
                 if (User == null || User.GetRoomUser() == null)
+                {
                     continue;
+                }
 
                 if (User.GetRoomUser().Statusses.ContainsKey("trd"))
                 {
@@ -407,10 +437,12 @@ namespace Neon.HabboHotel.Rooms.Trading
 
         public void SendMessageToUsers(ServerPacket Message)
         {
-            foreach (TradeUser User in this.Users.ToList())
+            foreach (TradeUser User in Users.ToList())
             {
                 if (User == null || User.GetClient() == null)
+                {
                     continue;
+                }
 
                 User.GetClient().SendMessage(Message);
             }
@@ -418,9 +450,10 @@ namespace Neon.HabboHotel.Rooms.Trading
 
         private Room GetRoom()
         {
-            Room Room;
-            if (NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(RoomId, out Room))
+            if (NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(RoomId, out Room Room))
+            {
                 return Room;
+            }
 
             return null;
         }

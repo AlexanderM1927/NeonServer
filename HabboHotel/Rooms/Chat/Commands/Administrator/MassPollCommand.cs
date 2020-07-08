@@ -1,27 +1,15 @@
-﻿using Neon.Communication.Packets.Outgoing;
-using Neon.Communication.Packets.Outgoing.Moderation;
-using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
-using Neon.Communication.Packets.Outgoing.Rooms.Polls;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Polls;
 using Neon.HabboHotel.Rooms.Polls;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.Administrator
 {
-    class MassPollCommand : IChatCommand
+    internal class MassPollCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_masspoll"; }
-        }
+        public string PermissionRequired => "command_masspoll";
 
-        public string Parameters
-        {
-            get { return "%id%"; }
-        }
+        public string Parameters => "%id%";
 
-        public string Description
-        {
-            get { return "Envia una encuesta a todo el hotel"; }
-        }
+        public string Description => "Envia una encuesta a todo el hotel";
 
         public void Execute(GameClients.GameClient Session, Room Room, string[] Params)
         {
@@ -31,8 +19,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Administrator
                 return;
             }
 
-            RoomPoll poll;
-            if (NeonEnvironment.GetGame().GetPollManager().TryGetPollForHotel(int.Parse(Params[1]), out poll))
+            if (NeonEnvironment.GetGame().GetPollManager().TryGetPollForHotel(int.Parse(Params[1]), out RoomPoll poll))
             {
                 if (poll.Type == RoomPollType.Poll)
                 {

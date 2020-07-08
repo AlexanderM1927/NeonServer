@@ -1,15 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Users;
-using Neon.HabboHotel.Users.Messenger;
-using Neon.HabboHotel.Users.Relationships;
-
-namespace Neon.Communication.Packets.Outgoing.Messenger
+﻿namespace Neon.Communication.Packets.Outgoing.Messenger
 {
-    class MessengerInitComposer : ServerPacket
+    internal class MessengerInitComposer : ServerPacket
     {
         public MessengerInitComposer()
             : base(ServerPacketHeader.MessengerInitMessageComposer)

@@ -1,28 +1,30 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using Neon.Database.Interfaces;
-using Neon.HabboHotel.Rooms;
+﻿using Neon.Database.Interfaces;
 using Neon.HabboHotel.Items;
+using Neon.HabboHotel.Rooms;
+using System;
+using System.Linq;
 
 
 namespace Neon.Communication.Packets.Incoming.Rooms.Furni
 {
-    class SetMannequinNameEvent : IPacketEvent
+    internal class SetMannequinNameEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
             Room Room = Session.GetHabbo().CurrentRoom;
             if (Room == null || !Room.CheckRights(Session, true))
+            {
                 return;
+            }
 
             int ItemId = Packet.PopInt();
             string Name = Packet.PopString();
 
             Item Item = Session.GetHabbo().CurrentRoom.GetRoomItemHandler().GetItem(ItemId);
             if (Item == null)
+            {
                 return;
+            }
 
             if (Item.ExtraData.Contains(Convert.ToChar(5)))
             {
@@ -30,7 +32,9 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Furni
                 Item.ExtraData = Flags[0] + Convert.ToChar(5) + Flags[1] + Convert.ToChar(5) + Name;
             }
             else
+            {
                 Item.ExtraData = "m" + Convert.ToChar(5) + ".ch-210-1321.lg-285-92" + Convert.ToChar(5) + "Default Maniqui";
+            }
 
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {

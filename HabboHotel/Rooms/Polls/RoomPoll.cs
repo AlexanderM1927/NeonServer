@@ -1,5 +1,5 @@
-﻿using System.Linq;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Neon.HabboHotel.Rooms.Polls
 {
@@ -21,25 +21,25 @@ namespace Neon.HabboHotel.Rooms.Polls
 
         public RoomPoll(int id, int roomId, string type, string headline, string summary, string completionMessage, int creditReward, int pixelReward, string badgeReward, double expiry, Dictionary<int, RoomPollQuestion> questions)
         {
-            this.Id = id;
-            this.RoomId = roomId;
-            this.Type = RoomPollTypeUtility.GetRoomPollType(type);
-            this.Headline = headline;
-            this.Summary = summary;
-            this.CompletionMessage = completionMessage;
-            this.CreditReward = creditReward;
-            this.PixelReward = pixelReward;
-            this.BadgeReward = badgeReward;
-            this.Expiry = expiry;
+            Id = id;
+            RoomId = roomId;
+            Type = RoomPollTypeUtility.GetRoomPollType(type);
+            Headline = headline;
+            Summary = summary;
+            CompletionMessage = completionMessage;
+            CreditReward = creditReward;
+            PixelReward = pixelReward;
+            BadgeReward = badgeReward;
+            Expiry = expiry;
 
-            this._questions = questions.Values.OrderBy(x => x.SeriesOrder).ToDictionary(t => t.Id);
-            this.LastQuestionId = this._questions.Count > 0 ? this._questions.Values.OrderByDescending(x => x.SeriesOrder).FirstOrDefault().SeriesOrder : 0;
+            _questions = questions.Values.OrderBy(x => x.SeriesOrder).ToDictionary(t => t.Id);
+            LastQuestionId = _questions.Count > 0 ? _questions.Values.OrderByDescending(x => x.SeriesOrder).FirstOrDefault().SeriesOrder : 0;
         }
 
         public Dictionary<int, RoomPollQuestion> Questions
         {
-            get { return this._questions; }
-            set { this._questions = value; }
+            get => _questions;
+            set => _questions = value;
         }
     }
 }

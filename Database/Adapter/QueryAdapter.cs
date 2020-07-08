@@ -1,9 +1,8 @@
-﻿using System;
-using System.Data;
-using ConsoleWriter;
-
+﻿using ConsoleWriter;
 using MySql.Data.MySqlClient;
 using Neon.Database.Interfaces;
+using System;
+using System.Data;
 
 namespace Neon.Database.Adapter
 {
@@ -130,9 +129,11 @@ namespace Neon.Database.Adapter
 
         public DataTable getTable()
         {
-            var dataTable = new DataTable();
+            DataTable dataTable = new DataTable();
             if (!dbEnabled)
+            {
                 return dataTable;
+            }
 
             try
             {
@@ -152,7 +153,9 @@ namespace Neon.Database.Adapter
         public void RunQuery(string query)
         {
             if (!dbEnabled)
+            {
                 return;
+            }
 
             SetQuery(query);
             RunQuery();
@@ -172,7 +175,9 @@ namespace Neon.Database.Adapter
         public long InsertQuery()
         {
             if (!dbEnabled)
+            {
                 return 0;
+            }
 
             long lastInsertedId = 0L;
             try
@@ -190,17 +195,22 @@ namespace Neon.Database.Adapter
         public void runFastQuery(string query)
         {
             if (!dbEnabled)
+            {
                 return;
+            }
+
             DateTime now = DateTime.Now;
-            this.SetQuery(query);
-            this.RunQuery();
-            _ = (TimeSpan)(DateTime.Now - now);
+            SetQuery(query);
+            RunQuery();
+            _ = DateTime.Now - now;
         }
 
         public void RunQuery()
         {
             if (!dbEnabled)
+            {
                 return;
+            }
 
             try
             {

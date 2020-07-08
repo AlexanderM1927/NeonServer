@@ -1,21 +1,16 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using System.Collections.Concurrent;
-using Neon.Communication.Packets.Outgoing.Moderation;
-using Neon.Communication.Packets.Incoming;
+﻿using Neon.Communication.Packets.Incoming;
+using Neon.Communication.Packets.Outgoing.Rooms.Chat;
 using Neon.HabboHotel.Rooms;
 using Neon.HabboHotel.Users;
-using Neon.Communication.Packets.Outgoing.Rooms.Chat;
+using System.Collections.Concurrent;
 
 namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
 {
-    class MuteTriggererBox : IWiredItem
+    internal class MuteTriggererBox : IWiredItem
     {
         public Room Instance { get; set; }
         public Item Item { get; set; }
-        public WiredBoxType Type { get { return WiredBoxType.EffectMuteTriggerer; } }
+        public WiredBoxType Type => WiredBoxType.EffectMuteTriggerer;
         public ConcurrentDictionary<int, Item> SetItems { get; set; }
         public string StringData { get; set; }
         public bool BoolData { get; set; }
@@ -25,38 +20,48 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
         {
             this.Instance = Instance;
             this.Item = Item;
-            this.SetItems = new ConcurrentDictionary<int, Item>();
+            SetItems = new ConcurrentDictionary<int, Item>();
 
-            if (this.SetItems.Count > 0)
-                this.SetItems.Clear();
+            if (SetItems.Count > 0)
+            {
+                SetItems.Clear();
+            }
         }
 
         public void HandleSave(ClientPacket Packet)
         {
-            if (this.SetItems.Count > 0)
-                this.SetItems.Clear();
+            if (SetItems.Count > 0)
+            {
+                SetItems.Clear();
+            }
 
             int Unknown = Packet.PopInt();
             int Time = Packet.PopInt();
             string Message = Packet.PopString();
 
-            this.StringData = Time + ";" + Message;
+            StringData = Time + ";" + Message;
         }
 
         public bool Execute(params object[] Params)
         {
             if (Params.Length != 1)
+            {
                 return false;
+            }
 
             Habbo Player = (Habbo)Params[0];
             if (Player == null)
+            {
                 return false;
+            }
 
             RoomUser User = Instance.GetRoomUserManager().GetRoomUserByHabbo(Player.Id);
             if (User == null)
+            {
                 return false;
+            }
 
-            if (Player.GetPermissions().HasRight("mod_tool") || this.Instance.OwnerId == Player.Id)
+            if (Player.GetPermissions().HasRight("mod_tool") || Instance.OwnerId == Player.Id)
             {
                 Player.GetClient().SendMessage(new WhisperComposer(User.VirtualId, "Wired Mute Exception: Unmutable Player", 0, 0));
                 return false;
@@ -69,7 +74,9 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
             {
                 Player.GetClient().SendMessage(new WhisperComposer(User.VirtualId, "Wired Mute: Muted for " + Time + "! Message: " + Message, 0, 0));
                 if (!Instance.MutedUsers.ContainsKey(Player.Id))
+                {
                     Instance.MutedUsers.Add(Player.Id, (NeonEnvironment.GetUnixTimestamp() + (Time * 60)));
+                }
                 else
                 {
                     Instance.MutedUsers.Remove(Player.Id);

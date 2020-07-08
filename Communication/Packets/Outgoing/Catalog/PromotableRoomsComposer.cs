@@ -1,12 +1,8 @@
-﻿using System;
+﻿using Neon.HabboHotel.Rooms;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Neon.HabboHotel.Rooms;
 namespace Neon.Communication.Packets.Outgoing.Catalog
 {
-    class PromotableRoomsComposer : ServerPacket
+    internal class PromotableRoomsComposer : ServerPacket
     {
         public PromotableRoomsComposer(ICollection<RoomData> Rooms)
             : base(ServerPacketHeader.PromotableRoomsMessageComposer)
@@ -17,7 +13,7 @@ namespace Neon.Communication.Packets.Outgoing.Catalog
             foreach (RoomData Data in Rooms)
             {
                 base.WriteInteger(Data.Id);
-               base.WriteString(Data.Name);
+                base.WriteString(Data.Name);
                 base.WriteBoolean(false);
             }
         }

@@ -1,15 +1,11 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
+﻿
+using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
 using Neon.Communication.Packets.Outgoing.Users;
 using Neon.HabboHotel.GameClients;
-using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
 
 namespace Neon.Communication.Packets.Incoming.Users
 {
-    class GetUserTagsEvent : IPacketEvent
+    internal class GetUserTagsEvent : IPacketEvent
     {
         public void Parse(GameClient Session, ClientPacket Packet)
         {

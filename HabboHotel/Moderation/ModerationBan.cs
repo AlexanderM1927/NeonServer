@@ -1,8 +1,4 @@
-﻿using System;
-
-using Neon.HabboHotel.Moderation;
-
-namespace Neon.HabboHotel.Moderation
+﻿namespace Neon.HabboHotel.Moderation
 {
 
     public class ModerationBan
@@ -12,7 +8,7 @@ namespace Neon.HabboHotel.Moderation
         public string Reason;
         public ModerationBanType Type;
 
-        public ModerationBan(ModerationBanType Type, string Value, string Reason, Double Expire)
+        public ModerationBan(ModerationBanType Type, string Value, string Reason, double Expire)
         {
             this.Type = Type;
             this.Value = Value;
@@ -25,7 +21,10 @@ namespace Neon.HabboHotel.Moderation
             get
             {
                 if (NeonEnvironment.GetUnixTimestamp() >= Expire)
+                {
                     return true;
+                }
+
                 return false;
             }
         }

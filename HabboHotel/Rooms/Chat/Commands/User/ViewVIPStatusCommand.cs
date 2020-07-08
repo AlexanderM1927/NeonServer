@@ -1,29 +1,15 @@
-﻿using Neon.HabboHotel.GameClients;
-
-using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
-using Neon.Database.Interfaces;
-using System.Data;
-using System;
-using Neon.Communication.Packets.Outgoing.Rooms.Engine;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
+using Neon.HabboHotel.GameClients;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.User
 {
-    class ViewVIPStatusCommand : IChatCommand
+    internal class ViewVIPStatusCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_info"; }
-        }
+        public string PermissionRequired => "command_info";
 
-        public string Parameters
-        {
-            get { return ""; }
-        }
+        public string Parameters => "";
 
-        public string Description
-        {
-            get { return "Información de tu suscripción VIP."; }
-        }
+        public string Description => "Información de tu suscripción VIP.";
 
         public void Execute(GameClient Session, Room Room, string[] Params)
         {

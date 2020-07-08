@@ -16,7 +16,7 @@ namespace Neon.HabboHotel.Achievements
             this.GroupName = GroupName;
             this.Category = Category;
             this.GameId = GameId;
-            this.Levels = new Dictionary<int, AchievementLevel>();
+            Levels = new Dictionary<int, AchievementLevel>();
         }
 
         public void AddLevel(AchievementLevel Level)

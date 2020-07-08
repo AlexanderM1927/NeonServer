@@ -1,29 +1,15 @@
-﻿using Neon.Communication.Packets.Outgoing.Moderation;
-using Neon.Communication.Packets.Outgoing.Notifications;
+﻿using Neon.Communication.Packets.Outgoing.Notifications;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
 {
-    class GuideAlertCommand : IChatCommand
+    internal class GuideAlertCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_guide_alert";}
-        }
+        public string PermissionRequired => "command_guide_alert";
 
-        public string Parameters
-        {
-            get { return "%message%"; }
-        }
+        public string Parameters => "%message%";
 
-        public string Description
-        {
-            get { return "Enviale un mensaje de alerta a todos los staff online."; }
-        }
+        public string Description => "Enviale un mensaje de alerta a todos los staff online.";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {
@@ -31,7 +17,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
             {
                 Session.SendWhisper("No puedes enviar alertas para guías si no lo eres.");
                 return;
-              
+
             }
             if (Params.Length == 1)
             {

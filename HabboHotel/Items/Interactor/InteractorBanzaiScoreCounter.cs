@@ -1,8 +1,6 @@
-﻿using System;
-
-using Neon.HabboHotel.GameClients;
-using Neon.HabboHotel.Rooms.Games;
+﻿using Neon.HabboHotel.GameClients;
 using Neon.HabboHotel.Rooms.Games.Teams;
+using System;
 
 namespace Neon.HabboHotel.Items.Interactor
 {
@@ -11,7 +9,9 @@ namespace Neon.HabboHotel.Items.Interactor
         public void OnPlace(GameClient Session, Item Item)
         {
             if (Item.team == TEAM.NONE)
+            {
                 return;
+            }
 
             Item.ExtraData = Item.GetRoom().GetGameManager().Points[Convert.ToInt32(Item.team)].ToString();
             Item.UpdateState(false, true);

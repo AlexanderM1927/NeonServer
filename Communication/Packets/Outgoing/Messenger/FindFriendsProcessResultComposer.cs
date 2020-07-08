@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Neon.Communication.Packets.Outgoing.Messenger
+﻿namespace Neon.Communication.Packets.Outgoing.Messenger
 {
-    class FindFriendsProcessResultComposer : ServerPacket
+    internal class FindFriendsProcessResultComposer : ServerPacket
     {
         public FindFriendsProcessResultComposer(bool Found)
             : base(ServerPacketHeader.FindFriendsProcessResultMessageComposer)

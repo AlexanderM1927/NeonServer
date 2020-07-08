@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Neon.Communication.Packets.Outgoing.Rooms.Engine
+﻿namespace Neon.Communication.Packets.Outgoing.Rooms.Engine
 {
-    class SlideObjectBundleComposer : ServerPacket
+    internal class SlideObjectBundleComposer : ServerPacket
     {
         public SlideObjectBundleComposer(int FromX, int FromY, double FromZ, int ToX, int ToY, double ToZ, int RollerId, int AvatarId, int ItemId)
             : base(ServerPacketHeader.SlideObjectBundleMessageComposer)
@@ -20,7 +14,9 @@ namespace Neon.Communication.Packets.Outgoing.Rooms.Engine
             base.WriteInteger(IsItem ? 1 : 0);
 
             if (IsItem)
+            {
                 base.WriteInteger(ItemId);
+            }
             else
             {
                 base.WriteInteger(RollerId);

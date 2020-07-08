@@ -1,33 +1,16 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using Neon.Communication.Packets.Outgoing.Inventory.Furni;
-using System.Globalization;
+﻿using Neon.Communication.Packets.Outgoing;
 using Neon.Database.Interfaces;
-using Neon.Communication.Packets.Outgoing;
-using Neon.HabboHotel.Items;
-using Neon.Communication.Packets.Outgoing.Rooms.Engine;
-using Neon.Communication.Packets.Outgoing.Rooms.Chat;
+using System.Collections.Generic;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.User
 {
-    class HideWiredCommand : IChatCommand
+    internal class HideWiredCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return ""; }
-        }
+        public string PermissionRequired => "";
 
-        public string Parameters
-        {
-            get { return ""; }
-        }
+        public string Parameters => "";
 
-        public string Description
-        {
-            get { return "Esconder Wired No seu quarto ."; }
-        }
+        public string Description => "Esconder Wired No seu quarto .";
 
         public void Execute(GameClients.GameClient Session, Room Room, string[] Params)
         {
@@ -40,9 +23,13 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User
 
             Room.HideWired = !Room.HideWired;
             if (Room.HideWired)
+            {
                 Session.SendWhisper("Wired está oculto.", 34);
+            }
             else
+            {
                 Session.SendWhisper("Wired fue mostrado.", 34);
+            }
 
             using (IQueryAdapter con = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {

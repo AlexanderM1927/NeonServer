@@ -1,34 +1,31 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.Communication.Packets.Outgoing.LandingView;
+﻿using Neon.Communication.Packets.Outgoing.LandingView;
 
 namespace Neon.Communication.Packets.Incoming.LandingView
 {
-    class RefreshCampaignEvent : IPacketEvent
+    internal class RefreshCampaignEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
             try
             {
-                String parseCampaings = Packet.PopString();
+                string parseCampaings = Packet.PopString();
                 if (parseCampaings == "2015-08-18 13:00,gamesmaker;2015-08-19 13:00")
                 {
                     Session.SendMessage(new HallOfFameComposer());
                     return;
                 }
 
-                String campaingName = "";
-                String[] parser = parseCampaings.Split(';');
+                string campaingName = "";
+                string[] parser = parseCampaings.Split(';');
 
                 for (int i = 0; i < parser.Length; i++)
                 {
-                    if (String.IsNullOrEmpty(parser[i]) || parser[i].EndsWith(","))
+                    if (string.IsNullOrEmpty(parser[i]) || parser[i].EndsWith(","))
+                    {
                         continue;
+                    }
 
-                    String[] data = parser[i].Split(',');
+                    string[] data = parser[i].Split(',');
                     campaingName = data[1];
                 }
                 Session.SendMessage(new CampaignComposer(parseCampaings, campaingName));

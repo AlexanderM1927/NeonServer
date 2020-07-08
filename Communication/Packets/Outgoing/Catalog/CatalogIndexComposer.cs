@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
-using Neon.HabboHotel.Catalog;
+﻿using Neon.HabboHotel.Catalog;
 using Neon.HabboHotel.GameClients;
-using Neon.Communication.Packets.Outgoing;
+using System.Collections.Generic;
 
 namespace Neon.Communication.Packets.Outgoing.Catalog
 {
@@ -13,22 +12,35 @@ namespace Neon.Communication.Packets.Outgoing.Catalog
             WriteRootIndex(Session, Pages);
             foreach (CatalogPage Parent in Pages)
             {
-                if (Parent.ParentId != -1 || Parent.MinimumRank > Session.GetHabbo().Rank || (Parent.MinimumVIP > Session.GetHabbo().VIPRank && Session.GetHabbo().Rank == 1))
+                if (Parent.ParentId != -1 || Parent.MinimumRank > Session.GetHabbo().CatRank || (Parent.MinimumVIP > Session.GetHabbo().VIPRank && Session.GetHabbo().Rank == 1))
+                {
                     continue;
+                }
+
                 WritePage(Parent, CalcTreeSize(Session, Pages, Parent.Id));
                 foreach (CatalogPage child in Pages)
                 {
-                    if (child.ParentId != Parent.Id || child.MinimumRank > Session.GetHabbo().Rank || (child.MinimumVIP > Session.GetHabbo().VIPRank && Session.GetHabbo().Rank == 1))
+                    if (child.ParentId != Parent.Id || child.MinimumRank > Session.GetHabbo().CatRank || (child.MinimumVIP > Session.GetHabbo().VIPRank && Session.GetHabbo().Rank == 1))
+                    {
                         continue;
+                    }
+
                     if (child.Enabled)
+                    {
                         WritePage(child, CalcTreeSize(Session, Pages, child.Id));
+                    }
                     else
+                    {
                         WriteNodeIndex(child, CalcTreeSize(Session, Pages, child.Id));
+                    }
 
                     foreach (CatalogPage SubChild in Pages)
                     {
-                        if (SubChild.ParentId != child.Id || SubChild.MinimumRank > Session.GetHabbo().Rank)
+                        if (SubChild.ParentId != child.Id || SubChild.MinimumRank > Session.GetHabbo().CatRank)
+                        {
                             continue;
+                        }
+
                         WritePage(SubChild, 0);
                     }
                 }
@@ -42,22 +54,35 @@ namespace Neon.Communication.Packets.Outgoing.Catalog
             WriteRootIndex(Session, Pages);
             foreach (BCCatalogPage Parent in Pages)
             {
-                if (Parent.ParentId != -1 || Parent.MinimumRank > Session.GetHabbo().Rank || (Parent.MinimumVIP > Session.GetHabbo().VIPRank && Session.GetHabbo().Rank == 1))
+                if (Parent.ParentId != -1 || Parent.MinimumRank > Session.GetHabbo().CatRank || (Parent.MinimumVIP > Session.GetHabbo().VIPRank && Session.GetHabbo().Rank == 1))
+                {
                     continue;
+                }
+
                 WritePage(Parent, CalcTreeSize(Session, Pages, Parent.Id));
                 foreach (BCCatalogPage child in Pages)
                 {
-                    if (child.ParentId != Parent.Id || child.MinimumRank > Session.GetHabbo().Rank || (child.MinimumVIP > Session.GetHabbo().VIPRank && Session.GetHabbo().Rank == 1))
+                    if (child.ParentId != Parent.Id || child.MinimumRank > Session.GetHabbo().CatRank || (child.MinimumVIP > Session.GetHabbo().VIPRank && Session.GetHabbo().Rank == 1))
+                    {
                         continue;
+                    }
+
                     if (child.Enabled)
+                    {
                         WritePage(child, CalcTreeSize(Session, Pages, child.Id));
+                    }
                     else
+                    {
                         WriteNodeIndex(child, CalcTreeSize(Session, Pages, child.Id));
+                    }
 
                     foreach (BCCatalogPage SubChild in Pages)
                     {
-                        if (SubChild.ParentId != child.Id || SubChild.MinimumRank > Session.GetHabbo().Rank)
+                        if (SubChild.ParentId != child.Id || SubChild.MinimumRank > Session.GetHabbo().CatRank)
+                        {
                             continue;
+                        }
+
                         WritePage(SubChild, 0);
                     }
                 }
@@ -104,10 +129,15 @@ namespace Neon.Communication.Packets.Outgoing.Catalog
             int i = 0;
             foreach (CatalogPage Page in Pages)
             {
-                if (Page.MinimumRank > Session.GetHabbo().Rank || (Page.MinimumVIP > Session.GetHabbo().VIPRank && Session.GetHabbo().Rank == 1) || Page.ParentId != ParentId)
+                if (Page.MinimumRank > Session.GetHabbo().CatRank || (Page.MinimumVIP > Session.GetHabbo().VIPRank && Session.GetHabbo().Rank == 1) || Page.ParentId != ParentId)
+                {
                     continue;
+                }
+
                 if (Page.ParentId == ParentId)
+                {
                     i++;
+                }
             }
             return i;
         }
@@ -150,10 +180,15 @@ namespace Neon.Communication.Packets.Outgoing.Catalog
             int i = 0;
             foreach (BCCatalogPage Page in Pages)
             {
-                if (Page.MinimumRank > Session.GetHabbo().Rank || (Page.MinimumVIP > Session.GetHabbo().VIPRank && Session.GetHabbo().Rank == 1) || Page.ParentId != ParentId)
+                if (Page.MinimumRank > Session.GetHabbo().CatRank || (Page.MinimumVIP > Session.GetHabbo().VIPRank && Session.GetHabbo().Rank == 1) || Page.ParentId != ParentId)
+                {
                     continue;
+                }
+
                 if (Page.ParentId == ParentId)
+                {
                     i++;
+                }
             }
             return i;
         }

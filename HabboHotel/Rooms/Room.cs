@@ -1,40 +1,33 @@
-﻿using System;
-using System.Data;
-using System.Linq;
-using System.Collections;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-
+﻿using Neon.Communication.Interfaces;
+using Neon.Communication.Packets.Outgoing;
+using Neon.Communication.Packets.Outgoing.Inventory.Purse;
+using Neon.Communication.Packets.Outgoing.Rooms.Avatar;
+using Neon.Communication.Packets.Outgoing.Rooms.Engine;
+using Neon.Communication.Packets.Outgoing.Rooms.Poll;
+using Neon.Communication.Packets.Outgoing.Rooms.Session;
 using Neon.Core;
+using Neon.Database.Interfaces;
 using Neon.HabboHotel.GameClients;
 using Neon.HabboHotel.Groups;
 using Neon.HabboHotel.Items;
-using Neon.HabboHotel.Rooms.AI;
-using Neon.HabboHotel.Rooms.Games;
-using Neon.Communication.Interfaces;
-using Neon.Communication.Packets.Outgoing;
-
-
-using Neon.HabboHotel.Rooms.Instance;
-
-using Neon.HabboHotel.Items.Data.Toner;
-using Neon.HabboHotel.Rooms.Games.Freeze;
 using Neon.HabboHotel.Items.Data.Moodlight;
-
-using Neon.Communication.Packets.Outgoing.Rooms.Avatar;
-using Neon.Communication.Packets.Outgoing.Rooms.Engine;
-using Neon.Communication.Packets.Outgoing.Rooms.Session;
-
-using Neon.HabboHotel.Rooms.Games.Banzai;
-using Neon.HabboHotel.Rooms.Games.Teams;
-using Neon.HabboHotel.Rooms.Trading;
+using Neon.HabboHotel.Items.Data.Toner;
+using Neon.HabboHotel.Rooms.AI;
 using Neon.HabboHotel.Rooms.AI.Speech;
-using Neon.Database.Interfaces;
-using Neon.Communication.Packets.Outgoing.Rooms.Poll;
-
-using Neon.HabboHotel.Rooms.Music;
+using Neon.HabboHotel.Rooms.Games;
+using Neon.HabboHotel.Rooms.Games.Banzai;
 using Neon.HabboHotel.Rooms.Games.Football;
-using Neon.Communication.Packets.Outgoing.Inventory.Purse;
+using Neon.HabboHotel.Rooms.Games.Freeze;
+using Neon.HabboHotel.Rooms.Games.Teams;
+using Neon.HabboHotel.Rooms.Instance;
+using Neon.HabboHotel.Rooms.Music;
+using Neon.HabboHotel.Rooms.Trading;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Neon.HabboHotel.Rooms
 {
@@ -49,7 +42,9 @@ namespace Neon.HabboHotel.Rooms
         public int BallSpeed;
 
         public delegate void FurnisLoaded();
+#pragma warning disable CS0067 // O evento "Room.OnFurnisLoad" nunca é usado
         public event FurnisLoaded OnFurnisLoad;
+#pragma warning restore CS0067 // O evento "Room.OnFurnisLoad" nunca é usado
 
         public Task ProcessTask;
         public ArrayList ActiveTrades;
@@ -62,7 +57,7 @@ namespace Neon.HabboHotel.Rooms
 
         internal bool ForSale;
         internal int SalePrice;
-        private Dictionary<int, List<RoomUser>> Tents;
+        private readonly Dictionary<int, List<RoomUser>> Tents;
 
         internal string poolQuestion;
 
@@ -79,10 +74,10 @@ namespace Neon.HabboHotel.Rooms
         public TeamManager teamfreeze;
         public MusicManager _roomMusicManager;
 
-        private RoomUserManager _roomUserManager;
+        private readonly RoomUserManager _roomUserManager;
         private RoomItemHandling _roomItemHandling;
-        private FilterComponent _filterComponent = null;
-        private WiredComponent _wiredComponent = null;
+        private readonly FilterComponent _filterComponent = null;
+        private readonly WiredComponent _wiredComponent = null;
 
         internal List<int> yesPoolAnswers;
         internal List<int> noPoolAnswers;
@@ -99,103 +94,106 @@ namespace Neon.HabboHotel.Rooms
 
         public Room(RoomData Data)
         {
-            this.IsLagging = 0;
-            this.IdleTime = 0;
+            IsLagging = 0;
+            IdleTime = 0;
 
-            this.RoomData = Data;
+            RoomData = Data;
             RoomMuted = false;
             mDisposed = false;
             muteSignalEnabled = false;
 
-            this.Id = Data.Id;
-            this.Name = Data.Name;
-            this.Description = Data.Description;
-            this.OwnerName = Data.OwnerName;
-            this.OwnerId = Data.OwnerId;
+            Id = Data.Id;
+            Name = Data.Name;
+            Description = Data.Description;
+            OwnerName = Data.OwnerName;
+            OwnerId = Data.OwnerId;
 
-            this.WiredScoreBordDay = Data.WiredScoreBordDay;
-            this.WiredScoreBordWeek = Data.WiredScoreBordWeek;
-            this.WiredScoreBordMonth = Data.WiredScoreBordMonth;
-            this.WiredScoreFirstBordInformation = Data.WiredScoreFirstBordInformation;
+            WiredScoreBordDay = Data.WiredScoreBordDay;
+            WiredScoreBordWeek = Data.WiredScoreBordWeek;
+            WiredScoreBordMonth = Data.WiredScoreBordMonth;
+            WiredScoreFirstBordInformation = Data.WiredScoreFirstBordInformation;
 
-            this.ForSale = false;
-            this.SalePrice = 0;
-            this.Category = Data.Category;
-            this.Type = Data.Type;
-            this.Access = Data.Access;
-            this.UsersNow = 0;
-            this.UsersMax = Data.UsersMax;
-            this.ModelName = Data.ModelName;
-            this.Score = Data.Score;
-            this.Tags = new List<string>();
+            ForSale = false;
+            SalePrice = 0;
+            Category = Data.Category;
+            Type = Data.Type;
+            Access = Data.Access;
+            UsersNow = 0;
+            UsersMax = Data.UsersMax;
+            ModelName = Data.ModelName;
+            Score = Data.Score;
+            Tags = new List<string>();
             foreach (string tag in Data.Tags)
             {
                 Tags.Add(tag);
             }
 
-            this.AllowPets = Data.AllowPets;
-            this.AllowPetsEating = Data.AllowPetsEating;
-            this.RoomBlockingEnabled = Data.RoomBlockingEnabled;
-            this.Hidewall = Data.Hidewall;
-            this.Group = Data.Group;
+            AllowPets = Data.AllowPets;
+            AllowPetsEating = Data.AllowPetsEating;
+            RoomBlockingEnabled = Data.RoomBlockingEnabled;
+            Hidewall = Data.Hidewall;
+            Group = Data.Group;
 
-            this.Password = Data.Password;
-            this.Wallpaper = Data.Wallpaper;
-            this.Floor = Data.Floor;
-            this.Landscape = Data.Landscape;
-            this.hideWired = Data.HideWired;
+            Password = Data.Password;
+            Wallpaper = Data.Wallpaper;
+            Floor = Data.Floor;
+            Landscape = Data.Landscape;
+            hideWired = Data.HideWired;
 
-            this.WallThickness = Data.WallThickness;
-            this.FloorThickness = Data.FloorThickness;
+            WallThickness = Data.WallThickness;
+            FloorThickness = Data.FloorThickness;
 
-            this.chatMode = Data.chatMode;
-            this.chatSize = Data.chatSize;
-            this.chatSpeed = Data.chatSpeed;
-            this.chatDistance = Data.chatDistance;
-            this.extraFlood = Data.extraFlood;
+            chatMode = Data.chatMode;
+            chatSize = Data.chatSize;
+            chatSpeed = Data.chatSpeed;
+            chatDistance = Data.chatDistance;
+            extraFlood = Data.extraFlood;
 
-            this.TradeSettings = Data.TradeSettings;
+            TradeSettings = Data.TradeSettings;
 
-            this.WhoCanBan = Data.WhoCanBan;
-            this.WhoCanKick = Data.WhoCanKick;
-            this.WhoCanBan = Data.WhoCanBan;
+            WhoCanBan = Data.WhoCanBan;
+            WhoCanKick = Data.WhoCanKick;
+            WhoCanBan = Data.WhoCanBan;
 
-            this.PushEnabled = Data.PushEnabled;
-            this.PullEnabled = Data.PullEnabled;
-            this.SPullEnabled = Data.SPullEnabled;
-            this.SPushEnabled = Data.SPushEnabled;
-            this.EnablesEnabled = Data.EnablesEnabled;
-            this.RespectNotificationsEnabled = Data.RespectNotificationsEnabled;
-            this.PetMorphsAllowed = Data.PetMorphsAllowed;
-            this.Shoot = Data.Shoot;
+            PushEnabled = Data.PushEnabled;
+            PullEnabled = Data.PullEnabled;
+            SPullEnabled = Data.SPullEnabled;
+            SPushEnabled = Data.SPushEnabled;
+            EnablesEnabled = Data.EnablesEnabled;
+            RespectNotificationsEnabled = Data.RespectNotificationsEnabled;
+            PetMorphsAllowed = Data.PetMorphsAllowed;
+            Shoot = Data.Shoot;
 
-            this.poolQuestion = string.Empty;
-            this.yesPoolAnswers = new List<int>();
-            this.noPoolAnswers = new List<int>();
+            poolQuestion = string.Empty;
+            yesPoolAnswers = new List<int>();
+            noPoolAnswers = new List<int>();
 
-            this.ActiveTrades = new ArrayList();
-            this.Bans = new Dictionary<int, double>();
-            this.MutedUsers = new Dictionary<int, double>();
-            this.Tents = new Dictionary<int, List<RoomUser>>();
+            ActiveTrades = new ArrayList();
+            Bans = new Dictionary<int, double>();
+            MutedUsers = new Dictionary<int, double>();
+            Tents = new Dictionary<int, List<RoomUser>>();
 
             _gamemap = new Gamemap(this);
             if (_roomItemHandling == null)
+            {
                 _roomItemHandling = new RoomItemHandling(this);
+            }
+
             _roomUserManager = new RoomUserManager(this);
 
-            this._filterComponent = new FilterComponent(this);
-            this._wiredComponent = new WiredComponent(this);
+            _filterComponent = new FilterComponent(this);
+            _wiredComponent = new WiredComponent(this);
             _roomMusicManager = new MusicManager();
 
             GetRoomItemHandler().LoadFurniture();
             GetGameMap().GenerateMaps();
 
-            this.LoadPromotions();
-            this.LoadRights();
-            this.LoadBans();
-            this.LoadFilter();
-            this.InitBots();
-            this.InitPets();
+            LoadPromotions();
+            LoadRights();
+            LoadBans();
+            LoadFilter();
+            InitBots();
+            InitPets();
 
             Data.UsersNow = 1;
         }
@@ -212,7 +210,10 @@ namespace Neon.HabboHotel.Rooms
                 {
                     Item item = items[i];
                     if (!item.IsWired)
+                    {
                         continue;
+                    }
+
                     list.Add(new ObjectRemoveComposer(item, 0));
                 }
             }
@@ -222,7 +223,10 @@ namespace Neon.HabboHotel.Rooms
                 {
                     Item item = items[i];
                     if (!item.IsWired)
+                    {
                         continue;
+                    }
+
                     list.Add(new ObjectAddComposer(item, this));
                 }
             }
@@ -246,7 +250,9 @@ namespace Neon.HabboHotel.Rooms
         public void AddBan(int pId, long Time)
         {
             if (!Bans.ContainsKey(Convert.ToInt32(pId)))
+            {
                 Bans.Add(pId, NeonEnvironment.GetUnixTimestamp() + Time);
+            }
 
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
@@ -256,7 +262,7 @@ namespace Neon.HabboHotel.Rooms
 
         public List<int> BannedUsers()
         {
-            var Bans = new List<int>();
+            List<int> Bans = new List<int>();
 
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
@@ -275,10 +281,14 @@ namespace Neon.HabboHotel.Rooms
         public bool HasBanExpired(int pId)
         {
             if (!UserIsBanned(pId))
+            {
                 return true;
+            }
 
             if (Bans[pId] < NeonEnvironment.GetUnixTimestamp())
+            {
                 return true;
+            }
 
             return false;
         }
@@ -291,7 +301,9 @@ namespace Neon.HabboHotel.Rooms
             }
 
             if (Bans.ContainsKey(UserId))
+            {
                 Bans.Remove(UserId);
+            }
         }
 
         #endregion
@@ -301,7 +313,9 @@ namespace Neon.HabboHotel.Rooms
         public bool HasActiveTrade(RoomUser User)
         {
             if (User.IsBot)
+            {
                 return false;
+            }
 
             return HasActiveTrade(User.GetClient().GetHabbo().Id);
         }
@@ -309,12 +323,16 @@ namespace Neon.HabboHotel.Rooms
         public bool HasActiveTrade(int UserId)
         {
             if (ActiveTrades.Count == 0)
+            {
                 return false;
+            }
 
             foreach (Trade Trade in ActiveTrades.ToArray())
             {
                 if (Trade.ContainsUser(UserId))
+                {
                     return true;
+                }
             }
             return false;
         }
@@ -336,7 +354,9 @@ namespace Neon.HabboHotel.Rooms
         {
             if (UserOne == null || UserTwo == null || UserOne.IsBot || UserTwo.IsBot || UserOne.IsTrading ||
                 UserTwo.IsTrading || HasActiveTrade(UserOne) || HasActiveTrade(UserTwo))
+            {
                 return;
+            }
 
             ActiveTrades.Add(new Trade(UserOne.GetClient().GetHabbo().Id, UserTwo.GetClient().GetHabbo().Id, RoomId));
         }
@@ -346,7 +366,9 @@ namespace Neon.HabboHotel.Rooms
             Trade Trade = GetUserTrade(UserId);
 
             if (Trade == null)
+            {
                 return;
+            }
 
             Trade.CloseTrade(UserId);
             ActiveTrades.Remove(Trade);
@@ -355,20 +377,11 @@ namespace Neon.HabboHotel.Rooms
         #endregion
 
 
-        public int UserCount
-        {
-            get { return _roomUserManager.GetRoomUsers().Count; }
-        }
+        public int UserCount => _roomUserManager.GetRoomUsers().Count;
 
-        public int RoomId
-        {
-            get { return Id; }
-        }
+        public int RoomId => Id;
 
-        public bool CanTradeInRoom
-        {
-            get { return true; }
-        }
+        public bool CanTradeInRoom => true;
 
 
         public RoomData RoomData { get; }
@@ -400,57 +413,80 @@ namespace Neon.HabboHotel.Rooms
         public Soccer GetSoccer()
         {
             if (_soccer == null)
+            {
                 _soccer = new Soccer(this);
+            }
 
             return _soccer;
         }
         public TeamManager GetTeamManager()
         {
-            if (this.teammanager == null)
-                this.teammanager = new TeamManager();
-            return this.teammanager;
+            if (teammanager == null)
+            {
+                teammanager = new TeamManager();
+            }
+
+            return teammanager;
         }
 
 
         public TeamManager GetTeamManagerForBanzai()
         {
             if (teambanzai == null)
+            {
                 teambanzai = TeamManager.createTeamforGame("banzai");
+            }
+
             return teambanzai;
         }
 
         public TeamManager GetTeamManagerForFreeze()
         {
             if (teamfreeze == null)
+            {
                 teamfreeze = TeamManager.createTeamforGame("freeze");
+            }
+
             return teamfreeze;
         }
 
         public BattleBanzai GetBanzai()
         {
             if (_banzai == null)
+            {
                 _banzai = new BattleBanzai(this);
+            }
+
             return _banzai;
         }
 
         public Freeze GetFreeze()
         {
             if (_freeze == null)
+            {
                 _freeze = new Freeze(this);
+            }
+
             return _freeze;
         }
 
         public GameManager GetGameManager()
         {
             if (_gameManager == null)
+            {
                 _gameManager = new GameManager(this);
+            }
+
             return _gameManager;
         }
 
         public GameItemHandler GetGameItemHandler()
         {
             if (_gameItemHandler == null)
+            {
                 _gameItemHandler = new GameItemHandler(this);
+            }
+
             return _gameItemHandler;
         }
         public bool GotSoccer()
@@ -550,7 +586,9 @@ namespace Neon.HabboHotel.Rooms
                     }
                 }
                 if (GetRoomMusicManager().PlaylistSize > 0 && GetRoomMusicManager().LinkedItem.ExtraData != "0")
+                {
                     GetRoomMusicManager().Start();
+                }
             }
         }
 
@@ -561,7 +599,9 @@ namespace Neon.HabboHotel.Rooms
                 dbClient.SetQuery("SELECT `id`,`room_id`,`name`,`motto`,`look`,`x`,`y`,`z`,`rotation`,`gender`,`user_id`,`ai_type`,`walk_mode`,`automatic_chat`,`speaking_interval`,`mix_sentences`,`chat_bubble` FROM `bots` WHERE `room_id` = '" + RoomId + "' AND `ai_type` != 'pet'");
                 DataTable Data = dbClient.getTable();
                 if (Data == null)
+                {
                     return;
+                }
 
                 foreach (DataRow Bot in Data.Rows)
                 {
@@ -588,20 +628,24 @@ namespace Neon.HabboHotel.Rooms
                 DataTable Data = dbClient.getTable();
 
                 if (Data == null)
+                {
                     return;
+                }
 
                 foreach (DataRow Row in Data.Rows)
                 {
                     dbClient.SetQuery("SELECT `type`,`race`,`color`,`experience`,`energy`,`nutrition`,`respect`,`createstamp`,`have_saddle`,`anyone_ride`,`hairdye`,`pethair`,`gnome_clothing` FROM `bots_petdata` WHERE `id` = '" + Row[0] + "' LIMIT 1");
                     DataRow mRow = dbClient.getRow();
                     if (mRow == null)
+                    {
                         continue;
+                    }
 
                     Pet Pet = new Pet(Convert.ToInt32(Row["id"]), Convert.ToInt32(Row["user_id"]), Convert.ToInt32(Row["room_id"]), Convert.ToString(Row["name"]), Convert.ToInt32(mRow["type"]), Convert.ToString(mRow["race"]),
                         Convert.ToString(mRow["color"]), Convert.ToInt32(mRow["experience"]), Convert.ToInt32(mRow["energy"]), Convert.ToInt32(mRow["nutrition"]), Convert.ToInt32(mRow["respect"]), Convert.ToDouble(mRow["createstamp"]), Convert.ToInt32(Row["x"]), Convert.ToInt32(Row["y"]),
                         Convert.ToDouble(Row["z"]), Convert.ToInt32(mRow["have_saddle"]), Convert.ToInt32(mRow["anyone_ride"]), Convert.ToInt32(mRow["hairdye"]), Convert.ToInt32(mRow["pethair"]), Convert.ToString(mRow["gnome_clothing"]));
 
-                    var RndSpeechList = new List<RandomSpeech>();
+                    List<RandomSpeech> RndSpeechList = new List<RandomSpeech>();
 
                     _roomUserManager.DeployBot(new RoomBot(Pet.PetId, RoomId, "pet", "freeroam", Pet.Name, "", Pet.Look, Pet.X, Pet.Y, Convert.ToInt32(Pet.Z), 0, 0, 0, 0, 0, ref RndSpeechList, "", 0, Pet.OwnerId, false, 0, false, 0), Pet);
                 }
@@ -610,12 +654,12 @@ namespace Neon.HabboHotel.Rooms
 
         public FilterComponent GetFilter()
         {
-            return this._filterComponent;
+            return _filterComponent;
         }
 
         public WiredComponent GetWired()
         {
-            return this._wiredComponent;
+            return _wiredComponent;
         }
 
         public void LoadPromotions()
@@ -623,13 +667,15 @@ namespace Neon.HabboHotel.Rooms
             DataRow GetPromotion = null;
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
-                dbClient.SetQuery("SELECT * FROM `room_promotions` WHERE `room_id` = " + this.Id + " LIMIT 1;");
+                dbClient.SetQuery("SELECT * FROM `room_promotions` WHERE `room_id` = " + Id + " LIMIT 1;");
                 GetPromotion = dbClient.getRow();
 
                 if (GetPromotion != null)
                 {
                     if (Convert.ToDouble(GetPromotion["timestamp_expire"]) > NeonEnvironment.GetUnixTimestamp())
+                    {
                         RoomData._promotion = new RoomPromotion(Convert.ToString(GetPromotion["title"]), Convert.ToString(GetPromotion["description"]), Convert.ToDouble(GetPromotion["timestamp_start"]), Convert.ToDouble(GetPromotion["timestamp_expire"]), Convert.ToInt32(GetPromotion["category_id"]));
+                    }
                 }
             }
         }
@@ -638,7 +684,9 @@ namespace Neon.HabboHotel.Rooms
         {
             UsersWithRights = new List<int>();
             if (Group != null)
+            {
                 return;
+            }
 
             DataTable Data = null;
 
@@ -660,7 +708,7 @@ namespace Neon.HabboHotel.Rooms
 
         private void LoadFilter()
         {
-            this.WordFilterList = new List<string>();
+            WordFilterList = new List<string>();
 
             DataTable Data = null;
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
@@ -671,11 +719,13 @@ namespace Neon.HabboHotel.Rooms
             }
 
             if (Data == null)
+            {
                 return;
+            }
 
             foreach (DataRow Row in Data.Rows)
             {
-                this.WordFilterList.Add(Convert.ToString(Row["word"]));
+                WordFilterList.Add(Convert.ToString(Row["word"]));
             }
         }
 
@@ -692,7 +742,9 @@ namespace Neon.HabboHotel.Rooms
             }
 
             if (Bans == null)
+            {
                 return;
+            }
 
             foreach (DataRow ban in Bans.Rows)
             {
@@ -710,35 +762,51 @@ namespace Neon.HabboHotel.Rooms
             try
             {
                 if (Session == null || Session.GetHabbo() == null)
+                {
                     return false;
+                }
 
                 if (Session.GetHabbo().Username == OwnerName && Type == "private")
+                {
                     return true;
+                }
 
                 if (Session.GetHabbo().GetPermissions().HasRight("room_any_owner"))
+                {
                     return true;
+                }
 
                 if (!RequireOwnership && Type == "private")
                 {
                     if (Session.GetHabbo().GetPermissions().HasRight("room_any_rights"))
+                    {
                         return true;
+                    }
 
                     if (UsersWithRights.Contains(Session.GetHabbo().Id))
+                    {
                         return true;
+                    }
                 }
 
                 if (CheckForGroups && Type == "private")
                 {
                     if (Group == null)
+                    {
                         return false;
+                    }
 
                     if (Group.IsAdmin(Session.GetHabbo().Id))
+                    {
                         return true;
+                    }
 
                     if (Group.AdminOnlyDeco == 0)
                     {
                         if (Group.IsAdmin(Session.GetHabbo().Id))
+                        {
                             return true;
+                        }
                     }
                 }
             }
@@ -790,7 +858,9 @@ namespace Neon.HabboHotel.Rooms
                             ForSale.Group.DeleteMember(UserID);
                             GameClient UserClient = NeonEnvironment.GetGame().GetClientManager().GetClientByUserID(UserID);
                             if (UserClient == null)
+                            {
                                 continue;
+                            }
 
                             if (UserClient.GetHabbo().GetStats().FavouriteGroupId == GroupID)
                             {
@@ -836,7 +906,10 @@ namespace Neon.HabboHotel.Rooms
             foreach (RoomUser User in UsersReturn)
             {
                 if (User == null || User.GetClient() == null)
+                {
                     continue;
+                }
+
                 User.GetClient().SendMessage(new RoomForwardComposer(ForSale.RoomId));
                 User.GetClient().SendNotification("La sala en que estás acaba de ser comprada por " + Buyer.GetClient().GetHabbo().Username + " en total " + ForSale.ForSaleAmount + " duckets!");
             }
@@ -846,7 +919,7 @@ namespace Neon.HabboHotel.Rooms
         {
             Func<Item, bool> predicate = null;
             string Key = null;
-            foreach (Item item in this.GetRoomItemHandler().GetFurniObjects(Ball.GetX, Ball.GetY).ToList())
+            foreach (Item item in GetRoomItemHandler().GetFurniObjects(Ball.GetX, Ball.GetY).ToList())
             {
                 if (item.GetBaseItem().ItemName.StartsWith("fball_goal_"))
                 {
@@ -863,21 +936,28 @@ namespace Neon.HabboHotel.Rooms
                 {
                     predicate = p => p.GetBaseItem().ItemName == ("fball_score_" + Key);
                 }
-                foreach (Item item2 in this.GetRoomItemHandler().GetFloor.Where<Item>(predicate).ToList())
+                foreach (Item item2 in GetRoomItemHandler().GetFloor.Where<Item>(predicate).ToList())
                 {
                     if (item2.GetBaseItem().ItemName == ("fball_score_" + Key))
                     {
-                        if (!String.IsNullOrEmpty(item2.ExtraData))
+                        if (!string.IsNullOrEmpty(item2.ExtraData))
+                        {
                             item2.ExtraData = (Convert.ToInt32(item2.ExtraData) + 1).ToString();
+                        }
                         else
+                        {
                             item2.ExtraData = "1";
+                        }
+
                         item2.UpdateState();
                     }
                 }
                 return true;
             }
             else
+            {
                 return false;
+            }
         }
 
         public void OnUserShoot(GameClient client, Item Ball)
@@ -886,13 +966,17 @@ namespace Neon.HabboHotel.Rooms
             string Key = null;
 
             if (client == null)
+            {
                 return;
+            }
 
             RoomUser User = Ball.GetRoom().GetRoomUserManager().GetRoomUserByHabbo(client.GetHabbo().Id);
             if (User == null)
+            {
                 return;
+            }
 
-            foreach (Item item in this.GetRoomItemHandler().GetFurniObjects(Ball.GetX, Ball.GetY).ToList())
+            foreach (Item item in GetRoomItemHandler().GetFurniObjects(Ball.GetX, Ball.GetY).ToList())
             {
                 if (item.GetBaseItem().ItemName.StartsWith("fball_goal_"))
                 {
@@ -913,14 +997,19 @@ namespace Neon.HabboHotel.Rooms
                     predicate = p => p.GetBaseItem().ItemName == ("fball_score_" + Key);
                 }
 
-                foreach (Item item2 in this.GetRoomItemHandler().GetFloor.Where<Item>(predicate).ToList())
+                foreach (Item item2 in GetRoomItemHandler().GetFloor.Where<Item>(predicate).ToList())
                 {
                     if (item2.GetBaseItem().ItemName == ("fball_score_" + Key))
                     {
-                        if (!String.IsNullOrEmpty(item2.ExtraData))
+                        if (!string.IsNullOrEmpty(item2.ExtraData))
+                        {
                             item2.ExtraData = (Convert.ToInt32(item2.ExtraData) + 1).ToString();
+                        }
                         else
+                        {
                             item2.ExtraData = "1";
+                        }
+
                         item2.UpdateState();
                     }
                 }
@@ -930,21 +1019,27 @@ namespace Neon.HabboHotel.Rooms
         public void ProcessRoom()
         {
             if (isCrashed || mDisposed)
+            {
                 return;
+            }
 
             try
             {
-                if (this.GetRoomUserManager().GetRoomUsers().Count == 0)
-                    this.IdleTime++;
-                else if (this.IdleTime > 0)
-                    this.IdleTime = 0;
-
-                if (this.RoomData.HasActivePromotion && this.RoomData.Promotion.HasExpired)
+                if (GetRoomUserManager().GetRoomUsers().Count == 0)
                 {
-                    this.RoomData.EndPromotion();
+                    IdleTime++;
+                }
+                else if (IdleTime > 0)
+                {
+                    IdleTime = 0;
                 }
 
-                if (this.IdleTime >= 60 && !this.RoomData.HasActivePromotion)
+                if (RoomData.HasActivePromotion && RoomData.Promotion.HasExpired)
+                {
+                    RoomData.EndPromotion();
+                }
+
+                if (IdleTime >= 60 && !RoomData.HasActivePromotion)
                 {
                     NeonEnvironment.GetGame().GetRoomManager().UnloadRoom(this);
                     return;
@@ -977,7 +1072,9 @@ namespace Neon.HabboHotel.Rooms
                 try
                 {
                     if (_gameItemHandler != null)
+                    {
                         _gameItemHandler.OnCycle();
+                    }
                 }
                 catch (Exception)
                 {
@@ -1009,7 +1106,9 @@ namespace Neon.HabboHotel.Rooms
                 foreach (RoomUser user in _roomUserManager.GetRoomUsers().ToList())
                 {
                     if (user == null || user.GetClient() == null)
+                    {
                         continue;
+                    }
 
                     user.GetClient().SendNotification("O quarto travou, avise um Administrador.");
 
@@ -1042,7 +1141,9 @@ namespace Neon.HabboHotel.Rooms
             }
 
             if (Session.GetHabbo().TimeMuted > 0 || (RoomMuted && Session.GetHabbo().Username != OwnerName))
+            {
                 return true;
+            }
 
             return false;
         }
@@ -1070,23 +1171,35 @@ namespace Neon.HabboHotel.Rooms
             foreach (RoomUser RoomUser in _roomUserManager.GetUserList().ToList())
             {
                 if (RoomUser == null)
+                {
                     continue;
+                }
 
                 Session.SendMessage(new UsersComposer(RoomUser));
 
                 if (RoomUser.IsBot && RoomUser.BotData.DanceId > 0)
+                {
                     Session.SendMessage(new DanceComposer(RoomUser, RoomUser.BotData.DanceId));
+                }
                 else if (!RoomUser.IsBot && !RoomUser.IsPet && RoomUser.IsDancing)
+                {
                     Session.SendMessage(new DanceComposer(RoomUser, RoomUser.DanceId));
+                }
 
                 if (RoomUser.IsAsleep)
+                {
                     Session.SendMessage(new SleepComposer(RoomUser, true));
+                }
 
                 if (RoomUser.CarryItemID > 0 && RoomUser.CarryTimer > 0)
+                {
                     Session.SendMessage(new CarryObjectComposer(RoomUser.VirtualId, RoomUser.CarryItemID));
+                }
 
                 if (!RoomUser.IsBot && !RoomUser.IsPet && RoomUser.CurrentEffect > 0)
+                {
                     Room.SendMessage(new AvatarEffectComposer(RoomUser.VirtualId, RoomUser.CurrentEffect));
+                }
             }
 
             Session.SendMessage(new UserUpdateComposer(_roomUserManager.GetUserList().ToList()));
@@ -1098,7 +1211,9 @@ namespace Neon.HabboHotel.Rooms
         public void AddTent(int TentId)
         {
             if (Tents.ContainsKey(TentId))
+            {
                 Tents.Remove(TentId);
+            }
 
             Tents.Add(TentId, new List<RoomUser>());
         }
@@ -1106,19 +1221,25 @@ namespace Neon.HabboHotel.Rooms
         public void RemoveTent(int TentId, Item Item)
         {
             if (!Tents.ContainsKey(TentId))
+            {
                 return;
+            }
 
             List<RoomUser> Users = Tents[TentId];
             foreach (RoomUser User in Users.ToList())
             {
                 if (User == null || User.GetClient() == null || User.GetClient().GetHabbo() == null)
+                {
                     continue;
+                }
 
                 User.GetClient().GetHabbo().TentId = 0;
             }
 
             if (Tents.ContainsKey(TentId))
+            {
                 Tents.Remove(TentId);
+            }
         }
 
         public void AddUserToTent(int TentId, RoomUser User, Item Item)
@@ -1126,10 +1247,15 @@ namespace Neon.HabboHotel.Rooms
             if (User != null && User.GetClient() != null && User.GetClient().GetHabbo() != null)
             {
                 if (!Tents.ContainsKey(TentId))
+                {
                     Tents.Add(TentId, new List<RoomUser>());
+                }
 
                 if (!Tents[TentId].Contains(User))
+                {
                     Tents[TentId].Add(User);
+                }
+
                 User.GetClient().GetHabbo().TentId = TentId;
             }
         }
@@ -1139,10 +1265,14 @@ namespace Neon.HabboHotel.Rooms
             if (User != null && User.GetClient() != null && User.GetClient().GetHabbo() != null)
             {
                 if (!Tents.ContainsKey(TentId))
+                {
                     Tents.Add(TentId, new List<RoomUser>());
+                }
 
                 if (Tents[TentId].Contains(User))
+                {
                     Tents[TentId].Remove(User);
+                }
 
                 User.GetClient().GetHabbo().TentId = 0;
             }
@@ -1151,12 +1281,16 @@ namespace Neon.HabboHotel.Rooms
         public void SendToTent(int Id, int TentId, IServerPacket Packet)
         {
             if (!Tents.ContainsKey(TentId))
+            {
                 return;
+            }
 
             foreach (RoomUser User in Tents[TentId].ToList())
             {
                 if (User == null || User.GetClient() == null || User.GetClient().GetHabbo() == null || User.GetClient().GetHabbo().MutedUsers.Contains(Id) || User.GetClient().GetHabbo().TentId != TentId)
+                {
                     continue;
+                }
 
                 User.GetClient().SendMessage(Packet);
             }
@@ -1171,12 +1305,14 @@ namespace Neon.HabboHotel.Rooms
                 lock (GetRoomUserManager().GetUsers())
                 {
                     foreach (
-                        var client in
+                        GameClient client in
                         GetRoomUserManager()
                             .GetUsers().Values.Where(user => user != null && !user.IsBot)
                             .Select(user => user.GetClient())
                             .Where(client => client != null))
+                    {
                         client.SendMessage(message);
+                    }
                 }
             }
             catch
@@ -1186,26 +1322,36 @@ namespace Neon.HabboHotel.Rooms
         public void SendMessage(IServerPacket Message, bool UsersWithRightsOnly = false)
         {
             if (Message == null)
+            {
                 return;
+            }
 
             try
             {
 
-                List<RoomUser> Users = this._roomUserManager.GetUserList().ToList();
+                List<RoomUser> Users = _roomUserManager.GetUserList().ToList();
 
-                if (this == null || this._roomUserManager == null || Users == null)
+                if (this == null || _roomUserManager == null || Users == null)
+                {
                     return;
+                }
 
                 foreach (RoomUser User in Users)
                 {
                     if (User == null || User.IsBot)
+                    {
                         continue;
+                    }
 
                     if (User.GetClient() == null || User.GetClient().GetConnection() == null)
+                    {
                         continue;
+                    }
 
-                    if (UsersWithRightsOnly && !this.CheckRights(User.GetClient()))
+                    if (UsersWithRightsOnly && !CheckRights(User.GetClient()))
+                    {
                         continue;
+                    }
 
                     User.GetClient().SendMessage(Message);
                 }
@@ -1218,13 +1364,17 @@ namespace Neon.HabboHotel.Rooms
 
         public void BroadcastPacket(byte[] Packet)
         {
-            foreach (RoomUser User in this._roomUserManager.GetUserList().ToList())
+            foreach (RoomUser User in _roomUserManager.GetUserList().ToList())
             {
                 if (User == null || User.IsBot)
+                {
                     continue;
+                }
 
                 if (User.GetClient() == null || User.GetClient().GetConnection() == null)
+                {
                     continue;
+                }
 
                 User.GetClient().GetConnection().SendData(Packet);
             }
@@ -1233,7 +1383,9 @@ namespace Neon.HabboHotel.Rooms
         public void SendMessage(List<ServerPacket> Messages)
         {
             if (Messages.Count == 0)
+            {
                 return;
+            }
 
             try
             {
@@ -1254,7 +1406,7 @@ namespace Neon.HabboHotel.Rooms
                     }
                 }
 
-                this.BroadcastPacket(TotalBytes);
+                BroadcastPacket(TotalBytes);
             }
             catch (Exception e)
             {
@@ -1268,7 +1420,9 @@ namespace Neon.HabboHotel.Rooms
             foreach (RoomUser User in GetRoomUserManager().GetRoomUsers().ToList())
             {
                 if (User == null || !User.IsBot)
+                {
                     continue;
+                }
 
                 if (User.IsBot)
                 {
@@ -1300,7 +1454,9 @@ namespace Neon.HabboHotel.Rooms
                 try
                 {
                     if (ProcessTask != null && ProcessTask.IsCompleted)
+                    {
                         ProcessTask.Dispose();
+                    }
                 }
                 catch { }
 
@@ -1311,10 +1467,12 @@ namespace Neon.HabboHotel.Rooms
                     dbClient.runFastQuery("UPDATE `rooms` SET `users_now` = '0' WHERE `id` = '" + Id + "' LIMIT 1");
                 }
 
-                if (this._roomUserManager.PetCount > 0)
-                    this._roomUserManager.UpdatePets();
+                if (_roomUserManager.PetCount > 0)
+                {
+                    _roomUserManager.UpdatePets();
+                }
 
-                this.SaveAI();
+                SaveAI();
 
                 UsersNow = 0;
                 RoomData.UsersNow = 0;
@@ -1324,38 +1482,56 @@ namespace Neon.HabboHotel.Rooms
                 MutedUsers.Clear();
                 Tents.Clear();
 
-                this.TonerData = null;
-                this.MoodlightData = null;
+                TonerData = null;
+                MoodlightData = null;
 
-                this._filterComponent.Cleanup();
-                this._wiredComponent.Cleanup();
+                _filterComponent.Cleanup();
+                _wiredComponent.Cleanup();
 
-                if (this._gameItemHandler != null)
-                    this._gameItemHandler.Dispose();
+                if (_gameItemHandler != null)
+                {
+                    _gameItemHandler.Dispose();
+                }
 
-                if (this._gameManager != null)
-                    this._gameManager.Dispose();
+                if (_gameManager != null)
+                {
+                    _gameManager.Dispose();
+                }
 
-                if (this._freeze != null)
-                    this._freeze.Dispose();
+                if (_freeze != null)
+                {
+                    _freeze.Dispose();
+                }
 
-                if (this._banzai != null)
-                    this._banzai.Dispose();
+                if (_banzai != null)
+                {
+                    _banzai.Dispose();
+                }
 
-                if (this._soccer != null)
-                    this._soccer.Dispose();
+                if (_soccer != null)
+                {
+                    _soccer.Dispose();
+                }
 
-                if (this._gamemap != null)
-                    this._gamemap.Dispose();
+                if (_gamemap != null)
+                {
+                    _gamemap.Dispose();
+                }
 
-                if (this._roomUserManager != null)
-                    this._roomUserManager.Dispose();
+                if (_roomUserManager != null)
+                {
+                    _roomUserManager.Dispose();
+                }
 
-                if (this._roomItemHandling != null)
-                    this._roomItemHandling.Dispose();
+                if (_roomItemHandling != null)
+                {
+                    _roomItemHandling.Dispose();
+                }
 
                 if (ActiveTrades.Count > 0)
+                {
                     ActiveTrades.Clear();
+                }
             }
         }
     }

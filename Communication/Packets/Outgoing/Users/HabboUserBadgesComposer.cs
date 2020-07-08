@@ -1,14 +1,10 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Users;
+﻿using Neon.HabboHotel.Users;
 using Neon.HabboHotel.Users.Badges;
+using System.Linq;
 
 namespace Neon.Communication.Packets.Outgoing.Users
 {
-    class HabboUserBadgesComposer : ServerPacket
+    internal class HabboUserBadgesComposer : ServerPacket
     {
         public HabboUserBadgesComposer(Habbo Habbo)
             : base(ServerPacketHeader.HabboUserBadgesMessageComposer)
@@ -19,10 +15,12 @@ namespace Neon.Communication.Packets.Outgoing.Users
             foreach (Badge Badge in Habbo.GetBadgeComponent().GetBadges().ToList())
             {
                 if (Badge.Slot <= 0)
+                {
                     continue;
+                }
 
                 base.WriteInteger(Badge.Slot);
-               base.WriteString(Badge.Code);
+                base.WriteString(Badge.Code);
             }
         }
     }

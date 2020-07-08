@@ -2,7 +2,7 @@
 
 namespace Neon.Communication.Packets.Incoming.Avatar
 {
-    class GetWardrobeEvent : IPacketEvent
+    internal class GetWardrobeEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {

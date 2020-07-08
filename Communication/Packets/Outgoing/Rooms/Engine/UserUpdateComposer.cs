@@ -1,14 +1,11 @@
-﻿using System;
+﻿using Neon.HabboHotel.Rooms;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-
-using Neon.HabboHotel.Rooms;
 
 namespace Neon.Communication.Packets.Outgoing.Rooms.Engine
 {
-    class UserUpdateComposer : ServerPacket
+    internal class UserUpdateComposer : ServerPacket
     {
         public UserUpdateComposer(ICollection<RoomUser> RoomUsers)
             : base(ServerPacketHeader.UserUpdateMessageComposer)
@@ -30,7 +27,7 @@ namespace Neon.Communication.Packets.Outgoing.Rooms.Engine
                 {
                     StatusComposer.Append(Status.Key);
 
-                    if (!String.IsNullOrEmpty(Status.Value))
+                    if (!string.IsNullOrEmpty(Status.Value))
                     {
                         StatusComposer.Append(" ");
                         StatusComposer.Append(Status.Value);

@@ -1,36 +1,38 @@
-﻿using System.Linq;
-using System.Collections.Generic;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Furni;
 using Neon.HabboHotel.Items;
-using Neon.Communication.Packets.Outgoing.Rooms.Furni;
 using Neon.HabboHotel.Items.Crafting;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Neon.Communication.Packets.Incoming.Rooms.Furni
 {
-    class GetCraftingRecipesAvailableEvent : IPacketEvent
+    internal class GetCraftingRecipesAvailableEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
             int craftingTable = Packet.PopInt();
             List<Item> items = new List<Item>();
 
-            var count = Packet.PopInt();
-            for (var i = 1; i <= count; i++)
+            int count = Packet.PopInt();
+            for (int i = 1; i <= count; i++)
             {
-                var id = Packet.PopInt();
+                int id = Packet.PopInt();
 
-                var item = Session.GetHabbo().GetInventoryComponent().GetItem(id);
+                Item item = Session.GetHabbo().GetInventoryComponent().GetItem(id);
                 if (item == null || items.Contains(item))
+                {
                     return;
+                }
 
                 items.Add(item);
             }
 
             CraftingRecipe craftingRecipe = null;
-            foreach (var recipe in NeonEnvironment.GetGame().GetCraftingManager().CraftingRecipes)
+            foreach (KeyValuePair<string, CraftingRecipe> recipe in NeonEnvironment.GetGame().GetCraftingManager().CraftingRecipes)
             {
                 bool found = false;
                 int total = 0;
-                foreach (var item in recipe.Value.ItemsNeeded)
+                foreach (KeyValuePair<string, int> item in recipe.Value.ItemsNeeded)
                 {
 
                     if (item.Value != items.Count(item2 => item2.GetBaseItem().ItemName == item.Key))
@@ -44,11 +46,15 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Furni
                     }
 
                     if (total == items.Count)
+                    {
                         found = true;
+                    }
                 }
 
                 if (found == false)
+                {
                     continue;
+                }
 
                 craftingRecipe = recipe.Value;
                 break;

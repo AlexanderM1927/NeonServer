@@ -11,7 +11,7 @@ namespace Neon.HabboHotel.Catalog.PredesignedRooms
         internal List<PredesignedFloorItems> FloorItemData;
         internal List<PredesignedWallItems> WallItemData;
 
-        internal PredesignedRooms(uint predesignedId, uint roomId, string roomModel, string floorItems, string wallItems, 
+        internal PredesignedRooms(uint predesignedId, uint roomId, string roomModel, string floorItems, string wallItems,
             string catalogItems, string roomDecoration)
         {
             PredesignedId = predesignedId;
@@ -21,9 +21,9 @@ namespace Neon.HabboHotel.Catalog.PredesignedRooms
             if (FloorItems != null)
             {
                 FloorItemData = new List<PredesignedFloorItems>();
-                foreach (var item in FloorItems)
+                foreach (string item in FloorItems)
                 {
-                    var itemsData = item.Split(new string[] { "$$$$" }, StringSplitOptions.None);
+                    string[] itemsData = item.Split(new string[] { "$$$$" }, StringSplitOptions.None);
                     FloorItemData.Add(new PredesignedFloorItems(Convert.ToUInt32(itemsData[0]),
                         Convert.ToInt32(itemsData[1]), Convert.ToInt32(itemsData[2]),
                         Convert.ToInt32(itemsData[4]), Convert.ToDouble(itemsData[3]), itemsData[5]));
@@ -34,13 +34,13 @@ namespace Neon.HabboHotel.Catalog.PredesignedRooms
             if (WallItems != null)
             {
                 WallItemData = new List<PredesignedWallItems>();
-                foreach (var item in WallItems)
+                foreach (string item in WallItems)
                 {
-                    var itemsData = item.Split(new string[] { "$$$$" }, StringSplitOptions.None);
+                    string[] itemsData = item.Split(new string[] { "$$$$" }, StringSplitOptions.None);
                     WallItemData.Add(new PredesignedWallItems(Convert.ToUInt32(itemsData[0]), itemsData[1], itemsData[2]));
                 }
             }
-            
+
             CatalogItems = catalogItems;
             RoomDecoration = roomDecoration.Split(';');
         }

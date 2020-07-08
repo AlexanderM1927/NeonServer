@@ -1,14 +1,12 @@
-﻿using System;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Furni.LoveLocks;
+using Neon.Database.Interfaces;
 using Neon.HabboHotel.Items;
 using Neon.HabboHotel.Rooms;
-using Neon.Communication.Packets.Outgoing;
-using Neon.Communication.Packets.Outgoing.Rooms.Furni.LoveLocks;
-using Neon.Communication.Packets.Outgoing.Rooms.Engine;
-using Neon.Database.Interfaces;
+using System;
 
 namespace Neon.Communication.Packets.Incoming.Rooms.Furni.LoveLocks
 {
-    class ConfirmLoveLockEvent : IPacketEvent
+    internal class ConfirmLoveLockEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
@@ -17,12 +15,16 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Furni.LoveLocks
 
             Room Room = Session.GetHabbo().CurrentRoom;
             if (Room == null)
+            {
                 return;
+            }
 
             Item Item = Room.GetRoomItemHandler().GetItem(pId);
 
             if (Item == null || Item.GetBaseItem() == null || Item.GetBaseItem().InteractionType != InteractionType.LOVELOCK)
+            {
                 return;
+            }
 
             int UserOneId = Item.InteractingUser;
             int UserTwoId = Item.InteractingUser2;
@@ -30,21 +32,21 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Furni.LoveLocks
             RoomUser UserOne = Room.GetRoomUserManager().GetRoomUserByHabbo(UserOneId);
             RoomUser UserTwo = Room.GetRoomUserManager().GetRoomUserByHabbo(UserTwoId);
 
-            if(UserOne == null && UserTwo == null)
+            if (UserOne == null && UserTwo == null)
             {
                 Item.InteractingUser = 0;
                 Item.InteractingUser2 = 0;
                 Session.SendNotification("Su pareja ha salido de la sala o ha cancelado sus candados del amor.");
                 return;
             }
-            else if(UserOne.GetClient() == null || UserTwo.GetClient() == null)
+            else if (UserOne.GetClient() == null || UserTwo.GetClient() == null)
             {
                 Item.InteractingUser = 0;
                 Item.InteractingUser2 = 0;
                 Session.SendNotification("Su pareja ha salido de la sala o ha cancelado sus candados del amor.");
                 return;
             }
-            else if(UserOne == null)
+            else if (UserOne == null)
             {
                 UserTwo.CanWalk = true;
                 UserTwo.GetClient().SendNotification("Su pareja ha salido de la sala o ha cancelado sus candados del amor.");
@@ -53,7 +55,7 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Furni.LoveLocks
                 Item.InteractingUser2 = 0;
                 return;
             }
-            else if(UserTwo == null)
+            else if (UserTwo == null)
             {
                 UserOne.CanWalk = true;
                 UserOne.GetClient().SendNotification("Su pareja ha salido de la sala o ha cancelado sus candados del amor.");
@@ -62,7 +64,7 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Furni.LoveLocks
                 Item.InteractingUser2 = 0;
                 return;
             }
-            else if(Item.ExtraData.Contains(Convert.ToChar(5).ToString()))
+            else if (Item.ExtraData.Contains(Convert.ToChar(5).ToString()))
             {
                 UserTwo.CanWalk = true;
                 UserTwo.GetClient().SendNotification("Parece que este candado del amor ya ha sido bloqueado.");
@@ -76,7 +78,7 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Furni.LoveLocks
                 Item.InteractingUser2 = 0;
                 return;
             }
-            else if(!isConfirmed)
+            else if (!isConfirmed)
             {
                 Item.InteractingUser = 0;
                 Item.InteractingUser2 = 0;
@@ -90,19 +92,21 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Furni.LoveLocks
             }
             else
             {
-                if(UserOneId == Session.GetHabbo().Id)
+                if (UserOneId == Session.GetHabbo().Id)
                 {
                     Session.SendMessage(new LoveLockDialogueSetLockedMessageComposer(pId));
                     UserOne.LLPartner = UserTwoId;
                 }
-                else if(UserTwoId == Session.GetHabbo().Id)
+                else if (UserTwoId == Session.GetHabbo().Id)
                 {
                     Session.SendMessage(new LoveLockDialogueSetLockedMessageComposer(pId));
                     UserTwo.LLPartner = UserOneId;
                 }
 
                 if (UserOne.LLPartner == 0 || UserTwo.LLPartner == 0)
+                {
                     return;
+                }
                 else
                 {
                     Item.ExtraData = "1" + (char)5 + UserOne.GetUsername() + (char)5 + UserTwo.GetUsername() + (char)5 + UserOne.GetClient().GetHabbo().Look + (char)5 + UserTwo.GetClient().GetHabbo().Look + (char)5 + DateTime.Now.ToString("dd/MM/yyyy");

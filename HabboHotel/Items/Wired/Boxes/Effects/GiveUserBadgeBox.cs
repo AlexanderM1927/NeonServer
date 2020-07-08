@@ -1,23 +1,17 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using System.Collections.Concurrent;
-
-using Neon.Communication.Packets.Incoming;
+﻿using Neon.Communication.Packets.Incoming;
 using Neon.HabboHotel.Rooms;
 using Neon.HabboHotel.Users;
-using Neon.Communication.Packets.Outgoing.Rooms.Chat;
+using System.Collections.Concurrent;
 
 namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
 {
-    class GiveUserBadgeBox : IWiredItem
+    internal class GiveUserBadgeBox : IWiredItem
     {
         public Room Instance { get; set; }
 
         public Item Item { get; set; }
 
-        public WiredBoxType Type { get { return WiredBoxType.EffectGiveUserBadge; } }
+        public WiredBoxType Type => WiredBoxType.EffectGiveUserBadge;
 
         public ConcurrentDictionary<int, Item> SetItems { get; set; }
 
@@ -31,7 +25,7 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
         {
             this.Instance = Instance;
             this.Item = Item;
-            this.SetItems = new ConcurrentDictionary<int, Item>();
+            SetItems = new ConcurrentDictionary<int, Item>();
         }
 
         public void HandleSave(ClientPacket Packet)
@@ -39,31 +33,43 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
             int Unknown = Packet.PopInt();
             string Badge = Packet.PopString();
 
-            this.StringData = Badge;
+            StringData = Badge;
         }
 
         public bool Execute(params object[] Params)
         {
             if (Params == null || Params.Length == 0)
+            {
                 return false;
+            }
 
             Habbo Owner = NeonEnvironment.GetHabboById(Item.UserID);
             if (Owner == null || !Owner.GetPermissions().HasRight("room_item_wired_rewards"))
+            {
                 return false;
+            }
 
             Habbo Player = (Habbo)Params[0];
             if (Player == null || Player.GetClient() == null)
+            {
                 return false;
+            }
 
             RoomUser User = Player.CurrentRoom.GetRoomUserManager().GetRoomUserByHabbo(Player.Username);
             if (User == null)
+            {
                 return false;
+            }
 
-            if (String.IsNullOrEmpty(StringData))
+            if (string.IsNullOrEmpty(StringData))
+            {
                 return false;
+            }
 
             if (Player.GetBadgeComponent().HasBadge(StringData))
+            {
                 Player.GetClient().SendNotification("Parece que ya has obtenido esta placa, revisa tu inventario.");
+            }
             else
             {
                 Player.GetBadgeComponent().GiveBadge(StringData, true, Player.GetClient());

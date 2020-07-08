@@ -1,12 +1,11 @@
-﻿using System.Linq;
-
-using Neon.HabboHotel.GameClients;
-using Neon.Communication.Packets.Outgoing.Inventory.Purse;
+﻿using Neon.Communication.Packets.Outgoing.Inventory.Purse;
 using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
+using Neon.HabboHotel.GameClients;
+using System.Linq;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
 {
-    class RoomGiveCommand : IChatCommand
+    internal class RoomGiveCommand : IChatCommand
     {
         public string PermissionRequired => "command_room_give";
 
@@ -34,14 +33,15 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
                         }
                         else
                         {
-                            int Amount;
-                            if (int.TryParse(Params[2], out Amount))
+                            if (int.TryParse(Params[2], out int Amount))
+                            {
                                 foreach (RoomUser User in Room.GetRoomUserManager().GetUserList().ToList())
                                 {
                                     User.GetClient().GetHabbo().Diamonds += Amount;
                                     User.GetClient().SendMessage(new HabboActivityPointNotificationComposer(User.GetClient().GetHabbo().Diamonds, Amount, 5));
                                     User.GetClient().SendMessage(new RoomCustomizedAlertComposer(Session.GetHabbo().Username + " te acaba de regalar " + Amount + " Diamantes."));
                                 }
+                            }
                         }
                         Session.SendWhisper("Enviaste correctamente en la sala " + Params[2] + " diamantes!");
                     }
@@ -74,14 +74,14 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
                         }
                         else
                         {
-                            int Amount;
-                            if (int.TryParse(Params[2], out Amount))
-
+                            if (int.TryParse(Params[2], out int Amount))
+                            {
                                 if (Amount > 50)
                                 {
                                     Session.SendWhisper("No pueden enviar más de 50 Pixeles, esto será notificado al CEO y tomará medidas.");
                                     return;
                                 }
+                            }
 
                             foreach (RoomUser User in Room.GetRoomUserManager().GetUserList().ToList())
                             {

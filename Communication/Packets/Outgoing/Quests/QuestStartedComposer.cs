@@ -1,32 +1,32 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Quests;
+﻿
 using Neon.HabboHotel.GameClients;
+using Neon.HabboHotel.Quests;
 
 namespace Neon.Communication.Packets.Outgoing.Quests
 {
-    class QuestStartedComposer : ServerPacket
+    internal class QuestStartedComposer : ServerPacket
     {
         public QuestStartedComposer(GameClient Session, Quest Quest)
             : base(ServerPacketHeader.QuestStartedMessageComposer)
         {
-            this.SerializeQuest(this, Session, Quest, Quest.Category);
+            SerializeQuest(this, Session, Quest, Quest.Category);
         }
 
         private void SerializeQuest(ServerPacket Message, GameClient Session, Quest Quest, string Category)
         {
             if (Message == null || Session == null)
+            {
                 return;
+            }
 
             int AmountInCat = NeonEnvironment.GetGame().GetQuestManager().GetAmountOfQuestsInCategory(Category);
             int Number = Quest == null ? AmountInCat : Quest.Number - 1;
             int UserProgress = Quest == null ? 0 : Session.GetHabbo().GetQuestProgress(Quest.Id);
 
             if (Quest != null && Quest.IsCompleted(UserProgress))
+            {
                 Number++;
+            }
 
             Message.WriteString(Category);
             Message.WriteInteger(Number);  // Quest progress in this cat

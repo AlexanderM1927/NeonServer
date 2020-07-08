@@ -1,13 +1,11 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using Neon.HabboHotel.Items;
+﻿using Neon.HabboHotel.Items;
 using Neon.HabboHotel.Rooms.Music;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Neon.Communication.Packets.Outgoing.Rooms.Music
 {
-    class GetJukeboxDisksComposer : ServerPacket
+    internal class GetJukeboxDisksComposer : ServerPacket
     {
         public GetJukeboxDisksComposer(Dictionary<int, Item> songs)
             : base(ServerPacketHeader.GetJukeboxDisksMessageComposer)

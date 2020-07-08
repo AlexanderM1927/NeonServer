@@ -1,24 +1,25 @@
-﻿using System;
-using System.Data;
+﻿using Neon.Database.Interfaces;
+using System;
 using System.Collections.Generic;
-
-using Neon.Database.Interfaces;
+using System.Data;
 
 namespace Neon.HabboHotel.Users.Polls
 {
     public sealed class PollsComponent
     {
-        private List<int> _completedPolls;
+        private readonly List<int> _completedPolls;
 
         public PollsComponent()
         {
-            this._completedPolls = new List<int>();
+            _completedPolls = new List<int>();
         }
 
         public bool Init(Habbo habbo)
         {
-            if (this._completedPolls.Count > 0)
+            if (_completedPolls.Count > 0)
+            {
                 return false;
+            }
 
             DataTable GetPolls = null;
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
@@ -31,8 +32,10 @@ namespace Neon.HabboHotel.Users.Polls
                 {
                     foreach (DataRow Row in GetPolls.Rows)
                     {
-                        if (!this._completedPolls.Contains(Convert.ToInt32(Row["poll_id"])))
-                            this._completedPolls.Add(Convert.ToInt32(Row["poll_id"]));
+                        if (!_completedPolls.Contains(Convert.ToInt32(Row["poll_id"])))
+                        {
+                            _completedPolls.Add(Convert.ToInt32(Row["poll_id"]));
+                        }
                     }
                 }
             }
@@ -41,21 +44,20 @@ namespace Neon.HabboHotel.Users.Polls
 
         public bool TryAdd(int PollId)
         {
-            if (this._completedPolls.Contains(PollId))
+            if (_completedPolls.Contains(PollId))
+            {
                 return false;
+            }
 
-            this._completedPolls.Add(PollId);
+            _completedPolls.Add(PollId);
             return true;
         }
 
-        public ICollection<int> CompletedPolls
-        {
-            get { return this._completedPolls; }
-        }
+        public ICollection<int> CompletedPolls => _completedPolls;
 
         public void Dispose()
         {
-            this._completedPolls.Clear();
+            _completedPolls.Clear();
         }
     }
 }

@@ -1,12 +1,9 @@
-﻿using System;
-using log4net;
-using Neon.HabboHotel;
-
+﻿using log4net;
 using Neon.Communication.Packets.Outgoing.Moderation;
+using Neon.Communication.Packets.Outgoing.Notifications;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Neon.Communication.Packets.Outgoing.Notifications;
-using System.Globalization;
 
 namespace Neon.Core
 {
@@ -17,7 +14,9 @@ namespace Neon.Core
         public static void InvokeCommand(string inputData)
         {
             if (string.IsNullOrEmpty(inputData))
+            {
                 return;
+            }
 
             try
             {
@@ -78,7 +77,7 @@ namespace Neon.Core
         public static void ShutdownIn(int time)
         {
             Thread.Sleep(time);
-            
+
             Logging.DisablePrimaryWriting(true);
             Logging.WriteLine("The server is saving users furniture, rooms, etc. WAIT FOR THE SERVER TO CLOSE, DO NOT EXIT THE PROCESS IN TASK MANAGER!!", ConsoleColor.Yellow);
             NeonEnvironment.PerformShutDown();

@@ -1,13 +1,11 @@
-﻿using System;
-using ConnectionManager;
-using Neon.Core;
-using Neon.HabboHotel.GameClients;
-using Neon.Communication.Packets.Incoming;
-using SharedPacketLib;
-using System.Text;
-using Neon.Utilities;
-using System.IO;
+﻿using ConnectionManager;
 using log4net;
+using Neon.Communication.Packets.Incoming;
+using Neon.HabboHotel.GameClients;
+using Neon.Utilities;
+using SharedPacketLib;
+using System;
+using System.IO;
 
 namespace Neon.Net
 {
@@ -33,19 +31,19 @@ namespace Neon.Net
         {
             try
             {
-                if (this.currentClient.RC4Client != null && !this._deciphered)
+                if (currentClient.RC4Client != null && !_deciphered)
                 {
-                    this.currentClient.RC4Client.Decrypt(ref Data);
-                    this._deciphered = true;
+                    currentClient.RC4Client.Decrypt(ref Data);
+                    _deciphered = true;
                 }
 
-                if (this._halfDataRecieved)
+                if (_halfDataRecieved)
                 {
-                    byte[] FullDataRcv = new byte[this._halfData.Length + Data.Length];
-                    Buffer.BlockCopy(this._halfData, 0, FullDataRcv, 0, this._halfData.Length);
-                    Buffer.BlockCopy(Data, 0, FullDataRcv, this._halfData.Length, Data.Length);
+                    byte[] FullDataRcv = new byte[_halfData.Length + Data.Length];
+                    Buffer.BlockCopy(_halfData, 0, FullDataRcv, 0, _halfData.Length);
+                    Buffer.BlockCopy(Data, 0, FullDataRcv, _halfData.Length, Data.Length);
 
-                    this._halfDataRecieved = false; // mark done this round
+                    _halfDataRecieved = false; // mark done this round
                     handlePacketData(FullDataRcv); // repeat now we have the combined array
                     return;
                 }
@@ -53,17 +51,21 @@ namespace Neon.Net
                 using (BinaryReader Reader = new BinaryReader(new MemoryStream(Data)))
                 {
                     if (Data.Length < 4)
+                    {
                         return;
+                    }
 
                     int MsgLen = HabboEncoding.DecodeInt32(Reader.ReadBytes(4));
                     if ((Reader.BaseStream.Length - 4) < MsgLen)
                     {
-                        this._halfData = Data;
-                        this._halfDataRecieved = true;
+                        _halfData = Data;
+                        _halfDataRecieved = true;
                         return;
                     }
                     else if (MsgLen < 0 || MsgLen > 5120)//TODO: Const somewhere.
+                    {
                         return;
+                    }
 
                     byte[] Packet = Reader.ReadBytes(MsgLen);
 
@@ -76,8 +78,8 @@ namespace Neon.Net
 
                         ClientPacket Message = new ClientPacket(Header, Content);
                         onNewPacket.Invoke(Message);
-                     
-                        this._deciphered = false;
+
+                        _deciphered = false;
                     }
 
                     if (Reader.BaseStream.Length - 4 > MsgLen)
@@ -85,7 +87,7 @@ namespace Neon.Net
                         byte[] Extra = new byte[Reader.BaseStream.Length - Reader.BaseStream.Position];
                         Buffer.BlockCopy(Data, (int)Reader.BaseStream.Position, Extra, 0, (int)(Reader.BaseStream.Length - Reader.BaseStream.Position));
 
-                        this._deciphered = true;
+                        _deciphered = true;
                         handlePacketData(Extra);
                     }
                 }

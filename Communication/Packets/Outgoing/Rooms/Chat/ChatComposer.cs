@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Neon.Communication.Packets.Outgoing.Rooms.Chat
+﻿namespace Neon.Communication.Packets.Outgoing.Rooms.Chat
 {
     public class ChatComposer : ServerPacket
     {

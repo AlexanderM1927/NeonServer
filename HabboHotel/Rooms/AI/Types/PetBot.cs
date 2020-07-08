@@ -1,13 +1,11 @@
-﻿using System;
-using System.Linq;
-using System.Drawing;
-using Neon.Core;
+﻿using Neon.Core;
 using Neon.HabboHotel.GameClients;
 using Neon.HabboHotel.Pathfinding;
-using Neon.HabboHotel.Rooms.AI;
-using Neon.HabboHotel.Rooms;
 using Neon.Utilities;
+using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
 
 namespace Neon.HabboHotel.Rooms.AI.Types
 {
@@ -32,7 +30,9 @@ namespace Neon.HabboHotel.Rooms.AI.Types
                 foreach (KeyValuePair<string, string> KVP in Pet.Statusses.ToList())
                 {
                     if (Pet.Statusses.ContainsKey(KVP.Key))
+                    {
                         Pet.Statusses.Remove(KVP.Key);
+                    }
                 }
             }
         }
@@ -43,7 +43,9 @@ namespace Neon.HabboHotel.Rooms.AI.Types
             //int randomX = NeonEnvironment.GetRandomNumber(0, GetRoom().Model.MapSizeX);
             //int randomY = NeonEnvironment.GetRandomNumber(0, GetRoom().Model.MapSizeY);
             if (GetRoomUser() != null)
+            {
                 GetRoomUser().MoveTo(nextCoord.X, nextCoord.Y);
+            }
         }
 
         public override void OnSelfLeaveRoom(bool Kicked)
@@ -80,7 +82,9 @@ namespace Neon.HabboHotel.Rooms.AI.Types
         {
             RoomUser Pet = GetRoomUser();
             if (Pet == null)
+            {
                 return;
+            }
 
 
             #region Speech
@@ -88,11 +92,13 @@ namespace Neon.HabboHotel.Rooms.AI.Types
             if (SpeechTimer <= 0)
             {
                 if (Pet.PetData.DBState != DatabaseUpdateState.NeedsInsert)
+                {
                     Pet.PetData.DBState = DatabaseUpdateState.NeedsUpdate;
+                }
 
                 if (Pet != null)
                 {
-                    var RandomSpeech = new Random();
+                    Random RandomSpeech = new Random();
                     RemovePetStatus();
 
                     string[] Speech = NeonEnvironment.GetGame().GetChatManager().GetPetLocale().GetValue("speech.pet" + Pet.PetData.Type);
@@ -103,7 +109,9 @@ namespace Neon.HabboHotel.Rooms.AI.Types
                         Pet.Chat(rSpeech, false);
                     }
                     else
+                    {
                         Pet.Statusses.Add(rSpeech, TextHandling.GetString(Pet.Z));
+                    }
                 }
                 SpeechTimer = NeonEnvironment.GetRandomNumber(20, 120);
             }
@@ -129,7 +137,9 @@ namespace Neon.HabboHotel.Rooms.AI.Types
 
                         Point nextCoord = GetRoom().GetGameMap().GetRandomWalkableSquare();
                         if (GetRoomUser().CanWalk)
+                        {
                             GetRoomUser().MoveTo(nextCoord.X, nextCoord.Y);
+                        }
                     }
                 }
                 catch (Exception e)
@@ -167,15 +177,21 @@ namespace Neon.HabboHotel.Rooms.AI.Types
         public override void OnUserSay(RoomUser User, string Message)
         {
             if (User == null)
+            {
                 return;
+            }
 
             RoomUser Pet = GetRoomUser();
             if (Pet == null)
+            {
                 return;
+            }
 
             if (Pet.PetData.DBState != DatabaseUpdateState.NeedsInsert)
+            {
                 Pet.PetData.DBState = DatabaseUpdateState.NeedsUpdate;
-       
+            }
+
             if (Message.ToLower().Equals(Pet.PetData.Name.ToLower()))
             {
                 Pet.SetRot(Rotation.Calculate(Pet.X, Pet.Y, User.X, User.Y), false);
@@ -389,7 +405,7 @@ namespace Neon.HabboHotel.Rooms.AI.Types
                     {
                         string[] Speech = NeonEnvironment.GetGame().GetChatManager().GetPetLocale().GetValue("pet.tired");
 
-                        var RandomSpeech = new Random();
+                        Random RandomSpeech = new Random();
                         Pet.Chat(Speech[RandomNumber.GenerateRandom(0, Speech.Length - 1)], false);
 
                         Pet.Statusses.Add("lay", TextHandling.GetString(Pet.Z));
@@ -403,7 +419,7 @@ namespace Neon.HabboHotel.Rooms.AI.Types
                     {
                         string[] Speech = NeonEnvironment.GetGame().GetChatManager().GetPetLocale().GetValue("pet.lazy");
 
-                        var RandomSpeech = new Random();
+                        Random RandomSpeech = new Random();
                         Pet.Chat(Speech[RandomNumber.GenerateRandom(0, Speech.Length - 1)], false);
 
                         Pet.PetData.PetEnergy(false); // Remove Energy

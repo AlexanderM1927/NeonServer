@@ -44,9 +44,13 @@ namespace Neon.HabboHotel.Pathfinding
         public override bool Equals(object obj)
         {
             if (obj == null)
+            {
                 return false;
+            }
             else
+            {
                 return base.GetHashCode().Equals(obj.GetHashCode());
+            }
         }
     }
 }

@@ -1,14 +1,8 @@
-﻿using Neon.HabboHotel.GameClients;
-using Neon.HabboHotel.Games;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Neon.HabboHotel.Games;
 
 namespace Neon.Communication.Packets.Outgoing.GameCenter
 {
-    class LoadGameComposer : ServerPacket
+    internal class LoadGameComposer : ServerPacket
     {
         public LoadGameComposer(GameData GameData, string SSOTicket)
             : base(ServerPacketHeader.LoadGameMessageComposer)

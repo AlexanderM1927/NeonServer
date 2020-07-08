@@ -1,14 +1,10 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms;
+﻿
 using Neon.HabboHotel.Items;
+using Neon.HabboHotel.Rooms;
 
 namespace Neon.Communication.Packets.Outgoing.Rooms.Engine
 {
-    class ItemsComposer : ServerPacket
+    internal class ItemsComposer : ServerPacket
     {
         public ItemsComposer(Item[] Objects, Room Room)
             : base(ServerPacketHeader.ItemsMessageComposer)
@@ -16,7 +12,7 @@ namespace Neon.Communication.Packets.Outgoing.Rooms.Engine
 
             base.WriteInteger(1);
             base.WriteInteger(Room.OwnerId);
-           base.WriteString(Room.OwnerName);
+            base.WriteString(Room.OwnerName);
 
             base.WriteInteger(Objects.Length);
 
@@ -28,16 +24,16 @@ namespace Neon.Communication.Packets.Outgoing.Rooms.Engine
 
         private void WriteWallItem(Item Item, int UserId)
         {
-           base.WriteString(Item.Id.ToString());
+            base.WriteString(Item.Id.ToString());
             base.WriteInteger(Item.Data.SpriteId);
 
             try
             {
-               base.WriteString(Item.wallCoord);
+                base.WriteString(Item.wallCoord);
             }
             catch
             {
-               base.WriteString("");
+                base.WriteString("");
             }
 
             ItemBehaviourUtility.GenerateWallExtradata(Item, this);

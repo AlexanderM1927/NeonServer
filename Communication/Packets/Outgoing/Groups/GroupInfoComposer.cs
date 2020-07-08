@@ -1,15 +1,10 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms;
+﻿using Neon.HabboHotel.GameClients;
 using Neon.HabboHotel.Groups;
-using Neon.HabboHotel.GameClients;
+using System;
 
 namespace Neon.Communication.Packets.Outgoing.Groups
 {
-    class GroupInfoComposer : ServerPacket
+    internal class GroupInfoComposer : ServerPacket
     {
         public GroupInfoComposer(Group Group, GameClient Session, bool NewWindow = false)
             : base(ServerPacketHeader.GroupInfoMessageComposer)

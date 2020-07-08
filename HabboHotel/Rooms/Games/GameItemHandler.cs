@@ -1,9 +1,8 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
+﻿using Neon.HabboHotel.Items;
+using System;
 using System.Collections.Concurrent;
-
-using Neon.HabboHotel.Items;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Neon.HabboHotel.Rooms
 {
@@ -17,10 +16,10 @@ namespace Neon.HabboHotel.Rooms
         public GameItemHandler(Room room)
         {
             this.room = room;
-            this.rnd = new Random();
+            rnd = new Random();
 
-            this._banzaiPyramids = new ConcurrentDictionary<int, Item>();
-            this._banzaiTeleports = new ConcurrentDictionary<int, Item>();
+            _banzaiPyramids = new ConcurrentDictionary<int, Item>();
+            _banzaiTeleports = new ConcurrentDictionary<int, Item>();
         }
 
         public void OnCycle()
@@ -35,7 +34,9 @@ namespace Neon.HabboHotel.Rooms
             foreach (Item item in _banzaiPyramids.Values.ToList())
             {
                 if (item == null)
+                {
                     continue;
+                }
 
                 if (item.interactionCountHelper == 0 && item.ExtraData == "1")
                 {
@@ -44,7 +45,9 @@ namespace Neon.HabboHotel.Rooms
                 }
 
                 if (string.IsNullOrEmpty(item.ExtraData))
+                {
                     item.ExtraData = "0";
+                }
 
                 int randomNumber = rnd.Next(0, 30);
                 if (randomNumber == 15)
@@ -57,7 +60,7 @@ namespace Neon.HabboHotel.Rooms
                     }
                     else
                     {
-                        if (room.GetGameMap().itemCanBePlacedHere(item.GetX, item.GetY))
+                        if (room.GetGameMap().ItemCanBePlacedHere(item.GetX, item.GetY))
                         {
                             item.ExtraData = "0";
                             item.UpdateState();
@@ -71,29 +74,35 @@ namespace Neon.HabboHotel.Rooms
         public void AddPyramid(Item item, int itemID)
         {
             if (_banzaiPyramids.ContainsKey(itemID))
+            {
                 _banzaiPyramids[itemID] = item;
+            }
             else
+            {
                 _banzaiPyramids.TryAdd(itemID, item);
+            }
         }
 
         public void RemovePyramid(int itemID)
         {
-            Item Item = null;
-            _banzaiPyramids.TryRemove(itemID, out Item);
+            _banzaiPyramids.TryRemove(itemID, out Item Item);
         }
 
         public void AddTeleport(Item item, int itemID)
         {
             if (_banzaiTeleports.ContainsKey(itemID))
+            {
                 _banzaiTeleports[itemID] = item;
+            }
             else
+            {
                 _banzaiTeleports.TryAdd(itemID, item);
+            }
         }
 
         public void RemoveTeleport(int itemID)
         {
-            Item Item = null;
-            _banzaiTeleports.TryRemove(itemID, out Item);
+            _banzaiTeleports.TryRemove(itemID, out Item Item);
         }
 
         public void onTeleportRoomUserEnter(RoomUser User, Item Item)
@@ -106,12 +115,16 @@ namespace Neon.HabboHotel.Rooms
             int countAmount = 0;
 
             if (count == 0)
+            {
                 return;
+            }
 
             foreach (Item item in items.ToList())
             {
                 if (item == null)
+                {
                     continue;
+                }
 
                 if (countAmount == countID)
                 {
@@ -132,14 +145,20 @@ namespace Neon.HabboHotel.Rooms
 
         public void Dispose()
         {
-            if (this._banzaiTeleports != null)
-                this._banzaiTeleports.Clear();
-            if (this._banzaiPyramids != null)
-                this._banzaiPyramids.Clear();
-            this._banzaiPyramids = null;
-            this._banzaiTeleports = null;
-            this.room = null;
-            this.rnd = null;
+            if (_banzaiTeleports != null)
+            {
+                _banzaiTeleports.Clear();
+            }
+
+            if (_banzaiPyramids != null)
+            {
+                _banzaiPyramids.Clear();
+            }
+
+            _banzaiPyramids = null;
+            _banzaiTeleports = null;
+            room = null;
+            rnd = null;
         }
     }
 }

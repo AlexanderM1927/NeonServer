@@ -1,10 +1,7 @@
 ﻿using Neon.Communication.Packets.Outgoing.Help.Helpers;
 using Neon.HabboHotel.GameClients;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.HabboHotel.Helpers
 {
@@ -14,29 +11,11 @@ namespace Neon.HabboHotel.Helpers
         public static List<HelperCase> Cases;
         public static int ANSWER_CALL_WAIT_TIME = 120;
 
-        public static int GuideCount
-        {
-            get
-            {
-                return Helpers.Count(c => c.IsGuide);
-            }
-        }
+        public static int GuideCount => Helpers.Count(c => c.IsGuide);
 
-        public static int HelperCount
-        {
-            get
-            {
-                return Helpers.Count(c => c.IsHelper);
-            }
-        }
+        public static int HelperCount => Helpers.Count(c => c.IsHelper);
 
-        public static int GuardianCount
-        {
-            get
-            {
-                return Helpers.Count(c => c.IsGuardian);
-            }
-        }
+        public static int GuardianCount => Helpers.Count(c => c.IsGuardian);
 
 
 
@@ -49,39 +28,47 @@ namespace Neon.HabboHotel.Helpers
 
         public static void HelperToolsManager_OnClientDisconnect(GameClient Session)
         {
-            var client = Helpers.FirstOrDefault(c => c.Session == Session);
+            HabboHelper client = Helpers.FirstOrDefault(c => c.Session == Session);
             if (client == null)
             { }
-            var element = GetElement(Session);
+            IHelperElement element = GetElement(Session);
             if (element == null)
+            {
                 return;
+            }
+
             if (element is HabboHelper)
             {
-                var h = (HabboHelper)element;
+                HabboHelper h = (HabboHelper)element;
                 RemoveHelper(h);
 
                 if (h.Case != null)
+                {
                     h.Case.End(0);
+                }
 
                 if (h.InvinteCase != null)
+                {
                     h.InvinteCase.OnDecline(h);
-
+                }
             }
-            else if (element is HelperCase)
+            else if (element is HelperCase c)
             {
-                var c = (HelperCase)element;
                 RemoveCall(c);
                 if (c.Helper != null)
+                {
                     c.Helper.End(0);
-
+                }
             }
         }
 
         public static HabboHelper AddHelper(GameClient Session, bool IsHelper, bool IsGard, bool IsGuide)
         {
-            var h = GetHelper(Session);
+            HabboHelper h = GetHelper(Session);
             if (h != null)
+            {
                 return h;
+            }
 
             Session.GetHabbo().OnHelperDuty = true;
 
@@ -93,10 +80,13 @@ namespace Neon.HabboHotel.Helpers
 
         public static HelperCase AddCall(GameClient Session, string message, int category)
         {
-            var c = GetCall(Session);
+            HelperCase c = GetCall(Session);
             if (c != null)
+            {
                 return c;
-            var hcase = new HelperCase(Session, message, category);
+            }
+
+            HelperCase hcase = new HelperCase(Session, message, category);
             Cases.Add(hcase);
             return hcase;
         }
@@ -119,22 +109,28 @@ namespace Neon.HabboHotel.Helpers
 
         public static void RemoveCall(GameClient client)
         {
-            var call = GetCall(client);
+            HelperCase call = GetCall(client);
             if (call != null)
+            {
                 RemoveCall(call);
+            }
         }
 
 
         public static void RemoveHelper(GameClient Session)
         {
-            var h = GetHelper(Session);
+            HabboHelper h = GetHelper(Session);
             if (h != null)
+            {
                 RemoveHelper(h);
+            }
 
-            foreach (var helper in Helpers)
+            foreach (HabboHelper helper in Helpers)
             {
                 if (helper.Session.GetHabbo() == null)
+                {
                     RemoveHelper(helper);
+                }
             }
         }
 

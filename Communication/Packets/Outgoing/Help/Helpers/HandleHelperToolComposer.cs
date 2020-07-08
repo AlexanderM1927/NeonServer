@@ -1,13 +1,8 @@
 ﻿using Neon.HabboHotel.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.Communication.Packets.Outgoing.Help.Helpers
 {
-    class HandleHelperToolComposer : ServerPacket
+    internal class HandleHelperToolComposer : ServerPacket
     {
         public HandleHelperToolComposer(bool onDuty, int helperAmount, int guideAmount, int guardianAmount)
             : base(ServerPacketHeader.HandleHelperToolMessageComposer)

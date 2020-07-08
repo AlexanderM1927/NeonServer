@@ -1,30 +1,19 @@
-﻿using System;
-using System.Linq;
-using System.Data;
-using System.Drawing;
-using System.Collections.Generic;
-
-using Neon.Core;
-using Neon.HabboHotel.Groups;
-using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.GameClients;
-using Neon.HabboHotel.Pathfinding;
-using Neon.HabboHotel.Rooms.Games;
-using Neon.HabboHotel.Items.Interactor;
-
-
-using Neon.Utilities;
-using Neon.HabboHotel.Users;
-using Neon.HabboHotel.Rooms.Games.Freeze;
-using Neon.Communication.Packets.Outgoing.Rooms.Engine;
-using Neon.Communication.Packets.Outgoing.Rooms.Session;
-
-
-using Neon.HabboHotel.Rooms.Games.Teams;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Engine;
 using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
+using Neon.Core;
 using Neon.Football;
+using Neon.HabboHotel.Items.Interactor;
 using Neon.HabboHotel.Items.Wired.Util;
+using Neon.HabboHotel.Pathfinding;
+using Neon.HabboHotel.Rooms;
 using Neon.HabboHotel.Rooms.Games.Football;
+using Neon.HabboHotel.Rooms.Games.Freeze;
+using Neon.HabboHotel.Rooms.Games.Teams;
+using Neon.Utilities;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
 
 namespace Neon.HabboHotel.Items
 {
@@ -66,14 +55,18 @@ namespace Neon.HabboHotel.Items
         public string wallCoord;
         private bool updateNeeded;
 
-        private Room _room;
-        private static Random _random = new Random();
+        private readonly Room _room;
+        private static readonly Random _random = new Random();
 
         // Futbol
         internal bool Shoot = false;
+#pragma warning disable CS0649 // Campo "Item.comeDirection" nunca é atribuído e sempre terá seu valor padrão null
         internal ComeDirection comeDirection;
+#pragma warning restore CS0649 // Campo "Item.comeDirection" nunca é atribuído e sempre terá seu valor padrão null
         public Direction Direction;
+#pragma warning disable CS0649 // Campo "Item.ComeDirection" nunca é atribuído e sempre terá seu valor padrão
         internal IComeDirection ComeDirection;
+#pragma warning restore CS0649 // Campo "Item.ComeDirection" nunca é atribuído e sempre terá seu valor padrão
         public MovementDirection MoveToDirMovement = MovementDirection.NONE;
         internal int _iBallValue;
         internal RoomUser ballMover;
@@ -83,14 +76,16 @@ namespace Neon.HabboHotel.Items
         {
             get
             {
-                int i;
-                if (!int.TryParse(ExtraData, out i))
+                if (!int.TryParse(ExtraData, out int i))
+                {
                     return 0;
+                }
+
                 return i;
             }
         }
 
-        public Item(int Id, int RoomId, int BaseItem, string ExtraData, int X, int Y, Double Z, int Rot, int Userid, int Group, int limitedNumber, int limitedStack, string wallCoord, Room Room = null)
+        public Item(int Id, int RoomId, int BaseItem, string ExtraData, int X, int Y, double Z, int Rot, int Userid, int Group, int limitedNumber, int limitedStack, string wallCoord, Room Room = null)
         {
             if (NeonEnvironment.GetGame().GetItemManager().GetItem(BaseItem, out ItemData Data))
             {
@@ -105,7 +100,10 @@ namespace Neon.HabboHotel.Items
                 GetX = X;
                 GetY = Y;
                 if (!double.IsInfinity(Z))
+                {
                     GetZ = Z;
+                }
+
                 Rotation = Rot;
                 UpdateNeeded = false;
                 UpdateCounter = 0;
@@ -208,27 +206,27 @@ namespace Neon.HabboHotel.Items
 
         public bool UpdateNeeded
         {
-            get { return updateNeeded; }
+            get => updateNeeded;
             set
             {
                 if (value && GetRoom() != null)
+                {
                     GetRoom().GetRoomItemHandler().QueueRoomItemUpdate(this);
+                }
+
                 updateNeeded = value;
             }
         }
 
         public bool IsRoller { get; }
 
-        public Point Coordinate
-        {
-            get { return new Point(GetX, GetY); }
-        }
+        public Point Coordinate => new Point(GetX, GetY);
 
         public List<Point> GetCoords
         {
             get
             {
-                var toReturn = new List<Point>
+                List<Point> toReturn = new List<Point>
                 {
                     Coordinate
                 };
@@ -244,7 +242,7 @@ namespace Neon.HabboHotel.Items
 
         public List<Point> GetSides()
         {
-            var toReturn = new List<Point>
+            List<Point> toReturn = new List<Point>
             {
                 SquareBehind,
                 SquareInFront,
@@ -264,11 +262,15 @@ namespace Neon.HabboHotel.Items
                 if (GetBaseItem().AdjustableHeights.Count > 1)
                 {
                     if (int.TryParse(ExtraData, out int num2) && (this.GetBaseItem().AdjustableHeights.Count) - 1 >= num2)
+                    {
                         CurHeight = GetZ + GetBaseItem().AdjustableHeights[num2];
+                    }
                 }
 
                 if (CurHeight <= 0.0)
+                {
                     CurHeight = GetZ + GetBaseItem().Height;
+                }
 
                 return CurHeight;
             }
@@ -282,7 +284,7 @@ namespace Neon.HabboHotel.Items
         {
             get
             {
-                var Sq = new Point(GetX, GetY);
+                Point Sq = new Point(GetX, GetY);
 
                 if (Rotation == 0)
                 {
@@ -309,7 +311,7 @@ namespace Neon.HabboHotel.Items
         {
             get
             {
-                var Sq = new Point(GetX, GetY);
+                Point Sq = new Point(GetX, GetY);
 
                 if (Rotation == 0)
                 {
@@ -336,7 +338,7 @@ namespace Neon.HabboHotel.Items
         {
             get
             {
-                var Sq = new Point(GetX, GetY);
+                Point Sq = new Point(GetX, GetY);
 
                 if (Rotation == 0)
                 {
@@ -363,7 +365,7 @@ namespace Neon.HabboHotel.Items
         {
             get
             {
-                var Sq = new Point(GetX, GetY);
+                Point Sq = new Point(GetX, GetY);
 
                 if (Rotation == 0)
                 {
@@ -469,9 +471,6 @@ namespace Neon.HabboHotel.Items
                     case InteractionType.FREEZE_TILE:
                         return new InteractorFreezeTile();
 
-                    case InteractionType.FOOTBALL:
-                        return new InteractorFootball();
-
                     case InteractionType.footballcounterblue:
                     case InteractionType.footballcountergreen:
                     case InteractionType.footballcounterred:
@@ -573,11 +572,11 @@ namespace Neon.HabboHotel.Items
 
                 if (CurrentMode <= 0)
                 {
-                    foreach (RoomUser user in _room.GetGameMap().GetRoomUsers(new Point(this.GetX, this.GetY)))
+                    foreach (RoomUser user in _room.GetGameMap().GetRoomUsers(new Point(GetX, GetY)))
                     {
                         user.SqState = 0;
                     }
-                    _room.GetGameMap().GameMap[this.GetX, this.GetY] = 0;
+                    _room.GetGameMap().GameMap[GetX, GetY] = 0;
                 }
             }
             catch
@@ -604,7 +603,9 @@ namespace Neon.HabboHotel.Items
         public void ProcessUpdates()
         {
             if (this == null)
+            {
                 return;
+            }
 
             try
             {
@@ -1155,9 +1156,9 @@ namespace Neon.HabboHotel.Items
                             {
                                 if (ExtraData == "-1")
                                 {
-                                    var num = RandomNumber.GenerateRandom(1, 6);
+                                    int num = RandomNumber.GenerateRandom(1, 6);
 
-                                    var user = GetRoom().GetRoomUserManager().GetRoomUserByHabbo(InteractingUser);
+                                    RoomUser user = GetRoom().GetRoomUserManager().GetRoomUserByHabbo(InteractingUser);
 
                                     if (user != null)
                                     {
@@ -1195,7 +1196,7 @@ namespace Neon.HabboHotel.Items
 
                                 if (ExtraData == "-1")
                                 {
-                                    var num = RandomNumber.GenerateRandom(1, 6);
+                                    int num = RandomNumber.GenerateRandom(1, 6);
                                     ExtraData = num.ToString();
                                 }
 
@@ -1245,7 +1246,10 @@ namespace Neon.HabboHotel.Items
                             {
                                 User = GetRoom().GetRoomUserManager().GetRoomUserByHabbo(InteractingUser);
                                 if (User == null)
+                                {
                                     break;
+                                }
+
                                 User.UnlockWalking();
                                 if (GetBaseItem().VendingIds.Count > 0)
                                 {
@@ -1266,8 +1270,9 @@ namespace Neon.HabboHotel.Items
                         case InteractionType.SCOREBOARD:
                             {
                                 if (string.IsNullOrEmpty(ExtraData))
+                                {
                                     break;
-
+                                }
 
                                 int seconds = 0;
 
@@ -1290,12 +1295,16 @@ namespace Neon.HabboHotel.Items
                                         UpdateState();
                                     }
                                     else
+                                    {
                                         interactionCountHelper++;
+                                    }
 
                                     UpdateCounter = 1;
                                 }
                                 else
+                                {
                                     UpdateCounter = 0;
+                                }
 
                                 break;
                             }
@@ -1305,7 +1314,9 @@ namespace Neon.HabboHotel.Items
                         case InteractionType.banzaicounter:
                             {
                                 if (string.IsNullOrEmpty(ExtraData))
+                                {
                                     break;
+                                }
 
                                 int seconds = 0;
 
@@ -1330,10 +1341,14 @@ namespace Neon.HabboHotel.Items
                                             UpdateState();
                                         }
                                         else
+                                        {
                                             break;
+                                        }
                                     }
                                     else
+                                    {
                                         interactionCountHelper++;
+                                    }
 
                                     UpdateCounter = 1;
                                 }
@@ -1407,7 +1422,9 @@ namespace Neon.HabboHotel.Items
                                         UpdateCounter = 1;
                                     }
                                     else
+                                    {
                                         UpdateCounter = 0;
+                                    }
                                 }
                                 break;
                             }
@@ -1436,11 +1453,11 @@ namespace Neon.HabboHotel.Items
                             {
                                 if (InteractingUser > 0)
                                 {
-                                    this.ExtraData = "11000";
-                                    this.UpdateState(false, true);
-                                    this.GetRoom().GetFreeze().onFreezeTiles(this, this.freezePowerUp);
-                                    this.InteractingUser = 0;
-                                    this.interactionCountHelper = 0;
+                                    ExtraData = "11000";
+                                    UpdateState(false, true);
+                                    GetRoom().GetFreeze().onFreezeTiles(this, freezePowerUp);
+                                    InteractingUser = 0;
+                                    interactionCountHelper = 0;
                                 }
                                 break;
                             }
@@ -1450,7 +1467,9 @@ namespace Neon.HabboHotel.Items
                         case InteractionType.COUNTER:
                             {
                                 if (string.IsNullOrEmpty(ExtraData))
+                                {
                                     break;
+                                }
 
                                 int seconds = 0;
 
@@ -1474,10 +1493,14 @@ namespace Neon.HabboHotel.Items
                                             UpdateState();
                                         }
                                         else
+                                        {
                                             break;
+                                        }
                                     }
                                     else
+                                    {
                                         interactionCountHelper++;
+                                    }
 
                                     UpdateCounter = 1;
                                 }
@@ -1495,7 +1518,9 @@ namespace Neon.HabboHotel.Items
                         case InteractionType.freezetimer:
                             {
                                 if (string.IsNullOrEmpty(ExtraData))
+                                {
                                     break;
+                                }
 
                                 int seconds = 0;
 
@@ -1519,10 +1544,14 @@ namespace Neon.HabboHotel.Items
                                             UpdateState();
                                         }
                                         else
+                                        {
                                             break;
+                                        }
                                     }
                                     else
+                                    {
                                         interactionCountHelper++;
+                                    }
 
                                     UpdateCounter = 1;
                                 }
@@ -1563,7 +1592,9 @@ namespace Neon.HabboHotel.Items
                         case InteractionType.CANNON:
                             {
                                 if (ExtraData != "1")
+                                {
                                     break;
+                                }
 
                                 #region Target Calculation
                                 Point TargetStart = Coordinate;
@@ -1575,14 +1606,18 @@ namespace Neon.HabboHotel.Items
                                             TargetStart = new Point(GetX - 1, GetY);
 
                                             if (!TargetSquares.Contains(TargetStart))
+                                            {
                                                 TargetSquares.Add(TargetStart);
+                                            }
 
                                             for (int I = 1; I <= 3; I++)
                                             {
                                                 Point TargetSquare = new Point(TargetStart.X - I, TargetStart.Y);
 
                                                 if (!TargetSquares.Contains(TargetSquare))
+                                                {
                                                     TargetSquares.Add(TargetSquare);
+                                                }
                                             }
 
                                             break;
@@ -1593,14 +1628,18 @@ namespace Neon.HabboHotel.Items
                                             TargetStart = new Point(GetX, GetY - 1);
 
                                             if (!TargetSquares.Contains(TargetStart))
+                                            {
                                                 TargetSquares.Add(TargetStart);
+                                            }
 
                                             for (int I = 1; I <= 3; I++)
                                             {
                                                 Point TargetSquare = new Point(TargetStart.X, TargetStart.Y - I);
 
                                                 if (!TargetSquares.Contains(TargetSquare))
+                                                {
                                                     TargetSquares.Add(TargetSquare);
+                                                }
                                             }
 
                                             break;
@@ -1611,14 +1650,18 @@ namespace Neon.HabboHotel.Items
                                             TargetStart = new Point(GetX + 2, GetY);
 
                                             if (!TargetSquares.Contains(TargetStart))
+                                            {
                                                 TargetSquares.Add(TargetStart);
+                                            }
 
                                             for (int I = 1; I <= 3; I++)
                                             {
                                                 Point TargetSquare = new Point(TargetStart.X + I, TargetStart.Y);
 
                                                 if (!TargetSquares.Contains(TargetSquare))
+                                                {
                                                     TargetSquares.Add(TargetSquare);
+                                                }
                                             }
 
                                             break;
@@ -1630,14 +1673,18 @@ namespace Neon.HabboHotel.Items
 
 
                                             if (!TargetSquares.Contains(TargetStart))
+                                            {
                                                 TargetSquares.Add(TargetStart);
+                                            }
 
                                             for (int I = 1; I <= 3; I++)
                                             {
                                                 Point TargetSquare = new Point(TargetStart.X, TargetStart.Y + I);
 
                                                 if (!TargetSquares.Contains(TargetSquare))
+                                                {
                                                     TargetSquares.Add(TargetSquare);
+                                                }
                                             }
 
                                             break;
@@ -1652,18 +1699,26 @@ namespace Neon.HabboHotel.Items
                                         List<RoomUser> affectedUsers = _room.GetGameMap().GetRoomUsers(Square).ToList();
 
                                         if (affectedUsers == null || affectedUsers.Count == 0)
+                                        {
                                             continue;
+                                        }
 
                                         foreach (RoomUser Target in affectedUsers)
                                         {
                                             if (Target == null || Target.IsBot || Target.IsPet)
+                                            {
                                                 continue;
+                                            }
 
                                             if (Target.GetClient() == null || Target.GetClient().GetHabbo() == null)
+                                            {
                                                 continue;
+                                            }
 
                                             if (_room.CheckRights(Target.GetClient(), true))
+                                            {
                                                 continue;
+                                            }
 
                                             Target.ApplyEffect(4);
                                             Target.GetClient().SendMessage(new RoomNotificationComposer("Expulsado de la Sala", "Usted fue golpeado por la bola del cañon directo hacia la salida!", "room_kick_cannonball"));
@@ -1684,36 +1739,13 @@ namespace Neon.HabboHotel.Items
             catch (Exception e) { Logging.LogException(e.ToString()); }
         }
 
-        public static string[] RandomizeStrings(string[] arr)
-        {
-            List<KeyValuePair<int, string>> list = new List<KeyValuePair<int, string>>();
-
-            foreach (string s in arr)
-            {
-                list.Add(new KeyValuePair<int, string>(_random.Next(), s));
-            }
-
-            var sorted = from item in list
-                         orderby item.Key
-                         select item;
-
-            string[] result = new string[arr.Length];
-
-            int index = 0;
-            foreach (KeyValuePair<int, string> pair in sorted)
-            {
-                result[index] = pair.Value;
-                index++;
-            }
-
-            return result;
-        }
-
         public void RequestUpdate(int Cycles, bool setUpdate)
         {
             UpdateCounter = Cycles;
             if (setUpdate)
+            {
                 UpdateNeeded = true;
+            }
         }
 
         public void UpdateState()
@@ -1724,17 +1756,25 @@ namespace Neon.HabboHotel.Items
         public void UpdateState(bool inDb, bool inRoom)
         {
             if (GetRoom() == null)
+            {
                 return;
+            }
 
             if (inDb)
+            {
                 GetRoom().GetRoomItemHandler().UpdateItem(this);
+            }
 
             if (inRoom)
             {
                 if (IsFloorItem)
+                {
                     GetRoom().SendMessage(new ObjectUpdateComposer(this, GetRoom().OwnerId));
+                }
                 else
+                {
                     GetRoom().SendMessage(new ItemUpdateComposer(this, GetRoom().OwnerId));
+                }
             }
         }
 
@@ -1749,7 +1789,9 @@ namespace Neon.HabboHotel.Items
             if (Data == null)
             {
                 if (NeonEnvironment.GetGame().GetItemManager().GetItem(BaseItem, out ItemData I))
+                {
                     Data = I;
+                }
             }
 
             return Data;
@@ -1758,10 +1800,14 @@ namespace Neon.HabboHotel.Items
         public Room GetRoom()
         {
             if (_room != null)
+            {
                 return _room;
+            }
 
             if (NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(RoomId, out Room Room))
+            {
                 return Room;
+            }
 
             return null;
         }
@@ -1769,7 +1815,9 @@ namespace Neon.HabboHotel.Items
         public void UserFurniCollision(RoomUser user)
         {
             if (user == null || user.GetClient() == null || user.GetClient().GetHabbo() == null)
+            {
                 return;
+            }
 
             GetRoom().GetWired().TriggerEvent(Wired.WiredBoxType.TriggerUserFurniCollision, user.GetClient().GetHabbo(), this);
         }
@@ -1777,7 +1825,9 @@ namespace Neon.HabboHotel.Items
         public void UserWalksOnFurni(RoomUser user)
         {
             if (user == null || user.GetClient() == null || user.GetClient().GetHabbo() == null)
+            {
                 return;
+            }
 
             if (GetBaseItem().InteractionType == InteractionType.TENT || GetBaseItem().InteractionType == InteractionType.TENT_SMALL)
             {
@@ -1803,10 +1853,14 @@ namespace Neon.HabboHotel.Items
         public void UserWalksOffFurni(RoomUser user)
         {
             if (user == null || user.GetClient() == null || user.GetClient().GetHabbo() == null)
+            {
                 return;
+            }
 
             if (GetBaseItem().InteractionType == InteractionType.TENT || GetBaseItem().InteractionType == InteractionType.TENT_SMALL)
+            {
                 GetRoom().RemoveUserFromTent(Id, user, this);
+            }
 
             //if (GetBaseItem().InteractionType == InteractionType.PRESSURE_TILE)
             //{
@@ -1816,8 +1870,8 @@ namespace Neon.HabboHotel.Items
 
             if (GetBaseItem().InteractionType == InteractionType.PRESSURE_PAD)
             {
-                this.ExtraData = "0";
-                this.UpdateState();
+                ExtraData = "0";
+                UpdateState();
             }
 
             GetRoom().GetWired().TriggerEvent(Wired.WiredBoxType.TriggerWalkOffFurni, user.GetClient().GetHabbo(), this);

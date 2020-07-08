@@ -1,26 +1,17 @@
-﻿using Neon.HabboHotel.GameClients;
-using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
-using System;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
 using Neon.Database.Interfaces;
+using Neon.HabboHotel.GameClients;
+using System;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
 {
-    class GiveRanksCommand : IChatCommand
+    internal class GiveRanksCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_give"; }
-        }
+        public string PermissionRequired => "command_give";
 
-        public string Parameters
-        {
-            get { return "%username% %type% %rank%"; }
-        }
+        public string Parameters => "%username% %type% %rank%";
 
-        public string Description
-        {
-            get { return "Escribe :rank para ver la explicación."; }
-        }
+        public string Description => "Escribe :rank para ver la explicación.";
 
         public void Execute(GameClient Session, Room Room, string[] Params)
         {
@@ -50,12 +41,11 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
                         }
                         else
                         {
-                            int Rank;
-                            if (int.TryParse(Params[3], out Rank))
+                            if (int.TryParse(Params[3], out int Rank))
                             {
                                 byte RankByte = Convert.ToByte(Rank);
 
-                                if(Rank > 4 || Rank < 0)
+                                if (Rank > 4 || Rank < 0)
                                 {
                                     Session.SendWhisper("No puedes superar la cifra de 4 o colocar una cifra inferior a 0.", 1);
                                     return;
@@ -113,8 +103,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
 
                         else
                         {
-                            int Rank;
-                            if (int.TryParse(Params[3], out Rank))
+                            if (int.TryParse(Params[3], out int Rank))
                             {
                                 byte RankByte = Convert.ToByte(Rank);
 
@@ -127,30 +116,30 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
 
                                 switch (RankByte)
                                 {
-                                   case 0:
-                                   Target.SendMessage(RoomNotificationComposer.SendBubble("eventoxx", Session.GetHabbo().Username + " acaba de retirarte del departamento de publicistas. Reinicia para aplicar los cambios respectivos.\n\nRecuerda que hemos depositado nuestra confianza en tí y que todo esfuerzo tiene su recompensa.", ""));
-                                   Session.SendWhisper("Rango retirado satisfactoriamente a " + Target.GetHabbo().Username + ".");
-                                   Target.Disconnect();
-                                   break;
-                                    
-                                   case 1:
-                                   Target.SendMessage(RoomNotificationComposer.SendBubble("eventoxx", Session.GetHabbo().Username + " acaba de darte el rango de publicista a prueba. Reinicia para aplicar los cambios respectivos.\n\nRecuerda que hemos depositado nuestra confianza en tí y que todo esfuerzo tiene su recompensa.", ""));
-                                   Session.SendWhisper("Rango entregado satisfactoriamente a " + Target.GetHabbo().Username + ".");
-                                   break;
-                                    
-                                   case 2:
-                                   Target.SendMessage(RoomNotificationComposer.SendBubble("eventoxx", Session.GetHabbo().Username + " acaba de darte el rango de publicista. Reinicia para aplicar los cambios respectivos.\n\nRecuerda que hemos depositado nuestra confianza en tí y que todo esfuerzo tiene su recompensa.", ""));
-                                   Session.SendWhisper("Rango entregado satisfactoriamente a " + Target.GetHabbo().Username + ".");
-                                   break;
-                                    
-                                   case 3:
-                                   Target.SendMessage(RoomNotificationComposer.SendBubble("eventoxx", Session.GetHabbo().Username + " acaba de darte el rango de encargado de publicidad. Reinicia para aplicar los cambios respectivos.\n\nRecuerda que hemos depositado nuestra confianza en tí y que todo esfuerzo tiene su recompensa.", ""));                                        Session.SendWhisper("Rango entregado satisfactoriamente a " + Target.GetHabbo().Username + ".");
-                                   break;
-                                    
-                                   case 4:
-                                   Target.SendMessage(RoomNotificationComposer.SendBubble("eventoxx", Session.GetHabbo().Username + " acaba de darte el rango de encargado de publicidad oculto. Reinicia para aplicar los cambios respectivos.\n\nRecuerda que hemos depositado nuestra confianza en tí y que todo esfuerzo tiene su recompensa.", ""));
-                                   Session.SendWhisper("Rango entregado satisfactoriamente a " + Target.GetHabbo().Username + ".");
-                                   break;
+                                    case 0:
+                                        Target.SendMessage(RoomNotificationComposer.SendBubble("eventoxx", Session.GetHabbo().Username + " acaba de retirarte del departamento de publicistas. Reinicia para aplicar los cambios respectivos.\n\nRecuerda que hemos depositado nuestra confianza en tí y que todo esfuerzo tiene su recompensa.", ""));
+                                        Session.SendWhisper("Rango retirado satisfactoriamente a " + Target.GetHabbo().Username + ".");
+                                        Target.Disconnect();
+                                        break;
+
+                                    case 1:
+                                        Target.SendMessage(RoomNotificationComposer.SendBubble("eventoxx", Session.GetHabbo().Username + " acaba de darte el rango de publicista a prueba. Reinicia para aplicar los cambios respectivos.\n\nRecuerda que hemos depositado nuestra confianza en tí y que todo esfuerzo tiene su recompensa.", ""));
+                                        Session.SendWhisper("Rango entregado satisfactoriamente a " + Target.GetHabbo().Username + ".");
+                                        break;
+
+                                    case 2:
+                                        Target.SendMessage(RoomNotificationComposer.SendBubble("eventoxx", Session.GetHabbo().Username + " acaba de darte el rango de publicista. Reinicia para aplicar los cambios respectivos.\n\nRecuerda que hemos depositado nuestra confianza en tí y que todo esfuerzo tiene su recompensa.", ""));
+                                        Session.SendWhisper("Rango entregado satisfactoriamente a " + Target.GetHabbo().Username + ".");
+                                        break;
+
+                                    case 3:
+                                        Target.SendMessage(RoomNotificationComposer.SendBubble("eventoxx", Session.GetHabbo().Username + " acaba de darte el rango de encargado de publicidad. Reinicia para aplicar los cambios respectivos.\n\nRecuerda que hemos depositado nuestra confianza en tí y que todo esfuerzo tiene su recompensa.", "")); Session.SendWhisper("Rango entregado satisfactoriamente a " + Target.GetHabbo().Username + ".");
+                                        break;
+
+                                    case 4:
+                                        Target.SendMessage(RoomNotificationComposer.SendBubble("eventoxx", Session.GetHabbo().Username + " acaba de darte el rango de encargado de publicidad oculto. Reinicia para aplicar los cambios respectivos.\n\nRecuerda que hemos depositado nuestra confianza en tí y que todo esfuerzo tiene su recompensa.", ""));
+                                        Session.SendWhisper("Rango entregado satisfactoriamente a " + Target.GetHabbo().Username + ".");
+                                        break;
                                 }
                                 break;
                             }
@@ -172,8 +161,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
                         }
                         else
                         {
-                            int Rank;
-                            if (int.TryParse(Params[3], out Rank))
+                            if (int.TryParse(Params[3], out int Rank))
                             {
                                 byte RankByte = Convert.ToByte(Rank);
                                 if (Rank > 1 || Rank < 0)
@@ -186,18 +174,18 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
                                 switch (RankByte)
                                 {
                                     case 0:
-                                    Target.SendMessage(RoomNotificationComposer.SendBubble("inters", Session.GetHabbo().Username + " acaba de retirarte del departamento de intermediarios. Reinicia para aplicar los cambios respectivos.\n\nRecuerda que hemos depositado nuestra confianza en tí y que todo esfuerzo tiene su recompensa.", ""));
-                                    Session.SendWhisper("Rango retirado satisfactoriamente a " + Target.GetHabbo().Username + ".");
-                                    Target.Disconnect();
-                                    break;
+                                        Target.SendMessage(RoomNotificationComposer.SendBubble("inters", Session.GetHabbo().Username + " acaba de retirarte del departamento de intermediarios. Reinicia para aplicar los cambios respectivos.\n\nRecuerda que hemos depositado nuestra confianza en tí y que todo esfuerzo tiene su recompensa.", ""));
+                                        Session.SendWhisper("Rango retirado satisfactoriamente a " + Target.GetHabbo().Username + ".");
+                                        Target.Disconnect();
+                                        break;
 
                                     case 1:
-                                    Target.SendMessage(RoomNotificationComposer.SendBubble("inters", Session.GetHabbo().Username + " acaba de darte el cargo de intermediario. Reinicia para aplicar los cambios respectivos.\n\nRecuerda que hemos depositado nuestra confianza en tí y que todo esfuerzo tiene su recompensa.", ""));
-                                    Session.SendWhisper("Rango entregado satisfactoriamente a " + Target.GetHabbo().Username + ".");
+                                        Target.SendMessage(RoomNotificationComposer.SendBubble("inters", Session.GetHabbo().Username + " acaba de darte el cargo de intermediario. Reinicia para aplicar los cambios respectivos.\n\nRecuerda que hemos depositado nuestra confianza en tí y que todo esfuerzo tiene su recompensa.", ""));
+                                        Session.SendWhisper("Rango entregado satisfactoriamente a " + Target.GetHabbo().Username + ".");
 
-                                    if (!Target.GetHabbo().GetBadgeComponent().HasBadge("INT3"))
-                                    { Target.GetHabbo().GetBadgeComponent().GiveBadge("INT3", true, Target); }
-                                    break;
+                                        if (!Target.GetHabbo().GetBadgeComponent().HasBadge("INT3"))
+                                        { Target.GetHabbo().GetBadgeComponent().GiveBadge("INT3", true, Target); }
+                                        break;
                                 }
                                 break;
                             }
@@ -218,8 +206,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
                         }
                         else
                         {
-                            int Rank;
-                            if (int.TryParse(Params[3], out Rank))
+                            if (int.TryParse(Params[3], out int Rank))
                             {
                                 byte RankByte = Convert.ToByte(Rank);
                                 if (Rank > 1 || Rank < 0)

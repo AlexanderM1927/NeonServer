@@ -1,10 +1,5 @@
 ﻿using Neon.Communication.Packets.Outgoing.Help.Helpers;
 using Neon.HabboHotel.GameClients;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.HabboHotel.Helpers
 {
@@ -15,28 +10,16 @@ namespace Neon.HabboHotel.Helpers
         public HelperCase Case;
         public HelperCase InvinteCase;
 
-        public bool Busy
-        {
-            get
-            {
-                return Case != null || InvinteCase != null;
-            }
-        }
+        public bool Busy => Case != null || InvinteCase != null;
 
-        public IHelperElement OtherElement
-        {
-            get
-            {
-                return Case;
-            }
-        }
+        public IHelperElement OtherElement => Case;
 
         public HabboHelper(GameClient Session, bool guide, bool helper, bool guard)
         {
             this.Session = Session;
-            this.IsGuide = guide;
-            this.IsGuardian = guard;
-            this.IsHelper = helper;
+            IsGuide = guide;
+            IsGuardian = guard;
+            IsHelper = helper;
         }
 
         public void Accept()
@@ -65,10 +48,16 @@ namespace Neon.HabboHotel.Helpers
         public void CancelCall()
         {
             if (InvinteCase != null)
+            {
                 InvinteCase.Session.SendMessage(new CloseHelperSessionComposer());
+            }
+
             InvinteCase = null;
             if (Case != null)
+            {
                 Case.Session.SendMessage(new CloseHelperSessionComposer());
+            }
+
             Case = null;
             Session.SendMessage(new CloseHelperSessionComposer());
         }

@@ -2,7 +2,6 @@
 using Neon.HabboHotel.GameClients;
 using Neon.HabboHotel.Quests;
 using Neon.HabboHotel.Rooms;
-using Neon.Communication.Packets.Incoming;
 
 namespace Neon.Communication.Packets.Incoming.Rooms.Avatar
 {
@@ -11,20 +10,27 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Avatar
         public void Parse(GameClient Session, ClientPacket Packet)
         {
             if (!Session.GetHabbo().InRoom)
+            {
                 return;
+            }
 
             int Action = Packet.PopInt();
 
-            Room Room = null;
-            if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Session.GetHabbo().CurrentRoomId, out Room))
+            if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Session.GetHabbo().CurrentRoomId, out Room Room))
+            {
                 return;
+            }
 
             RoomUser User = Room.GetRoomUserManager().GetRoomUserByHabbo(Session.GetHabbo().Id);
             if (User == null)
+            {
                 return;
+            }
 
             if (User.DanceId > 0)
+            {
                 User.DanceId = 0;
+            }
 
             User.UnIdle();
             Room.SendMessage(new ActionComposer(User.VirtualId, Action));

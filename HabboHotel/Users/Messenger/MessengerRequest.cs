@@ -1,34 +1,22 @@
-﻿using System;
-using Neon.Communication.Packets.Incoming;
-
-namespace Neon.HabboHotel.Users.Messenger
+﻿namespace Neon.HabboHotel.Users.Messenger
 {
     public class MessengerRequest
     {
-        private int _toUser;
-        private int _fromUser;
-        private string _username;
+        private readonly int _toUser;
+        private readonly int _fromUser;
+        private readonly string _username;
 
         public MessengerRequest(int ToUser, int FromUser, string Username)
         {
-            this._toUser = ToUser;
-            this._fromUser = FromUser;
-            this._username = Username;
+            _toUser = ToUser;
+            _fromUser = FromUser;
+            _username = Username;
         }
 
-        public string Username
-        {
-            get { return this._username; }
-        }
+        public string Username => _username;
 
-        public int To
-        {
-            get { return _toUser; }
-        }
+        public int To => _toUser;
 
-        public int From
-        {
-            get { return _fromUser; }
-        }
+        public int From => _fromUser;
     }
 }

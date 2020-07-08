@@ -1,11 +1,8 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
+﻿using Neon.Database.Interfaces;
 using Neon.HabboHotel.Users;
-
-using Neon.Database.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
 
 namespace Neon.HabboHotel.Items
@@ -14,7 +11,10 @@ namespace Neon.HabboHotel.Items
     {
         public static Item CreateSingleItemNullable(ItemData Data, Habbo Habbo, string ExtraData, string DisplayFlags, int GroupId = 0, int LimitedNumber = 0, int LimitedStack = 0)
         {
-            if (Data == null) throw new InvalidOperationException("Data cannot be null.");
+            if (Data == null)
+            {
+                throw new InvalidOperationException("Data cannot be null.");
+            }
 
             Item Item = new Item(0, 0, Data.Id, ExtraData, 0, 0, 0, 0, Habbo.Id, GroupId, LimitedNumber, LimitedStack, "");
 
@@ -47,7 +47,10 @@ namespace Neon.HabboHotel.Items
 
         public static Item CreateSingleItem(ItemData Data, Habbo Habbo, string ExtraData, string DisplayFlags, int ItemId, int LimitedNumber = 0, int LimitedStack = 0)
         {
-            if (Data == null) throw new InvalidOperationException("Data cannot be null.");
+            if (Data == null)
+            {
+                throw new InvalidOperationException("Data cannot be null.");
+            }
 
             Item Item = new Item(ItemId, 0, Data.Id, ExtraData, 0, 0, 0, 0, Habbo.Id, 0, LimitedNumber, LimitedStack, "");
 
@@ -71,10 +74,13 @@ namespace Neon.HabboHotel.Items
                 return Item;
             }
         }
-      
+
         public static Item CreateGiftItem(ItemData Data, Habbo Habbo, string ExtraData, string DisplayFlags, int ItemId, int LimitedNumber = 0, int LimitedStack = 0)
         {
-            if (Data == null) throw new InvalidOperationException("Data cannot be null.");
+            if (Data == null)
+            {
+                throw new InvalidOperationException("Data cannot be null.");
+            }
 
             Item Item = new Item(ItemId, 0, Data.Id, ExtraData, 0, 0, 0, 0, Habbo.Id, 0, LimitedNumber, LimitedStack, "");
 
@@ -101,7 +107,10 @@ namespace Neon.HabboHotel.Items
 
         public static List<Item> CreateMultipleItems(ItemData Data, Habbo Habbo, string ExtraData, int Amount, int GroupId = 0)
         {
-            if (Data == null) throw new InvalidOperationException("Data cannot be null.");
+            if (Data == null)
+            {
+                throw new InvalidOperationException("Data cannot be null.");
+            }
 
             List<Item> Items = new List<Item>();
 

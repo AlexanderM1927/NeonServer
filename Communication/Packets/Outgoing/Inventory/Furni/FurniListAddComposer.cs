@@ -1,9 +1,9 @@
-﻿using Neon.HabboHotel.Items;
-using Neon.HabboHotel.Catalog.Utilities;
+﻿using Neon.HabboHotel.Catalog.Utilities;
+using Neon.HabboHotel.Items;
 
 namespace Neon.Communication.Packets.Outgoing.Inventory.Furni
 {
-    class FurniListAddComposer : ServerPacket
+    internal class FurniListAddComposer : ServerPacket
     {
         public FurniListAddComposer(Item Item)
             : base(ServerPacketHeader.FurniListAddMessageComposer)
@@ -22,7 +22,9 @@ namespace Neon.Communication.Packets.Outgoing.Inventory.Furni
                 WriteInteger(Item.LimitedTot);
             }
             else
+            {
                 ItemBehaviourUtility.GenerateExtradata(Item, this);
+            }
 
             WriteBoolean(Item.GetBaseItem().AllowEcotronRecycle);
             WriteBoolean(Item.GetBaseItem().AllowTrade);

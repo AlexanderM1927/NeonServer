@@ -1,30 +1,18 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using Neon.HabboHotel.GameClients;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Engine;
 using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
+using Neon.HabboHotel.GameClients;
 using Neon.HabboHotel.Items;
-using Neon.Communication.Packets.Outgoing.Rooms.Engine;
+using System.Collections.Generic;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.User
 {
-    class SetChessGameCommand : IChatCommand
+    internal class SetChessGameCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_info"; }
-        }
+        public string PermissionRequired => "command_info";
 
-        public string Parameters
-        {
-            get { return ""; }
-        }
+        public string Parameters => "";
 
-        public string Description
-        {
-            get { return "Activar el modo ajedrez."; }
-        }
+        public string Description => "Activar el modo ajedrez.";
 
         public void Execute(GameClient Session, Room Room, string[] Params)
         {

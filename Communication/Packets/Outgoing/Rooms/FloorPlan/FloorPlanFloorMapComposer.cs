@@ -1,11 +1,10 @@
-﻿using System.Linq;
-using System.Collections.Generic;
-using Neon.HabboHotel.Items;
+﻿using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace Neon.Communication.Packets.Outgoing.Rooms.FloorPlan
 {
-    class FloorPlanFloorMapComposer : ServerPacket
+    internal class FloorPlanFloorMapComposer : ServerPacket
     {
         public FloorPlanFloorMapComposer(List<Point> Items)
             : base(ServerPacketHeader.FloorPlanFloorMapMessageComposer)

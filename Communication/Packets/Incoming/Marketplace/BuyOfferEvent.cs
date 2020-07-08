@@ -1,23 +1,19 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Data;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.GameClients;
-
-using Neon.HabboHotel.Items;
-using Neon.HabboHotel.Catalog.Marketplace;
-using Neon.Communication.Packets.Outgoing.Marketplace;
+﻿using Neon.Communication.Packets.Outgoing.Inventory.Furni;
 using Neon.Communication.Packets.Outgoing.Inventory.Purse;
-using Neon.Communication.Packets.Outgoing.Inventory.Furni;
-
+using Neon.Communication.Packets.Outgoing.Marketplace;
 using Neon.Database.Interfaces;
+using Neon.HabboHotel.Catalog.Marketplace;
+using Neon.HabboHotel.GameClients;
+using Neon.HabboHotel.Items;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Text;
 
 
 namespace Neon.Communication.Packets.Incoming.Marketplace
 {
-    class BuyOfferEvent : IPacketEvent
+    internal class BuyOfferEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
@@ -33,29 +29,28 @@ namespace Neon.Communication.Packets.Incoming.Marketplace
 
             if (Row == null)
             {
-                this.ReloadOffers(Session);
+                ReloadOffers(Session);
                 return;
             }
 
             if (Convert.ToString(Row["state"]) == "2")
             {
                 Session.SendNotification("Oops, esta oferta ya no esta disponible.");
-                this.ReloadOffers(Session);
+                ReloadOffers(Session);
                 return;
             }
 
             if (NeonEnvironment.GetGame().GetCatalog().GetMarketplace().FormatTimestamp() > (Convert.ToDouble(Row["timestamp"])))
             {
                 Session.SendNotification("Oops, esta oferta ha expirado..");
-                this.ReloadOffers(Session);
+                ReloadOffers(Session);
                 return;
             }
 
-            ItemData Item = null;
-            if (!NeonEnvironment.GetGame().GetItemManager().GetItem(Convert.ToInt32(Row["item_id"]), out Item))
+            if (!NeonEnvironment.GetGame().GetItemManager().GetItem(Convert.ToInt32(Row["item_id"]), out ItemData Item))
             {
                 Session.SendNotification("Este furni ya no esta disponible");
-                this.ReloadOffers(Session);
+                ReloadOffers(Session);
                 return;
             }
             else
@@ -83,7 +78,7 @@ namespace Neon.Communication.Packets.Incoming.Marketplace
                     Session.SendMessage(new FurniListNotificationComposer(GiveItem.Id, 1));
 
                     Session.SendMessage(new Neon.Communication.Packets.Outgoing.Catalog.PurchaseOKComposer());
-                    Session.SendMessage(new FurniListAddComposer(GiveItem));            
+                    Session.SendMessage(new FurniListAddComposer(GiveItem));
                     Session.SendMessage(new FurniListUpdateComposer());
                 }
 
@@ -97,10 +92,13 @@ namespace Neon.Communication.Packets.Incoming.Marketplace
                     Id = dbClient.getInteger();
 
                     if (Id > 0)
+                    {
                         dbClient.RunQuery("UPDATE `catalog_marketplace_data` SET `sold` = `sold` + 1, `avgprice` = (avgprice + " + Convert.ToInt32(Row["total_price"]) + ") WHERE `id` = " + Id + " LIMIT 1;");
+                    }
                     else
+                    {
                         dbClient.RunQuery("INSERT INTO `catalog_marketplace_data` (sprite, sold, avgprice) VALUES ('" + Item.SpriteId + "', '1', '" + Convert.ToInt32(Row["total_price"]) + "')");
-
+                    }
 
                     if (NeonEnvironment.GetGame().GetCatalog().GetMarketplace().MarketAverages.ContainsKey(Item.SpriteId) && NeonEnvironment.GetGame().GetCatalog().GetMarketplace().MarketCounts.ContainsKey(Item.SpriteId))
                     {
@@ -115,15 +113,19 @@ namespace Neon.Communication.Packets.Incoming.Marketplace
                     else
                     {
                         if (!NeonEnvironment.GetGame().GetCatalog().GetMarketplace().MarketAverages.ContainsKey(Item.SpriteId))
+                        {
                             NeonEnvironment.GetGame().GetCatalog().GetMarketplace().MarketAverages.Add(Item.SpriteId, Convert.ToInt32(Row["total_price"]));
+                        }
 
                         if (!NeonEnvironment.GetGame().GetCatalog().GetMarketplace().MarketCounts.ContainsKey(Item.SpriteId))
+                        {
                             NeonEnvironment.GetGame().GetCatalog().GetMarketplace().MarketCounts.Add(Item.SpriteId, 1);
+                        }
                     }
                 }
             }
 
-            this.ReloadOffers(Session);
+            ReloadOffers(Session);
         }
 
 

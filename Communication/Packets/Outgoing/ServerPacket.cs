@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Neon.Communication.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Text;
-using Neon.Communication.Interfaces;
 
 namespace Neon.Communication.Packets.Outgoing
 {
@@ -9,7 +9,7 @@ namespace Neon.Communication.Packets.Outgoing
     {
         private readonly Encoding Encoding = Encoding.Default;
 
-        private List<byte> Body = new List<byte>();
+        private readonly List<byte> Body = new List<byte>();
 
         public ServerPacket(int id)
         {
@@ -21,7 +21,7 @@ namespace Neon.Communication.Packets.Outgoing
 
         public byte[] GetBytes()
         {
-            var Final = new List<byte>();
+            List<byte> Final = new List<byte>();
             Final.AddRange(BitConverter.GetBytes(Body.Count)); // packet len
             Final.Reverse();
             Final.AddRange(Body); // Add Packet
@@ -78,7 +78,7 @@ namespace Neon.Communication.Packets.Outgoing
 
         public void WriteShort(int s) // d
         {
-            var i = (Int16) s;
+            short i = (short)s;
             WriteBytes(BitConverter.GetBytes(i), true);
         }
 
@@ -89,13 +89,13 @@ namespace Neon.Communication.Packets.Outgoing
 
         public void WriteBoolean(bool b) // d
         {
-            WriteBytes(new[] {(byte) (b ? 1 : 0)}, false);
+            WriteBytes(new[] { (byte)(b ? 1 : 0) }, false);
         }
 
-        public void writeList(List<String> list)
+        public void writeList(List<string> list)
         {
             WriteInteger(list.Count);
-            foreach (String obj in list)
+            foreach (string obj in list)
             {
                 WriteString(obj);
             }

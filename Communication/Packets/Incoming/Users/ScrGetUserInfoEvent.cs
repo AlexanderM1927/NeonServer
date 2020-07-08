@@ -1,13 +1,10 @@
-﻿using System;
-using Neon.Communication.Packets.Incoming;
-using Neon.HabboHotel.GameClients;
+﻿using Neon.Communication.Packets.Outgoing.Handshake;
 using Neon.Communication.Packets.Outgoing.Users;
-using Neon.Communication.Packets.Outgoing.Handshake;
-using Neon.HabboHotel.Rooms;
+using Neon.HabboHotel.GameClients;
 
 namespace Neon.Communication.Packets.Incoming.Users
 {
-    class ScrGetUserInfoEvent : IPacketEvent
+    internal class ScrGetUserInfoEvent : IPacketEvent
     {
         public void Parse(GameClient Session, ClientPacket Packet)
         {

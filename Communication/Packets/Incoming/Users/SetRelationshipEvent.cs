@@ -1,25 +1,22 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.GameClients;
-using Neon.HabboHotel.Users.Relationships;
-
-using Neon.HabboHotel.Users;
-using Neon.Communication.Packets.Outgoing.Messenger;
-using Neon.HabboHotel.Users.Messenger;
-using Neon.Database.Interfaces;
+﻿using Neon.Communication.Packets.Outgoing.Messenger;
 using Neon.Communication.Packets.Outgoing.Moderation;
+using Neon.Database.Interfaces;
+using Neon.HabboHotel.GameClients;
+using Neon.HabboHotel.Users;
+using Neon.HabboHotel.Users.Messenger;
+using Neon.HabboHotel.Users.Relationships;
+using System;
 
 namespace Neon.Communication.Packets.Incoming.Users
 {
-    class SetRelationshipEvent : IPacketEvent
+    internal class SetRelationshipEvent : IPacketEvent
     {
         public void Parse(GameClient Session, ClientPacket Packet)
         {
             if (Session == null || Session.GetHabbo() == null || Session.GetHabbo().GetMessenger() == null)
+            {
                 return;
+            }
 
             int User = Packet.PopInt();
             int Type = Packet.PopInt();
@@ -55,7 +52,9 @@ namespace Neon.Communication.Packets.Incoming.Users
                     dbClient.RunQuery();
 
                     if (Session.GetHabbo().Relationships.ContainsKey(User))
+                    {
                         Session.GetHabbo().Relationships.Remove(User);
+                    }
                 }
                 else
                 {
@@ -70,7 +69,9 @@ namespace Neon.Communication.Packets.Incoming.Users
                         dbClient.RunQuery();
 
                         if (Session.GetHabbo().Relationships.ContainsKey(User))
+                        {
                             Session.GetHabbo().Relationships.Remove(User);
+                        }
                     }
 
                     dbClient.SetQuery("INSERT INTO `user_relationships` (`user_id`,`target`,`type`) VALUES ('" + Session.GetHabbo().Id + "', @target, @type)");
@@ -79,20 +80,25 @@ namespace Neon.Communication.Packets.Incoming.Users
                     int newId = Convert.ToInt32(dbClient.InsertQuery());
 
                     if (!Session.GetHabbo().Relationships.ContainsKey(User))
+                    {
                         Session.GetHabbo().Relationships.Add(User, new Relationship(newId, User, Type));
+                    }
                 }
 
                 GameClient Client = NeonEnvironment.GetGame().GetClientManager().GetClientByUserID(User);
                 if (Client != null)
+                {
                     Session.GetHabbo().GetMessenger().UpdateFriend(User, Client, true);
+                }
                 else
                 {
                     Habbo Habbo = NeonEnvironment.GetHabboById(User);
                     if (Habbo != null)
                     {
-                        MessengerBuddy Buddy = null;
-                        if (Session.GetHabbo().GetMessenger().TryGetFriend(User, out Buddy))
+                        if (Session.GetHabbo().GetMessenger().TryGetFriend(User, out MessengerBuddy Buddy))
+                        {
                             Session.SendMessage(new FriendListUpdateComposer(Session, Buddy));
+                        }
                     }
                 }
             }

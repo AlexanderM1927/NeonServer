@@ -1,18 +1,15 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.Communication.Packets.Outgoing.Catalog;
-using Neon.Core;
-using Neon.HabboHotel.GameClients;
+﻿using Neon.Communication.Packets.Outgoing.Catalog;
+using Neon.Communication.Packets.Outgoing.Inventory.Achievements;
 using Neon.Communication.Packets.Outgoing.Notifications;
 using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
-using Neon.Communication.Packets.Outgoing.Inventory.Achievements;
+using Neon.Core;
+using Neon.HabboHotel.GameClients;
+using System.Linq;
+using System.Text;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.Administrator
 {
-    class UpdateCommand : IChatCommand
+    internal class UpdateCommand : IChatCommand
     {
         public string PermissionRequired => "command_update";
 
@@ -90,7 +87,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Administrator
                         NeonEnvironment.GetGame().GetClientManager().SendMessage(RoomNotificationComposer.SendBubble("catalogue", "¡El catálogo ha sido actualizado, échale un vistazo!", "catalog/open/" + Message + ""));
 
                         break;
-                    }              
+                    }
 
                 case "goals":
                     {
@@ -311,7 +308,9 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Administrator
                         foreach (GameClient Client in NeonEnvironment.GetGame().GetClientManager().GetClients.ToList())
                         {
                             if (Client == null || Client.GetHabbo() == null || Client.GetHabbo().GetPermissions() == null)
+                            {
                                 continue;
+                            }
 
                             Client.GetHabbo().GetPermissions().Init(Client.GetHabbo());
                         }

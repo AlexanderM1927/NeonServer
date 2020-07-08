@@ -1,11 +1,9 @@
-﻿using System;
+﻿using log4net;
+using log4net.Config;
+using Neon.Core;
+using System;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
-using ConsoleWriter;
-using Neon.Core;
-using log4net;
-using log4net.Config;
-using Neon.Utilities;
 
 namespace Neon
 {
@@ -46,7 +44,9 @@ namespace Neon
             {
                 Console.CursorVisible = true;
                 if (Logging.DisabledState)
+                {
                     Console.Write("Neon> ");
+                }
 
                 ConsoleCommandHandler.InvokeCommand(Console.ReadLine());
                 continue;
@@ -57,7 +57,7 @@ namespace Neon
         private static void MyHandler(object sender, UnhandledExceptionEventArgs args)
         {
             Logging.DisablePrimaryWriting(true);
-            var e = (Exception) args.ExceptionObject;
+            Exception e = (Exception)args.ExceptionObject;
             Logging.LogCriticalException("SYSTEM CRITICAL EXCEPTION: " + e);
             NeonEnvironment.PerformShutDown();
         }

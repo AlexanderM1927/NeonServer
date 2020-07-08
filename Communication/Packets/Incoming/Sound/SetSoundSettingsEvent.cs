@@ -1,13 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using Neon.Database.Interfaces;
+﻿using Neon.Database.Interfaces;
 
 
 namespace Neon.Communication.Packets.Incoming.Sound
 {
-    class SetSoundSettingsEvent : IPacketEvent
+    internal class SetSoundSettingsEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
@@ -21,9 +17,13 @@ namespace Neon.Communication.Packets.Incoming.Sound
                 }
 
                 if (i < 2)
+                {
                     Volume += Vol + ",";
+                }
                 else
+                {
                     Volume += Vol;
+                }
             }
 
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())

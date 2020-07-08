@@ -1,18 +1,14 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Users;
+﻿using Neon.Communication.Packets.Outgoing;
+using Neon.HabboHotel.Cache;
 using Neon.HabboHotel.Groups;
 using Neon.HabboHotel.Items.Data.Toner;
-
-using Neon.Communication.Packets.Outgoing;
-using Neon.HabboHotel.Cache;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Neon.HabboHotel.Items
 {
-    static class ItemBehaviourUtility
+    internal static class ItemBehaviourUtility
     {
         public static void GenerateExtradata(Item Item, ServerPacket Message)
         {
@@ -110,7 +106,7 @@ namespace Neon.HabboHotel.Items
                 //        Message.WriteInteger(1);
                 //        Message.WriteInteger(Item.GetRoom().WiredCasinoApuestas.Count);
                 //        ScoreBordatas = Item.GetRoom().WiredCasinoApuestas;
-                                  
+
                 //        }
 
                 //        else
@@ -135,7 +131,7 @@ namespace Neon.HabboHotel.Items
                 //                Message.WriteString((string.IsNullOrEmpty(postor) ? string.Empty : postor));
                 //            }
                 //        }
-                    
+
                 //    break;
 
                 case InteractionType.GNOME_BOX:
@@ -201,7 +197,7 @@ namespace Neon.HabboHotel.Items
                 case InteractionType.BACKGROUND:
                     Message.WriteInteger(0);
                     Message.WriteInteger(1);
-                    if (!String.IsNullOrEmpty(Item.ExtraData))
+                    if (!string.IsNullOrEmpty(Item.ExtraData))
                     {
                         Message.WriteInteger(Item.ExtraData.Split(Convert.ToChar(9)).Length / 2);
 
@@ -287,7 +283,9 @@ namespace Neon.HabboHotel.Items
                     if (Item.RoomId != 0)
                     {
                         if (Item.GetRoom().TonerData == null)
+                        {
                             Item.GetRoom().TonerData = new TonerData(Item.Id);
+                        }
 
                         Message.WriteInteger(0);
                         Message.WriteInteger(5);
@@ -340,7 +338,7 @@ namespace Neon.HabboHotel.Items
                 case InteractionType.LOVELOCK:
                     if (Item.ExtraData.Contains(Convert.ToChar(5).ToString()))
                     {
-                        var EData = Item.ExtraData.Split((char)5);
+                        string[] EData = Item.ExtraData.Split((char)5);
                         int I = 0;
                         Message.WriteInteger(0);
                         Message.WriteInteger(2);

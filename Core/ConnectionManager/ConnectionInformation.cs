@@ -1,9 +1,7 @@
-﻿using System;
-using System.IO;
+﻿using SharedPacketLib;
+using System;
 using System.Net.Sockets;
 using System.Text;
-
-using SharedPacketLib;
 
 namespace ConnectionManager
 {
@@ -17,8 +15,8 @@ namespace ConnectionManager
         /// <param name="state">The new state of the connection</param>
         public delegate void ConnectionChange(ConnectionInformation information, ConnectionState state);
 
-        private static bool disableSend = false;
-        private static bool disableReceive = false;
+        private static readonly bool disableSend = false;
+        private static readonly bool disableReceive = false;
 
         /// <summary>
         ///     Buffer of the connection
@@ -50,7 +48,7 @@ namespace ConnectionManager
         /// <summary>
         ///     The manager which created this class
         /// </summary>
-        private SocketManager manager;
+        private readonly SocketManager manager;
 
         /// <summary>
         ///     This item contains the data parser for the connection
@@ -82,8 +80,9 @@ namespace ConnectionManager
             sendCallback = sentData;
             this.connectionID = connectionID;
             if (connectionChanged != null)
+            {
                 connectionChanged.Invoke(this, ConnectionState.OPEN);
-
+            }
         }
 
         /// <summary>
@@ -177,7 +176,9 @@ namespace ConnectionManager
                     try
                     {
                         if (connectionChanged != null)
+                        {
                             connectionChanged.Invoke(this, ConnectionState.CLOSED);
+                        }
                     }
                     catch
                     {
@@ -227,7 +228,7 @@ namespace ConnectionManager
             {
                 if (!disableReceive)
                 {
-                    var packet = new byte[bytesReceived];
+                    byte[] packet = new byte[bytesReceived];
                     Array.Copy(buffer, packet, bytesReceived);
                     handlePacketData(packet);
                 }
@@ -272,7 +273,9 @@ namespace ConnectionManager
             try
             {
                 if (!isConnected || disableSend)
+                {
                     return;
+                }
 
                 string packetData = Encoding.Default.GetString(packet);
                 dataSocket.BeginSend(packet, 0, packet.Length, 0, sendCallback, null);
@@ -291,7 +294,7 @@ namespace ConnectionManager
         {
             try
             {
-                 dataSocket.EndSend(iAr);
+                dataSocket.EndSend(iAr);
             }
             catch
             {

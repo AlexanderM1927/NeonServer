@@ -1,38 +1,40 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms;
+﻿using Neon.Database.Interfaces;
+using Neon.HabboHotel.GameClients;
 using Neon.HabboHotel.Items;
 using Neon.HabboHotel.Quests;
-using Neon.HabboHotel.Users;
-using Neon.HabboHotel.GameClients;
-
-using Neon.Communication.Packets.Outgoing.Inventory.Furni;
-using Neon.Database.Interfaces;
+using Neon.HabboHotel.Rooms;
 
 namespace Neon.Communication.Packets.Incoming.Rooms.Engine
 {
-    class PickupObjectEvent : IPacketEvent
+    internal class PickupObjectEvent : IPacketEvent
     {
-        public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
+        public void Parse(GameClient Session, ClientPacket Packet)
         {
 
             if (!Session.GetHabbo().InRoom)
+            {
                 return;
+            }
 
             Room Room = Session.GetHabbo().CurrentRoom;
             if (Room == null)
+            {
                 return;
+            }
+
             if (Session.GetHabbo().Rank > 8 && !Session.GetHabbo().StaffOk || NeonStaticGameSettings.IsGoingToBeClose)
+            {
                 return;
-            int Unknown = Packet.PopInt();
+            }
+
+            _ = Packet.PopInt();
             int ItemId = Packet.PopInt();
 
             Item Item = Room.GetRoomItemHandler().GetItem(ItemId);
             if (Item == null)
+            {
                 return;
+            }
 
             if (Room.ForSale)
             {
@@ -42,20 +44,30 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Engine
             }
 
             if (Item.GetBaseItem().InteractionType == InteractionType.POSTIT)
+            {
                 return;
+            }
 
-            Boolean ItemRights = false;
+            bool ItemRights = false;
             if (Item.UserID == Session.GetHabbo().Id || Room.CheckRights(Session, false))
+            {
                 ItemRights = true;
+            }
             else if (Room.Group != null && Room.CheckRights(Session, false, true))//Room has a group, this user has group rights.
+            {
                 ItemRights = true;
+            }
             else if (Session.GetHabbo().GetPermissions().HasRight("room_item_take"))
+            {
                 ItemRights = true;
+            }
 
             if (ItemRights == true)
             {
                 if (Item.GetBaseItem().InteractionType == InteractionType.TENT || Item.GetBaseItem().InteractionType == InteractionType.TENT_SMALL)
+                {
                     Room.RemoveTent(Item.Id, Item);
+                }
 
                 if (Item.GetBaseItem().InteractionType == InteractionType.MOODLIGHT)
                 {

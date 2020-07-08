@@ -1,13 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
+﻿
 using Neon.HabboHotel.Rooms;
 
 namespace Neon.Communication.Packets.Outgoing.Rooms.AI.Bots
 {
-    class OpenBotActionComposer : ServerPacket
+    internal class OpenBotActionComposer : ServerPacket
     {
         public OpenBotActionComposer(RoomUser BotUser, int ActionId, string BotSpeech)
             : base(ServerPacketHeader.OpenBotActionMessageComposer)
@@ -15,9 +11,13 @@ namespace Neon.Communication.Packets.Outgoing.Rooms.AI.Bots
             base.WriteInteger(BotUser.BotData.Id);
             base.WriteInteger(ActionId);
             if (ActionId == 2)
-               base.WriteString(BotSpeech);
+            {
+                base.WriteString(BotSpeech);
+            }
             else if (ActionId == 5)
-               base.WriteString(BotUser.BotData.Name);
+            {
+                base.WriteString(BotUser.BotData.Name);
+            }
         }
     }
 }

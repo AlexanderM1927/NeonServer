@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Astar.Algorithm;
+using Enclosure.Algorithm;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
-using Astar.Algorithm;
-using Enclosure.Algorithm;
 
 namespace Neon.Utilities.Enclosure
 {
@@ -18,7 +18,7 @@ namespace Neon.Utilities.Enclosure
         {
             currentField = theArray;
             diagonal = diagonalAllowed;
-            this._newEntries = new Queue<GametileUpdate>();
+            _newEntries = new Queue<GametileUpdate>();
             astarSolver = new AStarSolver<GameField>(diagonalAllowed, AStarHeuristicType.EXPERIMENTAL_SEARCH, this, theArray.GetUpperBound(1) + 1, theArray.GetUpperBound(0) + 1);
         }
 
@@ -27,12 +27,19 @@ namespace Neon.Utilities.Enclosure
             get
             {
                 if (currentField == null)
+                {
                     return false;
+                }
 
                 if (y < 0 || x < 0)
+                {
                     return false;
+                }
                 else if (y > currentField.GetUpperBound(0) || x > currentField.GetUpperBound(1))
+                {
                     return false;
+                }
+
                 return true;
             }
         }
@@ -40,7 +47,10 @@ namespace Neon.Utilities.Enclosure
         public bool IsBlocked(int x, int y, bool lastTile)
         {
             if (currentlyChecking.x == x && currentlyChecking.y == y)
+            {
                 return true;
+            }
+
             return !(getValue(x, y) == currentlyChecking.value);
         }
 
@@ -51,20 +61,22 @@ namespace Neon.Utilities.Enclosure
 
         public List<PointField> doUpdate()
         {
-            var returnList = new List<PointField>();
+            List<PointField> returnList = new List<PointField>();
             while (_newEntries.Count > 0)
             {
                 currentlyChecking = _newEntries.Dequeue();
 
                 List<Point> pointList = getConnectedItems(currentlyChecking);
                 if (pointList == null)
+                {
                     return null;
+                }
 
                 if (pointList.Count > 1)
                 {
-                    List<LinkedList<AStarSolver<GameField>.PathNode>> RouteList = handleListOfConnectedPoints(  pointList);
+                    List<LinkedList<AStarSolver<GameField>.PathNode>> RouteList = handleListOfConnectedPoints(pointList);
 
-                    foreach (var nodeList in RouteList)
+                    foreach (LinkedList<AStarSolver<GameField>.PathNode> nodeList in RouteList)
                     {
                         if (nodeList.Count >= 4)
                         {
@@ -85,7 +97,7 @@ namespace Neon.Utilities.Enclosure
 
         private PointField findClosed(LinkedList<AStarSolver<GameField>.PathNode> nodeList)
         {
-            var returnList = new PointField(currentlyChecking.value);
+            PointField returnList = new PointField(currentlyChecking.value);
 
             int minX = int.MaxValue;
             int maxX = int.MinValue;
@@ -95,16 +107,24 @@ namespace Neon.Utilities.Enclosure
             foreach (AStarSolver<GameField>.PathNode node in nodeList)
             {
                 if (node.X < minX)
+                {
                     minX = node.X;
+                }
 
                 if (node.X > maxX)
+                {
                     maxX = node.X;
+                }
 
                 if (node.Y < minY)
+                {
                     minY = node.Y;
+                }
 
                 if (node.Y > maxY)
+                {
                     maxY = node.Y;
+                }
             }
 
             int middleX = Convert.ToInt32(Math.Ceiling(((maxX - minX) / 2f)) + minX);
@@ -112,8 +132,8 @@ namespace Neon.Utilities.Enclosure
             //Console.WriteLine("Middle: x:[{0}]  y:[{1}]", middleX, middleY);
 
             Point current;
-            var toFill = new List<Point>();
-            var checkedItems = new List<Point>
+            List<Point> toFill = new List<Point>();
+            List<Point> checkedItems = new List<Point>
             {
                 new Point(currentlyChecking.x, currentlyChecking.y)
             };
@@ -128,40 +148,62 @@ namespace Neon.Utilities.Enclosure
                 y = current.Y;
 
                 if (x < minX)
+                {
                     return null; //OOB
+                }
+
                 if (x > maxX)
+                {
                     return null; //OOB
+                }
+
                 if (y < minY)
+                {
                     return null; //OOB
+                }
+
                 if (y > maxY)
+                {
                     return null; //OOB
+                }
 
                 if (this[y - 1, x] && currentField[y - 1, x] == 0)
                 {
                     toAdd = new Point(x, y - 1);
                     if (!toFill.Contains(toAdd) && !checkedItems.Contains(toAdd))
+                    {
                         toFill.Add(toAdd);
+                    }
                 }
                 if (this[y + 1, x] && currentField[y + 1, x] == 0)
                 {
                     toAdd = new Point(x, y + 1);
                     if (!toFill.Contains(toAdd) && !checkedItems.Contains(toAdd))
+                    {
                         toFill.Add(toAdd);
+                    }
                 }
                 if (this[y, x - 1] && currentField[y, x - 1] == 0)
                 {
                     toAdd = new Point(x - 1, y);
                     if (!toFill.Contains(toAdd) && !checkedItems.Contains(toAdd))
+                    {
                         toFill.Add(toAdd);
+                    }
                 }
                 if (this[y, x + 1] && currentField[y, x + 1] == 0)
                 {
                     toAdd = new Point(x + 1, y);
                     if (!toFill.Contains(toAdd) && !checkedItems.Contains(toAdd))
+                    {
                         toFill.Add(toAdd);
+                    }
                 }
                 if (getValue(current) == 0)
+                {
                     returnList.add(current);
+                }
+
                 checkedItems.Add(current);
                 toFill.RemoveAt(0);
             }
@@ -171,17 +213,23 @@ namespace Neon.Utilities.Enclosure
 
         private List<LinkedList<AStarSolver<GameField>.PathNode>> handleListOfConnectedPoints(List<Point> pointList)
         {
-            var returnList = new List<LinkedList<AStarSolver<GameField>.PathNode>>();
+            List<LinkedList<AStarSolver<GameField>.PathNode>> returnList = new List<LinkedList<AStarSolver<GameField>.PathNode>>();
             int amount = 0;
             foreach (Point begin in pointList)
             {
                 amount++;
                 if (amount == pointList.Count / 2 + 1)
+                {
                     return returnList;
+                }
+
                 foreach (Point end in pointList)
                 {
                     if (begin == end)
+                    {
                         continue;
+                    }
+
                     LinkedList<AStarSolver<GameField>.PathNode> list = astarSolver.Search(end, begin);
                     if (list != null)
                     {
@@ -195,9 +243,11 @@ namespace Neon.Utilities.Enclosure
         private List<Point> getConnectedItems(GametileUpdate update)
         {
             if (update == null)
+            {
                 return null;
+            }
 
-            var ConnectedItems = new List<Point>();
+            List<Point> ConnectedItems = new List<Point>();
             int x = update.x;
             int y = update.y;
             if (diagonal)
@@ -264,7 +314,9 @@ namespace Neon.Utilities.Enclosure
             currentField = null;
 
             if (_newEntries != null)
+            {
                 _newEntries.Clear();
+            }
         }
     }
 }

@@ -1,37 +1,16 @@
-﻿using System;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
 using Neon.HabboHotel.GameClients;
-using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
-using Neon.Communication.Packets.Outgoing.Catalog;
-using Neon.Communication.Packets.Outgoing;
-using Neon.Communication.Packets.Outgoing.Misc;
-using Neon.Communication.Packets.Outgoing.Rooms.Freeze;
-using Neon.Communication.Packets.Outgoing.Rooms.Settings;
-using System.Text;
-using Neon.Communication.Packets.Outgoing.Handshake;
-using Neon.HabboHotel.Users;
-using Neon.Communication.Packets.Outgoing.Help.Helpers;
-using Neon.HabboHotel.Moderation;
-using Neon.Utilities;
-using System.Collections.Generic;
+using System;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.User
 {
-    class InfoCommand : IChatCommand
+    internal class InfoCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_info"; }
-        }
+        public string PermissionRequired => "command_info";
 
-        public string Parameters
-        {
-            get { return ""; }
-        }
+        public string Parameters => "";
 
-        public string Description
-        {
-            get { return "Información de Neon."; }
-        }
+        public string Description => "Información de Neon.";
 
         public void Execute(GameClient Session, Room Room, string[] Params)
         {

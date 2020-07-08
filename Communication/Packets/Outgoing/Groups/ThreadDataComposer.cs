@@ -1,13 +1,8 @@
 ﻿using Neon.HabboHotel.Groups.Forums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.Communication.Packets.Outgoing.Groups
 {
-    class ThreadDataComposer : ServerPacket
+    internal class ThreadDataComposer : ServerPacket
     {
         public ThreadDataComposer(GroupForumThread Thread, int StartIndex, int MaxLength)
             : base(ServerPacketHeader.ThreadDataMessageComposer)
@@ -17,7 +12,7 @@ namespace Neon.Communication.Packets.Outgoing.Groups
             base.WriteInteger(StartIndex);
             base.WriteInteger(Thread.Posts.Count); //Messages count
 
-            foreach (var Post in Thread.Posts)
+            foreach (GroupForumThreadPost Post in Thread.Posts)
             {
                 Post.SerializeData(this);
             }

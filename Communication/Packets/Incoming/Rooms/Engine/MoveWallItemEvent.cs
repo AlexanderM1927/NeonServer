@@ -1,24 +1,23 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Items;
+﻿
 using Neon.Communication.Packets.Outgoing.Rooms.Engine;
+using Neon.HabboHotel.Items;
+using Neon.HabboHotel.Rooms;
 
 namespace Neon.Communication.Packets.Incoming.Rooms.Engine
 {
-    class MoveWallItemEvent : IPacketEvent
+    internal class MoveWallItemEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
-            Room Room = null;
-            if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Session.GetHabbo().CurrentRoomId, out Room))
+            if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Session.GetHabbo().CurrentRoomId, out Room Room))
+            {
                 return;
+            }
 
             if (!Room.CheckRights(Session))
+            {
                 return;
+            }
 
             int itemID = Packet.PopInt();
             string wallPositionData = Packet.PopString();
@@ -26,7 +25,9 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Engine
             Item Item = Room.GetRoomItemHandler().GetItem(itemID);
 
             if (Item == null)
+            {
                 return;
+            }
 
             try
             {

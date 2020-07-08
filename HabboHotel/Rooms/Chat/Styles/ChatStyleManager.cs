@@ -3,9 +3,6 @@ using Neon.Database.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.HabboHotel.Rooms.Chat.Styles
 {
@@ -17,13 +14,15 @@ namespace Neon.HabboHotel.Rooms.Chat.Styles
 
         public ChatStyleManager()
         {
-            this._styles = new Dictionary<int, ChatStyle>();
+            _styles = new Dictionary<int, ChatStyle>();
         }
 
         public void Init()
         {
-            if (this._styles.Count > 0)
-                this._styles.Clear();
+            if (_styles.Count > 0)
+            {
+                _styles.Clear();
+            }
 
             DataTable Table = null;
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
@@ -37,8 +36,10 @@ namespace Neon.HabboHotel.Rooms.Chat.Styles
                     {
                         try
                         {
-                            if (!this._styles.ContainsKey(Convert.ToInt32(Row["id"])))
-                                this._styles.Add(Convert.ToInt32(Row["id"]), new ChatStyle(Convert.ToInt32(Row["id"]), Convert.ToString(Row["name"]), Convert.ToString(Row["required_right"])));
+                            if (!_styles.ContainsKey(Convert.ToInt32(Row["id"])))
+                            {
+                                _styles.Add(Convert.ToInt32(Row["id"]), new ChatStyle(Convert.ToInt32(Row["id"]), Convert.ToString(Row["name"]), Convert.ToString(Row["required_right"])));
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -53,7 +54,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Styles
 
         public bool TryGetStyle(int Id, out ChatStyle Style)
         {
-            return this._styles.TryGetValue(Id, out Style);
+            return _styles.TryGetValue(Id, out Style);
         }
     }
 }

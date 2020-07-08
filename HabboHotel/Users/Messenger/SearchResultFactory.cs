@@ -1,8 +1,8 @@
 ﻿
+using Neon.Database.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using Neon.Database.Interfaces;
 
 
 namespace Neon.HabboHotel.Users.Messenger

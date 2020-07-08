@@ -78,24 +78,22 @@
     <Reference Include="AStar">
       <HintPath>bin\Debug\AStar.dll</HintPath>
     </Reference>
-    <Reference Include="Fleck, Version=0.14.0.59, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Fleck.0.14.0.59\lib\net40\Fleck.dll</HintPath>
+    <Reference Include="Fleck, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Fleck.1.1.0\lib\net45\Fleck.dll</HintPath>
     </Reference>
     <Reference Include="HabboEncryption, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>bin\Debug\HabboEncryption.dll</HintPath>
     </Reference>
-    <Reference Include="log4net">
-      <HintPath>packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
+    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="MySql.Data, Version=6.9.7.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>packages\MySql.Data.6.9.7\lib\net45\MySql.Data.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Downloads\Json100r3\Bin\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -905,6 +903,7 @@
     <Compile Include="HabboHotel\Items\Wired\Boxes\Effects\SendCustomMessageBox.cs" />
     <Compile Include="HabboHotel\Items\Wired\Boxes\Effects\SendYouTubeVideoBox.cs" />
     <Compile Include="HabboHotel\Items\Wired\Boxes\Effects\SetRollerSpeedBox.cs" />
+    <Compile Include="HabboHotel\Items\Wired\Boxes\Effects\ShowAlerPHBox.cs" />
     <Compile Include="HabboHotel\Items\Wired\Boxes\Effects\TeleportBotToFurniBox.cs" />
     <Compile Include="HabboHotel\Items\Wired\Boxes\Effects\ExecuteWiredStacksBox.cs" />
     <Compile Include="HabboHotel\Items\Wired\Boxes\Effects\MoveFurniFromUserBox.cs" />
@@ -913,6 +912,7 @@
     <Compile Include="HabboHotel\Items\Wired\Boxes\Triggers\AtGivenTimeBox.cs" />
     <Compile Include="HabboHotel\Items\Wired\Boxes\Triggers\BotReachedAvatarBox.cs" />
     <Compile Include="HabboHotel\Items\Wired\Boxes\Triggers\LongTriggerBox.cs" />
+    <Compile Include="HabboHotel\Items\Wired\Boxes\Triggers\ScoreAchievedBox.cs" />
     <Compile Include="HabboHotel\Items\Wired\Boxes\Triggers\UserFurniCollision.cs" />
     <Compile Include="HabboHotel\Items\Wired\Boxes\Triggers\UserSaysCommandBox.cs" />
     <Compile Include="HabboHotel\Items\Wired\Util\Movement.cs" />
@@ -961,12 +961,14 @@
     <Compile Include="HabboHotel\Rooms\Chat\Commands\Administrator\ForceFurniMaticBoxCommand.cs" />
     <Compile Include="HabboHotel\Rooms\Chat\Commands\Administrator\GiveRanksCommand.cs" />
     <Compile Include="HabboHotel\Rooms\Chat\Commands\Administrator\HALCommand.cs" />
+    <Compile Include="HabboHotel\Rooms\Chat\Commands\Administrator\InvisibleCommand.cs" />
     <Compile Include="HabboHotel\Rooms\Chat\Commands\Administrator\LinkStaffCommand.cs" />
     <Compile Include="HabboHotel\Rooms\Chat\Commands\Administrator\MassPollCommand.cs" />
     <Compile Include="HabboHotel\Rooms\Chat\Commands\Administrator\PremiarBonusRare.cs" />
     <Compile Include="HabboHotel\Rooms\Chat\Commands\Administrator\ProgressAchievementCommand.cs" />
     <Compile Include="HabboHotel\Rooms\Chat\Commands\Administrator\SendGraphicAlertCommand.cs" />
     <Compile Include="HabboHotel\Rooms\Chat\Commands\Administrator\SendImageToUserCommand.cs" />
+    <Compile Include="HabboHotel\Rooms\Chat\Commands\Administrator\TeleportUser.cs" />
     <Compile Include="HabboHotel\Rooms\Chat\Commands\Administrator\ViewInventaryCommand.cs" />
     <Compile Include="HabboHotel\Rooms\Chat\Commands\Administrator\ViewStaffEventListCommand.cs" />
     <Compile Include="HabboHotel\Rooms\Chat\Commands\Administrator\VoucherCommand.cs" />
@@ -1420,9 +1422,7 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Communication\Packets\Incoming\Rooms\Groups\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
   </ItemGroup>

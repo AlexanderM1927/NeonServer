@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Neon.Communication.Packets.Outgoing.Groups
+﻿namespace Neon.Communication.Packets.Outgoing.Groups
 {
-    class UnknownGroupComposer : ServerPacket
+    internal class UnknownGroupComposer : ServerPacket
     {
         public UnknownGroupComposer(int GroupId, int HabboId)
             : base(ServerPacketHeader.UnknownGroupMessageComposer)

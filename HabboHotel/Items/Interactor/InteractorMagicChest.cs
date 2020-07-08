@@ -1,16 +1,8 @@
-﻿using Neon.Communication.Packets.Outgoing.Rooms.Engine;
-using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
-using Neon.HabboHotel.Rooms;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Neon.HabboHotel.Rooms;
 
 namespace Neon.HabboHotel.Items.Interactor
 {
-    class InteractorMagicChest : IFurniInteractor
+    internal class InteractorMagicChest : IFurniInteractor
     {
         public void OnPlace(GameClients.GameClient Session, Item Item)
         {
@@ -23,17 +15,23 @@ namespace Neon.HabboHotel.Items.Interactor
         public void OnTrigger(GameClients.GameClient Session, Item Item, int Request, bool HasRights)
         {
             if (Session == null || Session.GetHabbo() == null || Item == null)
+            {
                 return;
+            }
 
             Room Room = Session.GetHabbo().CurrentRoom;
             if (Room == null)
+            {
                 return;
+            }
 
             RoomUser Actor = Room.GetRoomUserManager().GetRoomUserByHabbo(Session.GetHabbo().Id);
             if (Actor == null)
+            {
                 return;
+            }
 
-            var tick = int.Parse(Item.ExtraData);
+            int tick = int.Parse(Item.ExtraData);
 
             if (tick < 1)
             {
@@ -43,7 +41,7 @@ namespace Neon.HabboHotel.Items.Interactor
                     Item.ExtraData = tick.ToString();
                     Item.UpdateState(true, true);
                     int X = Item.GetX, Y = Item.GetY, Rot = Item.Rotation;
-                    Double Z = Item.GetZ;
+                    double Z = Item.GetZ;
                     if (tick == 1)
                     {
                         NeonEnvironment.GetGame().GetPinataManager().ReceiveCrackableReward(Actor, Room, Item);

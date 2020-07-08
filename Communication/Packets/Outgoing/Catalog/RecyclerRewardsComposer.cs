@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Catalog;
-
-namespace Neon.Communication.Packets.Outgoing.Catalog
+﻿namespace Neon.Communication.Packets.Outgoing.Catalog
 {
     public class RecyclerRewardsComposer : ServerPacket
     {

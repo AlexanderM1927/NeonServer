@@ -1,28 +1,14 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Chat;
 using Neon.HabboHotel.GameClients;
-using Neon.Communication.Packets.Outgoing.Rooms.Chat;
+using System;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.User.Fun
 {
-    class SexCommand : IChatCommand
+    internal class SexCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_sex"; }
-        }
-        public string Parameters
-        {
-            get { return "%username%"; }
-        }
-        public string Description
-        {
-            get { return "Hacer sexo con otro usuario"; }
-        }
+        public string PermissionRequired => "command_sex";
+        public string Parameters => "%username%";
+        public string Description => "Hacer sexo con otro usuario";
         public void Execute(GameClient Session, Room Room, string[] Params)
         {
             if (Params.Length == 1)
@@ -48,7 +34,9 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User.Fun
             }
             RoomUser ThisUser = Room.GetRoomUserManager().GetRoomUserByHabbo(Session.GetHabbo().Id);
             if (ThisUser == null)
+            {
                 return;
+            }
 
             if (!((Math.Abs(TargetUser.X - ThisUser.X) >= 2) || (Math.Abs(TargetUser.Y - ThisUser.Y) >= 2)))
             {

@@ -1,39 +1,32 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using System.Collections.Concurrent;
-
-using Neon.Communication.Packets.Incoming;
+﻿using Neon.Communication.Packets.Incoming;
 using Neon.HabboHotel.Rooms;
 using Neon.HabboHotel.Users;
-using Neon.Communication.Packets.Outgoing.Rooms.Chat;
-using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
 using System.Collections;
+using System.Collections.Concurrent;
 
 namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
 {
-    class GiveUserEnableBox : IWiredItem, IWiredCycle
+    internal class GiveUserEnableBox : IWiredItem, IWiredCycle
     {
         public Room Instance { get; set; }
         public Item Item { get; set; }
-        public WiredBoxType Type { get { return WiredBoxType.EffectGiveUserEnable; } }
+        public WiredBoxType Type => WiredBoxType.EffectGiveUserEnable;
         public ConcurrentDictionary<int, Item> SetItems { get; set; }
         public string StringData { get; set; }
         public bool BoolData { get; set; }
         public string ItemsData { get; set; }
-        public int Delay { get { return this._delay; } set { this._delay = value; this.TickCount = value + 1; } }
+        public int Delay { get => _delay; set { _delay = value; TickCount = value + 1; } }
         public int TickCount { get; set; }
         private int _delay = 0;
-        private Queue _queue;
+        private readonly Queue _queue;
 
         public GiveUserEnableBox(Room Instance, Item Item)
         {
             this.Instance = Instance;
             this.Item = Item;
-            this.SetItems = new ConcurrentDictionary<int, Item>();
-            this.TickCount = Delay;
-            this._queue = new Queue();
+            SetItems = new ConcurrentDictionary<int, Item>();
+            TickCount = Delay;
+            _queue = new Queue();
         }
 
         public void HandleSave(ClientPacket Packet)
@@ -41,17 +34,17 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
             int Unknown = Packet.PopInt();
             string Enable = Packet.PopString();
             int Unused = Packet.PopInt();
-            this.Delay = Packet.PopInt();
+            Delay = Packet.PopInt();
 
-            this.StringData = Enable;
+            StringData = Enable;
         }
 
         public bool OnCycle()
         {
             if (_queue.Count == 0)
             {
-                this._queue.Clear();
-                this.TickCount = Delay;
+                _queue.Clear();
+                TickCount = Delay;
                 return true;
             }
 
@@ -59,32 +52,42 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
             {
                 Habbo Player = (Habbo)_queue.Dequeue();
                 if (Player == null || Player.CurrentRoom != Instance)
+                {
                     continue;
+                }
 
-                this.ApplyEnableToUser(Player);
+                ApplyEnableToUser(Player);
             }
 
-            this.TickCount = Delay;
+            TickCount = Delay;
             return true;
         }
 
         public bool Execute(params object[] Params)
         {
             if (Params == null || Params.Length == 0)
+            {
                 return false;
+            }
 
             Habbo Player = (Habbo)Params[0];
             if (Player == null || Player.GetClient() == null)
+            {
                 return false;
+            }
 
             RoomUser User = Player.CurrentRoom.GetRoomUserManager().GetRoomUserByHabbo(Player.Username);
             if (User == null)
+            {
                 return false;
+            }
 
-            if (String.IsNullOrEmpty(StringData))
+            if (string.IsNullOrEmpty(StringData))
+            {
                 return false;
+            }
 
-            this._queue.Enqueue(Player);
+            _queue.Enqueue(Player);
             return true;
         }
 
@@ -92,12 +95,16 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
         {
             RoomUser User = Player.CurrentRoom.GetRoomUserManager().GetRoomUserByHabbo(Player.Username);
             if (User == null)
+            {
                 return;
+            }
 
-            var effect = int.Parse(StringData);
+            int effect = int.Parse(StringData);
 
             if (effect == 102 | effect == 178 | effect == 187 | effect == 593 | effect == 596 | effect == 592 | effect == 597 | effect == 594 || effect == 598 || effect == 595 || effect == 599 || effect == 600)
+            {
                 return;
+            }
 
             User.GetClient().GetHabbo().Effects().ApplyEffect(effect);
         }

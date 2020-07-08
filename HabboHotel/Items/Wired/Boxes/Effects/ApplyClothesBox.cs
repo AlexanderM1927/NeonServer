@@ -1,24 +1,17 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Concurrent;
-
+﻿using Neon.Communication.Packets.Incoming;
+using Neon.Communication.Packets.Outgoing;
+using Neon.Communication.Packets.Outgoing.Rooms.Engine;
 using Neon.HabboHotel.Rooms;
 using Neon.HabboHotel.Users;
-using Neon.Communication.Packets.Incoming;
-using Neon.Communication.Packets.Outgoing;
-using Neon.Database.Interfaces;
-using Neon.Communication.Packets.Outgoing.Rooms.Engine;
+using System.Collections.Concurrent;
 
 namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
 {
-    class ApplyClothesBox : IWiredItem
+    internal class ApplyClothesBox : IWiredItem
     {
         public Room Instance { get; set; }
         public Item Item { get; set; }
-        public WiredBoxType Type { get { return WiredBoxType.EffectApplyClothes; } }
+        public WiredBoxType Type => WiredBoxType.EffectApplyClothes;
         public ConcurrentDictionary<int, Item> SetItems { get; set; }
         public string StringData { get; set; }
         public bool BoolData { get; set; }
@@ -28,7 +21,7 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
         {
             this.Instance = Instance;
             this.Item = Item;
-            this.SetItems = new ConcurrentDictionary<int, Item>();
+            SetItems = new ConcurrentDictionary<int, Item>();
         }
 
         public void HandleSave(ClientPacket Packet)
@@ -36,33 +29,43 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
             int Unknown = Packet.PopInt();
             string BotConfiguration = Packet.PopString();
 
-            if (this.SetItems.Count > 0)
-                this.SetItems.Clear();
+            if (SetItems.Count > 0)
+            {
+                SetItems.Clear();
+            }
 
-            this.StringData = BotConfiguration;
+            StringData = BotConfiguration;
         }
 
         public bool Execute(params object[] Params)
         {
             if (Params == null || Params.Length == 0)
+            {
                 return false;
+            }
 
-            if (String.IsNullOrEmpty(this.StringData))
+            if (string.IsNullOrEmpty(StringData))
+            {
                 return false;
+            }
 
-
-            string[] Stuff = this.StringData.Split('\t');
+            string[] Stuff = StringData.Split('\t');
             if (Stuff.Length != 2)
+            {
                 return false;//This is important, incase a cunt scripts.
-
+            }
 
             Habbo Player = (Habbo)Params[0];
             if (Player == null)
+            {
                 return false;
+            }
 
             RoomUser User = Instance.GetRoomUserManager().GetRoomUserByHabbo(Player.Id);
             if (User == null)
+            {
                 return false;
+            }
             //string Username = Stuff[0];
 
             //RoomUser User = this.Instance.GetRoomUserManager().GetBotByName(Username);
@@ -79,7 +82,7 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
             UserChangeComposer.WriteString("M");
             UserChangeComposer.WriteString(User.GetClient().GetHabbo().Motto);
             UserChangeComposer.WriteInteger(0);
-            this.Instance.SendMessage(UserChangeComposer);
+            Instance.SendMessage(UserChangeComposer);
 
             User.GetClient().SendWhisper("Hola", 1);
             User.GetClient().SendMessage(new AvatarAspectUpdateMessageComposer(User.GetClient().GetHabbo().Look, User.GetClient().GetHabbo().Gender));

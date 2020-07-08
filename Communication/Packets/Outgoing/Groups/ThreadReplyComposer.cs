@@ -1,19 +1,14 @@
 ﻿using Neon.HabboHotel.GameClients;
 using Neon.HabboHotel.Groups.Forums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.Communication.Packets.Outgoing.Groups
 {
-    class ThreadReplyComposer : ServerPacket
+    internal class ThreadReplyComposer : ServerPacket
     {
         public ThreadReplyComposer(GameClient Session, GroupForumThreadPost Post)
             : base(ServerPacketHeader.ThreadReplyMessageComposer)
         {
-            var User = Post.GetAuthor();
+            HabboHotel.Users.Habbo User = Post.GetAuthor();
             base.WriteInteger(Post.ParentThread.ParentForum.Id);
             base.WriteInteger(Post.ParentThread.Id);
 

@@ -9,7 +9,7 @@ using Neon.HabboHotel.Items;
 
 namespace Neon.Communication.Packets.Incoming.Calendar
 {
-    class OpenCalendarBoxEvent : IPacketEvent
+    internal class OpenCalendarBoxEvent : IPacketEvent
     {
         public void Parse(GameClient Session, ClientPacket Packet)
         {
@@ -18,26 +18,31 @@ namespace Neon.Communication.Packets.Incoming.Calendar
 
             // Si no es el nombre de campaña actual.
             if (CampaignName != NeonEnvironment.GetGame().GetCalendarManager().GetCampaignName())
+            {
                 return;
+            }
 
             // Si es un día inválido.
             if (CampaignDay < 0 || CampaignDay > NeonEnvironment.GetGame().GetCalendarManager().GetTotalDays() - 1 || CampaignDay < NeonEnvironment.GetGame().GetCalendarManager().GetUnlockDays())
+            {
                 // Mini fix
                 return;
+            }
 
 
 
             // Días próximos
             if (CampaignDay > NeonEnvironment.GetGame().GetCalendarManager().GetUnlockDays())
-
+            {
                 return;
+            }
 
 
             // Esta recompensa ya ha sido recogida.
             if (Session.GetHabbo().calendarGift[CampaignDay])
-
+            {
                 return;
-
+            }
 
             Session.GetHabbo().calendarGift[CampaignDay] = true;
 
@@ -95,7 +100,7 @@ namespace Neon.Communication.Packets.Incoming.Calendar
 
                 case "vip":
                     {
-                        var IsVIP = Session.GetHabbo().GetClubManager().HasSubscription("club_vip");
+                        bool IsVIP = Session.GetHabbo().GetClubManager().HasSubscription("club_vip");
                         if (IsVIP)
                         {
                             Session.SendMessage(new AlertNotificationHCMessageComposer(4));

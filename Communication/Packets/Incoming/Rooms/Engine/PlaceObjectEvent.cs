@@ -1,37 +1,40 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
 using Neon.HabboHotel.Items;
-using Neon.HabboHotel.Users;
-
-using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
-using Neon.HabboHotel.Items.Data;
 using Neon.HabboHotel.Items.Data.Moodlight;
 using Neon.HabboHotel.Items.Data.Toner;
+using Neon.HabboHotel.Rooms;
+using Neon.HabboHotel.Users;
+using System;
+using System.Linq;
 
 namespace Neon.Communication.Packets.Incoming.Rooms.Engine
 {
-    class PlaceObjectEvent : IPacketEvent
+    internal class PlaceObjectEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
             if (Session == null || Session.GetHabbo() == null || !Session.GetHabbo().InRoom)
+            {
                 return;
+            }
 
             if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Session.GetHabbo().CurrentRoomId, out Room Room))
+            {
                 return;
-            
+            }
+
             string RawData = Packet.PopString();
             string[] Data = RawData.Split(' ');
             if (!int.TryParse(Data[0], out int ItemId))
+            {
                 return;
+            }
 
             bool HasRights = false;
             if (Room.CheckRights(Session, false, true))
+            {
                 HasRights = true;
+            }
 
             if (!HasRights)
             {
@@ -41,7 +44,9 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Engine
 
             Item Item = Session.GetHabbo().GetInventoryComponent().GetItem(ItemId);
             if (Item == null)
+            {
                 return;
+            }
 
             if (Room.ForSale)
             {
@@ -107,7 +112,9 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Engine
             if (!Item.IsWallItem)
             {
                 if (Data.Length < 4)
+                {
                     return;
+                }
 
                 if (!int.TryParse(Data[1], out int X)) { return; }
                 if (!int.TryParse(Data[2], out int Y)) { return; }
@@ -119,7 +126,9 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Engine
                     Session.GetHabbo().GetInventoryComponent().RemoveItem(ItemId);
 
                     if (Session.GetHabbo().Id == Room.OwnerId)
+                    {
                         NeonEnvironment.GetGame().GetAchievementManager().ProgressAchievement(Session, "ACH_RoomDecoFurniCount", 1, false);
+                    }
 
                     if (RoomItem.IsWired)
                     {
@@ -152,7 +161,9 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Engine
                         {
                             Session.GetHabbo().GetInventoryComponent().RemoveItem(ItemId);
                             if (Session.GetHabbo().Id == Room.OwnerId)
+                            {
                                 NeonEnvironment.GetGame().GetAchievementManager().ProgressAchievement(Session, "ACH_RoomDecoFurniCount", 1, false);
+                            }
                         }
                     }
                     catch
@@ -186,18 +197,16 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Engine
                 return false;
             }
 
-
-
             int.TryParse(wBit.Split(',')[0], out int w1);
             int.TryParse(wBit.Split(',')[1], out int w2);
             int.TryParse(lBit.Split(',')[0], out int l1);
             int.TryParse(lBit.Split(',')[1], out int l2);
-            //
-            //if (!Habbo.HasFuse("super_admin") && (w1 < 0 || w2 < 0 || l1 < 0 || l2 < 0 || w1 > 200 || w2 > 200 || l1 > 200 || l2 > 200))
-            //{
-            //    position = null;
-            //    return false;
-            //}
+
+            /*if (!Habbo.HasFuse("super_admin") && (w1 < 0 || w2 < 0 || l1 < 0 || l2 < 0 || w1 > 200 || w2 > 200 || l1 > 200 || l2 > 200))
+            {
+                position = null;
+                return false;
+            }*/
 
 
 
@@ -224,19 +233,25 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Engine
 
                 string[] posD = wallPosition.Split(' ');
                 if (posD[2] != "l" && posD[2] != "r")
+                {
                     return null;
+                }
 
                 string[] widD = posD[0].Substring(3).Split(',');
                 int widthX = int.Parse(widD[0]);
                 int widthY = int.Parse(widD[1]);
                 if (widthX < -1000 || widthY < -1 || widthX > 700 || widthY > 700)
+                {
                     return null;
+                }
 
                 string[] lenD = posD[1].Substring(2).Split(',');
                 int lengthX = int.Parse(lenD[0]);
                 int lengthY = int.Parse(lenD[1]);
                 if (lengthX < -1 || lengthY < -1000 || lengthX > 700 || lengthY > 700)
+                {
                     return null;
+                }
 
                 return ":w=" + widthX + "," + widthY + " " + "l=" + lengthX + "," + lengthY + " " + posD[2];
             }

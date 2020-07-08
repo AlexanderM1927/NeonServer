@@ -3,19 +3,15 @@ using Neon.Database.Interfaces;
 using Neon.HabboHotel.GameClients;
 using Neon.HabboHotel.Helpers;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.Communication.Packets.Incoming.Help.Helpers
 {
-    class HelperSessioChatSendMessageEvent : IPacketEvent
+    internal class HelperSessioChatSendMessageEvent : IPacketEvent
     {
         public void Parse(GameClient Session, ClientPacket Packet)
         {
-            var Element = HelperToolsManager.GetElement(Session);
-            var message = Packet.PopString();
+            IHelperElement Element = HelperToolsManager.GetElement(Session);
+            string message = Packet.PopString();
             if (Element.OtherElement != null)
             {
                 Session.SendMessage(new HelperSessionSendChatComposer(Session.GetHabbo().Id, message));

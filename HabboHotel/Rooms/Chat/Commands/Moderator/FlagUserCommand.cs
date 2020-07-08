@@ -1,29 +1,16 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
+﻿using Neon.Communication.Packets.Outgoing.Handshake;
 using Neon.Database.Interfaces;
 using Neon.HabboHotel.GameClients;
-using Neon.Communication.Packets.Outgoing.Handshake;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
 {
-    class FlagUserCommand : IChatCommand
+    internal class FlagUserCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_flaguser"; }
-        }
+        public string PermissionRequired => "command_flaguser";
 
-        public string Parameters
-        {
-            get { return "%username%"; }
-        }
+        public string Parameters => "%username%";
 
-        public string Description
-        {
-            get { return "Fuerza a algun usuario a cambiar su nombre."; }
-        }
+        public string Description => "Fuerza a algun usuario a cambiar su nombre.";
 
         public void Execute(GameClient Session, Room Room, string[] Params)
         {
@@ -40,9 +27,9 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
                 return;
             }
 
-           else if (TargetClient.GetHabbo()._changename != 1)
+            else if (TargetClient.GetHabbo()._changename != 1)
             {
-                Session.SendNotification("El usuario " +TargetClient.GetHabbo().Username+" no puede recibir el cambio de nombre, a causa de que ya ha agotado el cambio permitido.");
+                Session.SendNotification("El usuario " + TargetClient.GetHabbo().Username + " no puede recibir el cambio de nombre, a causa de que ya ha agotado el cambio permitido.");
                 TargetClient.SendNotification("¡Vaya!, uno de nuestros staffs ha intentado cambiarte el nombre, pero como lo has cambiado hace menos de un mes, no podemos proceder a tu cambio, si lo deseas, puedes comprar un cambio adicional dentro del catálogo");
                 return;
             }

@@ -1,14 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-
-using Neon.Communication.Packets.Incoming;
+﻿using Neon.Communication.Packets.Outgoing.Inventory.Purse;
 using Neon.HabboHotel.GameClients;
-using Neon.Communication.Packets.Outgoing.Inventory.Purse;
 
 namespace Neon.Communication.Packets.Incoming.Inventory.Purse
 {
-    class GetCreditsInfoEvent : IPacketEvent
+    internal class GetCreditsInfoEvent : IPacketEvent
     {
         public void Parse(GameClient Session, ClientPacket Packet)
         {

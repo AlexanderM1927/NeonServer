@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Neon.Communication.Packets.Outgoing.Rooms.Poll
+﻿namespace Neon.Communication.Packets.Outgoing.Rooms.Poll
 {
-    class QuickPollMessageComposer : ServerPacket
+    internal class QuickPollMessageComposer : ServerPacket
     {
-        public QuickPollMessageComposer(String question)
+        public QuickPollMessageComposer(string question)
             : base(ServerPacketHeader.QuickPollMessageComposer)
         {
             base.WriteString("");

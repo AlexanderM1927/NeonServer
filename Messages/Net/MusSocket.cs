@@ -1,29 +1,28 @@
-﻿using System;
+﻿using Neon.Messages.Net;
+using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
-using System.Collections.Generic;
-
-using Neon.Messages.Net;
 
 namespace Neon.Net
 {
     public class MusSocket
     {
-        private Socket _musSocket;
-        private List<String> _allowedIPs;
+        private readonly Socket _musSocket;
+        private readonly List<string> _allowedIPs;
 
-        private String _musIP;
-        private int _musPort;
+        private readonly string _musIP;
+        private readonly int _musPort;
 
-        public MusSocket(String MusIP, int MusPort, String[] AllowdIPs, int backlog)
+        public MusSocket(string MusIP, int MusPort, string[] AllowdIPs, int backlog)
         {
-            this._musIP = MusIP;
-            this._musPort = MusPort;
+            _musIP = MusIP;
+            _musPort = MusPort;
 
-            this._allowedIPs = new List<String>();
-            foreach (String ip in AllowdIPs)
+            _allowedIPs = new List<string>();
+            foreach (string ip in AllowdIPs)
             {
-                this._allowedIPs.Add(ip);
+                _allowedIPs.Add(ip);
             }
 
             try
@@ -45,10 +44,10 @@ namespace Neon.Net
             try
             {
                 Socket socket = ((Socket)iAr.AsyncState).EndAccept(iAr);
-                String ip = socket.RemoteEndPoint.ToString().Split(':')[0];
+                string ip = socket.RemoteEndPoint.ToString().Split(':')[0];
                 if (_allowedIPs.Contains(ip) || ip == "127.0.0.1")
                 {
-                    var nC = new MusConnection(socket);
+                    MusConnection nC = new MusConnection(socket);
                 }
                 else
                 {

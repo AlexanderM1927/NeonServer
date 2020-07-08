@@ -1,13 +1,8 @@
 ﻿using Neon.HabboHotel.Users;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.Communication.Packets.Outgoing.Help.Helpers
 {
-    class InitHelperSessionChatComposer : ServerPacket
+    internal class InitHelperSessionChatComposer : ServerPacket
     {
 
         public InitHelperSessionChatComposer(Habbo Habbo1, Habbo Habbo2)

@@ -1,21 +1,16 @@
 ﻿using Neon.Communication.Packets.Outgoing;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.Communication.Packets.Incoming.Navigator
 {
-    class LTDCountdownEvent : IPacketEvent
+    internal class LTDCountdownEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
             string time = Packet.PopString();
-            DateTime date;
-            DateTime.TryParse(time, out date);
+            DateTime.TryParse(time, out DateTime date);
             TimeSpan diff = date - DateTime.Now;
-            var response = new ServerPacket(ServerPacketHeader.LTDCountdownComposer);
+            ServerPacket response = new ServerPacket(ServerPacketHeader.LTDCountdownComposer);
             response.WriteString(time);
             response.WriteInteger(Convert.ToInt32(diff.TotalSeconds));
             Session.SendMessage(response);

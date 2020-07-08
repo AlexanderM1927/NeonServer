@@ -1,5 +1,4 @@
-﻿using Neon.Communication.Packets.Outgoing;
-using Neon.Communication.Packets.Outgoing.Rooms.Furni.LoveLocks;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Furni.LoveLocks;
 using Neon.HabboHotel.GameClients;
 using Neon.HabboHotel.Rooms;
 using System;
@@ -22,10 +21,14 @@ namespace Neon.HabboHotel.Items.Interactor
             RoomUser User = null;
 
             if (Session != null)
+            {
                 User = Item.GetRoom().GetRoomUserManager().GetRoomUserByHabbo(Session.GetHabbo().Id);
+            }
 
             if (User == null)
+            {
                 return;
+            }
 
             if (Gamemap.TilesTouching(Item.GetX, Item.GetY, User.X, User.Y))
             {
@@ -53,12 +56,18 @@ namespace Neon.HabboHotel.Items.Interactor
                     RoomUser UserOne = Item.GetRoom().GetRoomUserManager().GetUserForSquare(pointOne.X, pointOne.Y);
                     RoomUser UserTwo = Item.GetRoom().GetRoomUserManager().GetUserForSquare(pointTwo.X, pointTwo.Y);
 
-                    if(UserOne == null || UserTwo == null)
+                    if (UserOne == null || UserTwo == null)
+                    {
                         Session.SendNotification("No se encontro un usuario valido para poder bloquear esta cerradura de amor");
-                    else if(UserOne.GetClient() == null || UserTwo.GetClient() == null)
+                    }
+                    else if (UserOne.GetClient() == null || UserTwo.GetClient() == null)
+                    {
                         Session.SendNotification("No se encontro un usuario valido para poder bloquear esta cerradura de amor");
-                    else if(UserOne.HabboId != Item.UserID && UserTwo.HabboId != Item.UserID)
+                    }
+                    else if (UserOne.HabboId != Item.UserID && UserTwo.HabboId != Item.UserID)
+                    {
                         Session.SendNotification("Esta maquina solo la puede usar el dueño");
+                    }
                     else
                     {
                         UserOne.CanWalk = false;
@@ -74,7 +83,9 @@ namespace Neon.HabboHotel.Items.Interactor
 
                 }
                 else
+                {
                     return;
+                }
             }
             else
             {

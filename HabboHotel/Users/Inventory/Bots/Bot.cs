@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Neon.HabboHotel.Users.Inventory.Bots
+﻿namespace Neon.HabboHotel.Users.Inventory.Bots
 {
     public class Bot
     {
@@ -27,38 +21,38 @@ namespace Neon.HabboHotel.Users.Inventory.Bots
 
         public int Id
         {
-            get { return this._id; }
-            set { this._id = value; }
+            get => _id;
+            set => _id = value;
         }
 
         public int OwnerId
         {
-            get { return this._ownerId; }
-            set { this._ownerId = value; }
+            get => _ownerId;
+            set => _ownerId = value;
         }
 
         public string Name
         {
-            get { return this._name; }
-            set { this._name = value; }
+            get => _name;
+            set => _name = value;
         }
 
         public string Motto
         {
-            get { return this._motto; }
-            set { this._motto = value; }
+            get => _motto;
+            set => _motto = value;
         }
 
         public string Figure
         {
-            get { return this._figure; }
-            set { this._figure = value; }
+            get => _figure;
+            set => _figure = value;
         }
 
         public string Gender
         {
-            get { return this._gender; }
-            set { this._gender = value; }
+            get => _gender;
+            set => _gender = value;
         }
     }
 }

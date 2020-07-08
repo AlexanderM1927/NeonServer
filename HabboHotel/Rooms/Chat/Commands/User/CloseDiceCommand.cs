@@ -1,27 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.User
 {
-    class CloseDiceCommand : IChatCommand
+    internal class CloseDiceCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_close_dice"; }
-        }
+        public string PermissionRequired => "command_close_dice";
 
-        public string Parameters
-        {
-            get { return ""; }
-        }
+        public string Parameters => "";
 
-        public string Description
-        {
-            get { return "Cierra tus dados cuando en una tradición 5 mueren booth."; }
-        }
+        public string Description => "Cierra tus dados cuando en una tradición 5 mueren booth.";
 
         public void Execute(GameClients.GameClient Session, Room Room, string[] Params)
         {
@@ -40,7 +28,8 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User
                 return;
             }
 
-            userBooth.ForEach(x => {
+            userBooth.ForEach(x =>
+            {
                 x.ExtraData = "0";
                 x.UpdateState();
             });

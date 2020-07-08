@@ -3,7 +3,7 @@ using Neon.Utilities;
 
 namespace Neon.Communication.Packets.Outgoing.Moderation
 {
-    class CallForHelpPendingCallsComposer : ServerPacket
+    internal class CallForHelpPendingCallsComposer : ServerPacket
     {
         public CallForHelpPendingCallsComposer(ModerationTicket ticket)
             : base(ServerPacketHeader.CallForHelpPendingCallsMessageComposer)

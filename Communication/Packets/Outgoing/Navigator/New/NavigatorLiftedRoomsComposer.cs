@@ -1,11 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-namespace Neon.Communication.Packets.Outgoing.Navigator
+﻿namespace Neon.Communication.Packets.Outgoing.Navigator
 {
-    class NavigatorLiftedRoomsComposer : ServerPacket
+    internal class NavigatorLiftedRoomsComposer : ServerPacket
     {
         public NavigatorLiftedRoomsComposer()
             : base(ServerPacketHeader.NavigatorLiftedRoomsMessageComposer)
@@ -14,8 +9,8 @@ namespace Neon.Communication.Packets.Outgoing.Navigator
             {
                 base.WriteInteger(1);//Flat Id
                 base.WriteInteger(0);//Unknown
-               base.WriteString("");//Image
-               base.WriteString("Caption");//Caption.
+                base.WriteString("");//Image
+                base.WriteString("Caption");//Caption.
             }
         }
     }

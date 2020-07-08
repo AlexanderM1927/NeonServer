@@ -1,14 +1,10 @@
-﻿using System;
-
-using Neon.HabboHotel.Items;
+﻿using Neon.HabboHotel.GameClients;
 using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Rooms.Games;
-using Neon.HabboHotel.GameClients;
 using Neon.HabboHotel.Rooms.Games.Teams;
 
 namespace Neon.HabboHotel.Items.Interactor
 {
-    class InteractorFreezeTile : IFurniInteractor
+    internal class InteractorFreezeTile : IFurniInteractor
     {
         public void OnPlace(GameClient Session, Item Item)
         {
@@ -21,11 +17,15 @@ namespace Neon.HabboHotel.Items.Interactor
         public void OnTrigger(GameClient Session, Item Item, int Request, bool HasRights)
         {
             if (Session == null || !Session.GetHabbo().InRoom || Item == null || Item.InteractingUser > 0)
+            {
                 return;
+            }
 
             RoomUser User = Item.GetRoom().GetRoomUserManager().GetRoomUserByHabbo(Session.GetHabbo().Id);
             if (User == null)
+            {
                 return;
+            }
 
             if (User.Team != TEAM.NONE)
             {
@@ -35,7 +35,9 @@ namespace Neon.HabboHotel.Items.Interactor
                 if (Item.Data.InteractionType == InteractionType.FREEZE_TILE_BLOCK)
                 {
                     if (Gamemap.TileDistance(User.X, User.Y, Item.GetX, Item.GetY) < 2)
+                    {
                         Item.GetRoom().GetFreeze().onFreezeTiles(Item, Item.freezePowerUp);
+                    }
                 }
             }
         }

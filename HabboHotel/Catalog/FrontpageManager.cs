@@ -9,30 +9,34 @@
 
     public class FrontpageManager
     {
-        private Dictionary<int, Frontpage> _frontPageData = new Dictionary<int, Frontpage>();
-        private Dictionary<int, Frontpage> _bcfrontPageData = new Dictionary<int, Frontpage>();
+        private readonly Dictionary<int, Frontpage> _frontPageData = new Dictionary<int, Frontpage>();
+        private readonly Dictionary<int, Frontpage> _bcfrontPageData = new Dictionary<int, Frontpage>();
         private static readonly ILog log = LogManager.GetLogger("Neon.HabboHotel.Catalog.FrontPage");
 
         public FrontpageManager()
         {
-            this.LoadFrontPage();
+            LoadFrontPage();
         }
 
         public ICollection<Frontpage> GetCatalogFrontPage()
         {
-            return this._frontPageData.Values;
+            return _frontPageData.Values;
         }
         public ICollection<Frontpage> GetBCCatalogFrontPage()
         {
-            return this._bcfrontPageData.Values;
+            return _bcfrontPageData.Values;
         }
         public void LoadFrontPage()
         {
-            if (this._frontPageData.Count > 0)
-                this._frontPageData.Clear();
-            if (this._bcfrontPageData.Count > 0)
-                this._bcfrontPageData.Clear();
+            if (_frontPageData.Count > 0)
+            {
+                _frontPageData.Clear();
+            }
 
+            if (_bcfrontPageData.Count > 0)
+            {
+                _bcfrontPageData.Clear();
+            }
 
             using (IQueryAdapter adapter = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
@@ -42,7 +46,7 @@
                 {
                     foreach (DataRow row in table.Rows)
                     {
-                        this._frontPageData.Add(Convert.ToInt32(row["id"]), new Frontpage(Convert.ToInt32(row["id"]), Convert.ToString(row["front_name"]), Convert.ToString(row["front_link"]), Convert.ToString(row["front_image"])));
+                        _frontPageData.Add(Convert.ToInt32(row["id"]), new Frontpage(Convert.ToInt32(row["id"]), Convert.ToString(row["front_name"]), Convert.ToString(row["front_link"]), Convert.ToString(row["front_image"])));
                     }
                 }
             }
@@ -55,7 +59,7 @@
                 {
                     foreach (DataRow row in table.Rows)
                     {
-                        this._bcfrontPageData.Add(Convert.ToInt32(row["id"]), new Frontpage(Convert.ToInt32(row["id"]), Convert.ToString(row["front_name"]), Convert.ToString(row["front_link"]), Convert.ToString(row["front_image"])));
+                        _bcfrontPageData.Add(Convert.ToInt32(row["id"]), new Frontpage(Convert.ToInt32(row["id"]), Convert.ToString(row["front_name"]), Convert.ToString(row["front_link"]), Convert.ToString(row["front_image"])));
                     }
                 }
             }

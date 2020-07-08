@@ -2,7 +2,7 @@
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.User
 {
-    class SellRoomCommand : IChatCommand
+    internal class SellRoomCommand : IChatCommand
     {
         public string Description => "Ponga la sala en que estás a venta.";
         public string Parameters => "%precio%";
@@ -17,10 +17,12 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User
             }
 
             if (!Room.CheckRights(Session, true))
+            {
                 return;
+            }
 
             if (Room == null)
-
+            {
                 if (Params.Length == 1)
                 {
                     Session.SendWhisper("Vaya, se te olvidó elegir un precio para vender esta sala..", 34);
@@ -31,9 +33,9 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User
                     Session.SendWhisper("Vaya, aparentemente esta sala tiene un grupo, por lo que no puedes vender, primero debes eliminar el grupo.", 34);
                     return;
                 }
+            }
 
-            int Value = 0;
-            if (!int.TryParse(Params[1], out Value))
+            if (!int.TryParse(Params[1], out int Value))
             {
                 Session.SendWhisper("Vaya, está ingresando un valor que no es correcto", 34);
                 return;
@@ -58,7 +60,9 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User
             foreach (RoomUser User in Room.GetRoomUserManager().GetRoomUsers())
             {
                 if (User == null || User.GetClient() == null)
+                {
                     continue;
+                }
 
                 Session.SendWhisper("Esta sala está a la venta, el precio actual es:  " + Value + " Duckets! Cómprelo escribiendo :buyroom.");
             }

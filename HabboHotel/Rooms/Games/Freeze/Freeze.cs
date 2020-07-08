@@ -1,15 +1,13 @@
-﻿using System;
-using System.Linq;
-using System.Drawing;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Concurrent;
-
-using Neon.HabboHotel.Items;
-using Neon.Communication.Packets.Outgoing.Rooms.Avatar;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Avatar;
 using Neon.Communication.Packets.Outgoing.Rooms.Freeze;
-using Neon.HabboHotel.Rooms.Games.Teams;
+using Neon.HabboHotel.Items;
 using Neon.HabboHotel.Items.Wired;
+using Neon.HabboHotel.Rooms.Games.Teams;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
 
 namespace Neon.HabboHotel.Rooms.Games.Freeze
 {
@@ -24,35 +22,32 @@ namespace Neon.HabboHotel.Rooms.Games.Freeze
 
         public Freeze(Room room)
         {
-            this._room = room;
-            this._gameStarted = false;
-            this._exitTeleports = new ConcurrentDictionary<int, Item>();
-            this._random = new Random();
-            this._freezeTiles = new ConcurrentDictionary<int, Item>();
-            this._freezeBlocks = new ConcurrentDictionary<int, Item>();
+            _room = room;
+            _gameStarted = false;
+            _exitTeleports = new ConcurrentDictionary<int, Item>();
+            _random = new Random();
+            _freezeTiles = new ConcurrentDictionary<int, Item>();
+            _freezeBlocks = new ConcurrentDictionary<int, Item>();
         }
 
-        public bool GameIsStarted
-        {
-            get { return this._gameStarted; }
-        }
+        public bool GameIsStarted => _gameStarted;
 
-        public ConcurrentDictionary<int, Item> ExitTeleports
-        {
-            get { return this._exitTeleports; }
-        }
+        public ConcurrentDictionary<int, Item> ExitTeleports => _exitTeleports;
 
         public void AddExitTile(Item Item)
         {
             if (!_exitTeleports.ContainsKey(Item.Id))
+            {
                 _exitTeleports.TryAdd(Item.Id, Item);
+            }
         }
 
         public void RemoveExitTile(int Id)
         {
-            Item Temp;
             if (_exitTeleports.ContainsKey(Id))
-                _exitTeleports.TryRemove(Id, out Temp);
+            {
+                _exitTeleports.TryRemove(Id, out Item Temp);
+            }
         }
 
         public Item GetRandomExitTile()
@@ -62,52 +57,56 @@ namespace Neon.HabboHotel.Rooms.Games.Freeze
 
         public void StartGame()
         {
-            this._gameStarted = true;
+            _gameStarted = true;
             CountTeamPoints();
             ResetGame();
 
-            if (this.ExitTeleports.Count > 0)
+            if (ExitTeleports.Count > 0)
             {
                 foreach (Item ExitTile in ExitTeleports.Values.ToList())
                 {
-                    if (ExitTile.ExtraData == "0" || String.IsNullOrEmpty(ExitTile.ExtraData))
+                    if (ExitTile.ExtraData == "0" || string.IsNullOrEmpty(ExitTile.ExtraData))
+                    {
                         ExitTile.ExtraData = "1";
+                    }
 
                     ExitTile.UpdateState();
                 }
             }
 
-            this._room.GetGameManager().LockGates();
+            _room.GetGameManager().LockGates();
         }
 
         public void StopGame(bool userTriggered = false)
         {
-            this._gameStarted = false;
-            this._room.GetGameManager().UnlockGates();
-            this._room.GetGameManager().StopGame();
+            _gameStarted = false;
+            _room.GetGameManager().UnlockGates();
+            _room.GetGameManager().StopGame();
 
             ResetGame();
 
-            if (this.ExitTeleports.Count > 0)
+            if (ExitTeleports.Count > 0)
             {
                 foreach (Item ExitTile in ExitTeleports.Values.ToList())
                 {
-                    if (ExitTile.ExtraData == "1" || String.IsNullOrEmpty(ExitTile.ExtraData))
+                    if (ExitTile.ExtraData == "1" || string.IsNullOrEmpty(ExitTile.ExtraData))
+                    {
                         ExitTile.ExtraData = "0";
+                    }
 
                     ExitTile.UpdateState();
                 }
             }
 
-            TEAM Winners = this._room.GetGameManager().GetWinningTeam();
-            foreach (RoomUser User in this._room.GetRoomUserManager().GetUserList().ToList())
+            TEAM Winners = _room.GetGameManager().GetWinningTeam();
+            foreach (RoomUser User in _room.GetRoomUserManager().GetUserList().ToList())
             {
                 User.FreezeLives = 0;
                 if (User.Team == Winners)
                 {
                     User.UnIdle();
                     User.DanceId = 0;
-                    this._room.SendMessage(new ActionComposer(User.VirtualId, 1));
+                    _room.SendMessage(new ActionComposer(User.VirtualId, 1));
                 }
 
                 if (ExitTeleports.Count > 0)
@@ -124,14 +123,18 @@ namespace Neon.HabboHotel.Rooms.Games.Freeze
                             User.UpdateNeeded = true;
 
                             if (User.IsAsleep)
+                            {
                                 User.UnIdle();
+                            }
                         }
                     }
                 }
             }
 
             if (!userTriggered)
+            {
                 _room.GetWired().TriggerEvent(WiredBoxType.TriggerGameEnds, null);
+            }
         }
 
         public void CycleUser(RoomUser User)
@@ -168,7 +171,7 @@ namespace Neon.HabboHotel.Rooms.Games.Freeze
                     Item.interactionCountHelper = 0;
                     Item.ExtraData = "";
                     Item.UpdateState(false, true);
-                    this._room.GetGameMap().AddItemToMap(Item, false);
+                    _room.GetGameMap().AddItemToMap(Item, false);
                 }
             }
 
@@ -185,10 +188,12 @@ namespace Neon.HabboHotel.Rooms.Games.Freeze
 
         public void OnUserWalk(RoomUser User)
         {
-            if (!this._gameStarted || User.Team == TEAM.NONE)
+            if (!_gameStarted || User.Team == TEAM.NONE)
+            {
                 return;
+            }
 
-            foreach (Item Item in this._freezeTiles.Values.ToList())
+            foreach (Item Item in _freezeTiles.Values.ToList())
             {
                 if (User.GoalX == Item.GetX && User.GoalY == Item.GetY && User.FreezeInteracting)
                 {
@@ -215,7 +220,7 @@ namespace Neon.HabboHotel.Rooms.Games.Freeze
                 }
             }
 
-            foreach (Item Item in this._freezeBlocks.Values.ToList())
+            foreach (Item Item in _freezeBlocks.Values.ToList())
             {
                 if (User.GoalX == Item.GetX && User.GoalY == Item.GetY)
                 {
@@ -229,12 +234,14 @@ namespace Neon.HabboHotel.Rooms.Games.Freeze
 
         private void CountTeamPoints()
         {
-            this._room.GetGameManager().Reset();
+            _room.GetGameManager().Reset();
 
-            foreach (RoomUser User in this._room.GetRoomUserManager().GetUserList().ToList())
+            foreach (RoomUser User in _room.GetRoomUserManager().GetUserList().ToList())
             {
                 if (User.IsBot || User.Team == TEAM.NONE || User.GetClient() == null)
+                {
                     continue;
+                }
 
                 User.banzaiPowerUp = FreezePowerUp.NONE;
                 User.FreezeLives = 3;
@@ -317,7 +324,9 @@ namespace Neon.HabboHotel.Rooms.Games.Freeze
         private void SetRandomPowerUp(Item item)
         {
             if (!string.IsNullOrEmpty(item.ExtraData))
+            {
                 return;
+            }
 
             int next = _random.Next(1, 14);
 
@@ -407,39 +416,48 @@ namespace Neon.HabboHotel.Rooms.Games.Freeze
 
         public void AddFreezeTile(Item Item)
         {
-            if (!this._freezeTiles.ContainsKey(Item.Id))
-                this._freezeTiles.TryAdd(Item.Id, Item);
+            if (!_freezeTiles.ContainsKey(Item.Id))
+            {
+                _freezeTiles.TryAdd(Item.Id, Item);
+            }
         }
 
         public void RemoveFreezeTile(int itemID)
         {
             Item Item = null;
-            if (this._freezeTiles.ContainsKey(itemID))
-                this._freezeTiles.TryRemove(itemID, out Item);
+            if (_freezeTiles.ContainsKey(itemID))
+            {
+                _freezeTiles.TryRemove(itemID, out Item);
+            }
         }
 
         public void AddFreezeBlock(Item Item)
         {
-            if (!this._freezeBlocks.ContainsKey(Item.Id))
-                this._freezeBlocks.TryAdd(Item.Id, Item);
+            if (!_freezeBlocks.ContainsKey(Item.Id))
+            {
+                _freezeBlocks.TryAdd(Item.Id, Item);
+            }
         }
 
         public void RemoveFreezeBlock(int ItemID)
         {
-            Item Item = null;
-            this._freezeBlocks.TryRemove(ItemID, out Item);
+            _freezeBlocks.TryRemove(ItemID, out Item Item);
         }
 
         private void HandleUserFreeze(Point point)
         {
             if (_room == null)
+            {
                 return;
+            }
 
             RoomUser user = _room.GetGameMap().GetRoomUsers(point).FirstOrDefault();
             if (user != null)
             {
                 if (user.IsWalking && user.SetX != point.X && user.SetY != point.Y)
+                {
                     return;
+                }
 
                 FreezeUser(user);
             }
@@ -448,7 +466,9 @@ namespace Neon.HabboHotel.Rooms.Games.Freeze
         private void FreezeUser(RoomUser User)
         {
             if (User.IsBot || User.shieldActive || User.Team == TEAM.NONE || User.Freezed)
+            {
                 return;
+            }
 
             User.Freezed = true;
             User.FreezeCounter = 0;
@@ -464,7 +484,9 @@ namespace Neon.HabboHotel.Rooms.Games.Freeze
                 t.OnUserLeave(User);
                 User.Team = TEAM.NONE;
                 if (_exitTeleports.Count > 0)
-                    _room.GetGameMap().TeleportToItem(User, this.GetRandomExitTile());
+                {
+                    _room.GetGameMap().TeleportToItem(User, GetRandomExitTile());
+                }
 
                 User.Freezed = false;
                 User.SetStep = false;
@@ -472,16 +494,25 @@ namespace Neon.HabboHotel.Rooms.Games.Freeze
                 User.UpdateNeeded = true;
 
                 if (t.BlueTeam.Count <= 0 && t.RedTeam.Count <= 0 && t.GreenTeam.Count <= 0 && t.YellowTeam.Count > 0)
+                {
                     StopGame(); // yellow team win
+                }
                 else if (t.BlueTeam.Count > 0 && t.RedTeam.Count <= 0 && t.GreenTeam.Count <= 0 &&
                          t.YellowTeam.Count <= 0)
+                {
                     StopGame(); // blue team win
+                }
                 else if (t.BlueTeam.Count <= 0 && t.RedTeam.Count > 0 && t.GreenTeam.Count <= 0 &&
                          t.YellowTeam.Count <= 0)
+                {
                     StopGame(); // red team win
+                }
                 else if (t.BlueTeam.Count <= 0 && t.RedTeam.Count <= 0 && t.GreenTeam.Count > 0 &&
                          t.YellowTeam.Count <= 0)
+                {
                     StopGame(); // green team win
+                }
+
                 return;
             }
 
@@ -493,64 +524,80 @@ namespace Neon.HabboHotel.Rooms.Games.Freeze
 
         private List<Item> GetVerticalItems(int x, int y, int length)
         {
-            var totalItems = new List<Item>();
+            List<Item> totalItems = new List<Item>();
 
             for (int i = 0; i < length; i++)
             {
-                var point = new Point(x + i, y);
+                Point point = new Point(x + i, y);
 
                 List<Item> items = GetItemsForSquare(point);
                 if (!SquareGotFreezeTile(items))
+                {
                     break;
+                }
 
                 HandleUserFreeze(point);
                 totalItems.AddRange(items);
 
                 if (SquareGotFreezeBlock(items))
+                {
                     break;
+                }
             }
 
             for (int i = 1; i < length; i++)
             {
-                var point = new Point(x, y + i);
+                Point point = new Point(x, y + i);
 
                 List<Item> items = GetItemsForSquare(point);
                 if (!SquareGotFreezeTile(items))
+                {
                     break;
+                }
 
                 HandleUserFreeze(point);
                 totalItems.AddRange(items);
 
                 if (SquareGotFreezeBlock(items))
+                {
                     break;
+                }
             }
 
             for (int i = 1; i < length; i++)
             {
-                var point = new Point(x - i, y);
+                Point point = new Point(x - i, y);
                 List<Item> items = GetItemsForSquare(point);
                 if (!SquareGotFreezeTile(items))
+                {
                     break;
+                }
 
                 HandleUserFreeze(point);
                 totalItems.AddRange(items);
 
                 if (SquareGotFreezeBlock(items))
+                {
                     break;
+                }
             }
 
             for (int i = 1; i < length; i++)
             {
-                var point = new Point(x, y - i);
+                Point point = new Point(x, y - i);
                 List<Item> items = GetItemsForSquare(point);
                 if (!SquareGotFreezeTile(items))
+                {
                     break;
+                }
 
                 HandleUserFreeze(point);
                 totalItems.AddRange(items);
 
                 if (SquareGotFreezeBlock(items))
+                {
                     break;
+                }
             }
 
             return totalItems;
@@ -558,63 +605,79 @@ namespace Neon.HabboHotel.Rooms.Games.Freeze
 
         private List<Item> GetDiagonalItems(int x, int y, int length)
         {
-            var totalItems = new List<Item>();
+            List<Item> totalItems = new List<Item>();
 
             for (int i = 0; i < length; i++)
             {
-                var point = new Point(x + i, y + i);
+                Point point = new Point(x + i, y + i);
 
                 List<Item> items = GetItemsForSquare(point);
                 if (!SquareGotFreezeTile(items))
+                {
                     break;
+                }
 
                 HandleUserFreeze(point);
                 totalItems.AddRange(items);
 
                 if (SquareGotFreezeBlock(items))
+                {
                     break;
+                }
             }
 
             for (int i = 0; i < length; i++)
             {
-                var point = new Point(x - i, y - i);
+                Point point = new Point(x - i, y - i);
                 List<Item> items = GetItemsForSquare(point);
                 if (!SquareGotFreezeTile(items))
+                {
                     break;
+                }
 
                 HandleUserFreeze(point);
                 totalItems.AddRange(items);
 
                 if (SquareGotFreezeBlock(items))
+                {
                     break;
+                }
             }
 
             for (int i = 0; i < length; i++)
             {
-                var point = new Point(x - i, y + i);
+                Point point = new Point(x - i, y + i);
                 List<Item> items = GetItemsForSquare(point);
                 if (!SquareGotFreezeTile(items))
+                {
                     break;
+                }
 
                 HandleUserFreeze(point);
                 totalItems.AddRange(items);
 
                 if (SquareGotFreezeBlock(items))
+                {
                     break;
+                }
             }
 
             for (int i = 0; i < length; i++)
             {
-                var point = new Point(x + i, y - i);
+                Point point = new Point(x + i, y - i);
                 List<Item> items = GetItemsForSquare(point);
                 if (!SquareGotFreezeTile(items))
+                {
                     break;
+                }
 
                 HandleUserFreeze(point);
                 totalItems.AddRange(items);
 
                 if (SquareGotFreezeBlock(items))
+                {
                     break;
+                }
             }
 
             return totalItems;
@@ -622,7 +685,7 @@ namespace Neon.HabboHotel.Rooms.Games.Freeze
 
         private List<Item> GetItemsForSquare(Point point)
         {
-            return this._room.GetGameMap().GetCoordinatedItems(point);
+            return _room.GetGameMap().GetCoordinatedItems(point);
         }
 
         private static bool SquareGotFreezeTile(List<Item> items)
@@ -630,7 +693,9 @@ namespace Neon.HabboHotel.Rooms.Games.Freeze
             foreach (Item item in items)
             {
                 if (item.GetBaseItem().InteractionType == InteractionType.FREEZE_TILE)
+                {
                     return true;
+                }
             }
 
             return false;
@@ -641,7 +706,9 @@ namespace Neon.HabboHotel.Rooms.Games.Freeze
             foreach (Item item in items)
             {
                 if (item.GetBaseItem().InteractionType == InteractionType.FREEZE_TILE_BLOCK)
+                {
                     return true;
+                }
             }
 
             return false;
@@ -651,7 +718,7 @@ namespace Neon.HabboHotel.Rooms.Games.Freeze
         {
             _freezeBlocks.Clear();
             _freezeTiles.Clear();
-            this._exitTeleports.Clear();
+            _exitTeleports.Clear();
 
             _room = null;
             _random = null;

@@ -1,42 +1,39 @@
-﻿using System;
-using System.Data;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Concurrent;
-
-using log4net;
-
-using Neon.Core;
-using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.GameClients;
-using Neon.HabboHotel.Achievements;
-using Neon.HabboHotel.Users.Badges;
-using Neon.HabboHotel.Users.Inventory;
-using Neon.HabboHotel.Users.Messenger;
-using Neon.HabboHotel.Users.Relationships;
-using Neon.HabboHotel.Users.UserDataManagement;
-
-using Neon.HabboHotel.Users.Process;
+﻿using log4net;
+using Neon.Communication.Packets.Outgoing.Handshake;
 using Neon.Communication.Packets.Outgoing.Inventory.Purse;
-
-using Neon.HabboHotel.Users.Navigator.SavedSearches;
-using Neon.HabboHotel.Users.Effects;
-using Neon.HabboHotel.Users.Messenger.FriendBar;
-using Neon.HabboHotel.Users.Clothing;
+using Neon.Communication.Packets.Outgoing.LandingView;
 using Neon.Communication.Packets.Outgoing.Navigator;
 using Neon.Communication.Packets.Outgoing.Rooms.Engine;
-using Neon.Communication.Packets.Outgoing.Rooms.Session;
-using Neon.Communication.Packets.Outgoing.Handshake;
-using Neon.Database.Interfaces;
-using Neon.HabboHotel.Rooms.Chat.Commands;
-using Neon.HabboHotel.Users.Permissions;
-using Neon.HabboHotel.Subscriptions;
-using Neon.HabboHotel.Club;
 using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
-using Neon.Communication.Packets.Outgoing.LandingView;
-using Neon.HabboHotel.Users.Polls;
-using Neon.HabboHotel.Items;
+using Neon.Communication.Packets.Outgoing.Rooms.Session;
+using Neon.Core;
+using Neon.Database.Interfaces;
+using Neon.HabboHotel.Achievements;
+using Neon.HabboHotel.Catalog;
+using Neon.HabboHotel.Club;
+using Neon.HabboHotel.GameClients;
 using Neon.HabboHotel.Helpers;
+using Neon.HabboHotel.Items;
+using Neon.HabboHotel.Rooms;
+using Neon.HabboHotel.Rooms.Chat.Commands;
+using Neon.HabboHotel.Subscriptions;
+using Neon.HabboHotel.Users.Badges;
+using Neon.HabboHotel.Users.Clothing;
+using Neon.HabboHotel.Users.Effects;
+using Neon.HabboHotel.Users.Inventory;
+using Neon.HabboHotel.Users.Messenger;
+using Neon.HabboHotel.Users.Messenger.FriendBar;
+using Neon.HabboHotel.Users.Navigator.SavedSearches;
+using Neon.HabboHotel.Users.Permissions;
+using Neon.HabboHotel.Users.Polls;
+using Neon.HabboHotel.Users.Process;
+using Neon.HabboHotel.Users.Relationships;
+using Neon.HabboHotel.Users.UserDataManagement;
+using System;
+using System.Collections;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Data;
 
 namespace Neon.HabboHotel.Users
 {
@@ -91,12 +88,14 @@ namespace Neon.HabboHotel.Users
         public int lastY;
         public int lastX2;
         public int lastY2;
-        
+
         //Alfas
         internal bool onDuty;
         internal bool onService;
         internal uint userHelping;
+#pragma warning disable CS0649 // Campo "Habbo.rankHelper" nunca é atribuído e sempre terá seu valor padrão
         internal TypeOfHelper rankHelper;
+#pragma warning restore CS0649 // Campo "Habbo.rankHelper" nunca é atribuído e sempre terá seu valor padrão
         internal bool requestHelp;
         internal bool requestTour;
         internal bool reportsOfHarassment;
@@ -125,7 +124,7 @@ namespace Neon.HabboHotel.Users
         public bool _isBettingDice = false;
 
         private GameClient _client;
-        private HabboStats _habboStats;
+        private readonly HabboStats _habboStats;
         private HabboMessenger Messenger;
         private ClubManager ClubManager;
         private ProcessComponent _process;
@@ -136,18 +135,19 @@ namespace Neon.HabboHotel.Users
         public Dictionary<int, int> quests;
         private BadgeComponent BadgeComponent;
         private InventoryComponent InventoryComponent;
+        public Dictionary<int, CatalogItem> _lastitems;
         public Dictionary<int, Relationship> Relationships;
         public ConcurrentDictionary<string, UserAchievement> Achievements;
         private PollsComponent _polls;
 
-        private DateTime _timeCached;
-
+        private readonly DateTime _timeCached;
         private SearchesComponent _navigatorSearches;
         private EffectsComponent _fx;
         private ClothingComponent _clothing;
         private PermissionComponent _permissions;
 
         public double ForceHeight;
+        public double StackHeight;
         public bool PassedQuiz;
 
         public bool _multiWhisper;
@@ -161,11 +161,12 @@ namespace Neon.HabboHotel.Users
          bool HasFriendRequestsDisabled, int LastOnline, bool AppearOffline, bool HideInRoom, double CreateDate, int Diamonds,
          string machineID, string clientVolume, bool ChatPreference, bool FocusPreference, bool PetsMuted, bool BotsMuted, bool AdvertisingReportBlocked, double LastNameChange,
          int GOTWPoints, int UserPoints, bool IgnoreInvites, double TimeMuted, double TradingLock, bool AllowGifts, int FriendBarState, bool DisableForcedEffects, bool AllowMimic, int VIPRank,
-         byte guidelevel, byte publicistalevel, byte builder, byte croupier, bool Nux, byte TargetedBuy, string NameColor, string Tag, string TagColor, byte NameChange, string PinClient)
+         byte guidelevel, byte publicistalevel, byte builder, byte croupier, bool Nux, byte TargetedBuy, string NameColor, string Tag, string TagColor, byte NameChange, string PinClient, int CatRank)
         {
             this.Id = Id;
             this.Username = Username;
             this.Rank = Rank;
+            this.CatRank = CatRank;
             this.Motto = Motto;
             this.Look = NeonEnvironment.GetGame().GetAntiMutant().RunLook(Look);
             this.Gender = Gender.ToLower();
@@ -194,9 +195,13 @@ namespace Neon.HabboHotel.Users
             foreach (string Str in clientVolume.Split(','))
             {
                 if (int.TryParse(Str, out _))
+                {
                     ClientVolume.Add(int.Parse(Str));
+                }
                 else
+                {
                     ClientVolume.Add(100);
+                }
             }
 
             this.LastNameChange = LastNameChange;
@@ -321,7 +326,7 @@ namespace Neon.HabboHotel.Users
             {
                 dbClient.SetQuery("SELECT `id`,`roomvisits`,`onlinetime`,`respect`,`respectgiven`,`giftsgiven`,`giftsreceived`,`dailyrespectpoints`,`dailypetrespectpoints`,`achievementscore`,`quest_id`,`quest_progress`,`groupid`,`tickets_answered`,`respectstimestamp`,`forum_posts`, `PurchaseUsersConcurrent`, `vip_gifts` FROM `user_stats` WHERE `id` = @user_id LIMIT 1");
                 dbClient.AddParameter("user_id", Id);
-                
+
                 DataRow StatRow = dbClient.getRow();
 
                 if (StatRow == null)//No row, add it yo
@@ -340,18 +345,22 @@ namespace Neon.HabboHotel.Users
 
                     if (Convert.ToString(StatRow["respectsTimestamp"]) != DateTime.Today.ToString("MM/dd"))
                     {
-                        this._habboStats.RespectsTimestamp = DateTime.Today.ToString("MM/dd");
+                        _habboStats.RespectsTimestamp = DateTime.Today.ToString("MM/dd");
                         SubscriptionData SubData = null;
 
                         int DailyRespects = 3;
 
-                        if (this._permissions.HasRight("mod_tool"))
+                        if (_permissions.HasRight("mod_tool"))
+                        {
                             DailyRespects = 20;
+                        }
                         else if (NeonEnvironment.GetGame().GetSubscriptionManager().TryGetSubscriptionData(VIPRank, out SubData))
+                        {
                             DailyRespects = SubData.Respects;
+                        }
 
-                        this._habboStats.DailyRespectPoints = DailyRespects;
-                        this._habboStats.DailyPetRespectPoints = DailyRespects;
+                        _habboStats.DailyRespectPoints = DailyRespects;
+                        _habboStats.DailyPetRespectPoints = DailyRespects;
 
                         dbClient.RunQuery("UPDATE `user_stats` SET `dailyRespectPoints` = '" + DailyRespects + "', `dailyPetRespectPoints` = '" + DailyRespects + "', `respectsTimestamp` = '" + DateTime.Today.ToString("MM/dd") + "' WHERE `id` = '" + Id + "' LIMIT 1");
                     }
@@ -362,8 +371,10 @@ namespace Neon.HabboHotel.Users
                 }
             }
 
-            if (!NeonEnvironment.GetGame().GetGroupManager().TryGetGroup(this._habboStats.FavouriteGroupId, out _))
-                this._habboStats.FavouriteGroupId = 0;
+            if (!NeonEnvironment.GetGame().GetGroupManager().TryGetGroup(_habboStats.FavouriteGroupId, out _))
+            {
+                _habboStats.FavouriteGroupId = 0;
+            }
             #endregion
         }
 
@@ -375,26 +386,26 @@ namespace Neon.HabboHotel.Users
         }
         public string PrefixName
         {
-            get { return _tag; }
-            set { _tag = value; }
+            get => _tag;
+            set => _tag = value;
         }
 
         public string EColor
         {
-            get { return _eColor; }
-            set { _eColor = value; }
+            get => _eColor;
+            set => _eColor = value;
         }
 
         public string PrefixColor
         {
-            get { return _tagcolor; }
-            set { _tagcolor = value; }
+            get => _tagcolor;
+            set => _tagcolor = value;
         }
 
         public string NameColor
         {
-            get { return _nameColor; }
-            set { _nameColor = value; }
+            get => _nameColor;
+            set => _nameColor = value;
         }
 
         public int Id { get; set; }
@@ -404,6 +415,8 @@ namespace Neon.HabboHotel.Users
         public string Username { get; set; }
 
         public int Rank { get; set; }
+
+        public int CatRank { get; set; }
 
         public string Motto { get; set; }
 
@@ -415,14 +428,14 @@ namespace Neon.HabboHotel.Users
 
         private bool InitPolls()
         {
-            this._polls = new PollsComponent();
+            _polls = new PollsComponent();
 
-            return this._polls.Init(this);
+            return _polls.Init(this);
         }
 
         public PollsComponent GetPolls()
         {
-            return this._polls;
+            return _polls;
         }
 
         public string FootballGender { get; set; }
@@ -433,33 +446,34 @@ namespace Neon.HabboHotel.Users
 
         public bool FirstThrow
         {
-            get { return this._isFirstThrow; }
-            set { this._isFirstThrow = value; }
+            get => _isFirstThrow;
+            set => _isFirstThrow = value;
         }
 
         public bool IsControlling
         {
-            get { return this._isControlling; }
-            set { this._isControlling = value; }
+            get => _isControlling;
+            set => _isControlling = value;
         }
 
         public bool HisTurn
         {
-            get { return this._hisTurn; }
-            set { this._hisTurn = value; }
+            get => _hisTurn;
+            set => _hisTurn = value;
         }
 
         public string Opponent
         {
-            get { return this._Opponent; }
-            set { this._Opponent = value; }
+            get => _Opponent;
+            set => _Opponent = value;
         }
 
         public bool MultiWhisper
         {
-            get { return this._multiWhisper; }
-            set { this._multiWhisper = value; }
+            get => _multiWhisper;
+            set => _multiWhisper = value;
         }
+        public bool BlnInv { get; set; }
 
         public string BackupLook { get; set; }
 
@@ -527,8 +541,8 @@ namespace Neon.HabboHotel.Users
         // CHESS SYSTEM
         public bool PlayingChess
         {
-            get { return this._playingChess; }
-            set { this._playingChess = value; }
+            get => _playingChess;
+            set => _playingChess = value;
         }
 
         public bool AllowMimic { get; set; }
@@ -640,26 +654,26 @@ namespace Neon.HabboHotel.Users
 
         public bool SecureTradeEnabled
         {
-            get { return this._SecureTradeEnabled; }
-            set { this._SecureTradeEnabled = value; }
+            get => _SecureTradeEnabled;
+            set => _SecureTradeEnabled = value;
         }
 
         public bool SecurityQuestion
         {
-            get { return this._SecurityQuestion; }
-            set { this._SecurityQuestion = value; }
+            get => _SecurityQuestion;
+            set => _SecurityQuestion = value;
         }
 
         public bool PlayingDice
         {
-            get { return this._isBettingDice; }
-            set { this._isBettingDice = value; }
+            get => _isBettingDice;
+            set => _isBettingDice = value;
         }
 
         public bool IsBeingAsked
         {
-            get { return this._IsBeingAsked; }
-            set { this._IsBeingAsked = value; }
+            get => _IsBeingAsked;
+            set => _IsBeingAsked = value;
         }
 
         public bool SessionMottoBlocked { get; set; }
@@ -668,26 +682,24 @@ namespace Neon.HabboHotel.Users
 
         public HabboStats GetStats()
         {
-            return this._habboStats;
+            return _habboStats;
         }
 
-        public bool InRoom
-        {
-            get
-            {
-                return CurrentRoomId >= 1 && CurrentRoom != null;
-            }
-        }
+        public bool InRoom => CurrentRoomId >= 1 && CurrentRoom != null;
 
         public Room CurrentRoom
         {
             get
             {
                 if (CurrentRoomId <= 0)
+                {
                     return null;
+                }
 
                 if (NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(CurrentRoomId, out Room _room))
+                {
                     return _room;
+                }
 
                 return null;
             }
@@ -703,32 +715,41 @@ namespace Neon.HabboHotel.Users
         {
             get
             {
-                this._habboSaved = true;
-                return "UPDATE `users` SET `online` = '0', `last_online` = '" + NeonEnvironment.GetUnixTimestamp() + "', `activity_points` = '" + this.Duckets + "', `credits` = '" + this.Credits + "', `vip_points` = '" + this.Diamonds + "' ,  `bonus_points` = '" + this.BonusPoints + "', `home_room` = '" + this.HomeRoom + "', `gotw_points` = '" + this.GOTWPoints + "', `user_points` = '" + this.UserPoints + "', `publi` = '" + this._publicistalevel + "', `guia` = '" + this._guidelevel + "', `builder` = '" + this._builder + "', `croupier` = '" + this._croupier + "', `time_muted` = '" + this.TimeMuted + "',`friend_bar_state` = '" + FriendBarStateUtility.GetInt(this.FriendbarState) + "' WHERE id = '" + Id + "' LIMIT 1;UPDATE `user_stats` SET `roomvisits` = '" + this._habboStats.RoomVisits + "', `onlineTime` = '" + (NeonEnvironment.GetUnixTimestamp() - this.SessionStart + this._habboStats.OnlineTime) + "', `respect` = '" + this._habboStats.Respect + "', `respectGiven` = '" + this._habboStats.RespectGiven + "', `giftsGiven` = '" + this._habboStats.GiftsGiven + "', `giftsReceived` = '" + this._habboStats.GiftsReceived + "', `dailyRespectPoints` = '" + this._habboStats.DailyRespectPoints + "', `dailyPetRespectPoints` = '" + this._habboStats.DailyPetRespectPoints + "', `AchievementScore` = '" + this._habboStats.AchievementPoints + "', `quest_id` = '" + this._habboStats.QuestID + "', `quest_progress` = '" + this._habboStats.QuestProgress + "', `groupid` = '" + this._habboStats.FavouriteGroupId + "',`forum_posts` = '" + this._habboStats.ForumPosts + "',`PurchaseUsersConcurrent` = '" + this._habboStats.PurchaseUsersConcurrent + "', `vip_gifts` = '" + this._habboStats.vipGifts + "' WHERE `id` = '" + this.Id + "' LIMIT 1;";
+                _habboSaved = true;
+                return "UPDATE `users` SET `online` = '0', `last_online` = '" + NeonEnvironment.GetUnixTimestamp() + "', `activity_points` = '" + Duckets + "', `credits` = '" + Credits + "', `vip_points` = '" + Diamonds + "' ,  `bonus_points` = '" + BonusPoints + "', `home_room` = '" + HomeRoom + "', `gotw_points` = '" + GOTWPoints + "', `user_points` = '" + UserPoints + "', `publi` = '" + _publicistalevel + "', `guia` = '" + _guidelevel + "', `builder` = '" + _builder + "', `croupier` = '" + _croupier + "', `time_muted` = '" + TimeMuted + "',`friend_bar_state` = '" + FriendBarStateUtility.GetInt(FriendbarState) + "' WHERE id = '" + Id + "' LIMIT 1;UPDATE `user_stats` SET `roomvisits` = '" + _habboStats.RoomVisits + "', `onlineTime` = '" + (NeonEnvironment.GetUnixTimestamp() - SessionStart + _habboStats.OnlineTime) + "', `respect` = '" + _habboStats.Respect + "', `respectGiven` = '" + _habboStats.RespectGiven + "', `giftsGiven` = '" + _habboStats.GiftsGiven + "', `giftsReceived` = '" + _habboStats.GiftsReceived + "', `dailyRespectPoints` = '" + _habboStats.DailyRespectPoints + "', `dailyPetRespectPoints` = '" + _habboStats.DailyPetRespectPoints + "', `AchievementScore` = '" + _habboStats.AchievementPoints + "', `quest_id` = '" + _habboStats.QuestID + "', `quest_progress` = '" + _habboStats.QuestProgress + "', `groupid` = '" + _habboStats.FavouriteGroupId + "',`forum_posts` = '" + _habboStats.ForumPosts + "',`PurchaseUsersConcurrent` = '" + _habboStats.PurchaseUsersConcurrent + "', `vip_gifts` = '" + _habboStats.vipGifts + "' WHERE `id` = '" + Id + "' LIMIT 1;";
             }
         }
 
         public bool InitProcess()
         {
-            this._process = new ProcessComponent();
-            if (this._process.Init(this))
+            _process = new ProcessComponent();
+            if (_process.Init(this))
+            {
                 return true;
+            }
+
             return false;
         }
-        
+
         public bool InitSearches()
         {
-            this._navigatorSearches = new SearchesComponent();
-            if (this._navigatorSearches.Init(this))
+            _navigatorSearches = new SearchesComponent();
+            if (_navigatorSearches.Init(this))
+            {
                 return true;
+            }
+
             return false;
         }
 
         public bool InitFX()
         {
-            this._fx = new EffectsComponent();
-            if (this._fx.Init(this))
+            _fx = new EffectsComponent();
+            if (_fx.Init(this))
+            {
                 return true;
+            }
+
             return false;
         }
 
@@ -740,13 +761,16 @@ namespace Neon.HabboHotel.Users
 
         private bool InitPermissions()
         {
-            this._permissions = new PermissionComponent();
-            if (this._permissions.Init(this))
+            _permissions = new PermissionComponent();
+            if (_permissions.Init(this))
+            {
                 return true;
+            }
+
             return false;
         }
 
-       
+
         public void InitInformation(UserData data)
         {
             BadgeComponent = new BadgeComponent(this, data);
@@ -755,35 +779,35 @@ namespace Neon.HabboHotel.Users
 
         public void Init(GameClient client, UserData data)
         {
-            this.Achievements = data.achievements;
+            Achievements = data.achievements;
 
-            this.FavoriteRooms = new ArrayList();
+            FavoriteRooms = new ArrayList();
             foreach (int id in data.favouritedRooms)
             {
                 FavoriteRooms.Add(id);
             }
 
-            this.Tags = new ArrayList();
+            Tags = new ArrayList();
             foreach (string name in data.tags)
             {
                 Tags.Add(name);
             }
 
-            this.MysticKeys = new ArrayList();
+            MysticKeys = new ArrayList();
             foreach (string key in data.MysticKeys)
             {
                 MysticKeys.Add(key);
             }
 
-            this.MysticBoxes = new ArrayList();
+            MysticBoxes = new ArrayList();
             foreach (string box in data.MysticBoxes)
             {
                 MysticBoxes.Add(box);
             }
 
-            this.MutedUsers = data.ignores;
+            MutedUsers = data.ignores;
 
-            this._client = client;
+            _client = client;
             BadgeComponent = new BadgeComponent(this, data);
             InventoryComponent = new InventoryComponent(Id, client);
 
@@ -791,52 +815,56 @@ namespace Neon.HabboHotel.Users
 
             Messenger = new HabboMessenger(Id);
             Messenger.Init(data.friends, data.requests);
-            this.FriendCount = Convert.ToInt32(data.friends.Count);
-            this._disconnected = false;
+            FriendCount = Convert.ToInt32(data.friends.Count);
+            _disconnected = false;
             UsersRooms = data.rooms;
             Relationships = data.Relations;
 
-            this.InitSearches();
-            this.InitFX();
-            this.InitClothing();
-            this.ClubManager = new ClubManager(this.Id, data);
-            this.InitCalendar();
-            this.InitPolls();
+            InitSearches();
+            InitFX();
+            InitClothing();
+            ClubManager = new ClubManager(Id, data);
+            InitCalendar();
+            InitPolls();
 
         }
 
 
         public PermissionComponent GetPermissions()
         {
-            return this._permissions;
+            return _permissions;
         }
 
         public void OnDisconnect()
         {
-            if (this._disconnected)
+            if (_disconnected)
+            {
                 return;
+            }
 
             try
             {
-                if (this._process != null)
-                    this._process.Dispose();
+                if (_process != null)
+                {
+                    _process.Dispose();
+                }
             }
             catch { }
 
-            this._disconnected = true;
+            _disconnected = true;
 
-            if (this.ClubManager != null)
+            if (ClubManager != null)
             {
-                this.ClubManager.Clear();
-                this.ClubManager = (ClubManager)null;
+                ClubManager.Clear();
+                ClubManager = null;
             }
 
-            if(OnHelperDuty)
+            if (OnHelperDuty)
             {
-                GameClient Session = NeonEnvironment.GetGame().GetClientManager().GetClientByUserID(this.Id);
+                GameClient Session = NeonEnvironment.GetGame().GetClientManager().GetClientByUserID(Id);
                 HelperToolsManager.RemoveHelper(Session);
             }
-            
+
             NeonEnvironment.GetGame().GetClientManager().UnregisterClient(Id, Username);
 
             if (!_habboSaved) // GUARDADO DE USER
@@ -844,10 +872,12 @@ namespace Neon.HabboHotel.Users
                 _habboSaved = true;
                 using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
                 {
-                    dbClient.runFastQuery("UPDATE `users` SET `online` = '0', `last_online` = '" + NeonEnvironment.GetUnixTimestamp() + "', `activity_points` = '" + Duckets + "', `credits` = '" + Credits + "',  `vip_points` = '" + Diamonds + "' ,  `bonus_points` = '" + BonusPoints + "', `home_room` = '" + HomeRoom + "', `gotw_points` = '" + GOTWPoints + "', `user_points` = '" + UserPoints + "', `time_muted` = '" + TimeMuted + "',`friend_bar_state` = '" + FriendBarStateUtility.GetInt(FriendbarState) + "' WHERE id = '" + Id + "' LIMIT 1;UPDATE `user_stats` SET `roomvisits` = '" + _habboStats.RoomVisits + "', `onlineTime` = '" + (NeonEnvironment.GetUnixTimestamp() - SessionStart + _habboStats.OnlineTime) + "', `respect` = '" + _habboStats.Respect + "', `respectGiven` = '" + _habboStats.RespectGiven + "', `giftsGiven` = '" + _habboStats.GiftsGiven + "', `giftsReceived` = '" + _habboStats.GiftsReceived + "', `dailyRespectPoints` = '" + this._habboStats.DailyRespectPoints + "', `dailyPetRespectPoints` = '" + this._habboStats.DailyPetRespectPoints + "', `AchievementScore` = '" + this._habboStats.AchievementPoints + "', `quest_id` = '" + this._habboStats.QuestID + "', `quest_progress` = '" + this._habboStats.QuestProgress + "', `groupid` = '" + this._habboStats.FavouriteGroupId + "',`forum_posts` = '" + this._habboStats.ForumPosts + "',`PurchaseUsersConcurrent` = '" + this._habboStats.PurchaseUsersConcurrent + "' WHERE `id` = '" + this.Id + "' LIMIT 1;");
+                    dbClient.runFastQuery("UPDATE `users` SET `online` = '0', `last_online` = '" + NeonEnvironment.GetUnixTimestamp() + "', `activity_points` = '" + Duckets + "', `credits` = '" + Credits + "',  `vip_points` = '" + Diamonds + "' ,  `bonus_points` = '" + BonusPoints + "', `home_room` = '" + HomeRoom + "', `gotw_points` = '" + GOTWPoints + "', `user_points` = '" + UserPoints + "', `time_muted` = '" + TimeMuted + "',`friend_bar_state` = '" + FriendBarStateUtility.GetInt(FriendbarState) + "' WHERE id = '" + Id + "' LIMIT 1;UPDATE `user_stats` SET `roomvisits` = '" + _habboStats.RoomVisits + "', `onlineTime` = '" + (NeonEnvironment.GetUnixTimestamp() - SessionStart + _habboStats.OnlineTime) + "', `respect` = '" + _habboStats.Respect + "', `respectGiven` = '" + _habboStats.RespectGiven + "', `giftsGiven` = '" + _habboStats.GiftsGiven + "', `giftsReceived` = '" + _habboStats.GiftsReceived + "', `dailyRespectPoints` = '" + _habboStats.DailyRespectPoints + "', `dailyPetRespectPoints` = '" + _habboStats.DailyPetRespectPoints + "', `AchievementScore` = '" + _habboStats.AchievementPoints + "', `quest_id` = '" + _habboStats.QuestID + "', `quest_progress` = '" + _habboStats.QuestProgress + "', `groupid` = '" + _habboStats.FavouriteGroupId + "',`forum_posts` = '" + _habboStats.ForumPosts + "',`PurchaseUsersConcurrent` = '" + _habboStats.PurchaseUsersConcurrent + "' WHERE `id` = '" + Id + "' LIMIT 1;");
 
                     if (GetPermissions().HasRight("mod_tickets"))
+                    {
                         dbClient.RunQuery("UPDATE `moderation_tickets` SET `status` = 'open', `moderator_id` = '0' WHERE `status` ='picked' AND `moderator_id` = '" + Id + "'");
+                    }
                 }
             }
 
@@ -860,16 +890,24 @@ namespace Neon.HabboHotel.Users
         public void Dispose()
         {
             if (InventoryComponent != null)
+            {
                 InventoryComponent.SetIdleState();
+            }
 
             if (UsersRooms != null)
+            {
                 UsersRooms.Clear();
+            }
 
             if (MultiWhispers != null)
+            {
                 MultiWhispers.Clear();
+            }
 
             if (InRoom && CurrentRoom != null)
+            {
                 CurrentRoom.GetRoomUserManager().RemoveUserFromRoom(_client, false, false);
+            }
 
             if (Messenger != null)
             {
@@ -878,13 +916,19 @@ namespace Neon.HabboHotel.Users
             }
 
             if (_fx != null)
+            {
                 _fx.Dispose();
+            }
 
             if (_clothing != null)
+            {
                 _clothing.Dispose();
+            }
 
             if (_permissions != null)
+            {
                 _permissions.Dispose();
+            }
         }
 
         public void CheckBonusTimer()
@@ -916,7 +960,7 @@ namespace Neon.HabboHotel.Users
                 if (CreditsUpdateTick <= 0)
                 {
                     int CreditUpdate = NeonStaticGameSettings.UserCreditsUpdateAmount;
-                    int DucketUpdate = NeonStaticGameSettings.UserPixelsUpdateAmount;
+                    int DiamondUpdate = NeonStaticGameSettings.UserDiamondUpdateAmount;
                     int VipDucketUpdate = NeonStaticGameSettings.UserVipPixelsUpdateAmount;
 
                     Credits += CreditUpdate;
@@ -926,7 +970,7 @@ namespace Neon.HabboHotel.Users
                     }
                     else
                     {
-                        Duckets += DucketUpdate;
+                        Diamonds += DiamondUpdate;
                     }
 
 
@@ -938,17 +982,17 @@ namespace Neon.HabboHotel.Users
                     else
                     {
                         _client.SendMessage(new CreditBalanceComposer(Credits));
-                        _client.SendMessage(new HabboActivityPointNotificationComposer(Duckets, DucketUpdate));
+                        _client.SendMessage(new HabboActivityPointNotificationComposer(Diamonds, DiamondUpdate, 5));
                     }
-                    
+
                     if (_client.GetHabbo().Rank == 2 && _client.GetHabbo().VIPRank == 1)
                     {
-                        GetClient().SendMessage(RoomNotificationComposer.SendBubble("newuser", "Has recibido " + CreditUpdate + " créditos y " + VipDucketUpdate + " duckets por estar conectado 15 minutos.", ""));
+                        GetClient().SendMessage(RoomNotificationComposer.SendBubble("newuser", "Has recibido " + CreditUpdate + " créditos y " + VipDucketUpdate + " diamantes por estar conectado 30 minutos.", ""));
 
                     }
                     else
                     {
-                        GetClient().SendMessage(RoomNotificationComposer.SendBubble("newuser", "Has recibido " + CreditUpdate + " créditos y " + DucketUpdate + " duckets por estar conectado 15 minutos.", ""));
+                        GetClient().SendMessage(RoomNotificationComposer.SendBubble("newuser", "Has recibido " + CreditUpdate + " créditos y " + DiamondUpdate + " diamantes por estar conectado 30 minutos.", ""));
                     }
 
                     CreditsUpdateTick = NeonStaticGameSettings.UserCreditsUpdateTimer;
@@ -960,7 +1004,9 @@ namespace Neon.HabboHotel.Users
         public GameClient GetClient()
         {
             if (_client != null)
+            {
                 return _client;
+            }
 
             return NeonEnvironment.GetGame().GetClientManager().GetClientByUserID(Id);
         }
@@ -990,7 +1036,10 @@ namespace Neon.HabboHotel.Users
             return _fx;
         }
 
-        public ClothingComponent GetClothing() => _clothing;
+        public ClothingComponent GetClothing()
+        {
+            return _clothing;
+        }
 
         public int GetQuestProgress(int p)
         {
@@ -1026,15 +1075,21 @@ namespace Neon.HabboHotel.Users
         public void PrepareRoom(int Id, string Password)
         {
             if (GetClient() == null || GetClient().GetHabbo() == null)
+            {
                 return;
+            }
 
             if (GetClient().GetHabbo().InRoom)
             {
                 if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(GetClient().GetHabbo().CurrentRoomId, out Room OldRoom))
+                {
                     return;
+                }
 
                 if (OldRoom.GetRoomUserManager() != null)
+                {
                     OldRoom.GetRoomUserManager().RemoveUserFromRoom(GetClient(), false, false);
+                }
             }
 
             if (GetClient().GetHabbo().IsTeleporting && GetClient().GetHabbo().TeleportingRoomID != Id)
@@ -1062,7 +1117,9 @@ namespace Neon.HabboHotel.Users
             if (!GetClient().GetHabbo().GetPermissions().HasRight("room_ban_override") && Room.UserIsBanned(GetClient().GetHabbo().Id))
             {
                 if (Room.HasBanExpired(GetClient().GetHabbo().Id))
+                {
                     Room.RemoveBan(GetClient().GetHabbo().Id);
+                }
                 else
                 {
                     GetClient().GetHabbo().RoomAuthOk = false;
@@ -1099,9 +1156,9 @@ namespace Neon.HabboHotel.Users
                         return;
                     }
                 }
-                else if (Room.Access == RoomAccess.PASSWORD && !this.GetClient().GetHabbo().GetPermissions().HasRight("room_enter_locked"))
+                else if (Room.Access == RoomAccess.PASSWORD && !GetClient().GetHabbo().GetPermissions().HasRight("room_enter_locked"))
                 {
-                    if (Password.ToLower() != Room.Password.ToLower() || String.IsNullOrWhiteSpace(Password))
+                    if (Password.ToLower() != Room.Password.ToLower() || string.IsNullOrWhiteSpace(Password))
                     {
                         GetClient().SendMessage(new GenericErrorComposer(-100002));
                         GetClient().SendMessage(new CloseConnectionComposer(GetClient()));
@@ -1111,18 +1168,23 @@ namespace Neon.HabboHotel.Users
             }
 
             if (!EnterRoom(Room))
+            {
                 GetClient().SendMessage(new CloseConnectionComposer(GetClient()));
-
+            }
         }
 
         public void InitCalendar()
         {
             if (!NeonEnvironment.GetGame().GetCalendarManager().CampaignEnable())
+            {
                 return;
+            }
 
             calendarGift = new bool[NeonEnvironment.GetGame().GetCalendarManager().GetTotalDays()];
             for (int i = 0; i < calendarGift.Length; i++)
+            {
                 calendarGift[i] = false;
+            }
 
             DataTable dTable = null;
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
@@ -1145,32 +1207,40 @@ namespace Neon.HabboHotel.Users
         public bool EnterRoom(Room Room)
         {
             if (Room == null)
+            {
                 GetClient().SendMessage(new CloseConnectionComposer(GetClient()));
+            }
 
             GetClient().SendMessage(new RoomReadyComposer(Room.RoomId, Room.ModelName));
             if (Room.Wallpaper != "0.0")
+            {
                 GetClient().SendMessage(new RoomPropertyComposer("wallpaper", Room.Wallpaper));
+            }
+
             if (Room.Floor != "0.0")
+            {
                 GetClient().SendMessage(new RoomPropertyComposer("floor", Room.Floor));
+            }
 
             GetClient().SendMessage(new RoomPropertyComposer("landscape", Room.Landscape));
             GetClient().SendMessage(new RoomRatingComposer(Room.Score, !(GetClient().GetHabbo().RatedRooms.Contains(Room.RoomId) || Room.OwnerId == GetClient().GetHabbo().Id)));
 
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
-                dbClient.RunQuery("INSERT INTO user_roomvisits (user_id,room_id,entry_timestamp,exit_timestamp,hour,minute) VALUES ('" + GetClient().GetHabbo().Id + "','" + this.GetClient().GetHabbo().CurrentRoomId + "','" + NeonEnvironment.GetUnixTimestamp() + "','0','" + DateTime.Now.Hour + "','" + DateTime.Now.Minute + "');");// +
+                dbClient.RunQuery("INSERT INTO user_roomvisits (user_id,room_id,entry_timestamp,exit_timestamp,hour,minute) VALUES ('" + GetClient().GetHabbo().Id + "','" + GetClient().GetHabbo().CurrentRoomId + "','" + NeonEnvironment.GetUnixTimestamp() + "','0','" + DateTime.Now.Hour + "','" + DateTime.Now.Minute + "');");// +
             }
 
 
             if (Room.OwnerId != Id)
             {
                 GetClient().GetHabbo().GetStats().RoomVisits += 1;
-                NeonEnvironment.GetGame().GetAchievementManager().ProgressAchievement(GetClient(), "ACH_RoomEntry", 1);            
+                NeonEnvironment.GetGame().GetAchievementManager().ProgressAchievement(GetClient(), "ACH_RoomEntry", 1);
             }
             return true;
         }
     }
-    enum TypeOfHelper
+
+    internal enum TypeOfHelper
     {
         None,
         Guide,

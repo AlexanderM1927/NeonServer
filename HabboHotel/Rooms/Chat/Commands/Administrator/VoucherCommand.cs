@@ -1,30 +1,16 @@
 ﻿using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
 using Neon.HabboHotel.GameClients;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Neon.Database.Interfaces;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.Administrator
 {
-    class VoucherCommand : IChatCommand
+    internal class VoucherCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_voucher"; }
-        }
+        public string PermissionRequired => "command_voucher";
 
-        public string Parameters
-        {
-            get { return "%message%"; }
-        }
+        public string Parameters => "%message%";
 
-        public string Description
-        {
-            get { return "Enviale un mensaje de alerta a todos los staff online."; }
-        }
+        public string Description => "Enviale un mensaje de alerta a todos los staff online.";
 
         public void Execute(GameClient Session, Room Room, string[] Params)
         {
@@ -36,7 +22,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Administrator
 
             int Voucher = 10;
             string _CaracteresPermitidos = "abcdefghijklmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789!@$?";
-            Byte[] randomBytes = new Byte[Voucher];
+            byte[] randomBytes = new byte[Voucher];
             char[] Caracter = new char[Voucher];
             int CuentaPermitida = _CaracteresPermitidos.Length;
 
@@ -44,10 +30,10 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Administrator
             {
                 Random randomObj = new Random();
                 randomObj.NextBytes(randomBytes);
-                Caracter[i] = _CaracteresPermitidos[(int)randomBytes[i] % CuentaPermitida];
+                Caracter[i] = _CaracteresPermitidos[randomBytes[i] % CuentaPermitida];
             }
 
-            var code = new string(Caracter);
+            string code = new string(Caracter);
 
             NeonEnvironment.GetGame().GetCatalog().GetVoucherManager().AddVoucher(code, type, value, uses);
 

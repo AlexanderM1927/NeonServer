@@ -1,7 +1,6 @@
-﻿using System;
+﻿using Neon.HabboHotel.Items.Wired;
+using System;
 using System.Collections.Generic;
-
-using Neon.HabboHotel.Items.Wired;
 
 namespace Neon.HabboHotel.Items
 {
@@ -39,8 +38,8 @@ namespace Neon.HabboHotel.Items
             string VendingIds, string AdjustableHeights, int EffectId, int WiredId, bool IsRare, int ClothingId, bool ExtraRot, int SongID)
         {
             this.Id = Id;
-            this.SpriteId = Sprite;
-            this.ItemName = Name;
+            SpriteId = Sprite;
+            ItemName = Name;
             this.PublicName = PublicName;
             this.Type = char.Parse(Type);
             this.Width = Width;
@@ -49,7 +48,7 @@ namespace Neon.HabboHotel.Items
             this.Stackable = Stackable;
             this.Walkable = Walkable;
             this.IsSeat = IsSeat;
-            this.AllowEcotronRecycle = AllowRecycle;
+            AllowEcotronRecycle = AllowRecycle;
             this.AllowTrade = AllowTrade;
             this.AllowMarketplaceSell = AllowMarketplaceSell;
             this.AllowGift = AllowGift;
@@ -72,8 +71,10 @@ namespace Neon.HabboHotel.Items
                     }
                 }
             }
-            else if (!String.IsNullOrEmpty(VendingIds) && (int.Parse(VendingIds)) > 0)
+            else if (!string.IsNullOrEmpty(VendingIds) && (int.Parse(VendingIds)) > 0)
+            {
                 this.VendingIds.Add(int.Parse(VendingIds));
+            }
 
             this.AdjustableHeights = new List<double>();
             if (AdjustableHeights.Contains(","))
@@ -83,11 +84,13 @@ namespace Neon.HabboHotel.Items
                     this.AdjustableHeights.Add(double.Parse(H));
                 }
             }
-            else if (!String.IsNullOrEmpty(AdjustableHeights) && (double.Parse(AdjustableHeights)) > 0)
+            else if (!string.IsNullOrEmpty(AdjustableHeights) && (double.Parse(AdjustableHeights)) > 0)
+            {
                 this.AdjustableHeights.Add(double.Parse(AdjustableHeights));
+            }
 
             this.EffectId = EffectId;
-            this.WiredType = WiredBoxTypeUtility.FromWiredId(WiredId);
+            WiredType = WiredBoxTypeUtility.FromWiredId(WiredId);
             this.IsRare = IsRare;
             this.ClothingId = ClothingId;
             this.ExtraRot = ExtraRot;

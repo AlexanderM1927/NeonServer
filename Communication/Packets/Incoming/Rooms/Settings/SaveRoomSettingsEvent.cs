@@ -1,30 +1,31 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
-
-using Neon.Core;
-using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Navigator;
-using Neon.Communication.Packets.Outgoing.Navigator;
+﻿using Neon.Communication.Packets.Outgoing.Navigator;
 using Neon.Communication.Packets.Outgoing.Rooms.Engine;
 using Neon.Communication.Packets.Outgoing.Rooms.Settings;
 using Neon.Database.Interfaces;
+using Neon.HabboHotel.Navigator;
+using Neon.HabboHotel.Rooms;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
 
 namespace Neon.Communication.Packets.Incoming.Rooms.Settings
 {
-    class SaveRoomSettingsEvent : IPacketEvent
+    internal class SaveRoomSettingsEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
             if (Session == null || Session.GetHabbo() == null)
+            {
                 return;
+            }
 
             Room Room = NeonEnvironment.GetGame().GetRoomManager().LoadRoom(Packet.PopInt());
             if (Room == null || !Room.CheckRights(Session, true))
+            {
                 return;
+            }
+
             string Name = Packet.PopString();
             Name = NeonEnvironment.GetGame().GetChatManager().GetFilter().IsUnnaceptableWord(Name, out _) ? "Spam" : Name;
             string Description = Packet.PopString();
@@ -69,64 +70,104 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Settings
             int extraFlood = Packet.PopInt();
 
             if (chatMode < 0 || chatMode > 1)
+            {
                 chatMode = 0;
+            }
 
             if (chatSize < 0 || chatSize > 2)
+            {
                 chatSize = 0;
+            }
 
             if (chatSpeed < 0 || chatSpeed > 2)
+            {
                 chatSpeed = 0;
+            }
 
             if (chatDistance < 0)
+            {
                 chatDistance = 1;
+            }
 
             if (chatDistance > 99)
+            {
                 chatDistance = 100;
+            }
 
             if (extraFlood < 0 || extraFlood > 2)
+            {
                 extraFlood = 0;
+            }
 
             if (TradeSettings < 0 || TradeSettings > 2)
+            {
                 TradeSettings = 0;
+            }
 
             if (WhoMute < 0 || WhoMute > 1)
+            {
                 WhoMute = 0;
+            }
 
             if (WhoKick < 0 || WhoKick > 1)
+            {
                 WhoKick = 0;
+            }
 
             if (WhoBan < 0 || WhoBan > 1)
+            {
                 WhoBan = 0;
+            }
 
             if (WallThickness < -2 || WallThickness > 1)
+            {
                 WallThickness = 0;
+            }
 
             if (FloorThickness < -2 || FloorThickness > 1)
+            {
                 FloorThickness = 0;
+            }
 
             if (Name.Length < 1)
+            {
                 return;
+            }
 
             if (Name.Length > 60)
+            {
                 Name = Name.Substring(0, 60);
+            }
 
             if (Access == RoomAccess.PASSWORD && Password.Length == 0)
+            {
                 Access = RoomAccess.OPEN;
+            }
 
             if (MaxUsers < 0)
+            {
                 MaxUsers = 10;
+            }
 
             if (MaxUsers > 50)
+            {
                 MaxUsers = 50;
+            }
 
             if (!NeonEnvironment.GetGame().GetNavigator().TryGetSearchResultList(CategoryId, out SearchResultList SearchResultList))
+            {
                 CategoryId = 36;
+            }
 
             if (SearchResultList.CategoryType != NavigatorCategoryType.CATEGORY || SearchResultList.RequiredRank > Session.GetHabbo().Rank || (Session.GetHabbo().Id != Room.OwnerId && Session.GetHabbo().Rank >= SearchResultList.RequiredRank))
+            {
                 CategoryId = 36;
+            }
 
             if (TagCount > 2)
+            {
                 return;
+            }
 
             Room.AllowPets = AllowPets;
             Room.AllowPetsEating = AllowPetsEat;

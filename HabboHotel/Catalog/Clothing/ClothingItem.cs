@@ -15,10 +15,16 @@ namespace Neon.HabboHotel.Catalog.Clothing
 
             this.PartIds = new List<int>();
             if (PartIds.Contains(","))
-                foreach (var PartId in PartIds.Split(','))
+            {
+                foreach (string PartId in PartIds.Split(','))
+                {
                     this.PartIds.Add(int.Parse(PartId));
+                }
+            }
             else if (!string.IsNullOrEmpty(PartIds) && int.Parse(PartIds) > 0)
+            {
                 this.PartIds.Add(int.Parse(PartIds));
+            }
         }
 
         public int Id { get; set; }

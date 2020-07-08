@@ -1,28 +1,15 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
+﻿
 using Neon.HabboHotel.GameClients;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
 {
-    class DisconnectCommand :IChatCommand
+    internal class DisconnectCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_disconnect"; }
-        }
+        public string PermissionRequired => "command_disconnect";
 
-        public string Parameters
-        {
-            get { return "%username%"; }
-        }
+        public string Parameters => "%username%";
 
-        public string Description
-        {
-            get { return "Desconecta a cualquier usuario a la fuerza"; }
-        }
+        public string Description => "Desconecta a cualquier usuario a la fuerza";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {

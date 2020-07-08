@@ -2,12 +2,12 @@
 
 namespace Neon.Communication.Packets.Incoming.Avatar
 {
-    class SaveWardrobeOutfitEvent : IPacketEvent
+    internal class SaveWardrobeOutfitEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
             int SlotId = Packet.PopInt();
-            string Look = NeonEnvironment.GetGame().GetAntiMutant().RunLook(Packet.PopString()); 
+            string Look = NeonEnvironment.GetGame().GetAntiMutant().RunLook(Packet.PopString());
             string Gender = Packet.PopString();
 
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())

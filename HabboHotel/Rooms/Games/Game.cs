@@ -1,10 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Drawing;
-using System.Collections.Concurrent;
-
-using Neon.HabboHotel.Items;
+﻿using Neon.HabboHotel.Items;
 using Neon.HabboHotel.Rooms.Games.Teams;
+using System;
+using System.Collections.Concurrent;
+using System.Drawing;
+using System.Linq;
 
 namespace Neon.HabboHotel.Rooms.Games
 {
@@ -19,19 +18,19 @@ namespace Neon.HabboHotel.Rooms.Games
 
         public GameManager(Room room)
         {
-            this._room = room;
-            this._teamPoints = new int[5];
+            _room = room;
+            _teamPoints = new int[5];
 
-            this._redTeamItems = new ConcurrentDictionary<int, Item>();
-            this._blueTeamItems = new ConcurrentDictionary<int, Item>();
-            this._greenTeamItems = new ConcurrentDictionary<int, Item>();
-            this._yellowTeamItems = new ConcurrentDictionary<int, Item>();
+            _redTeamItems = new ConcurrentDictionary<int, Item>();
+            _blueTeamItems = new ConcurrentDictionary<int, Item>();
+            _greenTeamItems = new ConcurrentDictionary<int, Item>();
+            _yellowTeamItems = new ConcurrentDictionary<int, Item>();
         }
 
         public int[] Points
         {
-            get { return this._teamPoints; }
-            set { this._teamPoints = value; }
+            get => _teamPoints;
+            set => _teamPoints = value;
         }
 
         public TEAM GetWinningTeam()
@@ -52,17 +51,19 @@ namespace Neon.HabboHotel.Rooms.Games
 
         public void AddPointToTeam(TEAM team, int points)
         {
-            int newPoints = this._teamPoints[Convert.ToInt32(team)] += points;
+            int newPoints = _teamPoints[Convert.ToInt32(team)] += points;
             if (newPoints < 0)
+            {
                 newPoints = 0;
+            }
 
-            this._teamPoints[Convert.ToInt32(team)] = newPoints;
+            _teamPoints[Convert.ToInt32(team)] = newPoints;
 
             foreach (Item item in GetFurniItems(team).Values.ToList())
             {
                 if (!IsFootballGoal(item.GetBaseItem().InteractionType))
                 {
-                    item.ExtraData = this._teamPoints[Convert.ToInt32(team)].ToString();
+                    item.ExtraData = _teamPoints[Convert.ToInt32(team)].ToString();
                     item.UpdateState();
                 }
             }
@@ -112,13 +113,13 @@ namespace Neon.HabboHotel.Rooms.Games
                 default:
                     return new ConcurrentDictionary<int, Item>();
                 case TEAM.BLUE:
-                    return this._blueTeamItems;
+                    return _blueTeamItems;
                 case TEAM.GREEN:
-                    return this._greenTeamItems;
+                    return _greenTeamItems;
                 case TEAM.RED:
-                    return this._redTeamItems;
+                    return _redTeamItems;
                 case TEAM.YELLOW:
-                    return this._yellowTeamItems;
+                    return _yellowTeamItems;
             }
         }
 
@@ -169,22 +170,22 @@ namespace Neon.HabboHotel.Rooms.Games
         #region Gates
         public void LockGates()
         {
-            foreach (Item item in this._redTeamItems.Values.ToList())
+            foreach (Item item in _redTeamItems.Values.ToList())
             {
                 LockGate(item);
             }
 
-            foreach (Item item in this._greenTeamItems.Values.ToList())
+            foreach (Item item in _greenTeamItems.Values.ToList())
             {
                 LockGate(item);
             }
 
-            foreach (Item item in this._blueTeamItems.Values.ToList())
+            foreach (Item item in _blueTeamItems.Values.ToList())
             {
                 LockGate(item);
             }
 
-            foreach (Item item in this._yellowTeamItems.Values.ToList())
+            foreach (Item item in _yellowTeamItems.Values.ToList())
             {
                 LockGate(item);
             }
@@ -192,22 +193,22 @@ namespace Neon.HabboHotel.Rooms.Games
 
         public void UnlockGates()
         {
-            foreach (Item item in this._redTeamItems.Values.ToList())
+            foreach (Item item in _redTeamItems.Values.ToList())
             {
                 UnlockGate(item);
             }
 
-            foreach (Item item in this._greenTeamItems.Values.ToList())
+            foreach (Item item in _greenTeamItems.Values.ToList())
             {
                 UnlockGate(item);
             }
 
-            foreach (Item item in this._blueTeamItems.Values.ToList())
+            foreach (Item item in _blueTeamItems.Values.ToList())
             {
                 UnlockGate(item);
             }
 
-            foreach (Item item in this._yellowTeamItems.Values.ToList())
+            foreach (Item item in _yellowTeamItems.Values.ToList())
             {
                 UnlockGate(item);
             }
@@ -248,7 +249,7 @@ namespace Neon.HabboHotel.Rooms.Games
 
         public void StopGame()
         {
-            this._room.lastTimerReset = DateTime.Now;
+            _room.lastTimerReset = DateTime.Now;
         }
 
         public void Dispose()

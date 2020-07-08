@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Neon.Communication.Packets.Outgoing.Catalog
+﻿namespace Neon.Communication.Packets.Outgoing.Catalog
 {
-    class GetClubOffersMessageComposer : ServerPacket
+    internal class GetClubOffersMessageComposer : ServerPacket
     {
         public GetClubOffersMessageComposer()
             : base(ServerPacketHeader.GetClubOffersMessageComposer)

@@ -1,22 +1,19 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using System.Collections.Concurrent;
-
-using Neon.Communication.Packets.Incoming;
+﻿using Neon.Communication.Packets.Incoming;
 using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Pathfinding;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Neon.HabboHotel.Items.Wired.Boxes.Conditions
 {
-    class FurniHasNoFurniBox : IWiredItem
+    internal class FurniHasNoFurniBox : IWiredItem
     {
         public Room Instance { get; set; }
 
         public Item Item { get; set; }
 
-        public WiredBoxType Type { get { return WiredBoxType.ConditionFurniHasNoFurni; } }
+        public WiredBoxType Type => WiredBoxType.ConditionFurniHasNoFurni;
 
         public ConcurrentDictionary<int, Item> SetItems { get; set; }
 
@@ -30,7 +27,7 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Conditions
         {
             this.Instance = Instance;
             this.Item = Item;
-            this.SetItems = new ConcurrentDictionary<int, Item>();
+            SetItems = new ConcurrentDictionary<int, Item>();
         }
 
         public void HandleSave(ClientPacket Packet)
@@ -39,39 +36,49 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Conditions
             int Option = Packet.PopInt();
             string Unknown2 = Packet.PopString();
 
-            this.BoolData = Option == 1;
+            BoolData = Option == 1;
 
-            if (this.SetItems.Count > 0)
-                this.SetItems.Clear();
+            if (SetItems.Count > 0)
+            {
+                SetItems.Clear();
+            }
 
             int FurniCount = Packet.PopInt();
             for (int i = 0; i < FurniCount; i++)
             {
                 Item SelectedItem = Instance.GetRoomItemHandler().GetItem(Packet.PopInt());
                 if (SelectedItem != null)
+                {
                     SetItems.TryAdd(SelectedItem.Id, SelectedItem);
+                }
             }
         }
 
         public bool Execute(params object[] Params)
         {
-            return this.BoolData ? AllFurniHaveNotFurniOn() : SomeFurniHaveNotFurniOn();
+            return BoolData ? AllFurniHaveNotFurniOn() : SomeFurniHaveNotFurniOn();
         }
 
         public bool AllFurniHaveNotFurniOn()
         {
-            foreach (Item Item in this.SetItems.Values.ToList())
+            foreach (Item Item in SetItems.Values.ToList())
             {
                 if (Item == null || !Instance.GetRoomItemHandler().GetFloor.Contains(Item))
+                {
                     continue;
+                }
 
                 bool NoFurni = false;
                 List<Item> Items = Instance.GetGameMap().GetAllRoomItemForSquare(Item.GetX, Item.GetY);
                 if (!(Items.Where(x => x.GetZ >= Item.GetZ).Count() > 1))
+                {
                     NoFurni = true;
+                }
 
                 if (!NoFurni)
+                {
                     return false;
+                }
             }
 
             return true;
@@ -79,21 +86,27 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Conditions
 
         public bool SomeFurniHaveNotFurniOn()
         {
-            foreach (Item Item in this.SetItems.Values.ToList())
+            foreach (Item Item in SetItems.Values.ToList())
             {
                 if (Item == null || !Instance.GetRoomItemHandler().GetFloor.Contains(Item)) //Si el Furni esta en la sala
+                {
                     continue;
+                }
 
                 bool NoFurni = false;
-                foreach (String I in this.ItemsData.Split(';'))
+                foreach (string I in ItemsData.Split(';'))
                 {
-                    if (String.IsNullOrEmpty(I))
+                    if (string.IsNullOrEmpty(I))
+                    {
                         continue;
+                    }
 
                     Item II = Instance.GetRoomItemHandler().GetItem(Convert.ToInt32(I));
 
                     if (II == null)
+                    {
                         continue;
+                    }
 
                     List<Item> Items = Instance.GetGameMap().GetAllRoomItemForSquare(II.GetX, II.GetY);
                     if (!(Items.Where(x => x.GetZ >= Item.GetZ).Count() > 1))
@@ -104,7 +117,9 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Conditions
 
                 }
                 if (!NoFurni)
+                {
                     return false;
+                }
             }
             return true;
         }

@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Neon.Communication.Packets.Incoming;
 using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Users;
-using Neon.Communication.Packets.Incoming;
+using System;
+using System.Collections.Concurrent;
 
 namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
 {
@@ -15,10 +10,7 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
         public Room Instance { get; set; }
         public Item Item { get; set; }
 
-        public WiredBoxType Type
-        {
-            get { return WiredBoxType.EffectRegenerateMaps; }
-        }
+        public WiredBoxType Type => WiredBoxType.EffectRegenerateMaps;
 
         public ConcurrentDictionary<int, Item> SetItems { get; set; }
         public string StringData { get; set; }
@@ -29,8 +21,8 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
         {
             this.Instance = Instance;
             this.Item = Item;
-            this.StringData = "";
-            this.SetItems = new ConcurrentDictionary<int, Item>();
+            StringData = "";
+            SetItems = new ConcurrentDictionary<int, Item>();
         }
 
         public void HandleSave(ClientPacket Packet)
@@ -42,7 +34,9 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
         public bool Execute(params object[] Params)
         {
             if (Instance == null)
+            {
                 return false;
+            }
 
             TimeSpan TimeSinceRegen = DateTime.Now - Instance.lastRegeneration;
 
@@ -51,7 +45,7 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
                 Instance.GetGameMap().GenerateMaps();
                 return true;
             }
-            
+
             return false;
         }
     }

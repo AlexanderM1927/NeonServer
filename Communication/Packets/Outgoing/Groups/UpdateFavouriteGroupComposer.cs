@@ -2,7 +2,7 @@
 
 namespace Neon.Communication.Packets.Outgoing.Groups
 {
-    class UpdateFavouriteGroupComposer : ServerPacket
+    internal class UpdateFavouriteGroupComposer : ServerPacket
     {
         public UpdateFavouriteGroupComposer(int Id, Group Group, int VirtualId)
             : base(ServerPacketHeader.UpdateFavouriteGroupMessageComposer)

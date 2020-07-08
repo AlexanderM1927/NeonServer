@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
+﻿
 using Neon.HabboHotel.Users;
 
 namespace Neon.Communication.Packets.Outgoing.Handshake
@@ -13,10 +11,15 @@ namespace Neon.Communication.Packets.Outgoing.Handshake
             base.WriteInteger(14); // Count
             base.WriteString("USE_GUIDE_TOOL");
             base.WriteString("");
-            if(Habbo.Rank > 2 || Habbo._guidelevel > 0)
+            if (Habbo.Rank > 2 || Habbo._guidelevel > 0)
+            {
                 base.WriteBoolean(true);
+            }
             else
+            {
                 base.WriteBoolean(false);
+            }
+
             base.WriteString("NAVIGATOR_ROOM_THUMBNAIL_CAMERA");
             base.WriteString(""); // ??
             base.WriteBoolean(true);

@@ -1,13 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
+﻿
 using Neon.HabboHotel.Rooms;
 
 namespace Neon.Communication.Packets.Outgoing.Moderation
 {
-    class ModeratorRoomInfoComposer : ServerPacket
+    internal class ModeratorRoomInfoComposer : ServerPacket
     {
         public ModeratorRoomInfoComposer(RoomData Data, bool OwnerInRoom)
             : base(ServerPacketHeader.ModeratorRoomInfoMessageComposer)
@@ -20,11 +16,11 @@ namespace Neon.Communication.Packets.Outgoing.Moderation
             base.WriteBoolean(Data != null);
             base.WriteString(Data.Name);
             base.WriteString(Data.Description);
-           
+
             base.WriteInteger(Data.Tags.Count);
             foreach (string Tag in Data.Tags)
             {
-               base.WriteString(Tag);
+                base.WriteString(Tag);
             }
 
             base.WriteBoolean(false);

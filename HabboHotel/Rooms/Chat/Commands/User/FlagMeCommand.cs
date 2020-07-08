@@ -1,34 +1,19 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.Utilities;
+﻿using Neon.Communication.Packets.Outgoing.Handshake;
 using Neon.HabboHotel.Users;
-using Neon.Communication.Packets.Outgoing.Handshake;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.User
 {
-    class FlagMeCommand : IChatCommand
+    internal class FlagMeCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_flagme"; }
-        }
+        public string PermissionRequired => "command_flagme";
 
-        public string Parameters
-        {
-            get { return ""; }
-        }
+        public string Parameters => "";
 
-        public string Description
-        {
-            get { return "Cambia tu nombre de usuario."; }
-        }
+        public string Description => "Cambia tu nombre de usuario.";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {
-            if (!this.CanChangeName(Session.GetHabbo()))
+            if (!CanChangeName(Session.GetHabbo()))
             {
                 Session.SendWhisper("Lo sentimos, parece que actualmente no tienen la opción de cambiar su nombre de usuario, ESPERE UN POCO MAS DE TIEMPO.");
                 return;
@@ -42,15 +27,25 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User
         private bool CanChangeName(Habbo Habbo)
         {
             if (Habbo.Rank == 1 && Habbo.VIPRank == 0 && Habbo.LastNameChange == 0)
+            {
                 return true;
+            }
             else if (Habbo.Rank == 2 && Habbo.VIPRank == 1 && (Habbo.LastNameChange == 0 || (NeonEnvironment.GetUnixTimestamp() + 604800) > Habbo.LastNameChange))
+            {
                 return true;
+            }
             else if (Habbo.Rank == 1 && Habbo.VIPRank == 2 && (Habbo.LastNameChange == 0 || (NeonEnvironment.GetUnixTimestamp() + 86400) > Habbo.LastNameChange))
+            {
                 return true;
+            }
             else if (Habbo.Rank == 1 && Habbo.VIPRank == 3)
+            {
                 return true;
+            }
             else if (Habbo.GetPermissions().HasRight("mod_tool"))
+            {
                 return true;
+            }
 
             return false;
         }

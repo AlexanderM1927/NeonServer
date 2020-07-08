@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Neon.Communication.Packets.Outgoing.Navigator
+﻿namespace Neon.Communication.Packets.Outgoing.Navigator
 {
-    class NavigatorSettingsComposer : ServerPacket
+    internal class NavigatorSettingsComposer : ServerPacket
     {
         public NavigatorSettingsComposer(int Homeroom)
             : base(ServerPacketHeader.NavigatorSettingsMessageComposer)

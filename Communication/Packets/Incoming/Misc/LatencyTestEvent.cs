@@ -1,13 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.Communication.Packets.Outgoing.Misc;
-
-namespace Neon.Communication.Packets.Incoming.Misc
+﻿namespace Neon.Communication.Packets.Incoming.Misc
 {
-    class LatencyTestEvent : IPacketEvent
+    internal class LatencyTestEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {

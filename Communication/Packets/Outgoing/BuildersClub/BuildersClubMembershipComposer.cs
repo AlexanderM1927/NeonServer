@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Neon.Communication.Packets.Outgoing.BuildersClub
+﻿namespace Neon.Communication.Packets.Outgoing.BuildersClub
 {
-    class BuildersClubMembershipComposer : ServerPacket
+    internal class BuildersClubMembershipComposer : ServerPacket
     {
         public BuildersClubMembershipComposer()
             : base(ServerPacketHeader.BuildersClubMembershipMessageComposer)

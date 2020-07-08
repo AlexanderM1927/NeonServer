@@ -1,35 +1,21 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Data;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Users;
-using Neon.HabboHotel.GameClients;
-
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
 using Neon.Database.Interfaces;
-using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
+using Neon.HabboHotel.GameClients;
+using System;
+using System.Data;
+using System.Text;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
 {
-    class LastConsoleMessagesCommand : IChatCommand
+    internal class LastConsoleMessagesCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_user_info"; }
-        }
+        public string PermissionRequired => "command_user_info";
 
-        public string Parameters
-        {
-            get { return "%username%"; }
-        }
+        public string Parameters => "%username%";
 
-        public string Description
-        {
-            get { return "Consulta los últimos mensajes del usuario en la consola."; }
-        }
+        public string Description => "Consulta los últimos mensajes del usuario en la consola.";
 
-        public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
+        public void Execute(GameClient Session, Room Room, string[] Params)
         {
             if (Params.Length == 1)
             {
@@ -54,8 +40,6 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
             }
 
             GameClient TargetClient = NeonEnvironment.GetGame().GetClientManager().GetClientByUsername(Username);
-
-            DataTable GetLogs = null;
             StringBuilder HabboInfo = new StringBuilder();
 
             HabboInfo.Append("Estos son los últimos mensajes del usuario sospechoso, recuerda revisar siempre estos casos antes de proceder a banear a menos que sea un  caso evidente de spam.\n\n");
@@ -63,7 +47,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
                 dbClient.SetQuery("SELECT `message` FROM `chatlogs_console` WHERE `user_id` = '" + TargetClient.GetHabbo().Id + "' ORDER BY `id` DESC LIMIT 10");
-                GetLogs = dbClient.getTable();
+                DataTable GetLogs = dbClient.getTable();
 
                 if (GetLogs == null)
                 {

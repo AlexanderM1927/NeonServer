@@ -1,14 +1,13 @@
-﻿using System;
-using Neon.Communication.Packets.Outgoing.Rooms.Furni;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Furni;
 using Neon.HabboHotel.Items.Crafting;
 
 namespace Neon.Communication.Packets.Incoming.Rooms.Furni
 {
-    class SetCraftingRecipeEvent : IPacketEvent
+    internal class SetCraftingRecipeEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
-            var result = Packet.PopString();
+            string result = Packet.PopString();
 
             CraftingRecipe recipe = null;
             foreach (CraftingRecipe Receta in NeonEnvironment.GetGame().GetCraftingManager().CraftingRecipes.Values)
@@ -20,8 +19,12 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Furni
                 }
             }
 
-            var Final = NeonEnvironment.GetGame().GetCraftingManager().GetRecipe(recipe.Id);
-            if (Final == null) return;
+            CraftingRecipe Final = NeonEnvironment.GetGame().GetCraftingManager().GetRecipe(recipe.Id);
+            if (Final == null)
+            {
+                return;
+            }
+
             Session.SendMessage(new CraftingRecipeComposer(Final));
         }
 

@@ -139,7 +139,7 @@ namespace Neon.HabboHotel.Items.Wired.Util
 
         public static Point HandleMovement(Point newCoordinate, MovementState state, int newRotation)
         {
-            var newPoint = new Point(newCoordinate.X, newCoordinate.Y);
+            Point newPoint = new Point(newCoordinate.X, newCoordinate.Y);
 
             switch (state)
             {
@@ -155,18 +155,28 @@ namespace Neon.HabboHotel.Items.Wired.Util
                 case MovementState.LEFT_RIGHT:
                     {
                         if (NeonEnvironment.GetRandomNumber(0, 2) == 1)
+                        {
                             HandleMovement(ref newPoint, MovementState.LEFT);
+                        }
                         else
+                        {
                             HandleMovement(ref newPoint, MovementState.RIGHT);
+                        }
+
                         break;
                     }
 
                 case MovementState.UP_DOWN:
                     {
                         if (NeonEnvironment.GetRandomNumber(0, 2) == 1)
+                        {
                             HandleMovement(ref newPoint, MovementState.UP);
+                        }
                         else
+                        {
                             HandleMovement(ref newPoint, MovementState.DOWN);
+                        }
+
                         break;
                     }
 
@@ -205,7 +215,7 @@ namespace Neon.HabboHotel.Items.Wired.Util
 
         public static Point HandleMovementDir(Point newCoordinate, MovementDirection state, int newRotation)
         {
-            var newPoint = new Point(newCoordinate.X, newCoordinate.Y);
+            Point newPoint = new Point(newCoordinate.X, newCoordinate.Y);
 
             switch (state)
             {
@@ -257,7 +267,7 @@ namespace Neon.HabboHotel.Items.Wired.Util
 
         public static int HandleRotation(int oldRotation, RotationState state)
         {
-            var rotation = oldRotation;
+            int rotation = oldRotation;
             switch (state)
             {
                 case RotationState.CLOCK_WISE:
@@ -275,9 +285,14 @@ namespace Neon.HabboHotel.Items.Wired.Util
                 case RotationState.RANDOM:
                     {
                         if (NeonEnvironment.GetRandomNumber(0, 3) == 1)
+                        {
                             HandleClockwiseRotation(ref rotation);
+                        }
                         else
+                        {
                             HandleCounterClockwiseRotation(ref rotation);
+                        }
+
                         return rotation;
                     }
             }
@@ -289,14 +304,18 @@ namespace Neon.HabboHotel.Items.Wired.Util
         {
             rotation = rotation + 2;
             if (rotation > 6)
+            {
                 rotation = 0;
+            }
         }
 
         private static void HandleCounterClockwiseRotation(ref int rotation)
         {
             rotation = rotation - 2;
             if (rotation < 0)
+            {
                 rotation = 6;
+            }
         }
     }
 }

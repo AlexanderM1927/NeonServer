@@ -1,27 +1,24 @@
-﻿using Neon.Database.Interfaces;
+﻿using Neon.Communication.Packets.Outgoing.Inventory.Purse;
+using Neon.Database.Interfaces;
+using Neon.HabboHotel.GameClients;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Data;
-using Neon.HabboHotel.GameClients;
-using Neon.Communication.Packets.Outgoing.Inventory.Purse;
 
 namespace Neon.HabboHotel.Rewards
 {
     public class RewardManager
     {
-        private ConcurrentDictionary<int, Reward> _rewards;
-        private ConcurrentDictionary<int, List<int>> _rewardLogs;
+        private readonly ConcurrentDictionary<int, Reward> _rewards;
+        private readonly ConcurrentDictionary<int, List<int>> _rewardLogs;
 
         public RewardManager()
         {
-            this._rewards = new ConcurrentDictionary<int, Reward>();
-            this._rewardLogs = new ConcurrentDictionary<int, List<int>>();
+            _rewards = new ConcurrentDictionary<int, Reward>();
+            _rewardLogs = new ConcurrentDictionary<int, List<int>>();
 
-            this.Reload();   
+            Reload();
         }
 
         public void Reload()
@@ -48,10 +45,14 @@ namespace Neon.HabboHotel.Rewards
                         int RewardId = (int)dRow["reward_id"];
 
                         if (!_rewardLogs.ContainsKey(Id))
+                        {
                             _rewardLogs.TryAdd(Id, new List<int>());
+                        }
 
                         if (!_rewardLogs[Id].Contains(RewardId))
+                        {
                             _rewardLogs[Id].Add(RewardId);
+                        }
                     }
                 }
             }
@@ -60,10 +61,14 @@ namespace Neon.HabboHotel.Rewards
         public bool HasReward(int Id, int RewardId)
         {
             if (!_rewardLogs.ContainsKey(Id))
+            {
                 return false;
+            }
 
             if (_rewardLogs[Id].Contains(RewardId))
+            {
                 return true;
+            }
 
             return false;
         }
@@ -71,10 +76,14 @@ namespace Neon.HabboHotel.Rewards
         public void LogReward(int Id, int RewardId)
         {
             if (!_rewardLogs.ContainsKey(Id))
+            {
                 _rewardLogs.TryAdd(Id, new List<int>());
+            }
 
             if (!_rewardLogs[Id].Contains(RewardId))
+            {
                 _rewardLogs[Id].Add(RewardId);
+            }
 
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
@@ -88,15 +97,19 @@ namespace Neon.HabboHotel.Rewards
         public void CheckRewards(GameClient Session)
         {
             if (Session == null || Session.GetHabbo() == null)
+            {
                 return;
+            }
 
             foreach (KeyValuePair<int, Reward> Entry in _rewards)
             {
                 int Id = Entry.Key;
                 Reward Reward = Entry.Value;
 
-                if (this.HasReward(Session.GetHabbo().Id, Id))
+                if (HasReward(Session.GetHabbo().Id, Id))
+                {
                     continue;
+                }
 
                 if (Reward.isActive())
                 {
@@ -105,7 +118,10 @@ namespace Neon.HabboHotel.Rewards
                         case RewardType.BADGE:
                             {
                                 if (!Session.GetHabbo().GetBadgeComponent().HasBadge(Reward.RewardData))
+                                {
                                     Session.GetHabbo().GetBadgeComponent().GiveBadge(Reward.RewardData, true, Session);
+                                }
+
                                 break;
                             }
 
@@ -131,13 +147,17 @@ namespace Neon.HabboHotel.Rewards
                             }
                     }
 
-                    if (!String.IsNullOrEmpty(Reward.Message))
+                    if (!string.IsNullOrEmpty(Reward.Message))
+                    {
                         Session.SendNotification(Reward.Message);
+                    }
 
-                    this.LogReward(Session.GetHabbo().Id, Id);
+                    LogReward(Session.GetHabbo().Id, Id);
                 }
                 else
+                {
                     continue;
+                }
             }
         }
     }

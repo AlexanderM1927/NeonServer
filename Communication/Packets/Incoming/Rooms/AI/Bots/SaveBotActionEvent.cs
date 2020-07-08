@@ -1,52 +1,56 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.Communication.Packets.Incoming;
-using Neon.HabboHotel.Rooms;
+﻿using Neon.Communication.Packets.Outgoing;
 using Neon.Communication.Packets.Outgoing.Rooms.Avatar;
 using Neon.Communication.Packets.Outgoing.Rooms.Engine;
-
-using System.Data;
-using Neon.Communication.Packets.Outgoing;
+using Neon.Database.Interfaces;
+using Neon.HabboHotel.Rooms;
 using Neon.HabboHotel.Rooms.AI;
 using Neon.HabboHotel.Rooms.AI.Speech;
-
-using Neon.Database.Interfaces;
-using Neon.Utilities;
+using System;
+using System.Collections.Generic;
+using System.Data;
 using System.Text.RegularExpressions;
 
 namespace Neon.Communication.Packets.Incoming.Rooms.AI.Bots
 {
-    class SaveBotActionEvent : IPacketEvent
+    internal class SaveBotActionEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
             if (!Session.GetHabbo().InRoom)
+            {
                 return;
+            }
 
             Room Room = Session.GetHabbo().CurrentRoom;
             if (Room == null)
+            {
                 return;
+            }
 
             int BotId = Packet.PopInt();
             int ActionId = Packet.PopInt();
             string DataString = Packet.PopString();
 
             if (ActionId < 1 || ActionId > 5)
+            {
                 return;
+            }
 
-            RoomUser Bot = null;
-            if (!Room.GetRoomUserManager().TryGetBot(BotId, out Bot))
+            if (!Room.GetRoomUserManager().TryGetBot(BotId, out RoomUser Bot))
+            {
                 return;
+            }
 
             if ((Bot.BotData.ownerID != Session.GetHabbo().Id && !Session.GetHabbo().GetPermissions().HasRight("bot_edit_any_override")))
+            {
                 return;
+            }
 
             RoomBot RoomBot = Bot.BotData;
             if (RoomBot == null)
+            {
                 return;
+            }
 
             /* 1 = Copy looks
              * 2 = Setup Speech
@@ -104,7 +108,9 @@ namespace Neon.Communication.Packets.Incoming.Rooms.AI.Bots
                         string MixChat = Convert.ToString(ConfigData[3]);
 
                         if (string.IsNullOrEmpty(SpeakingInterval) || Convert.ToInt32(SpeakingInterval) <= 0 || Convert.ToInt32(SpeakingInterval) < 7)
+                        {
                             SpeakingInterval = "7";
+                        }
 
                         RoomBot.AutomaticChat = Convert.ToBoolean(AutomaticChat);
                         RoomBot.SpeakingInterval = Convert.ToInt32(SpeakingInterval);
@@ -159,9 +165,13 @@ namespace Neon.Communication.Packets.Incoming.Rooms.AI.Bots
                 case 3:
                     {
                         if (Bot.BotData.WalkingMode == "stand")
+                        {
                             Bot.BotData.WalkingMode = "freeroam";
+                        }
                         else
+                        {
                             Bot.BotData.WalkingMode = "stand";
+                        }
 
                         using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
                         {
@@ -175,7 +185,9 @@ namespace Neon.Communication.Packets.Incoming.Rooms.AI.Bots
                 case 4:
                     {
                         if (Bot.BotData.DanceId > 0)
+                        {
                             Bot.BotData.DanceId = 0;
+                        }
                         else
                         {
                             Random RandomDance = new Random();

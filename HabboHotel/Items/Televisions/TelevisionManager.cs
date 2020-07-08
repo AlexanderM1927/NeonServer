@@ -1,12 +1,8 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Data;
-using System.Threading.Tasks;
-using System.Collections.Generic;
+﻿using log4net;
 using Neon.Database.Interfaces;
-
-using log4net;
+using System;
+using System.Collections.Generic;
+using System.Data;
 
 namespace Neon.HabboHotel.Items.Televisions
 {
@@ -18,18 +14,20 @@ namespace Neon.HabboHotel.Items.Televisions
 
         public TelevisionManager()
         {
-            this._televisions =  new Dictionary<int, TelevisionItem>();
+            _televisions = new Dictionary<int, TelevisionItem>();
 
-            this.Init();
+            Init();
         }
 
         public void Init()
         {
-            if (this._televisions.Count > 0)
+            if (_televisions.Count > 0)
+            {
                 _televisions.Clear();
+            }
 
             DataTable getData = null;
-            using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor()) 
+            using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
                 dbClient.SetQuery("SELECT * FROM `items_youtube` ORDER BY `id` DESC");
                 getData = dbClient.getTable();
@@ -38,25 +36,22 @@ namespace Neon.HabboHotel.Items.Televisions
                 {
                     foreach (DataRow Row in getData.Rows)
                     {
-                        this._televisions.Add(Convert.ToInt32(Row["id"]), new TelevisionItem(Convert.ToInt32(Row["id"]), Row["youtube_id"].ToString(), Row["title"].ToString(), Row["description"].ToString(), NeonEnvironment.EnumToBool(Row["enabled"].ToString())));
+                        _televisions.Add(Convert.ToInt32(Row["id"]), new TelevisionItem(Convert.ToInt32(Row["id"]), Row["youtube_id"].ToString(), Row["title"].ToString(), Row["description"].ToString(), NeonEnvironment.EnumToBool(Row["enabled"].ToString())));
                     }
                 }
             }
         }
 
 
-        public ICollection<TelevisionItem> TelevisionList
-        {
-            get
-            {
-                return this._televisions.Values;
-            }
-        }
+        public ICollection<TelevisionItem> TelevisionList => _televisions.Values;
 
         public bool TryGet(int ItemId, out TelevisionItem TelevisionItem)
         {
-            if (this._televisions.TryGetValue(ItemId, out TelevisionItem))
+            if (_televisions.TryGetValue(ItemId, out TelevisionItem))
+            {
                 return true;
+            }
+
             return false;
         }
     }

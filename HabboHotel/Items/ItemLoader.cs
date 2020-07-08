@@ -1,9 +1,8 @@
-﻿using System;
-using System.Data;
-using System.Collections.Generic;
-
+﻿using Neon.Database.Interfaces;
 using Neon.HabboHotel.Rooms;
-using Neon.Database.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Data;
 
 
 namespace Neon.HabboHotel.Items
@@ -25,12 +24,11 @@ namespace Neon.HabboHotel.Items
                 {
                     foreach (DataRow Row in Items.Rows)
                     {
-                        ItemData Data = null;
 
-                        if (NeonEnvironment.GetGame().GetItemManager().GetItem(Convert.ToInt32(Row["base_item"]), out Data))
+                        if (NeonEnvironment.GetGame().GetItemManager().GetItem(Convert.ToInt32(Row["base_item"]), out ItemData Data))
                         {
                             I.Add(new Item(Convert.ToInt32(Row["id"]), Convert.ToInt32(Row["room_id"]), Convert.ToInt32(Row["base_item"]), Convert.ToString(Row["extra_data"]),
-                                Convert.ToInt32(Row["x"]), Convert.ToInt32(Row["y"]), Convert.ToDouble(Row["z"]), Convert.ToInt32(Row["rot"]), Convert.ToInt32(Row["user_id"]), 
+                                Convert.ToInt32(Row["x"]), Convert.ToInt32(Row["y"]), Convert.ToDouble(Row["z"]), Convert.ToInt32(Row["rot"]), Convert.ToInt32(Row["user_id"]),
                                 Convert.ToInt32(Row["group_id"]), Convert.ToInt32(Row["limited_number"]), Convert.ToInt32(Row["limited_stack"]), Convert.ToString(Row["wall_pos"]), Room));
                         }
                         else
@@ -58,9 +56,8 @@ namespace Neon.HabboHotel.Items
                 {
                     foreach (DataRow Row in Items.Rows)
                     {
-                        ItemData Data = null;
 
-                        if (NeonEnvironment.GetGame().GetItemManager().GetItem(Convert.ToInt32(Row["base_item"]), out Data))
+                        if (NeonEnvironment.GetGame().GetItemManager().GetItem(Convert.ToInt32(Row["base_item"]), out ItemData Data))
                         {
                             I.Add(new Item(Convert.ToInt32(Row["id"]), Convert.ToInt32(Row["room_id"]), Convert.ToInt32(Row["base_item"]), Convert.ToString(Row["extra_data"]),
                                 Convert.ToInt32(Row["x"]), Convert.ToInt32(Row["y"]), Convert.ToDouble(Row["z"]), Convert.ToInt32(Row["rot"]), Convert.ToInt32(Row["user_id"]),

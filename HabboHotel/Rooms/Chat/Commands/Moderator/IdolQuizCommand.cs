@@ -1,9 +1,6 @@
 ﻿using Neon.Communication.Packets.Outgoing.Rooms.Poll;
 using Neon.HabboHotel.GameClients;
 using Neon.HabboHotel.Items;
-using Neon.HabboHotel.Pathfinding;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
@@ -53,7 +50,9 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
                             bool HasUsers = false;
 
                             if (Room.GetGameMap().SquareHasUsers(Chair.GetX, Chair.GetY))
+                            {
                                 HasUsers = true;
+                            }
 
                             if (!HasUsers)
                             {

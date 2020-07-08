@@ -1,29 +1,16 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.GameClients;
+﻿
 using Neon.Communication.Packets.Outgoing.Rooms.Session;
+using Neon.HabboHotel.GameClients;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator.Fun
 {
-    class SummonCommand : IChatCommand
+    internal class SummonCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_summon"; }
-        }
+        public string PermissionRequired => "command_summon";
 
-        public string Parameters
-        {
-            get { return "%username%"; }
-        }
+        public string Parameters => "%username%";
 
-        public string Description
-        {
-            get { return "Trae a un usuario a tu sala"; }
-        }
+        public string Description => "Trae a un usuario a tu sala";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {
@@ -54,9 +41,13 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator.Fun
 
             TargetClient.SendNotification("Usted ha sido traido por " + Session.GetHabbo().Username + "!");
             if (!TargetClient.GetHabbo().InRoom)
+            {
                 TargetClient.SendMessage(new RoomForwardComposer(Session.GetHabbo().CurrentRoomId));
+            }
             else
+            {
                 TargetClient.GetHabbo().PrepareRoom(Session.GetHabbo().CurrentRoomId, "");
+            }
         }
     }
 }

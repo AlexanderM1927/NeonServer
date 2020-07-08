@@ -1,10 +1,5 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
+﻿using Neon.Database.Interfaces;
 using System.Text.RegularExpressions;
-using Neon.Database.Interfaces;
-using Neon.HabboHotel.Rooms;
 
 
 namespace Neon.HabboHotel.Rooms.Instance
@@ -16,53 +11,63 @@ namespace Neon.HabboHotel.Rooms.Instance
         public FilterComponent(Room Instance)
         {
             if (Instance == null)
+            {
                 return;
+            }
 
-            this._instance = Instance;
+            _instance = Instance;
         }
 
         public bool AddFilter(string Word)
         {
-            if (this._instance.WordFilterList.Contains(Word))
+            if (_instance.WordFilterList.Contains(Word))
+            {
                 return false;
+            }
 
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
                 dbClient.SetQuery("INSERT INTO `room_filter` (`room_id`,`word`) VALUES(@rid,@word);");
-                dbClient.AddParameter("rid", this._instance.Id);
+                dbClient.AddParameter("rid", _instance.Id);
                 dbClient.AddParameter("word", Word);
                 dbClient.RunQuery();
             }
 
-            this._instance.WordFilterList.Add(Word);
+            _instance.WordFilterList.Add(Word);
             return true;
         }
 
         public bool RemoveFilter(string Word)
         {
-            if (!this._instance.WordFilterList.Contains(Word))
+            if (!_instance.WordFilterList.Contains(Word))
+            {
                 return false;
+            }
 
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
                 dbClient.SetQuery("DELETE FROM `room_filter` WHERE `room_id` = @rid AND `word` = @word;");
-                dbClient.AddParameter("rid", this._instance.Id);
+                dbClient.AddParameter("rid", _instance.Id);
                 dbClient.AddParameter("word", Word);
                 dbClient.RunQuery();
             }
 
-            this._instance.WordFilterList.Remove(Word);
+            _instance.WordFilterList.Remove(Word);
             return true;
         }
 
         public string CheckMessage(string Message)
         {
-            foreach (string Filter in this._instance.WordFilterList)
+            foreach (string Filter in _instance.WordFilterList)
             {
                 if (Message.ToLower().Contains(Filter) || Message == Filter)
+                {
                     Message = Regex.Replace(Message, Filter, "Bobba", RegexOptions.IgnoreCase);
+                }
                 else
+                {
                     continue;
+                }
             }
 
             return Message.TrimEnd(' ');
@@ -70,7 +75,7 @@ namespace Neon.HabboHotel.Rooms.Instance
 
         public bool CheckCommandFilter(string Message)
         {
-            foreach (string Filter in this._instance.WordFilterList)
+            foreach (string Filter in _instance.WordFilterList)
             {
                 if (Message.ToLower().Contains(Filter) || Message == Filter)
                 {
@@ -84,7 +89,7 @@ namespace Neon.HabboHotel.Rooms.Instance
 
         public void Cleanup()
         {
-            this._instance = null;
+            _instance = null;
         }
     }
 }

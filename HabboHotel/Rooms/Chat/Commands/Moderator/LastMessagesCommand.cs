@@ -1,33 +1,19 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Data;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Users;
-using Neon.HabboHotel.GameClients;
-
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
 using Neon.Database.Interfaces;
-using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
+using Neon.HabboHotel.GameClients;
+using System;
+using System.Data;
+using System.Text;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
 {
-    class LastMessagesCommand : IChatCommand
+    internal class LastMessagesCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_user_info"; }
-        }
+        public string PermissionRequired => "command_user_info";
 
-        public string Parameters
-        {
-            get { return "%username%"; }
-        }
+        public string Parameters => "%username%";
 
-        public string Description
-        {
-            get { return "Consulta los últimos mensajes del usuario."; }
-        }
+        public string Description => "Consulta los últimos mensajes del usuario.";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {
@@ -76,7 +62,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
                 }
 
                 Session.SendMessage(new RoomNotificationComposer("Últimos mensajes de " + Username + ":", (HabboInfo.ToString()), "usr/body/" + Username + "", "", ""));
-            
+
 
                 //Session.SendMessage(new RoomCustomizedAlertComposer("Lamentablemente el usuario que has solicitado no tiene mensajes en el registro."));
 
@@ -85,4 +71,4 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
         }
     }
 }
-    
+

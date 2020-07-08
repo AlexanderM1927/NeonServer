@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Neon.Communication.Packets.Outgoing.Inventory.AvatarEffects
+﻿namespace Neon.Communication.Packets.Outgoing.Inventory.AvatarEffects
 {
-    class AvatarEffectAddedComposer : ServerPacket
+    internal class AvatarEffectAddedComposer : ServerPacket
     {
         public AvatarEffectAddedComposer(int SpriteId, int Duration)
             : base(ServerPacketHeader.AvatarEffectAddedMessageComposer)

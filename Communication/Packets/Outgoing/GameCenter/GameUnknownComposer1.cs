@@ -1,11 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-namespace Neon.Communication.Packets.Outgoing.GameCenter
+﻿namespace Neon.Communication.Packets.Outgoing.GameCenter
 {
-    class GameUnknownComposer1 : ServerPacket
+    internal class GameUnknownComposer1 : ServerPacket
     {
         public GameUnknownComposer1()
             : base(ServerPacketHeader.GameUnknownComposer1)

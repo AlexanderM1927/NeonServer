@@ -1,30 +1,15 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Chat;
 using Neon.HabboHotel.GameClients;
-using Neon.Communication.Packets.Outgoing.Rooms.Chat;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator.Fun
 {
-    class SuperPullCommand : IChatCommand
+    internal class SuperPullCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_super_pull"; }
-        }
+        public string PermissionRequired => "command_super_pull";
 
-        public string Parameters
-        {
-            get { return "%username%"; }
-        }
+        public string Parameters => "%username%";
 
-        public string Description
-        {
-            get { return "Hala a alguien sin liminte alguno"; }
-        }
+        public string Description => "Hala a alguien sin liminte alguno";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {
@@ -68,7 +53,9 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator.Fun
 
             RoomUser ThisUser = Room.GetRoomUserManager().GetRoomUserByHabbo(Session.GetHabbo().Id);
             if (ThisUser == null)
+            {
                 return;
+            }
 
             if (ThisUser.SetX - 1 == Room.GetGameMap().Model.DoorX)
             {
@@ -77,15 +64,26 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator.Fun
             }
 
             if (ThisUser.RotBody % 2 != 0)
+            {
                 ThisUser.RotBody--;
+            }
+
             if (ThisUser.RotBody == 0)
+            {
                 TargetUser.MoveTo(ThisUser.X, ThisUser.Y - 1);
+            }
             else if (ThisUser.RotBody == 2)
+            {
                 TargetUser.MoveTo(ThisUser.X + 1, ThisUser.Y);
+            }
             else if (ThisUser.RotBody == 4)
+            {
                 TargetUser.MoveTo(ThisUser.X, ThisUser.Y + 1);
+            }
             else if (ThisUser.RotBody == 6)
+            {
                 TargetUser.MoveTo(ThisUser.X - 1, ThisUser.Y);
+            }
 
             Room.SendMessage(new ChatComposer(ThisUser.VirtualId, "*super pulls " + Params[1] + " to them*", 0, ThisUser.LastBubble));
             return;

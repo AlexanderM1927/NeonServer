@@ -1,30 +1,14 @@
 ﻿using Neon.Communication.Packets.Outgoing;
-using Neon.Communication.Packets.Outgoing.Notifications;
 using Neon.Communication.Packets.Outgoing.Rooms.Chat;
 using Neon.Communication.Packets.Outgoing.Rooms.Engine;
-using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.User
 {
-    class EmojiCommand : IChatCommand
+    internal class EmojiCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return ""; }
-        }
-        public string Parameters
-        {
-            get { return ""; }
-        }
-        public string Description
-        {
-            get { return "Numero de 1-199. Manda un emoji"; }
-        }
+        public string PermissionRequired => "";
+        public string Parameters => "";
+        public string Description => "Numero de 1-199. Manda un emoji";
 
         public void Execute(GameClients.GameClient Session, Room Room, string[] Params)
         {
@@ -73,7 +57,9 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User
                                     Username = "<img src='/swf/c_images/emoji/Emoji_Smiley/Emoji Smiley-" + emojiNum + ".png' height='20' width='20'><br>    >";
                                 }
                                 if (Room != null)
+                                {
                                     Room.SendMessage(new UserNameChangeComposer(Session.GetHabbo().CurrentRoomId, TargetUser.VirtualId, Username));
+                                }
 
                                 string Message = " ";
                                 Room.SendMessage(new ChatComposer(TargetUser.VirtualId, Message, 0, TargetUser.LastBubble));

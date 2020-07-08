@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Neon.Communication.Packets.Outgoing.Rooms.Camera
+﻿namespace Neon.Communication.Packets.Outgoing.Rooms.Camera
 {
     public class CameraPhotoPreviewComposer : ServerPacket
     {

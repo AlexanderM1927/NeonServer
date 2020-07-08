@@ -1,14 +1,10 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Quests;
+﻿
 using Neon.HabboHotel.GameClients;
+using Neon.HabboHotel.Quests;
 
 namespace Neon.Communication.Packets.Outgoing.Quests
 {
-    class QuestCompletedComposer : ServerPacket
+    internal class QuestCompletedComposer : ServerPacket
     {
         public QuestCompletedComposer(GameClient Session, Quest Quest)
             : base(ServerPacketHeader.QuestCompletedMessageComposer)

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Neon.HabboHotel.Items.Wired
+﻿namespace Neon.HabboHotel.Items.Wired
 {
     public enum WiredBoxType
     {
@@ -21,6 +15,7 @@ namespace Neon.HabboHotel.Items.Wired
         TriggerUserFurniCollision,
         TriggerUserSaysCommand,
         TriggerAtGivenTime,
+        TriggerScoreAchieved,
         TriggerBotReachedAvatar,
 
         EffectShowMessage,
@@ -98,10 +93,11 @@ namespace Neon.HabboHotel.Items.Wired
 
         AddonRandomEffect,
 
-        // CUSTOM WIREDS - BY CUSTOM
+        // CUSTOM WIREDS - BY JAVAS
         EffectLowerFurni,
         EffectRaiseFurni,
         EffectRoomForward,
+        EffectShowAlertPHBox,
         //EffectGiveDuckets,
         //EffectGiveCredits,
         //EffectGiveDiamonds,

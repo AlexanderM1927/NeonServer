@@ -1,37 +1,36 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Concurrent;
-
-using Neon.Communication.Packets.Incoming;
+﻿using Neon.Communication.Packets.Incoming;
 using Neon.HabboHotel.Rooms;
 using Neon.HabboHotel.Users;
+using System;
+using System.Collections;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 
 namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
 {
-    class AddScoreBox : IWiredItem, IWiredCycle
+    internal class AddScoreBox : IWiredItem, IWiredCycle
     {
         public Room Instance { get; set; }
         public Item Item { get; set; }
-        public WiredBoxType Type { get { return WiredBoxType.EffectAddScore; } }
+        public WiredBoxType Type => WiredBoxType.EffectAddScore;
         public ConcurrentDictionary<int, Item> SetItems { get; set; }
         public string StringData { get; set; }
         public bool BoolData { get; set; }
-        public int Delay { get { return this._delay; } set { this._delay = value; this.TickCount = value + 1; } }
+        public int Delay { get => _delay; set { _delay = value; TickCount = value + 1; } }
         public int TickCount { get; set; }
         public string ItemsData { get; set; }
 
-        private Queue _queue;
+        private readonly Queue _queue;
         private int _delay = 0;
 
         public AddScoreBox(Room Instance, Item Item)
         {
             this.Instance = Instance;
             this.Item = Item;
-            this.SetItems = new ConcurrentDictionary<int, Item>();
+            SetItems = new ConcurrentDictionary<int, Item>();
 
-            this._queue = new Queue();
-            this.TickCount = Delay;
+            _queue = new Queue();
+            TickCount = Delay;
         }
 
         public void HandleSave(ClientPacket Packet)
@@ -44,7 +43,7 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
             int Delay = Packet.PopInt();
 
             this.Delay = Delay;
-            this.StringData = Convert.ToString(score + ";" + times);
+            StringData = Convert.ToString(score + ";" + times);
 
             // this.Delay = Packet.PopInt();
         }
@@ -53,8 +52,8 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
         {
             if (_queue.Count == 0)
             {
-                this._queue.Clear();
-                this.TickCount = Delay;
+                _queue.Clear();
+                TickCount = Delay;
                 return true;
             }
 
@@ -62,26 +61,32 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
             {
                 Habbo Player = (Habbo)_queue.Dequeue();
                 if (Player == null || Player.CurrentRoom != Instance)
+                {
                     continue;
+                }
 
-                this.TeleportUser(Player);
+                TeleportUser(Player);
             }
 
-            this.TickCount = Delay;
+            TickCount = Delay;
             return true;
         }
 
         public bool Execute(params object[] Params)
         {
             if (Params == null || Params.Length == 0)
+            {
                 return false;
+            }
 
             Habbo Player = (Habbo)Params[0];
 
             if (Player == null)
+            {
                 return false;
+            }
 
-            this._queue.Enqueue(Player);
+            _queue.Enqueue(Player);
             return true;
         }
 
@@ -89,7 +94,9 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
         {
             RoomUser User = Player.CurrentRoom.GetRoomUserManager().GetRoomUserByHabbo(Player.Id);
             if (User == null)
+            {
                 return;
+            }
 
             Room Instance = Player.CurrentRoom;
 

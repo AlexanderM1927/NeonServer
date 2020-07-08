@@ -1,37 +1,40 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms;
+﻿
 using Neon.Communication.Packets.Outgoing.Rooms.AI.Pets;
 using Neon.Database.Interfaces;
+using Neon.HabboHotel.Rooms;
 
 
 namespace Neon.Communication.Packets.Incoming.Rooms.AI.Pets.Horse
 {
-    class ModifyWhoCanRideHorseEvent : IPacketEvent
+    internal class ModifyWhoCanRideHorseEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
             if (!Session.GetHabbo().InRoom)
+            {
                 return;
+            }
 
-            Room Room = null;
-            if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Session.GetHabbo().CurrentRoomId, out Room))
+            if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Session.GetHabbo().CurrentRoomId, out Room Room))
+            {
                 return;
+            }
 
             int PetId = Packet.PopInt();
-           
-            RoomUser Pet = null;
-            if (!Room.GetRoomUserManager().TryGetPet(PetId, out Pet))
+
+            if (!Room.GetRoomUserManager().TryGetPet(PetId, out RoomUser Pet))
+            {
                 return;
+            }
 
             if (Pet.PetData.AnyoneCanRide == 1)
+            {
                 Pet.PetData.AnyoneCanRide = 0;
+            }
             else
+            {
                 Pet.PetData.AnyoneCanRide = 1;
-
+            }
 
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {

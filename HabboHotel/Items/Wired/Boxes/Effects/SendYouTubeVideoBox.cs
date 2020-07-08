@@ -1,23 +1,18 @@
-﻿using System;
-using System.Collections.Concurrent;
-
-using Neon.Communication.Packets.Incoming;
+﻿using Neon.Communication.Packets.Incoming;
+using Neon.Communication.Packets.Outgoing;
 using Neon.HabboHotel.Rooms;
 using Neon.HabboHotel.Users;
-using Neon.Communication.Packets.Outgoing.Rooms.Chat;
-using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
-using System.Collections;
-using Neon.Communication.Packets.Outgoing;
+using System.Collections.Concurrent;
 
 namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
 {
-    class SendYouTubeVideoBox : IWiredItem
+    internal class SendYouTubeVideoBox : IWiredItem
     {
         public Room Instance { get; set; }
 
         public Item Item { get; set; }
 
-        public WiredBoxType Type { get { return WiredBoxType.EffectSendYouTubeVideo; } }
+        public WiredBoxType Type => WiredBoxType.EffectSendYouTubeVideo;
 
         public ConcurrentDictionary<int, Item> SetItems { get; set; }
 
@@ -45,21 +40,29 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
         public bool Execute(params object[] Params)
         {
             if (Params == null || Params.Length == 0)
+            {
                 return false;
+            }
 
             Habbo Player = (Habbo)Params[0];
             if (Player == null || Player.GetClient() == null)
+            {
                 return false;
+            }
 
             if (string.IsNullOrEmpty(StringData))
+            {
                 return false;
+            }
 
             ServerPacket packet = new ServerPacket(2);
             packet.WriteString("Youtube");
             packet.WriteString("<iframe id=\"youtube-player\" frameborder=\"0\" allowfullscreen=\"1\" allow=\"autoplay; encrypted - media\" title=\"YouTube video player\" width=\"480\" height=\"270\" src=\"https://www.youtube.com/embed/" + StringData + "?autoplay=1&amp;fs=0&amp;modestbranding=1&amp;rel=0&amp;enablejsapi=1&amp;origin=http%3A%2F%2Fhabblive.in&amp;widgetid=1\"></iframe>");
 
             if (Player.GetClient().wsSession != null)
+            {
                 Player.GetClient().wsSession.send(packet);
+            }
 
             return true;
         }

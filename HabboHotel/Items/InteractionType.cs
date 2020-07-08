@@ -1,7 +1,4 @@
-﻿using System;
-using Neon;
-using Neon.Core;
-namespace Neon.HabboHotel.Items
+﻿namespace Neon.HabboHotel.Items
 {
     public enum InteractionType
     {

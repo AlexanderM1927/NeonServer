@@ -1,9 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using Neon.Database.Interfaces;
+﻿using Neon.Database.Interfaces;
 using Neon.HabboHotel.Rooms.AI;
+using System;
 
 
 namespace Neon.HabboHotel.Items.Utilities
@@ -15,17 +12,24 @@ namespace Neon.HabboHotel.Items.Utilities
             if (Type == InteractionType.pet0 || Type == InteractionType.pet1 || Type == InteractionType.pet2 || Type == InteractionType.pet3 || Type == InteractionType.pet4 || Type == InteractionType.pet5 || Type == InteractionType.pet6 ||
                Type == InteractionType.pet7 || Type == InteractionType.pet8 || Type == InteractionType.pet9 || Type == InteractionType.pet10 || Type == InteractionType.pet11 || Type == InteractionType.pet12 ||
                Type == InteractionType.pet13 || Type == InteractionType.pet14 || Type == InteractionType.pet15 || Type == InteractionType.pet16 || Type == InteractionType.pet17 || Type == InteractionType.pet18)
+            {
                 return true;
+            }
+
             return false;
         }
 
         public static bool CheckPetName(string PetName)
         {
             if (PetName.Length < 1 || PetName.Length > 16)
+            {
                 return false;
+            }
 
             if (!NeonEnvironment.IsValidAlphaNumeric(PetName))
+            {
                 return false;
+            }
 
             return true;
         }

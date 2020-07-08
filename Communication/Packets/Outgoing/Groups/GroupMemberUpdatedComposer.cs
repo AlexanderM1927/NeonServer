@@ -1,14 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-
+﻿
 using Neon.HabboHotel.Users;
 
 namespace Neon.Communication.Packets.Outgoing.Groups
 {
-    class GroupMemberUpdatedComposer : ServerPacket
+    internal class GroupMemberUpdatedComposer : ServerPacket
     {
         public GroupMemberUpdatedComposer(int GroupId, Habbo Habbo, int Type)
             : base(ServerPacketHeader.GroupMemberUpdatedMessageComposer)

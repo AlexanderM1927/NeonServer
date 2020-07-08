@@ -6,7 +6,7 @@ namespace Neon.HabboHotel.Pathfinding
     {
         public Vector2D Position;
         public PathFinderNode Next;
-        public int Cost = Int32.MaxValue;
+        public int Cost = int.MaxValue;
         public bool InOpen = false;
         public bool InClosed = false;
 
@@ -17,12 +17,12 @@ namespace Neon.HabboHotel.Pathfinding
 
         public override bool Equals(object obj)
         {
-            return (obj is PathFinderNode) && ((PathFinderNode)obj).Position.Equals(this.Position);
+            return (obj is PathFinderNode) && ((PathFinderNode)obj).Position.Equals(Position);
         }
 
         public bool Equals(PathFinderNode Breadcrumb)
         {
-            return Breadcrumb.Position.Equals(this.Position);
+            return Breadcrumb.Position.Equals(Position);
         }
 
         public override int GetHashCode()

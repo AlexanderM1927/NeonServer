@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Neon.HabboHotel.Calendar
+﻿namespace Neon.HabboHotel.Calendar
 {
     public class CalendarDay
     {
@@ -16,11 +10,11 @@ namespace Neon.HabboHotel.Calendar
 
         public CalendarDay(int day, string gift, string productname, string imagelink, string itemname)
         {
-            this.Day = day;
-            this.Gift = gift;
-            this.ProductName = productname;
-            this.ImageLink = imagelink;
-            this.ItemName = itemname;
+            Day = day;
+            Gift = gift;
+            ProductName = productname;
+            ImageLink = imagelink;
+            ItemName = itemname;
         }
     }
 }

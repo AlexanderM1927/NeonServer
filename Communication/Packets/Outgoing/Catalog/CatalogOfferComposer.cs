@@ -1,21 +1,17 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Items;
+﻿
 using Neon.HabboHotel.Catalog;
 using Neon.HabboHotel.Catalog.Utilities;
+using Neon.HabboHotel.Items;
 
 namespace Neon.Communication.Packets.Outgoing.Catalog
 {
-    class CatalogOfferComposer : ServerPacket
+    internal class CatalogOfferComposer : ServerPacket
     {
         public CatalogOfferComposer(CatalogItem Item)
             : base(ServerPacketHeader.CatalogOfferMessageComposer)
         {
             base.WriteInteger(Item.OfferId);
-           base.WriteString(Item.Data.ItemName);
+            base.WriteString(Item.Data.ItemName);
             base.WriteBoolean(false);//IsRentable
             base.WriteInteger(Item.CostCredits);
 
@@ -40,28 +36,38 @@ namespace Neon.Communication.Packets.Outgoing.Catalog
 
             if (!string.IsNullOrEmpty(Item.Badge))
             {
-               base.WriteString("b");
-               base.WriteString(Item.Badge);
+                base.WriteString("b");
+                base.WriteString(Item.Badge);
             }
 
-           base.WriteString(Item.Data.Type.ToString());
+            base.WriteString(Item.Data.Type.ToString());
             if (Item.Data.Type.ToString().ToLower() == "b")
-               base.WriteString(Item.Data.ItemName);//Badge name.
+            {
+                base.WriteString(Item.Data.ItemName);//Badge name.
+            }
             else
             {
                 base.WriteInteger(Item.Data.SpriteId);
                 if (Item.Data.InteractionType == InteractionType.WALLPAPER || Item.Data.InteractionType == InteractionType.FLOOR || Item.Data.InteractionType == InteractionType.LANDSCAPE)
-                   base.WriteString(Item.Name.Split('_')[2]);
+                {
+                    base.WriteString(Item.Name.Split('_')[2]);
+                }
                 else if (Item.PageID == 9)//Bots
                 {
-                    CatalogBot CataBot = null;
-                    if (!NeonEnvironment.GetGame().GetCatalog().TryGetBot(Item.ItemId, out CataBot))
-                       base.WriteString("hd-180-7.ea-1406-62.ch-210-1321.hr-831-49.ca-1813-62.sh-295-1321.lg-285-92");
+                    if (!NeonEnvironment.GetGame().GetCatalog().TryGetBot(Item.ItemId, out CatalogBot CataBot))
+                    {
+                        base.WriteString("hd-180-7.ea-1406-62.ch-210-1321.hr-831-49.ca-1813-62.sh-295-1321.lg-285-92");
+                    }
                     else
-                       base.WriteString(CataBot.Figure);
+                    {
+                        base.WriteString(CataBot.Figure);
+                    }
                 }
                 else if (Item.ExtraData != null)
-                   base.WriteString(Item.ExtraData != null ? Item.ExtraData : string.Empty);
+                {
+                    base.WriteString(Item.ExtraData != null ? Item.ExtraData : string.Empty);
+                }
+
                 base.WriteInteger(Item.Amount);
                 base.WriteBoolean(Item.IsLimited); // IsLimited
                 if (Item.IsLimited)

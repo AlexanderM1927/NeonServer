@@ -1,11 +1,11 @@
 ﻿#region
 
+using Neon.HabboHotel.Users.Clothing.Parts;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using Neon.HabboHotel.Users.Clothing.Parts;
 
 #endregion
 
@@ -30,19 +30,25 @@ namespace Neon.HabboHotel.Users.Clothing
         public bool Init(Habbo Habbo)
         {
             if (_allClothing.Count > 0)
+            {
                 return false;
+            }
 
-            using (var dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
+            using (Database.Interfaces.IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
                 dbClient.SetQuery("SELECT `id`,`part_id`,`part` FROM `user_clothing` WHERE `user_id` = @id;");
                 dbClient.AddParameter("id", Habbo.Id);
-                var GetClothing = dbClient.getTable();
+                DataTable GetClothing = dbClient.getTable();
 
                 if (GetClothing != null)
+                {
                     foreach (DataRow Row in GetClothing.Rows)
+                    {
                         _allClothing.TryAdd(Convert.ToInt32(Row["part_id"]),
                             new ClothingParts(Convert.ToInt32(Row["id"]), Convert.ToInt32(Row["part_id"]),
                                 Convert.ToString(Row["part"])));
+                    }
+                }
             }
 
             _habbo = Habbo;
@@ -51,10 +57,10 @@ namespace Neon.HabboHotel.Users.Clothing
 
         public void AddClothing(string ClothingName, List<int> PartIds)
         {
-            foreach (var PartId in PartIds.ToList().Where(PartId => !_allClothing.ContainsKey(PartId)))
+            foreach (int PartId in PartIds.ToList().Where(PartId => !_allClothing.ContainsKey(PartId)))
             {
                 int NewId;
-                using (var dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
+                using (Database.Interfaces.IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
                 {
                     dbClient.SetQuery(
                         "INSERT INTO `user_clothing` (`user_id`,`part_id`,`part`) VALUES (@UserId, @PartId, @Part)");
@@ -69,11 +75,16 @@ namespace Neon.HabboHotel.Users.Clothing
         }
 
         public bool TryGet(int PartId, out ClothingParts ClothingPart)
-            => _allClothing.TryGetValue(PartId, out ClothingPart);
+        {
+            return _allClothing.TryGetValue(PartId, out ClothingPart);
+        }
 
         /// <summary>
         ///     Disposes the ClothingComponent.
         /// </summary>
-        public void Dispose() => _allClothing.Clear();
+        public void Dispose()
+        {
+            _allClothing.Clear();
+        }
     }
 }

@@ -1,15 +1,11 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Data;
-using System.Collections.Generic;
-using System.Collections.Concurrent;
-
-
-using Neon.Communication.Packets.Outgoing.Inventory.AvatarEffects;
-using Neon.Communication.Packets.Outgoing.Rooms.Avatar;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Avatar;
 using Neon.Database.Interfaces;
 using Neon.HabboHotel.Rooms;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
 
 namespace Neon.HabboHotel.Users.Effects
 {
@@ -34,7 +30,9 @@ namespace Neon.HabboHotel.Users.Effects
         public bool Init(Habbo Habbo)
         {
             if (_effects.Count > 0)
+            {
                 return false;
+            }
 
             DataTable GetEffects = null;
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
@@ -47,7 +45,7 @@ namespace Neon.HabboHotel.Users.Effects
                 {
                     foreach (DataRow Row in GetEffects.Rows)
                     {
-                        if (this._effects.TryAdd(Convert.ToInt32(Row["id"]), new AvatarEffect(Convert.ToInt32(Row["id"]), Convert.ToInt32(Row["user_id"]), Convert.ToInt32(Row["effect_id"]), Convert.ToDouble(Row["total_duration"]), NeonEnvironment.EnumToBool(Row["is_activated"].ToString()), Convert.ToDouble(Row["activated_stamp"]), Convert.ToInt32(Row["quantity"]))))
+                        if (_effects.TryAdd(Convert.ToInt32(Row["id"]), new AvatarEffect(Convert.ToInt32(Row["id"]), Convert.ToInt32(Row["user_id"]), Convert.ToInt32(Row["effect_id"]), Convert.ToDouble(Row["total_duration"]), NeonEnvironment.EnumToBool(Row["is_activated"].ToString()), Convert.ToDouble(Row["activated_stamp"]), Convert.ToInt32(Row["quantity"]))))
                         {
                             //umm?
                         }
@@ -55,14 +53,14 @@ namespace Neon.HabboHotel.Users.Effects
                 }
             }
 
-            this._habbo = Habbo;
-            this._currentEffect = 0;
+            _habbo = Habbo;
+            _currentEffect = 0;
             return true;
         }
 
         public bool TryAdd(AvatarEffect Effect)
         {
-            return this._effects.TryAdd(Effect.Id, Effect);
+            return _effects.TryAdd(Effect.Id, Effect);
         }
 
         /// <summary>
@@ -86,7 +84,7 @@ namespace Neon.HabboHotel.Users.Effects
         /// <returns></returns>
         public AvatarEffect GetEffectNullable(int SpriteId, bool ActivatedOnly = false, bool UnactivatedOnly = false)
         {
-            foreach (AvatarEffect Effect in this._effects.Values.ToList())
+            foreach (AvatarEffect Effect in _effects.Values.ToList())
             {
                 if (!Effect.HasExpired && Effect.SpriteId == SpriteId && (!ActivatedOnly || Effect.Activated) && (!UnactivatedOnly || !Effect.Activated))
                 {
@@ -102,7 +100,7 @@ namespace Neon.HabboHotel.Users.Effects
         /// <param name="Habbo"></param>
         public void CheckEffectExpiry(Habbo Habbo)
         {
-            foreach (AvatarEffect Effect in this._effects.Values.ToList())
+            foreach (AvatarEffect Effect in _effects.Values.ToList())
             {
                 if (Effect.HasExpired)
                 {
@@ -113,29 +111,33 @@ namespace Neon.HabboHotel.Users.Effects
 
         public void ApplyEffect(int EffectId)
         {
-            if (this._habbo == null || this._habbo.CurrentRoom == null)
+            if (_habbo == null || _habbo.CurrentRoom == null)
+            {
                 return;
+            }
 
-            RoomUser User = this._habbo.CurrentRoom.GetRoomUserManager().GetRoomUserByHabbo(this._habbo.Id);
+            RoomUser User = _habbo.CurrentRoom.GetRoomUserManager().GetRoomUserByHabbo(_habbo.Id);
             if (User == null)
+            {
                 return;
+            }
 
-            this._currentEffect = EffectId;
+            _currentEffect = EffectId;
 
             if (User.IsDancing)
-                this._habbo.CurrentRoom.SendMessage(new DanceComposer(User, 0));
-            this._habbo.CurrentRoom.SendMessage(new AvatarEffectComposer(User.VirtualId, EffectId));
+            {
+                _habbo.CurrentRoom.SendMessage(new DanceComposer(User, 0));
+            }
+
+            _habbo.CurrentRoom.SendMessage(new AvatarEffectComposer(User.VirtualId, EffectId));
         }
 
-        public ICollection<AvatarEffect> GetAllEffects
-        {
-            get { return this._effects.Values; }
-        }
+        public ICollection<AvatarEffect> GetAllEffects => _effects.Values;
 
         public int CurrentEffect
         {
-            get { return this._currentEffect; }
-            set { this._currentEffect = value; }
+            get => _currentEffect;
+            set => _currentEffect = value;
         }
 
         /// <summary>
@@ -143,7 +145,7 @@ namespace Neon.HabboHotel.Users.Effects
         /// </summary>
         public void Dispose()
         {
-            this._effects.Clear();
+            _effects.Clear();
         }
     }
 }

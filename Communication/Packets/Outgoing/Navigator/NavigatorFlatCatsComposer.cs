@@ -1,13 +1,10 @@
 ﻿using Neon.HabboHotel.Navigator;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.Communication.Packets.Outgoing.Navigator
 {
-    class NavigatorFlatCatsComposer : ServerPacket
+    internal class NavigatorFlatCatsComposer : ServerPacket
     {
         public NavigatorFlatCatsComposer(ICollection<SearchResultList> Categories, int Rank)
             : base(ServerPacketHeader.NavigatorFlatCatsMessageComposer)

@@ -1,30 +1,31 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Music;
+using Neon.HabboHotel.Items;
 using Neon.HabboHotel.Rooms;
 using Neon.HabboHotel.Rooms.Music;
-using Neon.HabboHotel.Items;
-using Neon.Communication.Packets.Outgoing.Rooms.Music;
-using Neon.Database.Interfaces;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Neon.Communication.Packets.Incoming.Rooms.Music
 {
-    class AddPlaylistItemEvent : IPacketEvent
+    internal class AddPlaylistItemEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
             Room Instance = Session.GetHabbo().CurrentRoom;
 
             if (Instance == null || Instance.GetRoomMusicManager().PlaylistSize >= MusicManager.PlaylistCapacity)
+            {
                 return;
+            }
 
             int Itemid = Packet.PopInt();
 
             Item DiskItem = Session.GetHabbo().GetInventoryComponent().GetItem(Itemid);
 
             if (DiskItem == null || DiskItem.GetBaseItem().InteractionType != InteractionType.MUSIC_DISC)
+            {
                 return;
+            }
 
             SongItem SongItem = new SongItem(DiskItem);
 

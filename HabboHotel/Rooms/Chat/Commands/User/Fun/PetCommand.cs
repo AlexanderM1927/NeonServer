@@ -1,35 +1,24 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
+﻿using Neon.Communication.Packets.Outgoing.Notifications;
 using Neon.Communication.Packets.Outgoing.Rooms.Engine;
-using Neon.Communication.Packets.Outgoing.Notifications;
+using System.Text;
 
-namespace Neon.HabboHotel.Rooms.Chat.Commands.User.Fun 
+namespace Neon.HabboHotel.Rooms.Chat.Commands.User.Fun
 {
-    class PetCommand : IChatCommand
+    internal class PetCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_pet"; }
-        }
+        public string PermissionRequired => "command_pet";
 
-        public string Parameters
-        {
-            get { return ""; }
-        }
+        public string Parameters => "";
 
-        public string Description
-        {
-            get { return "Transformarte en una mascota. Ver la lista con :pet list."; }
-        }
+        public string Description => "Transformarte en una mascota. Ver la lista con :pet list.";
 
         public void Execute(GameClients.GameClient Session, Room Room, string[] Params)
         {
             RoomUser RoomUser = Session.GetHabbo().CurrentRoom.GetRoomUserManager().GetRoomUserByHabbo(Session.GetHabbo().Id);
             if (RoomUser == null)
+            {
                 return;
+            }
 
             if (!Room.PetMorphsAllowed)
             {
@@ -101,7 +90,9 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User.Fun
 
             //Tell them a quick message.
             if (Session.GetHabbo().PetId > 0)
+            {
                 Session.SendWhisper("Usa ':pet habbo' para volver a la normalidad!");
+            }
         }
 
         private int GetPetIdByString(string Pet)
@@ -140,11 +131,11 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User.Fun
                     return 10;
                 case "rana":
                     return 11;
-              /*
-                case "drag":
-                case "dragonn":
-                    return 12;
-                */
+                /*
+                  case "drag":
+                  case "dragonn":
+                      return 12;
+                  */
                 case "mono":
                     return 14;
                 case "caballo":

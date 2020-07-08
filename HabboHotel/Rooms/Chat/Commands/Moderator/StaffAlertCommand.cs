@@ -1,28 +1,12 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.Communication.Packets.Outgoing.Moderation;
-
-namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
+﻿namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
 {
-    class StaffAlertCommand : IChatCommand
+    internal class StaffAlertCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_staff_alert"; }
-        }
+        public string PermissionRequired => "command_staff_alert";
 
-        public string Parameters
-        {
-            get { return "%message%"; }
-        }
+        public string Parameters => "%message%";
 
-        public string Description
-        {
-            get { return "Envía un mensaje escrito por usted a los miembros actuales del personal en línea."; }
-        }
+        public string Description => "Envía un mensaje escrito por usted a los miembros actuales del personal en línea.";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {

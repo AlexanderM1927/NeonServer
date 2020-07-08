@@ -1,13 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
+﻿
 using Neon.HabboHotel.Items.Data.Moodlight;
 
 namespace Neon.Communication.Packets.Outgoing.Rooms.Furni.Moodlight
 {
-    class MoodlightConfigComposer : ServerPacket
+    internal class MoodlightConfigComposer : ServerPacket
     {
         public MoodlightConfigComposer(MoodlightData MoodlightData)
             : base(ServerPacketHeader.MoodlightConfigMessageComposer)
@@ -20,7 +16,7 @@ namespace Neon.Communication.Packets.Outgoing.Rooms.Furni.Moodlight
             {
                 base.WriteInteger(i);
                 base.WriteInteger(Preset.BackgroundOnly ? 2 : 1);
-               base.WriteString(Preset.ColorCode);
+                base.WriteString(Preset.ColorCode);
                 base.WriteInteger(Preset.ColorIntensity);
                 i++;
             }

@@ -1,6 +1,4 @@
-﻿using Neon.HabboHotel.Rooms;
-
-namespace Neon.Communication.Packets.Outgoing.Rooms.Chat
+﻿namespace Neon.Communication.Packets.Outgoing.Rooms.Chat
 {
     public class WhisperComposer : ServerPacket
     {
@@ -8,7 +6,7 @@ namespace Neon.Communication.Packets.Outgoing.Rooms.Chat
             : base(ServerPacketHeader.WhisperMessageComposer)
         {
             base.WriteInteger(VirtualId);
-           base.WriteString(Text);
+            base.WriteString(Text);
             base.WriteInteger(Emotion);
             base.WriteInteger(Colour);
 

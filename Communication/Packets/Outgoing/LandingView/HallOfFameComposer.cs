@@ -2,7 +2,7 @@
 
 namespace Neon.Communication.Packets.Outgoing.LandingView
 {
-    class HallOfFameComposer : ServerPacket
+    internal class HallOfFameComposer : ServerPacket
     {
         public HallOfFameComposer() : base(ServerPacketHeader.UpdateHallOfFameListMessageComposer)
         {

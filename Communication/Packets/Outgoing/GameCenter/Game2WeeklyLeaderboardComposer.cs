@@ -1,13 +1,7 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Games;
+﻿using Neon.Database.Interfaces;
 using Neon.HabboHotel.Users;
-using Neon.Database.Interfaces;
+using System;
 using System.Data;
-using System.Data.SqlClient;
 
 namespace Neon.Communication.Packets.Outgoing.GameCenter
 {
@@ -44,7 +38,7 @@ namespace Neon.Communication.Packets.Outgoing.GameCenter
                     foreach (DataRow Rows in GetLeaderData.Rows)
                     {
                         Habbo habbo = NeonEnvironment.GetHabboById(Convert.ToInt32(Rows["user_id"]));
-                        
+
                         base.WriteInteger(habbo.Id);//Id
                         base.WriteInteger(Convert.ToInt32(Rows["points"]));//Score
                         base.WriteInteger(id++);//Rank

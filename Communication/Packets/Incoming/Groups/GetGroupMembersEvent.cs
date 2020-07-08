@@ -1,18 +1,12 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Users;
-using Neon.HabboHotel.Groups;
-using Neon.Communication.Packets.Outgoing.Groups;
-using Neon.HabboHotel.Users.Authenticator;
-using Neon.HabboHotel.Users.UserDataManagement;
+﻿using Neon.Communication.Packets.Outgoing.Groups;
 using Neon.HabboHotel.Cache;
+using Neon.HabboHotel.Groups;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Neon.Communication.Packets.Incoming.Groups
 {
-    class GetGroupMembersEvent : IPacketEvent
+    internal class GetGroupMembersEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
@@ -21,9 +15,10 @@ namespace Neon.Communication.Packets.Incoming.Groups
             string SearchVal = Packet.PopString();
             int RequestType = Packet.PopInt();
 
-            Group Group = null;
-            if (!NeonEnvironment.GetGame().GetGroupManager().TryGetGroup(GroupId, out Group))
+            if (!NeonEnvironment.GetGame().GetGroupManager().TryGetGroup(GroupId, out Group Group))
+            {
                 return;
+            }
 
             List<UserCache> Members = new List<UserCache>();
 
@@ -36,10 +31,14 @@ namespace Neon.Communication.Packets.Incoming.Groups
                         {
                             UserCache GroupMember = NeonEnvironment.GetGame().GetCacheManager().GenerateUser(Id);
                             if (GroupMember == null)
+                            {
                                 continue;
+                            }
 
                             if (!Members.Contains(GroupMember))
+                            {
                                 Members.Add(GroupMember);
+                            }
                         }
                         break;
                     }
@@ -51,10 +50,14 @@ namespace Neon.Communication.Packets.Incoming.Groups
                         {
                             UserCache GroupMember = NeonEnvironment.GetGame().GetCacheManager().GenerateUser(Id);
                             if (GroupMember == null)
+                            {
                                 continue;
+                            }
 
                             if (!Members.Contains(GroupMember))
+                            {
                                 Members.Add(GroupMember);
+                            }
                         }
                         break;
                     }
@@ -66,17 +69,23 @@ namespace Neon.Communication.Packets.Incoming.Groups
                         {
                             UserCache GroupMember = NeonEnvironment.GetGame().GetCacheManager().GenerateUser(Id);
                             if (GroupMember == null)
+                            {
                                 continue;
+                            }
 
                             if (!Members.Contains(GroupMember))
+                            {
                                 Members.Add(GroupMember);
+                            }
                         }
                         break;
                     }
             }
 
             if (!string.IsNullOrEmpty(SearchVal))
+            {
                 Members = Members.Where(x => x.Username.StartsWith(SearchVal)).ToList();
+            }
 
             int StartIndex = ((Page - 1) * 14 + 14);
             int FinishIndex = Members.Count;

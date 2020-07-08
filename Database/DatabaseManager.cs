@@ -1,7 +1,7 @@
-﻿using System;
-using MySql.Data.MySqlClient;
+﻿using MySql.Data.MySqlClient;
 using Neon.Core;
 using Neon.Database.Interfaces;
+using System;
 
 namespace Neon.Database
 {
@@ -11,14 +11,14 @@ namespace Neon.Database
 
         public DatabaseManager(string ConnectionStr)
         {
-            this._connectionStr = ConnectionStr;
+            _connectionStr = ConnectionStr;
         }
 
         public bool IsConnected()
         {
             try
             {
-                MySqlConnection Con = new MySqlConnection(this._connectionStr);
+                MySqlConnection Con = new MySqlConnection(_connectionStr);
                 Con.Open();
                 MySqlCommand CMD = Con.CreateCommand();
                 CMD.CommandText = "SELECT 1+1";
@@ -39,7 +39,7 @@ namespace Neon.Database
         {
             try
             {
-                IDatabaseClient DbConnection = new DatabaseConnection(this._connectionStr);
+                IDatabaseClient DbConnection = new DatabaseConnection(_connectionStr);
 
                 DbConnection.connect();
 

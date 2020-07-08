@@ -1,22 +1,15 @@
-﻿using Neon.Communication.Packets.Outgoing.Inventory.Purse;
-using Neon.Communication.Packets.Outgoing.Rooms.Furni;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Furni;
 using Neon.HabboHotel.GameClients;
-using Neon.HabboHotel.Rooms;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.HabboHotel.Items.Interactor
 {
-    class InteractorMysticBox : IFurniInteractor
+    internal class InteractorMysticBox : IFurniInteractor
     {
         private string eColor;
 
         public void OnPlace(GameClient Session, Item Item)
         {
-            if(Session.GetHabbo().Id != Item.UserID)
+            if (Session.GetHabbo().Id != Item.UserID)
             {
                 Session.SendWhisper("Parece que estás intentando colocar una caja que no es tuya.", 33);
                 return;

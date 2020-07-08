@@ -1,19 +1,17 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using Neon.Database.Interfaces;
+﻿using Neon.Database.Interfaces;
 using Neon.HabboHotel.Users;
 
 
 namespace Neon.Communication.Packets.Incoming.Moderation
 {
-    class ModerationTradeLockEvent : IPacketEvent
+    internal class ModerationTradeLockEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
             if (Session == null || Session.GetHabbo() == null || !Session.GetHabbo().GetPermissions().HasRight("mod_trade_lock"))
+            {
                 return;
+            }
 
             int UserId = Packet.PopInt();
             string Message = Packet.PopString();
@@ -37,10 +35,14 @@ namespace Neon.Communication.Packets.Incoming.Moderation
             }
 
             if (Days < 1)
+            {
                 Days = 1;
+            }
 
             if (Days > 365)
+            {
                 Days = 365;
+            }
 
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {

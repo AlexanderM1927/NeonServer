@@ -1,17 +1,12 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-namespace Neon.Communication.Packets.Outgoing.Moderation
+﻿namespace Neon.Communication.Packets.Outgoing.Moderation
 {
-    class BroadcastMessageAlertComposer : ServerPacket
+    internal class BroadcastMessageAlertComposer : ServerPacket
     {
         public BroadcastMessageAlertComposer(string Message, string URL = "")
             : base(ServerPacketHeader.BroadcastMessageAlertMessageComposer)
         {
-           base.WriteString(Message);
-           base.WriteString(URL);
+            base.WriteString(Message);
+            base.WriteString(URL);
         }
     }
 }

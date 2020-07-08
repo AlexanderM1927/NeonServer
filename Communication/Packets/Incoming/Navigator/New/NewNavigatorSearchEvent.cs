@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
-using Neon.Communication.Packets.Outgoing.Navigator;
+﻿using Neon.Communication.Packets.Outgoing.Navigator;
 using Neon.HabboHotel.Navigator;
+using System.Collections.Generic;
 
 namespace Neon.Communication.Packets.Incoming.Navigator
 {
-    class NewNavigatorSearchEvent : IPacketEvent
+    internal class NewNavigatorSearchEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient session, ClientPacket packet)
         {

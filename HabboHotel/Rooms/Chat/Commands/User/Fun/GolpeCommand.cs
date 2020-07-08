@@ -1,28 +1,21 @@
 ﻿using Neon.Communication.Packets.Outgoing.Rooms.Chat;
 using Neon.HabboHotel.GameClients;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.User.Fun
 {
-    class GolpeCommand : IChatCommand
+    internal class GolpeCommand : IChatCommand
     {
-        public string PermissionRequired
-        { get { return "command_golpe"; } }
+        public string PermissionRequired => "command_golpe";
 
-        public string Parameters
-        { get { return "%target%"; }  }
+        public string Parameters => "%target%";
 
-        public string Description
-        { get { return "Golpear a alguien si la sala lo permite.";}}
+        public string Description => "Golpear a alguien si la sala lo permite.";
 
         public void Execute(GameClient Session, Room Room, string[] Params)
         {
             if (Params.Length == 1 || Params.Length > 2)
-            { Session.SendWhisper("@green@ Introduce el nombre del usuario que deseas golpear. { :golpe NOMBRE }");  return; }
+            { Session.SendWhisper("@green@ Introduce el nombre del usuario que deseas golpear. { :golpe NOMBRE }"); return; }
 
             GameClient TargetClient = NeonEnvironment.GetGame().GetClientManager().GetClientByUsername(Params[1]);
             if (TargetClient == null)
@@ -52,7 +45,9 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User.Fun
 
             RoomUser ThisUser = Room.GetRoomUserManager().GetRoomUserByHabbo(Session.GetHabbo().Id);
             if (ThisUser == null)
+            {
                 return;
+            }
 
             if (!((Math.Abs(TargetUser.X - ThisUser.X) >= 2) || (Math.Abs(TargetUser.Y - ThisUser.Y) >= 2)))
             {

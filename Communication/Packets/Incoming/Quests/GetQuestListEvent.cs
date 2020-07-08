@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using Neon.HabboHotel.GameClients;
-using Neon.HabboHotel.Quests;
-using Neon.Communication.Packets.Incoming;
+﻿using Neon.HabboHotel.GameClients;
 
 namespace Neon.Communication.Packets.Incoming.Quests
 {

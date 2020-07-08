@@ -1,6 +1,5 @@
 ﻿using Neon.HabboHotel.GameClients;
 using Neon.HabboHotel.Quests;
-using Neon.HabboHotel.Rooms;
 
 
 namespace Neon.HabboHotel.Items.Interactor
@@ -26,10 +25,9 @@ namespace Neon.HabboHotel.Items.Interactor
 
             NeonEnvironment.GetGame().GetQuestManager().ProgressUserQuest(Session, QuestType.FURNI_SWITCH);
 
-            int CurrentMode = 0;
             int NewMode = 0;
 
-            if (!int.TryParse(Item.ExtraData, out CurrentMode))
+            if (!int.TryParse(Item.ExtraData, out int CurrentMode))
             {
             }
 
@@ -59,13 +57,14 @@ namespace Neon.HabboHotel.Items.Interactor
                 return;
             }
 
-            int CurrentMode = 0;
             int NewMode = 0;
 
             if (string.IsNullOrEmpty(Item.ExtraData))
+            {
                 Item.ExtraData = "0";
+            }
 
-            if (!int.TryParse(Item.ExtraData, out CurrentMode))
+            if (!int.TryParse(Item.ExtraData, out int CurrentMode))
             {
                 return;
             }

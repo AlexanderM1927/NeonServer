@@ -1,9 +1,8 @@
-﻿using System;
-using System.Data;
-
-using MySql.Data.MySqlClient;
-using Neon.Database.Interfaces;
+﻿using MySql.Data.MySqlClient;
 using Neon.Database.Adapter;
+using Neon.Database.Interfaces;
+using System;
+using System.Data;
 
 namespace Neon.Database
 {
@@ -14,34 +13,34 @@ namespace Neon.Database
 
         public DatabaseConnection(string ConnectionStr)
         {
-            this._con = new MySqlConnection(ConnectionStr);
-            this._adapter = new NormalQueryReactor(this);
+            _con = new MySqlConnection(ConnectionStr);
+            _adapter = new NormalQueryReactor(this);
         }
 
         public void Dispose()
         {
-            if (this._con.State == ConnectionState.Open)
+            if (_con.State == ConnectionState.Open)
             {
-                this._con.Close();
+                _con.Close();
             }
 
-            this._con.Dispose();
+            _con.Dispose();
             GC.SuppressFinalize(this);
         }
 
         public void connect()
         {
-            this.Open();
+            Open();
         }
 
         public void disconnect()
         {
-            this.Close();
+            Close();
         }
 
         public IQueryAdapter GetQueryReactor()
         {
-            return this._adapter;
+            return _adapter;
         }
 
         public void prepare()

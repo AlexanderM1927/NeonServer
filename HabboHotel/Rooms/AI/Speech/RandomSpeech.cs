@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Neon.HabboHotel.Rooms.AI.Speech
+﻿namespace Neon.HabboHotel.Rooms.AI.Speech
 {
     public class RandomSpeech
     {

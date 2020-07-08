@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Neon.Communication.Packets.Outgoing.Rooms.Permissions
+﻿namespace Neon.Communication.Packets.Outgoing.Rooms.Permissions
 {
-    class YouAreControllerComposer : ServerPacket
+    internal class YouAreControllerComposer : ServerPacket
     {
         public YouAreControllerComposer(int Setting)
             : base(ServerPacketHeader.YouAreControllerMessageComposer)

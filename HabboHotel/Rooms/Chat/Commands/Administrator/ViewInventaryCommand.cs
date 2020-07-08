@@ -1,33 +1,21 @@
 ﻿using Neon.HabboHotel.GameClients;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.Administrator
 {
-    class ViewInventaryCommand : IChatCommand
+    internal class ViewInventaryCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_viewinventary"; }
-        }
+        public string PermissionRequired => "command_viewinventary";
 
-        public string Parameters
-        {
-            get { return ""; }
-        }
+        public string Parameters => "";
 
-        public string Description
-        {
-            get { return "Permite ver el inventario de un usuario"; }
-        }
+        public string Description => "Permite ver el inventario de un usuario";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {
             if (Room == null)
+            {
                 return;
+            }
 
             if (Params.Length == 2)
             {

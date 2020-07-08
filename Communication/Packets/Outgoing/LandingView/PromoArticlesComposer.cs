@@ -1,16 +1,11 @@
-﻿using System;
-using System.Data;
-using System.Linq;
-using System.Text;
+﻿using Neon.HabboHotel.LandingView.Promotions;
 using System.Collections.Generic;
-
-using Neon.HabboHotel.LandingView;
-using Neon.HabboHotel.LandingView.Promotions;
+using System.Linq;
 
 
 namespace Neon.Communication.Packets.Outgoing.LandingView
 {
-    class PromoArticlesComposer : ServerPacket
+    internal class PromoArticlesComposer : ServerPacket
     {
         public PromoArticlesComposer(ICollection<Promotion> LandingPromotions)
             : base(ServerPacketHeader.PromoArticlesMessageComposer)

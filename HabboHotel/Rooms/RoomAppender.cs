@@ -3,7 +3,7 @@ using Neon.HabboHotel.Navigator;
 
 namespace Neon.HabboHotel.Rooms
 {
-    static class RoomAppender
+    internal static class RoomAppender
     {
         public static void WriteRoom(ServerPacket Packet, RoomData Data, RoomPromotion Promotion, bool NewNavigator = false)
         {
@@ -28,16 +28,26 @@ namespace Neon.HabboHotel.Rooms
 
             int RoomType = 0;
             if (Data.Group != null)
+            {
                 RoomType += 2;
-            if (Data.Promotion != null)
-                RoomType += 4;
-            if (Data.Type == "private")
-                RoomType += 8;
-            if (Data.AllowPets == 1)
-                RoomType += 16;
+            }
 
-            FeaturedRoom Item = null;
-            if (NeonEnvironment.GetGame().GetNavigator().TryGetFeaturedRoom(Data.Id, out Item))
+            if (Data.Promotion != null)
+            {
+                RoomType += 4;
+            }
+
+            if (Data.Type == "private")
+            {
+                RoomType += 8;
+            }
+
+            if (Data.AllowPets == 1)
+            {
+                RoomType += 16;
+            }
+
+            if (NeonEnvironment.GetGame().GetNavigator().TryGetFeaturedRoom(Data.Id, out FeaturedRoom Item))
             {
                 RoomType += 1;
             }

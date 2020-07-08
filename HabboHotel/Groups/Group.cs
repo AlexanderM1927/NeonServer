@@ -1,10 +1,8 @@
-﻿using System;
+﻿using Neon.Database.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using Neon.Database.Interfaces;
-using Neon.HabboHotel.Users;
-using Neon.Communication.Packets.Outgoing.Messenger;
 
 namespace Neon.HabboHotel.Groups
 {
@@ -23,9 +21,9 @@ namespace Neon.HabboHotel.Groups
         public bool ForumEnabled { get; set; }
         public GroupType GroupType { get; set; }
 
-        private List<int> _members;
-        private List<int> _requests;
-        private List<int> _administrators;
+        private readonly List<int> _members;
+        private readonly List<int> _requests;
+        private readonly List<int> _administrators;
         internal bool HasForum { get; set; }
         internal bool HasChat { get; set; }
 
@@ -36,31 +34,31 @@ namespace Neon.HabboHotel.Groups
             this.Description = Description;
             this.RoomId = RoomId;
             this.Badge = Badge;
-            this.CreateTime = Time;
-            this.CreatorId = Owner;
+            CreateTime = Time;
+            CreatorId = Owner;
             this.Colour1 = (Colour1 == 0) ? 1 : Colour1;
             this.Colour2 = (Colour2 == 0) ? 1 : Colour2;
-            this.HasForum = hforum;
-            this.HasChat = hChat;
+            HasForum = hforum;
+            HasChat = hChat;
             switch (Type)
             {
                 case 0:
-                    this.GroupType = GroupType.OPEN;
+                    GroupType = GroupType.OPEN;
                     break;
                 case 1:
-                    this.GroupType = GroupType.LOCKED;
+                    GroupType = GroupType.LOCKED;
                     break;
                 case 2:
-                    this.GroupType = GroupType.PRIVATE;
+                    GroupType = GroupType.PRIVATE;
                     break;
             }
 
             this.AdminOnlyDeco = AdminOnlyDeco;
-            this.ForumEnabled = ForumEnabled;
+            ForumEnabled = ForumEnabled;
 
-            this._members = new List<int>();
-            this._requests = new List<int>();
-            this._administrators = new List<int>();
+            _members = new List<int>();
+            _requests = new List<int>();
+            _administrators = new List<int>();
 
             InitMembers();
         }
@@ -71,7 +69,7 @@ namespace Neon.HabboHotel.Groups
             {
                 DataTable GetMembers = null;
                 dbClient.SetQuery("SELECT `user_id`, `rank` FROM `group_memberships` WHERE `group_id` = @id");
-                dbClient.AddParameter("id", this.Id);
+                dbClient.AddParameter("id", Id);
                 GetMembers = dbClient.getTable();
 
                 if (GetMembers != null)
@@ -83,20 +81,24 @@ namespace Neon.HabboHotel.Groups
 
                         if (IsAdmin)
                         {
-                            if (!this._administrators.Contains(UserId))
-                                this._administrators.Add(UserId);
+                            if (!_administrators.Contains(UserId))
+                            {
+                                _administrators.Add(UserId);
+                            }
                         }
                         else
                         {
-                            if (!this._members.Contains(UserId))
-                                this._members.Add(UserId);
+                            if (!_members.Contains(UserId))
+                            {
+                                _members.Add(UserId);
+                            }
                         }
                     }
                 }
 
                 DataTable GetRequests = null;
                 dbClient.SetQuery("SELECT `user_id` FROM `group_requests` WHERE `group_id` = @id");
-                dbClient.AddParameter("id", this.Id);
+                dbClient.AddParameter("id", Id);
                 GetRequests = dbClient.getTable();
 
                 if (GetRequests != null)
@@ -105,74 +107,61 @@ namespace Neon.HabboHotel.Groups
                     {
                         int UserId = Convert.ToInt32(Row["user_id"]);
 
-                        if (this._members.Contains(UserId) || this._administrators.Contains(UserId))
+                        if (_members.Contains(UserId) || _administrators.Contains(UserId))
                         {
-                            dbClient.RunQuery("DELETE FROM `group_requests` WHERE `group_id` = '" + this.Id + "' AND `user_id` = '" + UserId + "'");
+                            dbClient.RunQuery("DELETE FROM `group_requests` WHERE `group_id` = '" + Id + "' AND `user_id` = '" + UserId + "'");
                         }
-                        else if (!this._requests.Contains(UserId))
+                        else if (!_requests.Contains(UserId))
                         {
-                            this._requests.Add(UserId);
+                            _requests.Add(UserId);
                         }
                     }
                 }
             }
         }
 
-        public List<int> GetMembers
-        {
-            get { return this._members.ToList(); }
-        }
+        public List<int> GetMembers => _members.ToList();
 
-        public List<int> GetRequests
-        {
-            get { return this._requests.ToList(); }
-        }
+        public List<int> GetRequests => _requests.ToList();
 
-        public List<int> GetAdministrators
-        {
-            get { return this._administrators.ToList(); }
-        }
+        public List<int> GetAdministrators => _administrators.ToList();
 
         public List<int> GetAllMembers
         {
             get
             {
-                List<int> Members = new List<int>(this._administrators.ToList());
-                Members.AddRange(this._members.ToList());
+                List<int> Members = new List<int>(_administrators.ToList());
+                Members.AddRange(_members.ToList());
 
                 return Members;
             }
         }
 
-        public int MemberCount
-        {
-            get { return this._members.Count + this._administrators.Count; }
-        }
+        public int MemberCount => _members.Count + _administrators.Count;
 
-        public int RequestCount
-        {
-            get { return this._requests.Count; }
-        }
+        public int RequestCount => _requests.Count;
 
         public bool IsMember(int Id)
         {
-            return this._members.Contains(Id) || this._administrators.Contains(Id);
+            return _members.Contains(Id) || _administrators.Contains(Id);
         }
 
         public bool IsAdmin(int Id)
         {
-            return this._administrators.Contains(Id);
+            return _administrators.Contains(Id);
         }
 
         public bool HasRequest(int Id)
         {
-            return this._requests.Contains(Id);
+            return _requests.Contains(Id);
         }
 
         public void MakeAdmin(int Id)
         {
-            if (this._members.Contains(Id))
-                this._members.Remove(Id);
+            if (_members.Contains(Id))
+            {
+                _members.Remove(Id);
+            }
 
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
@@ -182,49 +171,55 @@ namespace Neon.HabboHotel.Groups
                 dbClient.RunQuery();
             }
 
-            if (!this._administrators.Contains(Id))
-                this._administrators.Add(Id);
+            if (!_administrators.Contains(Id))
+            {
+                _administrators.Add(Id);
+            }
         }
 
         public void TakeAdmin(int UserId)
         {
-            if (!this._administrators.Contains(UserId))
+            if (!_administrators.Contains(UserId))
+            {
                 return;
+            }
 
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
                 dbClient.SetQuery("UPDATE group_memberships SET `rank` = '0' WHERE user_id = @uid AND group_id = @gid");
-                dbClient.AddParameter("gid", this.Id);
+                dbClient.AddParameter("gid", Id);
                 dbClient.AddParameter("uid", UserId);
                 dbClient.RunQuery();
             }
 
-            this._administrators.Remove(UserId);
-            this._members.Add(UserId);
+            _administrators.Remove(UserId);
+            _members.Add(UserId);
         }
 
         public void AddMember(int Id)
         {
-            if (this.IsMember(Id) || this.GroupType == GroupType.LOCKED && this._requests.Contains(Id))
+            if (IsMember(Id) || GroupType == GroupType.LOCKED && _requests.Contains(Id))
+            {
                 return;
+            }
 
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
-                if (this.IsAdmin(Id))
+                if (IsAdmin(Id))
                 {
                     dbClient.SetQuery("UPDATE `group_memberships` SET `rank` = '0' WHERE user_id = @uid AND group_id = @gid");
-                    this._administrators.Remove(Id);
-                    this._members.Add(Id);
+                    _administrators.Remove(Id);
+                    _members.Add(Id);
                 }
-                else if (this.GroupType == GroupType.LOCKED)
+                else if (GroupType == GroupType.LOCKED)
                 {
                     dbClient.SetQuery("INSERT INTO `group_requests` (user_id, group_id) VALUES (@uid, @gid)");
-                    this._requests.Add(Id);
+                    _requests.Add(Id);
                 }
                 else
                 {
                     dbClient.SetQuery("INSERT INTO `group_memberships` (user_id, group_id) VALUES (@uid, @gid)");
-                    this._members.Add(Id);
+                    _members.Add(Id);
                 }
 
                 dbClient.AddParameter("gid", this.Id);
@@ -237,16 +232,22 @@ namespace Neon.HabboHotel.Groups
         {
             if (IsMember(Id))
             {
-                if (this._members.Contains(Id))
-                    this._members.Remove(Id);
+                if (_members.Contains(Id))
+                {
+                    _members.Remove(Id);
+                }
             }
             else if (IsAdmin(Id))
             {
-                if (this._administrators.Contains(Id))
-                    this._administrators.Remove(Id);
+                if (_administrators.Contains(Id))
+                {
+                    _administrators.Remove(Id);
+                }
             }
             else
+            {
                 return;
+            }
 
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
@@ -268,7 +269,7 @@ namespace Neon.HabboHotel.Groups
                     dbClient.AddParameter("uid", Id);
                     dbClient.RunQuery();
 
-                    this._members.Add(Id);
+                    _members.Add(Id);
                 }
 
                 dbClient.SetQuery("DELETE FROM group_requests WHERE user_id=@uid AND group_id=@gid LIMIT 1");
@@ -277,13 +278,15 @@ namespace Neon.HabboHotel.Groups
                 dbClient.RunQuery();
             }
 
-            if (this._requests.Contains(Id))
-                this._requests.Remove(Id);
+            if (_requests.Contains(Id))
+            {
+                _requests.Remove(Id);
+            }
         }
 
         public void ClearRequests()
         {
-            this._requests.Clear();
+            _requests.Clear();
         }
 
         //public void BroadCastChat(Habbo User, string message)
@@ -302,9 +305,9 @@ namespace Neon.HabboHotel.Groups
 
         public void Dispose()
         {
-            this._requests.Clear();
-            this._members.Clear();
-            this._administrators.Clear();
+            _requests.Clear();
+            _members.Clear();
+            _administrators.Clear();
         }
     }
 }

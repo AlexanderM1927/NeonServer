@@ -1,7 +1,6 @@
-﻿using System;
-using System.Data;
+﻿using Neon.Database.Interfaces;
 using System.Collections.Generic;
-using Neon.Database.Interfaces;
+using System.Data;
 
 
 namespace Neon.HabboHotel.Rooms.Chat.Pets.Locale
@@ -12,14 +11,14 @@ namespace Neon.HabboHotel.Rooms.Chat.Pets.Locale
 
         public PetLocale()
         {
-            this._values = new Dictionary<string, string[]>();
+            _values = new Dictionary<string, string[]>();
 
-            this.Init();
+            Init();
         }
 
         public void Init()
         {
-            this._values = new Dictionary<string, string[]>();
+            _values = new Dictionary<string, string[]>();
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
                 dbClient.SetQuery("SELECT * FROM `bots_pet_responses`");
@@ -29,7 +28,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Pets.Locale
                 {
                     foreach (DataRow Row in Pets.Rows)
                     {
-                        this._values.Add(Row[0].ToString(), Row[1].ToString().Split(';'));
+                        _values.Add(Row[0].ToString(), Row[1].ToString().Split(';'));
                     }
                 }
             }
@@ -37,9 +36,11 @@ namespace Neon.HabboHotel.Rooms.Chat.Pets.Locale
 
         public string[] GetValue(string key)
         {
-            string[] value;
-            if (this._values.TryGetValue(key, out value))
+            if (_values.TryGetValue(key, out string[] value))
+            {
                 return value;
+            }
+
             return new[] { "Unknown pet speach:" + key };
         }
     }

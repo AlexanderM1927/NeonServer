@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Neon.Communication.Packets.Outgoing.Rooms.Session
+﻿namespace Neon.Communication.Packets.Outgoing.Rooms.Session
 {
-    class FlatAccessibleComposer : ServerPacket
+    internal class FlatAccessibleComposer : ServerPacket
     {
         public FlatAccessibleComposer(string Username)
             : base(ServerPacketHeader.FlatAccessibleMessageComposer)
         {
-           base.WriteString(Username);
+            base.WriteString(Username);
         }
     }
 }

@@ -1,29 +1,15 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
+﻿
 using Neon.HabboHotel.GameClients;
-using Neon.HabboHotel.Rooms;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.User.Fun
 {
-    class FollowCommand : IChatCommand
+    internal class FollowCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_follow"; }
-        }
+        public string PermissionRequired => "command_follow";
 
-        public string Parameters
-        {
-            get { return "%username%"; }
-        }
+        public string Parameters => "%username%";
 
-        public string Description
-        {
-            get { return "Seguir a un usuario a la sala en la que esté."; }
-        }
+        public string Description => "Seguir a un usuario a la sala en la que esté.";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {

@@ -1,16 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Neon.HabboHotel.GameClients;
-using Neon.HabboHotel.Helpers;
-using Neon.Communication.Packets.Outgoing.Help;
-using Neon.Communication.Packets.Outgoing;
+﻿using Neon.HabboHotel.GameClients;
 
 namespace Neon.Communication.Packets.Incoming.Help.Helpers
 {
-    class AcceptJoinJudgeChatEvent : IPacketEvent
+    internal class AcceptJoinJudgeChatEvent : IPacketEvent
     {
         public void Parse(GameClient Session, ClientPacket Packet)
         {

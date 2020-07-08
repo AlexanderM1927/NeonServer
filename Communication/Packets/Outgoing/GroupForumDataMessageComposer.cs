@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Neon.Communication.Packets.Outgoing
+﻿namespace Neon.Communication.Packets.Outgoing
 {
-    class GroupForumDataMessageComposer
+    internal class GroupForumDataMessageComposer
     {
     }
 }

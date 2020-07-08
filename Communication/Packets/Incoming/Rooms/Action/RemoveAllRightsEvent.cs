@@ -1,31 +1,33 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms;
-using Neon.Communication.Packets.Outgoing.Rooms.Engine;
-using Neon.Communication.Packets.Outgoing.Rooms.Settings;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Engine;
 using Neon.Communication.Packets.Outgoing.Rooms.Permissions;
+using Neon.Communication.Packets.Outgoing.Rooms.Settings;
 using Neon.Database.Interfaces;
+using Neon.HabboHotel.Rooms;
+using System.Collections.Generic;
+using System.Linq;
 
 
 namespace Neon.Communication.Packets.Incoming.Rooms.Action
 {
-    class RemoveAllRightsEvent : IPacketEvent
+    internal class RemoveAllRightsEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
             if (!Session.GetHabbo().InRoom)
+            {
                 return;
+            }
 
-            Room Instance;
 
-            if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Session.GetHabbo().CurrentRoomId, out Instance))
+            if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Session.GetHabbo().CurrentRoomId, out Room Instance))
+            {
                 return;
+            }
 
             if (!Instance.CheckRights(Session, true))
+            {
                 return;
+            }
 
             foreach (int UserId in new List<int>(Instance.UsersWithRights))
             {
@@ -52,7 +54,9 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Action
             }
 
             if (Instance.UsersWithRights.Count > 0)
+            {
                 Instance.UsersWithRights.Clear();
+            }
         }
     }
 }

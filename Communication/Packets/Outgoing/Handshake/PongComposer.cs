@@ -1,6 +1,6 @@
 ﻿namespace Neon.Communication.Packets.Outgoing.Handshake
 {
-    class PongComposer :ServerPacket
+    internal class PongComposer : ServerPacket
     {
         public PongComposer()
             : base(ServerPacketHeader.PongMessageComposer)

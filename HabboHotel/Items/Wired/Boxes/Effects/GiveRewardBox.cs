@@ -1,26 +1,21 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using System.Collections.Concurrent;
-
-using Neon.Communication.Packets.Incoming;
+﻿using Neon.Communication.Packets.Incoming;
+using Neon.Communication.Packets.Outgoing.Catalog;
+using Neon.Communication.Packets.Outgoing.Inventory.Furni;
+using Neon.Communication.Packets.Outgoing.Inventory.Purse;
+using Neon.Communication.Packets.Outgoing.Rooms.Chat;
+using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
 using Neon.HabboHotel.Rooms;
 using Neon.HabboHotel.Users;
-using Neon.Communication.Packets.Outgoing.Rooms.Chat;
-using Neon.Communication.Packets.Outgoing.Inventory.Furni;
-using Neon.Communication.Packets.Outgoing.Catalog;
-using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
-using Neon.Communication.Packets.Outgoing.Inventory.Purse;
-using Neon.Communication.Packets.Outgoing.Rooms.Engine;
+using System.Collections.Concurrent;
+using System.Linq;
 
 namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
 {
-    class GiveRewardBox : IWiredItem
+    internal class GiveRewardBox : IWiredItem
     {
         public Room Instance { get; set; }
         public Item Item { get; set; }
-        public WiredBoxType Type { get { return WiredBoxType.EffectGiveReward; } }
+        public WiredBoxType Type => WiredBoxType.EffectGiveReward;
         public ConcurrentDictionary<int, Item> SetItems { get; set; }
         public string StringData { get; set; }
         public bool BoolData { get; set; }
@@ -30,7 +25,7 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
         {
             this.Instance = Instance;
             this.Item = Item;
-            this.SetItems = new ConcurrentDictionary<int, Item>();
+            SetItems = new ConcurrentDictionary<int, Item>();
         }
 
         public void HandleSave(ClientPacket Packet)
@@ -42,39 +37,49 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
             int Often_No = Packet.PopInt();
             string Reward = Packet.PopString();
 
-            this.BoolData = Unique;
-            this.StringData = Reward + "-" + Often + "-" + Limit + "-" + Often_No;
+            BoolData = Unique;
+            StringData = Reward + "-" + Often + "-" + Limit + "-" + Often_No;
         }
 
         public bool Execute(params object[] Params)
         {
             if (Params == null || Params.Length == 0)
+            {
                 return false;
+            }
 
             Habbo Owner = NeonEnvironment.GetHabboById(Item.UserID);
             if (Owner == null || !Owner.GetPermissions().HasRight("room_item_wired_rewards"))
+            {
                 return false;
+            }
 
             Habbo Player = (Habbo)Params[0];
             if (Player == null || Player.GetClient() == null)
+            {
                 return false;
+            }
 
             RoomUser User = Player.CurrentRoom.GetRoomUserManager().GetRoomUserByHabbo(Player.Username);
             if (User == null)
+            {
                 return false;
+            }
 
             Room Room = Player.CurrentRoom;
 
-            if (String.IsNullOrEmpty(StringData))
+            if (string.IsNullOrEmpty(StringData))
+            {
                 return false;
+            }
 
             int SplitNumber = -1;
-            int oftenforuser = int.Parse(this.StringData.Split('-')[3]);
-            int amountLeft = int.Parse(this.StringData.Split('-')[2]);
-            int often = int.Parse(this.StringData.Split('-')[1]);
-            string Reward = this.StringData.Split('-')[0];
-            bool unique = this.BoolData;
-            int totalrewards = (this.StringData.Split('-')[0]).Split(';').Count();
+            int oftenforuser = int.Parse(StringData.Split('-')[3]);
+            int amountLeft = int.Parse(StringData.Split('-')[2]);
+            int often = int.Parse(StringData.Split('-')[1]);
+            string Reward = StringData.Split('-')[0];
+            bool unique = BoolData;
+            int totalrewards = (StringData.Split('-')[0]).Split(';').Count();
             bool premied = false;
 
             /*
@@ -102,45 +107,65 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
                 int totalpercentage = 0;
 
                 if (totalrewards > 0)
-                    percentage1 = int.Parse(((this.StringData.Split('-')[0]).Split(';')[0]).Split(',')[2]);
+                {
+                    percentage1 = int.Parse(((StringData.Split('-')[0]).Split(';')[0]).Split(',')[2]);
+                }
                 else if (totalrewards > 1)
-                    percentage2 = int.Parse(((this.StringData.Split('-')[0]).Split(';')[1]).Split(',')[2]) + percentage1;
+                {
+                    percentage2 = int.Parse(((StringData.Split('-')[0]).Split(';')[1]).Split(',')[2]) + percentage1;
+                }
                 else if (totalrewards > 2)
-                    percentage3 = int.Parse(((this.StringData.Split('-')[0]).Split(';')[2]).Split(',')[2]) + percentage2;
+                {
+                    percentage3 = int.Parse(((StringData.Split('-')[0]).Split(';')[2]).Split(',')[2]) + percentage2;
+                }
                 else if (totalrewards > 3)
-                    percentage4 = int.Parse(((this.StringData.Split('-')[0]).Split(';')[3]).Split(',')[2]) + percentage3;
+                {
+                    percentage4 = int.Parse(((StringData.Split('-')[0]).Split(';')[3]).Split(',')[2]) + percentage3;
+                }
                 else if (totalrewards > 4)
-                    percentage5 = int.Parse(((this.StringData.Split('-')[0]).Split(';')[4]).Split(',')[2]) + percentage4;
+                {
+                    percentage5 = int.Parse(((StringData.Split('-')[0]).Split(';')[4]).Split(',')[2]) + percentage4;
+                }
 
                 totalpercentage = percentage5 + percentage4 + percentage3 + percentage2 + percentage1;
 
-                var random = NeonEnvironment.GetRandomNumber(0, 100);
+                int random = NeonEnvironment.GetRandomNumber(0, 100);
 
-                if(random > totalpercentage)
+                if (random > totalpercentage)
                 {
                     Player.GetClient().SendMessage(new WiredRewardAlertComposer(4));
                     return true;
                 }
-                    
+
 
                 if (percentage1 >= random)
+                {
                     SplitNumber = 0;
+                }
                 else if (percentage1 <= random && random <= percentage2)
+                {
                     SplitNumber = 1;
+                }
                 else if (percentage2 <= random && random <= percentage3)
+                {
                     SplitNumber = 2;
+                }
                 else if (percentage3 <= random && random <= percentage4)
+                {
                     SplitNumber = 3;
+                }
                 else if (percentage4 <= random && random <= percentage5 || random >= percentage5)
+                {
                     SplitNumber = 4;
+                }
 
-                Player.GetClient().SendWhisper(random + " | " + SplitNumber + " | " + totalpercentage);               
+                Player.GetClient().SendWhisper(random + " | " + SplitNumber + " | " + totalpercentage);
 
-                var dataArray = ((this.StringData.Split('-')[0]).Split(';')[SplitNumber]).Split(',');
+                string[] dataArray = ((StringData.Split('-')[0]).Split(';')[SplitNumber]).Split(',');
 
-                var isbadge = dataArray[0] == "0";
-                var code = dataArray[1];
-                var percentage = int.Parse(dataArray[2]);
+                bool isbadge = dataArray[0] == "0";
+                string code = dataArray[1];
+                int percentage = int.Parse(dataArray[2]);
 
                 premied = true;
 
@@ -148,10 +173,10 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
                 {
                     if (code.StartsWith("diamonds:"))
                     {
-                        foreach (var reward in code.Split('-'))
+                        foreach (string reward in code.Split('-'))
                         {
-                            var dataArray2 = code.Split(':');
-                            var diamonds = int.Parse(dataArray2[1]);
+                            string[] dataArray2 = code.Split(':');
+                            int diamonds = int.Parse(dataArray2[1]);
                             if (diamonds > 100)
                             {
                                 Player.GetClient().SendMessage(new RoomCustomizedAlertComposer("¡Ha ocurrido un error! Avisa a un miembro del equipo Staff."));
@@ -165,7 +190,9 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
                         }
                     }
                     else if (Player.GetBadgeComponent().HasBadge(code))
+                    {
                         Player.GetClient().SendMessage(new WiredRewardAlertComposer(5));
+                    }
                     else
                     {
                         Player.GetBadgeComponent().GiveBadge(code, true, Player.GetClient());
@@ -174,9 +201,8 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
                 }
                 else
                 {
-                    ItemData ItemData = null;
 
-                    if (!NeonEnvironment.GetGame().GetItemManager().GetItem(int.Parse(code), out ItemData))
+                    if (!NeonEnvironment.GetGame().GetItemManager().GetItem(int.Parse(code), out ItemData ItemData))
                     {
                         Player.GetClient().SendMessage(new WhisperComposer(User.VirtualId, "No se pudo obtener Item ID: " + code, 0, User.LastBubble));
                         return false;
@@ -196,17 +222,17 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
                     }
                 }
             }
-           else
+            else
             {
-                foreach (var dataStr in (this.StringData.Split('-')[0]).Split(';'))
+                foreach (string dataStr in (StringData.Split('-')[0]).Split(';'))
                 {
-                    var dataArray = dataStr.Split(',');
+                    string[] dataArray = dataStr.Split(',');
 
-                    var isbadge = dataArray[0] == "0";
-                    var code = dataArray[1];
-                    var percentage = int.Parse(dataArray[2]);
+                    bool isbadge = dataArray[0] == "0";
+                    string code = dataArray[1];
+                    int percentage = int.Parse(dataArray[2]);
 
-                    var random = NeonEnvironment.GetRandomNumber(0, 100);
+                    int random = NeonEnvironment.GetRandomNumber(0, 100);
 
                     premied = true;
 
@@ -214,10 +240,10 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
                     {
                         if (code.StartsWith("diamonds:"))
                         {
-                            foreach (var reward in code.Split('-'))
+                            foreach (string reward in code.Split('-'))
                             {
-                                var dataArray2 = code.Split(':');
-                                var diamonds = int.Parse(dataArray2[1]);
+                                string[] dataArray2 = code.Split(':');
+                                int diamonds = int.Parse(dataArray2[1]);
                                 if (diamonds > 100)
                                 {
                                     Player.GetClient().SendMessage(new RoomCustomizedAlertComposer("¡Ha ocurrido un error! Avisa a un miembro del equipo Staff."));
@@ -231,7 +257,9 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
                             }
                         }
                         if (Player.GetBadgeComponent().HasBadge(code))
+                        {
                             Player.GetClient().SendMessage(new WiredRewardAlertComposer(5));
+                        }
                         else
                         {
                             Player.GetBadgeComponent().GiveBadge(code, true, Player.GetClient());
@@ -240,9 +268,8 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
                     }
                     else
                     {
-                        ItemData ItemData = null;
 
-                        if (!NeonEnvironment.GetGame().GetItemManager().GetItem(int.Parse(code), out ItemData))
+                        if (!NeonEnvironment.GetGame().GetItemManager().GetItem(int.Parse(code), out ItemData ItemData))
                         {
                             Player.GetClient().SendMessage(new WhisperComposer(User.VirtualId, "No se pudo obtener Item ID: " + code, 0, User.LastBubble));
                             return false;
@@ -264,9 +291,9 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
                 }
             }
 
-            if(premied)
+            if (premied)
             {
-                
+
             }
             else if (!premied)
             {
@@ -275,7 +302,7 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
             else if (amountLeft > 1)
             {
                 amountLeft--;
-                this.StringData = Reward + "-" + often + "-" + amountLeft + "-" + oftenforuser;              
+                StringData = Reward + "-" + often + "-" + amountLeft + "-" + oftenforuser;
             }
 
             return true;

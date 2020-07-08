@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.GameClients;
-using Neon.HabboHotel.Rooms;
-using Neon.Communication.Packets.Incoming;
-
-using Neon.Communication.Packets.Outgoing.Rooms.Engine;
-
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Engine;
 using Neon.Database.Interfaces;
+using Neon.HabboHotel.Rooms;
+using System;
+using System.Collections.Generic;
 
 namespace Neon.HabboHotel.Items.Interactor
 {
-    class InteractorMannequin : IFurniInteractor
+    internal class InteractorMannequin : IFurniInteractor
     {
         public void OnPlace(GameClients.GameClient Session, Item Item)
         {
@@ -25,13 +20,13 @@ namespace Neon.HabboHotel.Items.Interactor
         {
             if (Item.ExtraData.Contains(Convert.ToChar(5).ToString()))
             {
-                String[] Stuff = Item.ExtraData.Split(Convert.ToChar(5));
+                string[] Stuff = Item.ExtraData.Split(Convert.ToChar(5));
                 Session.GetHabbo().Gender = Stuff[0].ToUpper();
-                Dictionary<String, String> NewFig = new Dictionary<String, String>();
+                Dictionary<string, string> NewFig = new Dictionary<string, string>();
                 NewFig.Clear();
-                foreach (String Man in Stuff[1].Split('.'))
+                foreach (string Man in Stuff[1].Split('.'))
                 {
-                    foreach (String Fig in Session.GetHabbo().Look.Split('.'))
+                    foreach (string Fig in Session.GetHabbo().Look.Split('.'))
                     {
                         if (Fig.Split('-')[0] == Man.Split('-')[0])
                         {
@@ -56,7 +51,7 @@ namespace Neon.HabboHotel.Items.Interactor
                 }
 
                 string Final = "";
-                foreach (String Str in NewFig.Values)
+                foreach (string Str in NewFig.Values)
                 {
                     Final += Str + ".";
                 }

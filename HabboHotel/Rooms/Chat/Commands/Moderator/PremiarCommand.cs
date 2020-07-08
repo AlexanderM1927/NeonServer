@@ -1,26 +1,16 @@
-﻿using Neon.HabboHotel.GameClients;
-using Neon.Communication.Packets.Outgoing.Nux;
+﻿using Neon.Communication.Packets.Outgoing.Inventory.Purse;
 using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
-using Neon.Communication.Packets.Outgoing.Inventory.Purse;
+using Neon.HabboHotel.GameClients;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
 {
-    class PremiarCommand : IChatCommand
+    internal class PremiarCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_premiar"; }
-        }
+        public string PermissionRequired => "command_premiar";
 
-        public string Parameters
-        {
-            get { return "%username% %type% %amount%"; }
-        }
+        public string Parameters => "%username% %type% %amount%";
 
-        public string Description
-        {
-            get { return ""; }
-        }
+        public string Description => "";
 
         public void Execute(GameClient Session, Room Room, string[] Params)
         {

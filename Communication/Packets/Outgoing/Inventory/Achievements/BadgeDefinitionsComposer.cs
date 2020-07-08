@@ -1,12 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Text;
+﻿using Neon.HabboHotel.Achievements;
 using System.Collections.Generic;
-using Neon.HabboHotel.Achievements;
 
 namespace Neon.Communication.Packets.Outgoing.Inventory.Achievements
 {
-    class BadgeDefinitionsComposer: ServerPacket
+    internal class BadgeDefinitionsComposer : ServerPacket
     {
         public BadgeDefinitionsComposer(Dictionary<string, Achievement> Achievements)
             : base(ServerPacketHeader.BadgeDefinitionsMessageComposer)
@@ -15,7 +12,7 @@ namespace Neon.Communication.Packets.Outgoing.Inventory.Achievements
 
             foreach (Achievement Achievement in Achievements.Values)
             {
-               base.WriteString(Achievement.GroupName.Replace("ACH_", ""));
+                base.WriteString(Achievement.GroupName.Replace("ACH_", ""));
                 base.WriteInteger(Achievement.Levels.Count);
                 foreach (AchievementLevel Level in Achievement.Levels.Values)
                 {

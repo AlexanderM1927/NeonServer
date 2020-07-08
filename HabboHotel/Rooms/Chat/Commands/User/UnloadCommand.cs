@@ -1,29 +1,16 @@
-﻿using System;
-using System.Linq;
-using System.Text;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Session;
 using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms;
-using Neon.Communication.Packets.Outgoing.Rooms.Session;
+using System.Linq;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.User
 {
-    class UnloadCommand : IChatCommand
+    internal class UnloadCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_unload"; }
-        }
+        public string PermissionRequired => "command_unload";
 
-        public string Parameters
-        {
-            get { return "id"; }
-        }
+        public string Parameters => "id";
 
-        public string Description
-        {
-            get { return "Recarga la sala."; }
-        }
+        public string Description => "Recarga la sala.";
 
         public void Execute(GameClients.GameClient Session, Room Room, string[] Params)
         {

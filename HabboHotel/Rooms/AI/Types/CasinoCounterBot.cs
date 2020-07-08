@@ -1,12 +1,12 @@
-﻿using Neon.HabboHotel.GameClients;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
 using Neon.Database.Interfaces;
-using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
+using Neon.HabboHotel.GameClients;
 
 namespace Neon.HabboHotel.Rooms.AI.Types
 {
-    class CasinoCounter : BotAI
+    internal class CasinoCounter : BotAI
     {
-        private int VirtualId;
+        private readonly int VirtualId;
 
         public CasinoCounter(int VirtualId)
         {
@@ -22,7 +22,7 @@ namespace Neon.HabboHotel.Rooms.AI.Types
         }
 
         public override void OnUserEnterRoom(RoomUser User)
-        {         
+        {
         }
 
 
@@ -33,10 +33,14 @@ namespace Neon.HabboHotel.Rooms.AI.Types
         public override void OnUserSay(RoomUser User, string Message)
         {
             if (User == null || User.GetClient() == null || User.GetClient().GetHabbo() == null)
+            {
                 return;
+            }
 
             if (Gamemap.TileDistance(GetRoomUser().X, GetRoomUser().Y, User.X, User.Y) > 8)
+            {
                 return;
+            }
 
             long nowTime = NeonEnvironment.CurrentTimeMillis();
             long timeBetween = nowTime - User.GetClient().GetHabbo()._lastTimeUsedHelpCommand;
@@ -73,7 +77,7 @@ namespace Neon.HabboHotel.Rooms.AI.Types
                 return;
             }
 
-            GetRoomUser().Chat("<font color=\"#DF3A01\"><b>" + Username + "</b> tiene un total de <b>" + itemstotal + "</b> " + Rare + "s.</font>", false, 33);        
+            GetRoomUser().Chat("<font color=\"#DF3A01\"><b>" + Username + "</b> tiene un total de <b>" + itemstotal + "</b> " + Rare + "s.</font>", false, 33);
         }
 
         public override void OnUserShout(RoomUser User, string Message)

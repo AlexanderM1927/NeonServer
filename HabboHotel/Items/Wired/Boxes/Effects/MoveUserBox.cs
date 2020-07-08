@@ -1,17 +1,11 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using System.Collections.Concurrent;
-
-using Neon.Communication.Packets.Incoming;
+﻿using Neon.Communication.Packets.Incoming;
 using Neon.HabboHotel.Rooms;
 using Neon.HabboHotel.Users;
-using System.Drawing;
-using System.Security.Cryptography;
-using Neon.Communication.Packets.Outgoing.Rooms.Engine;
 using Neon.Utilities;
+using System;
 using System.Collections;
+using System.Collections.Concurrent;
+using System.Drawing;
 
 namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
 {
@@ -20,10 +14,7 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
         public Room Instance { get; set; }
         public Item Item { get; set; }
 
-        public WiredBoxType Type
-        {
-            get { return WiredBoxType.EffectMoveUser; }
-        }
+        public WiredBoxType Type => WiredBoxType.EffectMoveUser;
 
         public ConcurrentDictionary<int, Item> SetItems { get; set; }
         public string StringData { get; set; }
@@ -31,7 +22,7 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
 
         public int Delay
         {
-            get { return _delay; }
+            get => _delay;
             set
             {
                 _delay = value;
@@ -58,7 +49,10 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
         public void HandleSave(ClientPacket Packet)
         {
             if (SetItems.Count > 0)
+            {
                 SetItems.Clear();
+            }
+
             _ = Packet.PopInt();
             int Movement = Packet.PopInt();
             int Rotation = Packet.PopInt();
@@ -70,29 +64,37 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
                 Item SelectedItem = Instance.GetRoomItemHandler().GetItem(Packet.PopInt());
 
                 if (SelectedItem != null && !Instance.GetWired().OtherBoxHasItem(this, SelectedItem.Id))
+                {
                     SetItems.TryAdd(SelectedItem.Id, SelectedItem);
+                }
             }
 
-            this.StringData = Movement + ";" + Rotation;
-            this.Delay = Packet.PopInt();
+            StringData = Movement + ";" + Rotation;
+            Delay = Packet.PopInt();
         }
 
         public bool Execute(params object[] Params)
         {
             if (Params == null || Params.Length == 0)
+            {
                 return false;
+            }
 
             Habbo Player = (Habbo)Params[0];
 
             if (Player == null)
+            {
                 return false;
+            }
 
             Player.LastEffect = Player.Effects().CurrentEffect;
 
             if (Player.Effects() != null)
+            {
                 Player.Effects().ApplyEffect(4);
+            }
 
-            this._queue.Enqueue(Player);
+            _queue.Enqueue(Player);
             return true;
         }
 
@@ -103,44 +105,60 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
             {
                 Habbo Player = (Habbo)_queue.Dequeue();
                 if (Player == null || Player.CurrentRoom != Instance)
+                {
                     continue;
+                }
 
-                this.MoveUser(Player);
+                MoveUser(Player);
             }
 
-            this.TickCount = Delay;
+            TickCount = Delay;
             return true;
         }
 
         private void MoveUser(Habbo Player)
         {
             if (Player == null)
+            {
                 return;
+            }
 
             Room Room = Player.CurrentRoom;
             if (Room == null)
+            {
                 return;
+            }
 
             RoomUser User = Player.CurrentRoom.GetRoomUserManager().GetRoomUserByHabbo(Player.Username);
             if (User == null)
+            {
                 return;
+            }
 
             if (Player.IsTeleporting || Player.IsHopping || Player.TeleporterId != 0)
+            {
                 return;
+            }
 
             if (Room.GetGameMap() == null)
+            {
                 return;
+            }
 
-            Point Point = HandleMovement(Convert.ToInt32(this.StringData.Split(';')[0]), new Point(User.X, User.Y));
-            int newRot = HandleRotation(Convert.ToInt32(this.StringData.Split(';')[1]), Item.Rotation, User.RotBody);
+            Point Point = HandleMovement(Convert.ToInt32(StringData.Split(';')[0]), new Point(User.X, User.Y));
+            int newRot = HandleRotation(Convert.ToInt32(StringData.Split(';')[1]), Item.Rotation, User.RotBody);
 
             User.MoveTo(Point);
             User.SetRot(newRot, false);
 
             if (Player.Effects() != null && Player.LastEffect == 0 || Player.LastEffect == 4)
+            {
                 Player.Effects().ApplyEffect(0);
+            }
             else
+            {
                 Player.Effects().ApplyEffect(Player.LastEffect);
+            }
         }
 
         private int HandleRotation(int mode, int rotation, int rotuser)
@@ -174,13 +192,25 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
                         if (rotuser == 6 || rotuser == 7)
                             rotation = 0;*/
                         if (rotuser == 0 || rotuser == 7)
+                        {
                             rotation = 2;
+                        }
+
                         if (rotuser == 2 || rotuser == 1)
+                        {
                             rotation = 4;
+                        }
+
                         if (rotuser == 4 || rotuser == 3)
+                        {
                             rotation = 6;
+                        }
+
                         if (rotuser == 6 || rotuser == 5)
+                        {
                             rotation = 0;
+                        }
+
                         break;
                     }
 
@@ -211,13 +241,25 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
                         if (rotuser == 2 || rotuser == 1)
                             rotation = 0;*/
                         if (rotuser == 0 || rotuser == 1)
+                        {
                             rotation = 6;
+                        }
+
                         if (rotuser == 6 || rotuser == 3)
+                        {
                             rotation = 4;
+                        }
+
                         if (rotuser == 4 || rotuser == 5)
+                        {
                             rotation = 2;
+                        }
+
                         if (rotuser == 2 || rotuser == 7)
+                        {
                             rotation = 0;
+                        }
+
                         break;
                     }
 

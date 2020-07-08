@@ -1,16 +1,12 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.Communication.Packets.Outgoing.Users;
-
+﻿using Neon.Communication.Packets.Outgoing.Users;
 using Neon.Database.Interfaces;
+using System.Collections.Generic;
+using System.Linq;
 
 
 namespace Neon.Communication.Packets.Incoming.Users
 {
-    class CheckValidNameEvent : IPacketEvent
+    internal class CheckValidNameEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
@@ -36,8 +32,7 @@ namespace Neon.Communication.Packets.Incoming.Users
                 }
             }
 
-            string word;
-            if (NeonEnvironment.GetGame().GetChatManager().GetFilter().IsUnnaceptableWord(Name, out word))
+            if (NeonEnvironment.GetGame().GetChatManager().GetFilter().IsUnnaceptableWord(Name, out string word))
             {
                 Session.SendMessage(new NameChangeUpdateComposer(Name, 4));
                 return;

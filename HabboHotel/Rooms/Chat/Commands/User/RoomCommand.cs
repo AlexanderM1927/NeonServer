@@ -1,32 +1,16 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-
-
-using Neon.Communication.Packets.Outgoing.Rooms.Engine;
-
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Engine;
 using Neon.Database.Interfaces;
+using System.Text;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.User
 {
-    class RoomCommand : IChatCommand
+    internal class RoomCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_room"; }
-        }
+        public string PermissionRequired => "command_room";
 
-        public string Parameters
-        {
-            get { return "respect/pets/push/pull/spull/spush/enable"; }
-        }
+        public string Parameters => "respect/pets/push/pull/spull/spush/enable";
 
-        public string Description
-        {
-            get { return "Activar o desactivar estas funciones dentro de tu sala."; }
-        }
+        public string Description => "Activar o desactivar estas funciones dentro de tu sala.";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {
@@ -46,23 +30,23 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User
             switch (Option)
             {
                 case "list":
-                {
-                    StringBuilder List = new StringBuilder("");
-                    List.AppendLine("Lista de comando en salas");
-                    List.AppendLine("-------------------------");
-                    List.AppendLine("Pet Morphs: " + (Room.PetMorphsAllowed == true ? "Habilitado" : "Deshabilitado"));
-                    List.AppendLine("Pull: " + (Room.PullEnabled == true ? "Habilitado" : "Deshabilitado"));
-                    List.AppendLine("Push: " + (Room.PushEnabled == true ? "Habilitado" : "Deshabilitado"));
-                    //List.AppendLine("Golpes: " + (Room.GolpeEnabled == true ? "Habilitado" : "Deshabilitado"));
-                    List.AppendLine("Super Pull: " + (Room.SPullEnabled == true ? "Habilitado" : "Deshabilitado"));
-                    List.AppendLine("Super Push: " + (Room.SPushEnabled == true ? "Habilitado" : "Deshabilitado"));
-                    List.AppendLine("Respect: " + (Room.RespectNotificationsEnabled == true ? "Habilitado" : "Deshabilitado"));
-                    List.AppendLine("Enables: " + (Room.EnablesEnabled == true ? "Habilitado" : "Deshabilitado"));
-                    //List.AppendLine("Besos: " + (Room.BesosEnabled == true ? "Habilitado" : "Deshabilitado"));
-                    //List.AppendLine("Quemar: " + (Room.QuemarEnabled == true ? "Habilitado" : "Deshabilitado"));
-                    Session.SendNotification(List.ToString());
-                    break;
-                }
+                    {
+                        StringBuilder List = new StringBuilder("");
+                        List.AppendLine("Lista de comando en salas");
+                        List.AppendLine("-------------------------");
+                        List.AppendLine("Pet Morphs: " + (Room.PetMorphsAllowed == true ? "Habilitado" : "Deshabilitado"));
+                        List.AppendLine("Pull: " + (Room.PullEnabled == true ? "Habilitado" : "Deshabilitado"));
+                        List.AppendLine("Push: " + (Room.PushEnabled == true ? "Habilitado" : "Deshabilitado"));
+                        //List.AppendLine("Golpes: " + (Room.GolpeEnabled == true ? "Habilitado" : "Deshabilitado"));
+                        List.AppendLine("Super Pull: " + (Room.SPullEnabled == true ? "Habilitado" : "Deshabilitado"));
+                        List.AppendLine("Super Push: " + (Room.SPushEnabled == true ? "Habilitado" : "Deshabilitado"));
+                        List.AppendLine("Respect: " + (Room.RespectNotificationsEnabled == true ? "Habilitado" : "Deshabilitado"));
+                        List.AppendLine("Enables: " + (Room.EnablesEnabled == true ? "Habilitado" : "Deshabilitado"));
+                        //List.AppendLine("Besos: " + (Room.BesosEnabled == true ? "Habilitado" : "Deshabilitado"));
+                        //List.AppendLine("Quemar: " + (Room.QuemarEnabled == true ? "Habilitado" : "Deshabilitado"));
+                        Session.SendNotification(List.ToString());
+                        break;
+                    }
 
                 /*case "golpe":
                 {
@@ -111,7 +95,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User
                         Room.PushEnabled = !Room.PushEnabled;
                         using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
                         {
-                            dbClient.SetQuery("UPDATE `rooms` SET `push_enabled` = @PushEnabled WHERE `id` = '" + Room.Id +"' LIMIT 1");
+                            dbClient.SetQuery("UPDATE `rooms` SET `push_enabled` = @PushEnabled WHERE `id` = '" + Room.Id + "' LIMIT 1");
                             dbClient.AddParameter("PushEnabled", NeonEnvironment.BoolToEnum(Room.PushEnabled));
                             dbClient.RunQuery();
                         }
@@ -190,7 +174,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User
                         Session.SendWhisper("Notificaciones de Respeto estan " + (Room.RespectNotificationsEnabled == true ? "Habilitado!" : "Deshabilitado!"));
                         break;
                     }
-                
+
                 case "pets":
                 case "morphs":
                     {
@@ -203,20 +187,22 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User
                         }
 
                         Session.SendWhisper("Que se convierta en mascotas esta " + (Room.PetMorphsAllowed == true ? "Habilitado!" : "Deshabilitado!"));
-                        
+
                         if (!Room.PetMorphsAllowed)
                         {
                             foreach (RoomUser User in Room.GetRoomUserManager().GetRoomUsers())
                             {
                                 if (User == null || User.GetClient() == null || User.GetClient().GetHabbo() == null)
+                                {
                                     continue;
+                                }
 
                                 User.GetClient().SendWhisper("El propietario de la sala ha deshabilitado la opcion de convertirse en mascota.");
                                 if (User.GetClient().GetHabbo().PetId > 0)
                                 {
                                     //Tell the user what is going on.
                                     User.GetClient().SendWhisper("Oops, el dueño de la sala solo permite Usuarios normales, no mascotas..");
-                                    
+
                                     //Change the users Pet Id.
                                     User.GetClient().GetHabbo().PetId = 0;
 

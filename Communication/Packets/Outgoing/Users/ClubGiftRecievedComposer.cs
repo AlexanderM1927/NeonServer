@@ -1,14 +1,8 @@
-﻿using Neon.Communication.Packets.Outgoing;
-using Neon.HabboHotel.GameClients;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Neon.HabboHotel.GameClients;
 
 namespace Neon.Communication.Packets.Outgoing.Users
 {
-    class ClubGiftRecievedComposer : ServerPacket
+    internal class ClubGiftRecievedComposer : ServerPacket
     {
         public ClubGiftRecievedComposer(GameClient Session) : base(ServerPacketHeader.ClubGiftRecievedComposer)
         {

@@ -1,15 +1,12 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Data;
+﻿using Neon.Database.Interfaces;
+using System;
 using System.Collections.Generic;
-
-using Neon.Database.Interfaces;
+using System.Data;
 
 
 namespace Neon.HabboHotel.Users.Inventory.Bots
 {
-    class BotLoader
+    internal class BotLoader
     {
         public static List<Bot> GetBotsForUser(int UserId)
         {
@@ -25,8 +22,8 @@ namespace Neon.HabboHotel.Users.Inventory.Bots
                 {
                     foreach (DataRow dRow in dBots.Rows)
                     {
-                        B.Add(new Bot(Convert.ToInt32(dRow["id"]), Convert.ToInt32(dRow["user_id"]), Convert.ToString(dRow["name"]), 
-                            Convert.ToString(dRow["motto"]),  Convert.ToString(dRow["look"]), Convert.ToString(dRow["gender"])));
+                        B.Add(new Bot(Convert.ToInt32(dRow["id"]), Convert.ToInt32(dRow["user_id"]), Convert.ToString(dRow["name"]),
+                            Convert.ToString(dRow["motto"]), Convert.ToString(dRow["look"]), Convert.ToString(dRow["gender"])));
                     }
                 }
             }

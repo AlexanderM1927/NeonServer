@@ -1,19 +1,20 @@
-﻿using System.Collections.Generic;
-
-using Neon.Utilities;
-using Neon.HabboHotel.Users;
+﻿using Neon.Communication.Packets.Outgoing.Moderation;
 using Neon.Database.Interfaces;
 using Neon.HabboHotel.Moderation;
-using Neon.Communication.Packets.Outgoing.Moderation;
+using Neon.HabboHotel.Users;
+using Neon.Utilities;
+using System.Collections.Generic;
 
 namespace Neon.Communication.Packets.Incoming.Moderation
 {
-    class SubmitNewTicketEvent : IPacketEvent
+    internal class SubmitNewTicketEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
             if (Session == null || Session.GetHabbo() == null)
+            {
                 return;
+            }
 
             if (NeonEnvironment.GetGame().GetModerationManager().UserHasTickets(Session.GetHabbo().Id))
             {
@@ -47,7 +48,9 @@ namespace Neon.Communication.Packets.Incoming.Moderation
 
             ModerationTicket Ticket = new ModerationTicket(1, Type, Category, UnixTimestamp.GetNow(), 1, Session.GetHabbo(), ReportedUser, Message, Session.GetHabbo().CurrentRoom, Chats);
             if (!NeonEnvironment.GetGame().GetModerationManager().TryAddTicket(Ticket))
+            {
                 return;
+            }
 
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {

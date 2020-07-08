@@ -10,14 +10,14 @@ using System.Data;
 
 namespace Neon.Communication.Packets.Incoming.Catalog
 {
-    class BuyTargettedOfferMessage : IPacketEvent
+    internal class BuyTargettedOfferMessage : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
 
         {
             #region RETURN VALUES
-            var offer = NeonEnvironment.GetGame().GetTargetedOffersManager().TargetedOffer;
-            var habbo = Session.GetHabbo();
+            TargetedOffers offer = NeonEnvironment.GetGame().GetTargetedOffersManager().TargetedOffer;
+            HabboHotel.Users.Habbo habbo = Session.GetHabbo();
             if (offer == null || habbo == null)
             {
                 Session.SendMessage(new PurchaseErrorComposer(1));
@@ -27,14 +27,14 @@ namespace Neon.Communication.Packets.Incoming.Catalog
 
             #region FIELDS
             Packet.PopInt();
-            var amount = Packet.PopInt();
+            int amount = Packet.PopInt();
             if (amount > offer.Limit)
             {
                 Session.SendMessage(new PurchaseErrorComposer(1));
                 return;
             }
-            var creditsCost = int.Parse(offer.Price[0]) * amount;
-            var extraMoneyCost = int.Parse(offer.Price[1]) * amount;
+            int creditsCost = int.Parse(offer.Price[0]) * amount;
+            int extraMoneyCost = int.Parse(offer.Price[1]) * amount;
             #endregion
 
             //#region CREDITS COST
@@ -119,9 +119,12 @@ namespace Neon.Communication.Packets.Incoming.Catalog
                     else
 
                     {
-                        using (var dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
+                        using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
+                        {
                             dbClient.runFastQuery("UPDATE users SET targeted_buy = targeted_buy +1 WHERE id = " + Session.GetHabbo().Id + ";");
-                        foreach (var product in offer.Products)
+                        }
+
+                        foreach (TargetedItems product in offer.Products)
                         {
                             #region CHECK PRODUCT TYPE
                             switch (product.ItemType)
@@ -129,9 +132,17 @@ namespace Neon.Communication.Packets.Incoming.Catalog
                                 #region NORMAL ITEMS CASE
                                 case "item":
                                     {
-                                        if (!NeonEnvironment.GetGame().GetItemManager().GetItem(int.Parse(product.Item), out ItemData item)) return;
-                                        if (item == null) return;
-                                        var cItem = ItemFactory.CreateSingleItemNullable(item, Session.GetHabbo(), string.Empty, string.Empty);
+                                        if (!NeonEnvironment.GetGame().GetItemManager().GetItem(int.Parse(product.Item), out ItemData item))
+                                        {
+                                            return;
+                                        }
+
+                                        if (item == null)
+                                        {
+                                            return;
+                                        }
+
+                                        Item cItem = ItemFactory.CreateSingleItemNullable(item, Session.GetHabbo(), string.Empty, string.Empty);
                                         if (cItem != null)
                                         {
                                             Session.GetHabbo().GetInventoryComponent().TryAddItem(cItem);
@@ -231,16 +242,16 @@ namespace Neon.Communication.Packets.Incoming.Catalog
             #endregion
 
             #region RE-OPEN TARGETED BOX
-                    TargetedOffers TargetedOffer2 = NeonEnvironment.GetGame().GetTargetedOffersManager().TargetedOffer;
+            TargetedOffers TargetedOffer2 = NeonEnvironment.GetGame().GetTargetedOffersManager().TargetedOffer;
 
-                            int offer22 = Session.GetHabbo()._TargetedBuy;
+            int offer22 = Session.GetHabbo()._TargetedBuy;
 
 
-                            if (TargetedOffer2.Limit > offer22)
-                            {
-                                Session.SendMessage(NeonEnvironment.GetGame().GetTargetedOffersManager().TargetedOffer.Serialize());
-                            }
-                        }
-                    }
-            #endregion
+            if (TargetedOffer2.Limit > offer22)
+            {
+                Session.SendMessage(NeonEnvironment.GetGame().GetTargetedOffersManager().TargetedOffer.Serialize());
+            }
         }
+    }
+    #endregion
+}

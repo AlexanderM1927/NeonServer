@@ -1,38 +1,36 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms;
-
-using Neon.Communication.Packets.Outgoing.Rooms.Engine;
+﻿
+using Neon.Communication.Packets.Outgoing.Catalog;
+using Neon.Communication.Packets.Outgoing.Inventory.Furni;
 using Neon.Communication.Packets.Outgoing.Rooms.AI.Pets;
-
+using Neon.Communication.Packets.Outgoing.Rooms.Engine;
+using Neon.Database.Interfaces;
 using Neon.HabboHotel.Catalog.Utilities;
 using Neon.HabboHotel.Items;
-using Neon.Communication.Packets.Outgoing.Inventory.Furni;
-using Neon.Communication.Packets.Outgoing.Catalog;
-using Neon.Database.Interfaces;
+using Neon.HabboHotel.Rooms;
 using System.Drawing;
 
 namespace Neon.Communication.Packets.Incoming.Rooms.AI.Pets.Horse
 {
-    class RemoveSaddleFromHorseEvent : IPacketEvent
+    internal class RemoveSaddleFromHorseEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
             if (!Session.GetHabbo().InRoom)
+            {
                 return;
+            }
 
-            Room Room = null;
 
-            if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Session.GetHabbo().CurrentRoomId, out Room))
+            if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Session.GetHabbo().CurrentRoomId, out Room Room))
+            {
                 return;
+            }
 
-            RoomUser PetUser = null;
 
-            if (!Room.GetRoomUserManager().TryGetPet(Packet.PopInt(), out PetUser))
+            if (!Room.GetRoomUserManager().TryGetPet(Packet.PopInt(), out RoomUser PetUser))
+            {
                 return;
+            }
 
             //Fetch the furniture Id for the pets current saddle.
             int SaddleId = ItemUtility.GetSaddleId(PetUser.PetData.Saddle);
@@ -58,13 +56,16 @@ namespace Neon.Communication.Packets.Incoming.Rooms.AI.Pets.Horse
                     UserRiding.MoveTo(new Point(UserRiding.X + 1, UserRiding.Y + 1));
                 }
                 else
+                {
                     PetUser.RidingHorse = false;
+                }
             }
 
-            ItemData ItemData = null;
 
-            if (!NeonEnvironment.GetGame().GetItemManager().GetItem(SaddleId, out ItemData))
+            if (!NeonEnvironment.GetGame().GetItemManager().GetItem(SaddleId, out ItemData ItemData))
+            {
                 return;
+            }
 
             //Creates the item for the user
             Item Item = ItemFactory.CreateSingleItemNullable(ItemData, Session.GetHabbo(), "", "", 0, 0, 0);

@@ -8,63 +8,54 @@ namespace Neon.HabboHotel.Rooms
         private string _name;
         private string _description;
         private double _timestampExpires;
-        private double _timestampStarted;
+        private readonly double _timestampStarted;
         private int _categoryId;
 
         public RoomPromotion(string Name, string Desc, int CategoryId)
         {
-            this._name = Name;
-            this._description = Desc;
-            this._timestampStarted = NeonEnvironment.GetUnixTimestamp();
-            this._timestampExpires = (NeonEnvironment.GetUnixTimestamp()) + (NeonStaticGameSettings.RoomPromotionLifeTime * 60);
-            this._categoryId = CategoryId;
+            _name = Name;
+            _description = Desc;
+            _timestampStarted = NeonEnvironment.GetUnixTimestamp();
+            _timestampExpires = (NeonEnvironment.GetUnixTimestamp()) + (NeonStaticGameSettings.RoomPromotionLifeTime * 60);
+            _categoryId = CategoryId;
         }
 
         public RoomPromotion(string Name, string Desc, double Started, double Expires, int CategoryId)
         {
-            this._name = Name;
-            this._description = Desc;
-            this._timestampStarted = Started;
-            this._timestampExpires = Expires;
-            this._categoryId = CategoryId;
+            _name = Name;
+            _description = Desc;
+            _timestampStarted = Started;
+            _timestampExpires = Expires;
+            _categoryId = CategoryId;
         }
 
         public string Name
         {
-            get { return this._name; }
-            set { this._name = value; }
+            get => _name;
+            set => _name = value;
         }
 
         public string Description
         {
-            get { return this._description; }
-            set { this._description = value; }
+            get => _description;
+            set => _description = value;
         }
-        public double TimestampStarted
-        {
-            get { return this._timestampStarted; }
-        }
+        public double TimestampStarted => _timestampStarted;
 
         public double TimestampExpires
         {
-            get { return this._timestampExpires; }
-            set { this._timestampExpires = value; }
+            get => _timestampExpires;
+            set => _timestampExpires = value;
         }
 
-        public bool HasExpired
-        {
-            get { return (this.TimestampExpires - NeonEnvironment.GetUnixTimestamp()) < 0; }
-        }
+        public bool HasExpired => (TimestampExpires - NeonEnvironment.GetUnixTimestamp()) < 0;
 
-        public int MinutesLeft
-        {
-            get { return Convert.ToInt32(Math.Ceiling((this.TimestampExpires - NeonEnvironment.GetUnixTimestamp()) / 60)); }
-        }
+        public int MinutesLeft => Convert.ToInt32(Math.Ceiling((TimestampExpires - NeonEnvironment.GetUnixTimestamp()) / 60));
 
         public int CategoryId
         {
-            get { return this._categoryId; }
-            set { this._categoryId = value; }
+            get => _categoryId;
+            set => _categoryId = value;
         }
     }
 }

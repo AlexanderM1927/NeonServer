@@ -1,11 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-namespace Neon.Communication.Packets.Outgoing.Inventory.Trading
+﻿namespace Neon.Communication.Packets.Outgoing.Inventory.Trading
 {
-    class TradingAcceptComposer : ServerPacket
+    internal class TradingAcceptComposer : ServerPacket
     {
         public TradingAcceptComposer(int UserId, bool Accept)
             : base(ServerPacketHeader.TradingAcceptMessageComposer)

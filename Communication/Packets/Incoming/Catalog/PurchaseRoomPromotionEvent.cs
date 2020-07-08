@@ -1,14 +1,8 @@
-﻿using System;
-using System.Data;
-
-using Neon.Communication.Packets.Incoming;
-using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.GameClients;
-using Neon.Communication.Packets.Outgoing.Catalog;
+﻿using Neon.Communication.Packets.Outgoing.Catalog;
 using Neon.Communication.Packets.Outgoing.Rooms.Engine;
-using Neon.Communication.Packets.Outgoing.Inventory.Purse;
-
 using Neon.Database.Interfaces;
+using Neon.HabboHotel.GameClients;
+using Neon.HabboHotel.Rooms;
 
 
 namespace Neon.Communication.Packets.Incoming.Catalog
@@ -18,7 +12,10 @@ namespace Neon.Communication.Packets.Incoming.Catalog
         public void Parse(GameClient Session, ClientPacket Packet)
         {
             if (Session == null || Session.GetHabbo() == null)
+            {
                 return;
+            }
+
             _ = Packet.PopInt();
             _ = Packet.PopInt();
             int RoomId = Packet.PopInt();
@@ -31,13 +28,19 @@ namespace Neon.Communication.Packets.Incoming.Catalog
 
             RoomData Data = NeonEnvironment.GetGame().GetRoomManager().GenerateRoomData(RoomId);
             if (Data == null)
+            {
                 return;
+            }
 
             if (Data.OwnerId != Session.GetHabbo().Id)
+            {
                 return;
+            }
 
             if (Data.Promotion == null)
+            {
                 Data.Promotion = new RoomPromotion(Name, Desc, CategoryId);
+            }
             else
             {
                 Data.Promotion.Name = Name;
@@ -58,11 +61,15 @@ namespace Neon.Communication.Packets.Incoming.Catalog
             }
 
             if (!Session.GetHabbo().GetBadgeComponent().HasBadge("RADZZ"))
+            {
                 Session.GetHabbo().GetBadgeComponent().GiveBadge("RADZZ", true, Session);
+            }
 
             Session.SendMessage(new PurchaseOKComposer());
             if (Session.GetHabbo().InRoom && Session.GetHabbo().CurrentRoomId == RoomId)
+            {
                 Session.GetHabbo().CurrentRoom.SendMessage(new RoomEventComposer(Data, Data.Promotion));
+            }
 
             Session.GetHabbo().GetMessenger().BroadcastAchievement(Session.GetHabbo().Id, HabboHotel.Users.Messenger.MessengerEventTypes.EVENT_STARTED, Name);
         }

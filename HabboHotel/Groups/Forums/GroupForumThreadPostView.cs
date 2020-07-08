@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Neon.HabboHotel.Groups.Forums
+﻿namespace Neon.HabboHotel.Groups.Forums
 {
     public class GroupForumThreadPostView
     {

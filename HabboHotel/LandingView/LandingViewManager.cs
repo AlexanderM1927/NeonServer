@@ -1,12 +1,10 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Data;
-using System.Collections.Generic;
+﻿using log4net;
+using Neon.Communication.Packets.Incoming.LandingView;
 using Neon.Database.Interfaces;
 using Neon.HabboHotel.LandingView.Promotions;
-using log4net;
-using Neon.Communication.Packets.Incoming.LandingView;
+using System;
+using System.Collections.Generic;
+using System.Data;
 
 namespace Neon.HabboHotel.LandingView
 {
@@ -16,17 +14,17 @@ namespace Neon.HabboHotel.LandingView
 
         internal BonusRareList BonusRareLists;
 
-        private Dictionary<int, Promotion> _promotionItems;
+        private readonly Dictionary<int, Promotion> _promotionItems;
         public Dictionary<uint, UserRank> ranks;
         public List<UserCompetition> usersWithRank;
 
         public LandingViewManager()
         {
-            this._promotionItems = new Dictionary<int, Promotion>();
+            _promotionItems = new Dictionary<int, Promotion>();
 
-            this.LoadBonusRare(NeonEnvironment.GetDatabaseManager().GetQueryReactor());
+            LoadBonusRare(NeonEnvironment.GetDatabaseManager().GetQueryReactor());
 
-            this.LoadPromotions();
+            LoadPromotions();
         }
         public void LoadHallOfFame()
         {
@@ -46,17 +44,21 @@ namespace Neon.HabboHotel.LandingView
 
                 foreach (DataRow Row in gUsersTable.Rows)
                 {
-                    var staff = new UserCompetition(Row);
+                    UserCompetition staff = new UserCompetition(Row);
                     if (!usersWithRank.Contains(staff))
+                    {
                         usersWithRank.Add(staff);
+                    }
                 }
             }
         }
 
         public void LoadPromotions()
         {
-            if (this._promotionItems.Count > 0)
-                this._promotionItems.Clear();
+            if (_promotionItems.Count > 0)
+            {
+                _promotionItems.Clear();
+            }
 
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
@@ -67,7 +69,7 @@ namespace Neon.HabboHotel.LandingView
                 {
                     foreach (DataRow Row in GetData.Rows)
                     {
-                        this._promotionItems.Add(Convert.ToInt32(Row[0]), new Promotion((int)Row[0], Row[1].ToString(), Row[2].ToString(), Row[3].ToString(), Convert.ToInt32(Row[4]), Row[5].ToString(), Row[6].ToString()));
+                        _promotionItems.Add(Convert.ToInt32(Row[0]), new Promotion((int)Row[0], Row[1].ToString(), Row[2].ToString(), Row[3].ToString(), Convert.ToInt32(Row[4]), Row[5].ToString(), Row[6].ToString()));
                     }
                 }
             }
@@ -81,10 +83,12 @@ namespace Neon.HabboHotel.LandingView
             BonusRareLists = null;
 
             dbClient.SetQuery("SELECT * FROM landing_bonus WHERE enable = 'true' LIMIT 1");
-            var row = dbClient.getRow();
+            DataRow row = dbClient.getRow();
 
             if (row == null)
+            {
                 return;
+            }
 
             BonusRareLists = new BonusRareList((string)row["item_name"], (int)row["base_item"], (int)row["bonus_score"]);
             log.Info("» Vista do hotel -> READY!");
@@ -105,7 +109,7 @@ namespace Neon.HabboHotel.LandingView
 
         public ICollection<Promotion> GetPromotionItems()
         {
-            return this._promotionItems.Values;
+            return _promotionItems.Values;
         }
     }
 }

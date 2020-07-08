@@ -1,18 +1,12 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.GameClients;
+﻿using Neon.HabboHotel.GameClients;
 using Neon.HabboHotel.Navigator;
+using Neon.HabboHotel.Rooms;
 
 namespace Neon.Communication.Packets.Outgoing.Navigator
 {
-    class GetGuestRoomResultComposer : ServerPacket
+    internal class GetGuestRoomResultComposer : ServerPacket
     {
-        public GetGuestRoomResultComposer(GameClient Session, RoomData Data, Boolean isLoading, Boolean checkEntry)
+        public GetGuestRoomResultComposer(GameClient Session, RoomData Data, bool isLoading, bool checkEntry)
             : base(ServerPacketHeader.GetGuestRoomResultMessageComposer)
         {
             base.WriteBoolean(isLoading);
@@ -69,11 +63,15 @@ namespace Neon.Communication.Packets.Outgoing.Navigator
 
             base.WriteBoolean(checkEntry);
 
-            StaffPick staffPick = null;
-            if (!NeonEnvironment.GetGame().GetNavigator().TryGetStaffPickedRoom(Data.Id, out staffPick))
+            if (!NeonEnvironment.GetGame().GetNavigator().TryGetStaffPickedRoom(Data.Id, out StaffPick staffPick))
+            {
                 WriteBoolean(false);
+            }
             else
+            {
                 WriteBoolean(true);
+            }
+
             base.WriteBoolean(false); //Unknown
             base.WriteBoolean(false); //Unknown
 

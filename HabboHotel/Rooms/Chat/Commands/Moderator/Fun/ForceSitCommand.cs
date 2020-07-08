@@ -1,28 +1,12 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms;
-
-namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator.Fun
+﻿namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator.Fun
 {
-    class ForceSitCommand : IChatCommand
+    internal class ForceSitCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_forcesit"; }
-        }
+        public string PermissionRequired => "command_forcesit";
 
-        public string Parameters
-        {
-            get { return "%username%"; }
-        }
+        public string Parameters => "%username%";
 
-        public string Description
-        {
-            get { return "Obliga a otro usuario a sentarse"; }
-        }
+        public string Description => "Obliga a otro usuario a sentarse";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {
@@ -34,17 +18,23 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator.Fun
 
             RoomUser User = Room.GetRoomUserManager().GetRoomUserByHabbo(Params[1]);
             if (User == null)
+            {
                 return;
+            }
 
             if (User.Statusses.ContainsKey("lie") || User.isLying || User.RidingHorse || User.IsWalking)
+            {
                 return;
+            }
 
             if (!User.Statusses.ContainsKey("sit"))
             {
                 if ((User.RotBody % 2) == 0)
                 {
                     if (User == null)
+                    {
                         return;
+                    }
 
                     try
                     {

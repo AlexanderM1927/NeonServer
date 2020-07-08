@@ -1,42 +1,44 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
+﻿using Neon.Communication.Packets.Outgoing.Inventory.AvatarEffects;
+using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
+using Neon.Database.Interfaces;
+using Neon.HabboHotel.Catalog.Clothing;
 using Neon.HabboHotel.Items;
 using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Catalog.Clothing;
-
-
-
-using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
-using Neon.Communication.Packets.Outgoing.Inventory.AvatarEffects;
-using Neon.Database.Interfaces;
 
 namespace Neon.Communication.Packets.Incoming.Rooms.Furni
 {
-    class UseSellableClothingEvent : IPacketEvent
+    internal class UseSellableClothingEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
             if (Session == null || Session.GetHabbo() == null || !Session.GetHabbo().InRoom)
+            {
                 return;
+            }
 
             Room Room = Session.GetHabbo().CurrentRoom;
             if (Room == null)
+            {
                 return;
+            }
 
             int ItemId = Packet.PopInt();
 
             Item Item = Room.GetRoomItemHandler().GetItem(ItemId);
             if (Item == null)
+            {
                 return;
+            }
 
             if (Item.Data == null)
+            {
                 return;
+            }
 
             if (Item.UserID != Session.GetHabbo().Id)
+            {
                 return;
+            }
 
             if (Item.Data.InteractionType != InteractionType.PURCHASABLE_CLOTHING)
             {
@@ -50,8 +52,7 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Furni
                 return;
             }
 
-            ClothingItem Clothing = null;
-            if (!NeonEnvironment.GetGame().GetCatalog().GetClothingManager().TryGetClothing(Item.Data.ClothingId, out Clothing))
+            if (!NeonEnvironment.GetGame().GetCatalog().GetClothingManager().TryGetClothing(Item.Data.ClothingId, out ClothingItem Clothing))
             {
                 Session.SendNotification("Vaya.. no se ha podido encontrar esta parte de la ropa!");
                 return;

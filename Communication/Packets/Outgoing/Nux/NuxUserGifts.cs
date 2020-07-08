@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using Neon.Database.Interfaces;
-using Neon;
-using Neon.HabboHotel.Items;
-using Neon.Communication.Packets.Outgoing;
+﻿using Neon.Database.Interfaces;
 
 namespace Neon.Communication.Packets.Outgoing.Nux
 {
@@ -18,10 +12,12 @@ namespace Neon.Communication.Packets.Outgoing.Nux
             NuxUserGifts = null;
 
             dbClient.SetQuery("SELECT * FROM nuxgifts_frontpage");
-            var row = dbClient.getRow();
+            System.Data.DataRow row = dbClient.getRow();
 
             if (row == null)
+            {
                 return;
+            }
 
             NuxUserGifts = new NuxUserGifts((string)row["image_url"], (string)row["product_name"]);
         }
@@ -39,7 +35,7 @@ namespace Neon.Communication.Packets.Outgoing.Nux
 
         internal ServerPacket Serialize()
         {
-            var message = new ServerPacket(ServerPacketHeader.NuxItemListComposer);
+            ServerPacket message = new ServerPacket(ServerPacketHeader.NuxItemListComposer);
             message.WriteInteger(1); // Número de páginas.
 
             message.WriteInteger(1); // ELEMENTO 1

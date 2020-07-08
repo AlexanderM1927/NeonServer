@@ -1,47 +1,57 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Users;
-using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Items;
+﻿using Neon.Database.Interfaces;
 using Neon.HabboHotel.GameClients;
-
-using Neon.Database.Interfaces;
+using Neon.HabboHotel.Items;
+using Neon.HabboHotel.Rooms;
+using System.Collections.Generic;
+using System.Linq;
 
 
 namespace Neon.Communication.Packets.Incoming.Rooms.Settings
 {
-    class DeleteRoomEvent : IPacketEvent
+    internal class DeleteRoomEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
             if (Session == null || Session.GetHabbo() == null || Session.GetHabbo().UsersRooms == null)
+            {
                 return;
+            }
 
             int RoomId = Packet.PopInt();
             if (RoomId == 0)
+            {
                 return;
-            if (Session.GetHabbo().Rank > 8 && !Session.GetHabbo().StaffOk)
-                return;
-            Room Room;
+            }
 
-            if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(RoomId, out Room))
+            if (Session.GetHabbo().Rank > 8 && !Session.GetHabbo().StaffOk)
+            {
                 return;
+            }
+
+
+            if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(RoomId, out Room Room))
+            {
+                return;
+            }
 
             RoomData data = Room.RoomData;
             if (data == null)
+            {
                 return;
+            }
 
             if (Room.OwnerId != Session.GetHabbo().Id && !Session.GetHabbo().GetPermissions().HasRight("room_delete_any") || NeonStaticGameSettings.IsGoingToBeClose)
+            {
                 return;
+            }
 
             List<Item> ItemsToRemove = new List<Item>();
             foreach (Item Item in Room.GetRoomItemHandler().GetWallAndFloor.ToList())
             {
                 if (Item == null)
+                {
                     continue;
+                }
 
                 if (Item.GetBaseItem().InteractionType == InteractionType.MOODLIGHT)
                 {
@@ -87,7 +97,9 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Settings
 
             RoomData removedRoom = (from p in Session.GetHabbo().UsersRooms where p.Id == RoomId select p).SingleOrDefault();
             if (removedRoom != null)
+            {
                 Session.GetHabbo().UsersRooms.Remove(removedRoom);
+            }
         }
     }
 }

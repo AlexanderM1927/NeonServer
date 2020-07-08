@@ -1,14 +1,10 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Users.Effects;
+﻿
 using Neon.Communication.Packets.Outgoing.Inventory.AvatarEffects;
+using Neon.HabboHotel.Users.Effects;
 
 namespace Neon.Communication.Packets.Incoming.Inventory.AvatarEffects
 {
-    class AvatarEffectActivatedEvent : IPacketEvent
+    internal class AvatarEffectActivatedEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {

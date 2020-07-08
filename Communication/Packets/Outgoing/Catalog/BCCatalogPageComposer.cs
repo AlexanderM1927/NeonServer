@@ -1,13 +1,7 @@
-﻿using System;
-using System.Linq;
-
-using Neon.Core;
+﻿using Neon.HabboHotel.Catalog;
 using Neon.HabboHotel.Items;
-using Neon.HabboHotel.Catalog;
-using Neon.HabboHotel.Items.Utilities;
-using Neon.HabboHotel.Catalog.Utilities;
 using System.Collections.Generic;
-using Neon.HabboHotel.GameClients;
+using System.Linq;
 
 namespace Neon.Communication.Packets.Outgoing.Catalog
 {
@@ -36,7 +30,7 @@ namespace Neon.Communication.Packets.Outgoing.Catalog
             {
 
                 WriteInteger(Page.Items.Count);
-                foreach (var Item in Page.Items.Values)
+                foreach (BCCatalogItem Item in Page.Items.Values)
                 {
                     WriteInteger(Item.Id);
                     WriteString(Item.Name);
@@ -84,10 +78,9 @@ namespace Neon.Communication.Packets.Outgoing.Catalog
                         if (Item.PredesignedId > 0)
                         {
                             WriteInteger(Page.PredesignedItems.Items.Count);
-                            foreach (var predesigned in Page.PredesignedItems.Items.ToList())
+                            foreach (KeyValuePair<int, int> predesigned in Page.PredesignedItems.Items.ToList())
                             {
-                                ItemData Data = null;
-                                if (NeonEnvironment.GetGame().GetItemManager().GetItem(predesigned.Key, out Data)) { }
+                                if (NeonEnvironment.GetGame().GetItemManager().GetItem(predesigned.Key, out ItemData Data)) { }
                                 WriteString(Data.Type.ToString());
                                 WriteInteger(Data.SpriteId);
                                 WriteString(string.Empty);
@@ -125,11 +118,14 @@ namespace Neon.Communication.Packets.Outgoing.Catalog
                                 }
                                 else if (Item.Data.InteractionType == InteractionType.BOT)//Bots
                                 {
-                                    CatalogBot CatalogBot = null;
-                                    if (!NeonEnvironment.GetGame().GetCatalog().TryGetBot(Item.ItemId, out CatalogBot))
+                                    if (!NeonEnvironment.GetGame().GetCatalog().TryGetBot(Item.ItemId, out CatalogBot CatalogBot))
+                                    {
                                         base.WriteString("hd-180-7.ea-1406-62.ch-210-1321.hr-831-49.ca-1813-62.sh-295-1321.lg-285-92");
+                                    }
                                     else
+                                    {
                                         base.WriteString(CatalogBot.Figure);
+                                    }
                                 }
                                 else if (Item.ExtraData != null)
                                 {
@@ -157,7 +153,9 @@ namespace Neon.Communication.Packets.Outgoing.Catalog
                 /*}*/
             }
             else
+            {
                 base.WriteInteger(0);
+            }
 
             base.WriteInteger(-1);
             base.WriteBoolean(false);

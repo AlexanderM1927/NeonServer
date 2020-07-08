@@ -1,14 +1,11 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
+﻿using Neon.HabboHotel.Achievements;
 using Neon.HabboHotel.GameClients;
-using Neon.HabboHotel.Achievements;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Neon.Communication.Packets.Outgoing.GameCenter
 {
-    class GameAchievementListComposer : ServerPacket
+    internal class GameAchievementListComposer : ServerPacket
     {
         public GameAchievementListComposer(GameClient Session, ICollection<Achievement> Achievements, int GameId)
             : base(ServerPacketHeader.GameAchievementListMessageComposer)
@@ -19,7 +16,7 @@ namespace Neon.Communication.Packets.Outgoing.GameCenter
             {
                 UserAchievement UserData = Session.GetHabbo().GetAchievementData(Ach.GroupName);
                 int TargetLevel = (UserData != null ? UserData.Level + 1 : 1);
-           
+
                 AchievementLevel TargetLevelData = Ach.Levels[TargetLevel];
 
                 base.WriteInteger(Ach.Id); // ach id
@@ -36,7 +33,7 @@ namespace Neon.Communication.Packets.Outgoing.GameCenter
                 base.WriteInteger(0); // total levels
                 base.WriteInteger(0);
             }
-           base.WriteString("");
+            base.WriteString("");
         }
     }
 }

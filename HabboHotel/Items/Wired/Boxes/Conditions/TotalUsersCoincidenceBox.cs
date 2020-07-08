@@ -1,21 +1,16 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using System.Collections.Concurrent;
-
-using Neon.Communication.Packets.Incoming;
+﻿using Neon.Communication.Packets.Incoming;
 using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Pathfinding;
+using System.Collections.Concurrent;
 using System.Drawing;
+using System.Linq;
 
 namespace Neon.HabboHotel.Items.Wired.Boxes.Conditions
 {
-    class TotalUsersCoincidenceBox : IWiredItem
+    internal class TotalUsersCoincidenceBox : IWiredItem
     {
         public Room Instance { get; set; }
         public Item Item { get; set; }
-        public WiredBoxType Type { get { return WiredBoxType.TotalUsersCoincidence; } }
+        public WiredBoxType Type => WiredBoxType.TotalUsersCoincidence;
         public ConcurrentDictionary<int, Item> SetItems { get; set; }
         public string StringData { get; set; }
         public bool BoolData { get; set; }
@@ -25,7 +20,7 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Conditions
         {
             this.Instance = Instance;
             this.Item = Item;
-            this.SetItems = new ConcurrentDictionary<int, Item>();
+            SetItems = new ConcurrentDictionary<int, Item>();
         }
 
         public void HandleSave(ClientPacket Packet)
@@ -33,15 +28,19 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Conditions
             int Unknown = Packet.PopInt();
             string Unknown2 = Packet.PopString();
 
-            if (this.SetItems.Count > 0)
-                this.SetItems.Clear();
+            if (SetItems.Count > 0)
+            {
+                SetItems.Clear();
+            }
 
             int FurniCount = Packet.PopInt();
             for (int i = 0; i < FurniCount; i++)
             {
                 Item SelectedItem = Instance.GetRoomItemHandler().GetItem(Packet.PopInt());
                 if (SelectedItem != null)
+                {
                     SetItems.TryAdd(SelectedItem.Id, SelectedItem);
+                }
             }
         }
 
@@ -49,21 +48,27 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Conditions
         {
             int desiredusers = 0;
             bool exe = false;
-            this.StringData = "0";
+            StringData = "0";
 
-            foreach (Item Item in this.SetItems.Values.ToList())
+            foreach (Item Item in SetItems.Values.ToList())
             {
                 if (Item == null || !Instance.GetRoomItemHandler().GetFloor.Contains(Item))
+                {
                     continue;
+                }
 
                 desiredusers = desiredusers + Instance.GetGameMap().GetRoomUsers(new Point(Item.GetX, Item.GetY)).Count();
             }
 
-            if (desiredusers == int.Parse(this.StringData))
+            if (desiredusers == int.Parse(StringData))
+            {
                 exe = true;
+            }
 
             if (!exe)
+            {
                 return false;
+            }
 
             return true;
         }

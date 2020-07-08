@@ -1,13 +1,9 @@
 ﻿using Neon.HabboHotel.Items;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.Communication.Packets.Outgoing.Inventory.Furni
 {
-    class FurniListNotificationComposer : ServerPacket
+    internal class FurniListNotificationComposer : ServerPacket
     {
         public FurniListNotificationComposer(List<Item> items, int Type)
             : base(ServerPacketHeader.FurniListNotificationMessageComposer)

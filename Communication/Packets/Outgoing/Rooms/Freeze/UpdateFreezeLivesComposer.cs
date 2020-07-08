@@ -1,11 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-namespace Neon.Communication.Packets.Outgoing.Rooms.Freeze
+﻿namespace Neon.Communication.Packets.Outgoing.Rooms.Freeze
 {
-    class UpdateFreezeLivesComposer : ServerPacket
+    internal class UpdateFreezeLivesComposer : ServerPacket
     {
         public UpdateFreezeLivesComposer(int UserId, int FreezeLives)
             : base(ServerPacketHeader.UpdateFreezeLivesMessageComposer)

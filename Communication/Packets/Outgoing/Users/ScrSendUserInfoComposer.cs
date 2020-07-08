@@ -1,13 +1,9 @@
 ﻿using Neon.HabboHotel.Users;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.Communication.Packets.Outgoing.Users
 {
-    class ScrSendUserInfoComposer : ServerPacket
+    internal class ScrSendUserInfoComposer : ServerPacket
     {
         public ScrSendUserInfoComposer(Habbo habbo)
             : base(ServerPacketHeader.ScrSendUserInfoMessageComposer)
@@ -17,8 +13,8 @@ namespace Neon.Communication.Packets.Outgoing.Users
             if (habbo.GetClubManager().HasSubscription("habbo_vip"))
             {
 
-                Double Expire = habbo.GetClubManager().GetSubscription("habbo_vip").ExpireTime;
-                Double TimeLeft = Expire - NeonEnvironment.GetUnixTimestamp();
+                double Expire = habbo.GetClubManager().GetSubscription("habbo_vip").ExpireTime;
+                double TimeLeft = Expire - NeonEnvironment.GetUnixTimestamp();
                 int TotalDaysLeft = (int)Math.Ceiling(TimeLeft / 86400);
                 int MonthsLeft = TotalDaysLeft / 31;
 

@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
 
 namespace Neon.HabboHotel.Groups.Forums
 {
@@ -50,10 +49,10 @@ namespace Neon.HabboHotel.Groups.Forums
             DeletedTimestamp = (int)NeonEnvironment.GetUnixTimestamp();
 
             DataTable table;
-            using (var adap = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
+            using (Database.Interfaces.IQueryAdapter adap = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
                 adap.SetQuery("SELECT * FROM group_forums_thread_posts WHERE thread_id = @id");
-                adap.AddParameter("id", this.Id);
+                adap.AddParameter("id", Id);
                 table = adap.getTable();
             }
 
@@ -64,7 +63,7 @@ namespace Neon.HabboHotel.Groups.Forums
 
 
             //DataTable table;
-            using (var Adap = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
+            using (Database.Interfaces.IQueryAdapter Adap = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
                 Adap.SetQuery("SELECT * FROM group_forums_thread_views WHERE thread_id = @id");
                 Adap.AddParameter("id", Id);
@@ -82,7 +81,9 @@ namespace Neon.HabboHotel.Groups.Forums
         private void GroupForumThread_OnClientDisconnect(GameClient client)
         {
             if (UsersOnThread.Contains(client))
+            {
                 UsersOnThread.Remove(client);
+            }
         }
 
 
@@ -92,11 +93,11 @@ namespace Neon.HabboHotel.Groups.Forums
             if ((v = GetView(userid)) != null)
             {
                 v.Count = count >= 0 ? count : Posts.Count;
-                using (var adap = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
+                using (Database.Interfaces.IQueryAdapter adap = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
                 {
                     adap.SetQuery("UPDATE group_forums_thread_views SET count = @c WHERE thread_id = @p AND user_id = @u");
                     adap.AddParameter("c", v.Count);
-                    adap.AddParameter("p", this.Id);
+                    adap.AddParameter("p", Id);
                     adap.AddParameter("u", userid);
                     adap.RunQuery();
                 }
@@ -104,10 +105,10 @@ namespace Neon.HabboHotel.Groups.Forums
             else
             {
                 v = new GroupForumThreadPostView(0, userid, Posts.Count);
-                using (var adap = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
+                using (Database.Interfaces.IQueryAdapter adap = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
                 {
                     adap.SetQuery("INSERT INTO group_forums_thread_views (thread_id, user_id, count) VALUES (@t, @u, @c)");
-                    adap.AddParameter("t", this.Id);
+                    adap.AddParameter("t", Id);
                     adap.AddParameter("u", userid);
                     adap.AddParameter("c", v.Count);
                     v.Id = (int)adap.InsertQuery();
@@ -144,13 +145,13 @@ namespace Neon.HabboHotel.Groups.Forums
 
         public GroupForumThreadPost CreatePost(int userid, string message)
         {
-            var now = (int)NeonEnvironment.GetUnixTimestamp();
-            var Post = new GroupForumThreadPost(this, 0, userid, now, message, 0, 0);
+            int now = (int)NeonEnvironment.GetUnixTimestamp();
+            GroupForumThreadPost Post = new GroupForumThreadPost(this, 0, userid, now, message, 0, 0);
 
-            using (var adap = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
+            using (Database.Interfaces.IQueryAdapter adap = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
                 adap.SetQuery("INSERT INTO group_forums_thread_posts (thread_id, user_id, message, timestamp) VALUES (@a, @b, @c, @d)");
-                adap.AddParameter("a", this.Id);
+                adap.AddParameter("a", Id);
                 adap.AddParameter("b", userid);
                 adap.AddParameter("c", message);
                 adap.AddParameter("d", now);
@@ -170,7 +171,9 @@ namespace Neon.HabboHotel.Groups.Forums
         public void RemoveClientFromThread(GameClient Session)
         {
             if (UsersOnThread.Contains(Session))
+            {
                 UsersOnThread.Add(Session);
+            }
         }
 
         public GroupForumThreadPost GetLastMessage()
@@ -180,8 +183,8 @@ namespace Neon.HabboHotel.Groups.Forums
 
         public void SerializeData(GameClient Session, ServerPacket Packet)
         {
-            var lastpost = GetLastMessage();
-            var isn = lastpost == null;
+            GroupForumThreadPost lastpost = GetLastMessage();
+            bool isn = lastpost == null;
             Packet.WriteInteger(Id); //Thread ID
             Packet.WriteInteger(GetAuthor().Id);
             Packet.WriteString(GetAuthor().Username); //Thread Author
@@ -199,7 +202,7 @@ namespace Neon.HabboHotel.Groups.Forums
 
             Packet.WriteByte(DeletedLevel * 10); //thread Deleted Level
 
-            var deleter = GetDeleter();
+            Habbo deleter = GetDeleter();
             if (deleter != null)
             {
                 Packet.WriteInteger(deleter.Id);// deleter user id
@@ -222,7 +225,7 @@ namespace Neon.HabboHotel.Groups.Forums
 
         public void Save()
         {
-            using (var adap = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
+            using (Database.Interfaces.IQueryAdapter adap = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
                 adap.SetQuery("UPDATE group_forums_threads SET pinned = @pinned, locked = @locked, deleted_level = @dl, deleter_user_id = @duid WHERE id = @id");
                 adap.AddParameter("pinned", Pinned ? 1 : 0);

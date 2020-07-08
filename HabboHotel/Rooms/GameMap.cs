@@ -1,17 +1,17 @@
-﻿using System;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Engine;
+using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
+using Neon.Core;
+using Neon.HabboHotel.GameClients;
+using Neon.HabboHotel.Groups;
+using Neon.HabboHotel.Items;
+using Neon.HabboHotel.Items.RentableSpaces;
+using Neon.HabboHotel.Pathfinding;
+using Neon.HabboHotel.Rooms.Games.Teams;
+using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using Neon.Core;
-using Neon.HabboHotel.Items;
-using Neon.HabboHotel.Pathfinding;
-using Neon.HabboHotel.Groups;
-using Neon.HabboHotel.Rooms.Games.Teams;
-using System.Collections.Concurrent;
-using Neon.Communication.Packets.Outgoing.Rooms.Engine;
-using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
-using Neon.HabboHotel.Items.RentableSpaces;
-using Neon.HabboHotel.GameClients;
 
 namespace Neon.HabboHotel.Rooms
 {
@@ -36,7 +36,9 @@ namespace Neon.HabboHotel.Rooms
             }
 
             if (StaticModel == null)
+            {
                 return;
+            }
 
             Model = new DynamicRoomModel(StaticModel);
 
@@ -69,7 +71,9 @@ namespace Neon.HabboHotel.Rooms
         public void TeleportToItem(RoomUser user, Item item)
         {
             if (item == null || user == null)
+            {
                 return;
+            }
 
             GameMap[user.X, user.Y] = user.SqState;
             UpdateUserMovement(new Point(user.Coordinate.X, user.Coordinate.Y), new Point(item.Coordinate.X, item.Coordinate.Y), user);
@@ -99,7 +103,9 @@ namespace Neon.HabboHotel.Rooms
         public void RemoveUserFromMap(RoomUser user, Point coord)
         {
             if (userMap.ContainsKey(coord))
+            {
                 userMap[coord].RemoveAll(x => x != null && x.VirtualId == user.VirtualId);
+            }
         }
 
         public bool MapGotUser(Point coord)
@@ -110,30 +116,39 @@ namespace Neon.HabboHotel.Rooms
         public List<RoomUser> GetRoomUsers(Point coord)
         {
             if (userMap.ContainsKey(coord))
+            {
                 return userMap[coord];
+            }
             else
+            {
                 return new List<RoomUser>();
+            }
         }
 
         public Point GetRandomWalkableSquare()
         {
-            var walkableSquares = new List<Point>();
+            List<Point> walkableSquares = new List<Point>();
             for (int y = 0; y < GameMap.GetUpperBound(1); y++)
             {
                 for (int x = 0; x < GameMap.GetUpperBound(0); x++)
                 {
                     if (StaticModel.DoorX != x && StaticModel.DoorY != y && GameMap[x, y] == 1)
+                    {
                         walkableSquares.Add(new Point(x, y));
+                    }
                 }
             }
 
             int RandomNumber = NeonEnvironment.GetRandomNumber(0, walkableSquares.Count);
             int i = 0;
 
-            foreach (Point coord in walkableSquares.ToList())
+            foreach (Point coord in walkableSquares)
             {
                 if (i == RandomNumber)
+                {
                     return coord;
+                }
+
                 i++;
             }
 
@@ -143,18 +158,23 @@ namespace Neon.HabboHotel.Rooms
 
         public bool IsInMap(int X, int Y)
         {
-            var walkableSquares = new List<Point>();
+            List<Point> walkableSquares = new List<Point>();
             for (int y = 0; y < GameMap.GetUpperBound(1); y++)
             {
                 for (int x = 0; x < GameMap.GetUpperBound(0); x++)
                 {
                     if (StaticModel.DoorX != x && StaticModel.DoorY != y && GameMap[x, y] == 1)
+                    {
                         walkableSquares.Add(new Point(x, y));
+                    }
                 }
             }
 
             if (walkableSquares.Contains(new Point(X, Y)))
+            {
                 return true;
+            }
+
             return false;
         }
 
@@ -201,12 +221,19 @@ namespace Neon.HabboHotel.Rooms
                 foreach (Item item in items.ToList())
                 {
                     if (item == null)
+                    {
                         continue;
+                    }
 
                     if (item.GetX > Model.MapSizeX && item.GetX > MaxX)
+                    {
                         MaxX = item.GetX;
+                    }
+
                     if (item.GetY > Model.MapSizeY && item.GetY > MaxY)
+                    {
                         MaxY = item.GetY;
+                    }
                 }
 
                 Array.Clear(items, 0, items.Length);
@@ -217,9 +244,14 @@ namespace Neon.HabboHotel.Rooms
             if (MaxY > (Model.MapSizeY - 1) || MaxX > (Model.MapSizeX - 1))
             {
                 if (MaxX < Model.MapSizeX)
+                {
                     MaxX = Model.MapSizeX;
+                }
+
                 if (MaxY < Model.MapSizeY)
+                {
                     MaxY = Model.MapSizeY;
+                }
 
                 Model.SetMapsize(MaxX + 7, MaxY + 7);
                 GenerateMaps(false);
@@ -277,7 +309,7 @@ namespace Neon.HabboHotel.Rooms
                 }
 
                 /** COMENTADO YA QUE SALAS PUBLICAS NUEVA CRYPTO NO NECESARIO
-                if (!string.IsNullOrEmpty(StaticModel.StaticFurniMap))
+                if (!string.IsNullOrEmpty(StaticModel.StaticFurniMap)) 
                 {
                      * foreach (PublicRoomSquare square in StaticModel.Furnis)
                     {
@@ -366,12 +398,15 @@ namespace Neon.HabboHotel.Rooms
             foreach (Item Item in tmpItems.ToList())
             {
                 if (Item == null)
+                {
                     continue;
+                }
 
                 if (!AddItemToMap(Item))
+                {
                     continue;
+                }
             }
-
             Array.Clear(tmpItems, 0, tmpItems.Length);
 
             if (_room.RoomBlockingEnabled == 0)
@@ -379,7 +414,9 @@ namespace Neon.HabboHotel.Rooms
                 foreach (RoomUser user in _room.GetRoomUserManager().GetUserList().ToList())
                 {
                     if (user == null)
+                    {
                         continue;
+                    }
 
                     user.SqState = GameMap[user.X, user.Y];
                     GameMap[user.X, user.Y] = 0;
@@ -448,12 +485,16 @@ namespace Neon.HabboHotel.Rooms
                     if (Item.GetBaseItem().Walkable)    // If this item is walkable and on the floor, allow users to walk here.
                     {
                         if (GameMap[Coord.X, Coord.Y] != 3)
+                        {
                             GameMap[Coord.X, Coord.Y] = 1;
+                        }
                     }
                     else if (Item.GetBaseItem().InteractionType == InteractionType.GATE && Item.ExtraData == "1")
                     {
                         if (GameMap[Coord.X, Coord.Y] != 3)
+                        {
                             GameMap[Coord.X, Coord.Y] = 1;
+                        }
                     }
                     else if (Item.GetBaseItem().IsSeat || Item.GetBaseItem().InteractionType == InteractionType.BED || Item.GetBaseItem().InteractionType == InteractionType.TENT_SMALL)
                     {
@@ -462,13 +503,17 @@ namespace Neon.HabboHotel.Rooms
                     else // Finally, if it's none of those, block the square.
                     {
                         if (GameMap[Coord.X, Coord.Y] != 3)
+                        {
                             GameMap[Coord.X, Coord.Y] = 0;
+                        }
                     }
                 }
 
                 // Set bad maps
                 if (Item.GetBaseItem().InteractionType == InteractionType.BED || Item.GetBaseItem().InteractionType == InteractionType.TENT_SMALL)
+                {
                     GameMap[Coord.X, Coord.Y] = 3;
+                }
             }
             catch (Exception e)
             {
@@ -479,17 +524,21 @@ namespace Neon.HabboHotel.Rooms
 
         public void AddCoordinatedItem(Item item, Point coord)
         {
-            List<int> Items = new List<int>(); //mCoordinatedItems[CoordForItem];
+            _ = new List<int>(); //mCoordinatedItems[CoordForItem];
 
-            if (!mCoordinatedItems.TryGetValue(coord, out Items))
+            if (!mCoordinatedItems.TryGetValue(coord, out List<int> Items))
             {
                 Items = new List<int>();
 
                 if (!Items.Contains(item.Id))
+                {
                     Items.Add(item.Id);
+                }
 
                 if (!mCoordinatedItems.ContainsKey(coord))
+                {
                     mCoordinatedItems.TryAdd(coord, Items);
+                }
             }
             else
             {
@@ -503,13 +552,13 @@ namespace Neon.HabboHotel.Rooms
 
         public List<Item> GetCoordinatedItems(Point coord)
         {
-            var point = new Point(coord.X, coord.Y);
-            List<Item> Items = new List<Item>();
+            Point point = new Point(coord.X, coord.Y);
+            _ = new List<Item>();
 
             if (mCoordinatedItems.ContainsKey(point))
             {
                 List<int> Ids = mCoordinatedItems[point];
-                Items = GetItemsFromIds(Ids);
+                List<Item> Items = GetItemsFromIds(Ids);
                 return Items;
             }
 
@@ -521,7 +570,7 @@ namespace Neon.HabboHotel.Rooms
             Point point = new Point(coord.X, coord.Y);
             if (mCoordinatedItems != null && mCoordinatedItems.ContainsKey(point))
             {
-                ((List<int>)mCoordinatedItems[point]).RemoveAll(x => x == item.Id);
+                mCoordinatedItems[point].RemoveAll(x => x == item.Id);
                 return true;
             }
             return false;
@@ -648,41 +697,51 @@ namespace Neon.HabboHotel.Rooms
         public bool RemoveFromMap(Item item, bool handleGameItem)
         {
             if (handleGameItem)
+            {
                 RemoveSpecialItem(item);
+            }
 
             if (_room.GotSoccer())
+            {
                 _room.GetSoccer().onGateRemove(item);
+            }
 
             bool isRemoved = false;
-            foreach (Point coord in item.GetCoords.ToList())
+            foreach (Point coord in item.GetCoords)
             {
                 if (RemoveCoordinatedItem(item, coord))
+                {
                     isRemoved = true;
+                }
             }
 
             ConcurrentDictionary<Point, List<Item>> items = new ConcurrentDictionary<Point, List<Item>>();
-            foreach (Point Tile in item.GetCoords.ToList())
+            foreach (Point Tile in item.GetCoords)
             {
                 Point point = new Point(Tile.X, Tile.Y);
                 if (mCoordinatedItems.ContainsKey(point))
                 {
-                    List<int> Ids = (List<int>)mCoordinatedItems[point];
+                    List<int> Ids = mCoordinatedItems[point];
                     List<Item> __items = GetItemsFromIds(Ids);
 
                     if (!items.ContainsKey(Tile))
+                    {
                         items.TryAdd(Tile, __items);
+                    }
                 }
 
                 SetDefaultValue(Tile.X, Tile.Y);
             }
 
-            foreach (Point Coord in items.Keys.ToList())
+            foreach (Point Coord in items.Keys)
             {
                 if (!items.ContainsKey(Coord))
+                {
                     continue;
+                }
 
-                List<Item> SubItems = (List<Item>)items[Coord];
-                foreach (Item Item in SubItems.ToList())
+                List<Item> SubItems = items[Coord];
+                foreach (Item Item in SubItems)
                 {
                     ConstructMapForItem(Item, Coord);
                 }
@@ -690,9 +749,6 @@ namespace Neon.HabboHotel.Rooms
 
 
             items.Clear();
-            items = null;
-
-
             return isRemoved;
         }
 
@@ -718,7 +774,10 @@ namespace Neon.HabboHotel.Rooms
                     case InteractionType.FREEZE_RED_GATE:
                         {
                             if (!_room.GetRoomItemHandler().GetFloor.Contains(Item))
+                            {
                                 _room.GetGameManager().AddFurnitureToTeam(Item, TEAM.RED);
+                            }
+
                             break;
                         }
                     case InteractionType.FOOTBALL_GOAL_GREEN:
@@ -729,7 +788,10 @@ namespace Neon.HabboHotel.Rooms
                     case InteractionType.FREEZE_GREEN_GATE:
                         {
                             if (!_room.GetRoomItemHandler().GetFloor.Contains(Item))
+                            {
                                 _room.GetGameManager().AddFurnitureToTeam(Item, TEAM.GREEN);
+                            }
+
                             break;
                         }
                     case InteractionType.FOOTBALL_GOAL_BLUE:
@@ -740,7 +802,10 @@ namespace Neon.HabboHotel.Rooms
                     case InteractionType.FREEZE_BLUE_GATE:
                         {
                             if (!_room.GetRoomItemHandler().GetFloor.Contains(Item))
+                            {
                                 _room.GetGameManager().AddFurnitureToTeam(Item, TEAM.BLUE);
+                            }
+
                             break;
                         }
                     case InteractionType.FOOTBALL_GOAL_YELLOW:
@@ -751,7 +816,10 @@ namespace Neon.HabboHotel.Rooms
                     case InteractionType.FREEZE_YELLOW_GATE:
                         {
                             if (!_room.GetRoomItemHandler().GetFloor.Contains(Item))
+                            {
                                 _room.GetGameManager().AddFurnitureToTeam(Item, TEAM.YELLOW);
+                            }
+
                             break;
                         }
                     case InteractionType.freezeexit:
@@ -762,16 +830,21 @@ namespace Neon.HabboHotel.Rooms
                     case InteractionType.ROLLER:
                         {
                             if (!_room.GetRoomItemHandler().GetRollers().Contains(Item))
+                            {
                                 _room.GetRoomItemHandler().TryAddRoller(Item.Id, Item);
+                            }
+
                             break;
                         }
                 }
             }
 
             if (Item.GetBaseItem().Type != 's')
+            {
                 return true;
+            }
 
-            foreach (Point coord in Item.GetCoords.ToList())
+            foreach (Point coord in Item.GetCoords)
             {
                 AddCoordinatedItem(Item, new Point(coord.X, coord.Y));
             }
@@ -819,7 +892,9 @@ namespace Neon.HabboHotel.Rooms
             }
 
             if (_room.GetRoomUserManager().GetUserForSquare(X, Y) != null && _room.RoomBlockingEnabled == 0)
+            {
                 return false;
+            }
 
             return true;
         }
@@ -834,16 +909,22 @@ namespace Neon.HabboHotel.Rooms
             List<ThreeDCoord> Points = Gamemap.GetAffectedTiles(Item.GetBaseItem().Length, Item.GetBaseItem().Width, MoveTo.X, MoveTo.Y, Item.Rotation).Values.ToList();
 
             if (Points == null || Points.Count == 0)
+            {
                 return true;
+            }
 
             foreach (ThreeDCoord Coord in Points)
             {
 
                 if (Coord.X >= Model.MapSizeX || Coord.Y >= Model.MapSizeY)
+                {
                     return false;
+                }
 
                 if (!SquareIsOpen(Coord.X, Coord.Y, false))
+                {
                     return false;
+                }
 
                 continue;
             }
@@ -854,7 +935,9 @@ namespace Neon.HabboHotel.Rooms
         public byte GetFloorStatus(Point coord)
         {
             if (coord.X > GameMap.GetUpperBound(0) || coord.Y > GameMap.GetUpperBound(1))
+            {
                 return 1;
+            }
 
             return GameMap[coord.X, coord.Y];
         }
@@ -868,17 +951,24 @@ namespace Neon.HabboHotel.Rooms
         {
             if (coord.X > Model.SqFloorHeight.GetUpperBound(0) ||
                 coord.Y > Model.SqFloorHeight.GetUpperBound(1))
+            {
                 return 1;
+            }
+
             return Model.SqFloorHeight[coord.X, coord.Y];
         }
 
         public bool CanRollItemHere(int x, int y)
         {
             if (!ValidTile(x, y))
+            {
                 return false;
+            }
 
             if (Model.SqState[x, y] == SquareState.BLOCKED)
+            {
                 return false;
+            }
 
             return true;
         }
@@ -886,7 +976,9 @@ namespace Neon.HabboHotel.Rooms
         public bool SquareIsOpen(int x, int y, bool pOverride)
         {
             if ((Model.MapSizeX - 1) < x || (Model.MapSizeY - 1) < y)
+            {
                 return false;
+            }
 
             return CanWalk(GameMap[x, y], pOverride);
         }
@@ -899,10 +991,12 @@ namespace Neon.HabboHotel.Rooms
 
             if (Items != null && Items.Count() > 0)
             {
-                foreach (Item uItem in Items.ToList())
+                foreach (Item uItem in Items)
                 {
                     if (uItem == null)
+                    {
                         continue;
+                    }
 
                     if (uItem.TotalHeight > HighestZ)
                     {
@@ -911,22 +1005,29 @@ namespace Neon.HabboHotel.Rooms
                         continue;
                     }
                     else
+                    {
                         continue;
+                    }
                 }
             }
             else
+            {
                 return false;
+            }
 
             return true;
         }
 
         public double GetHeightForSquare(Point Coord)
         {
-            Item rItem;
 
-            if (GetHighestItemForSquare(Coord, out rItem))
+            if (GetHighestItemForSquare(Coord, out Item rItem))
+            {
                 if (rItem != null)
+                {
                     return rItem.TotalHeight;
+                }
+            }
 
             return 0.0;
         }
@@ -953,8 +1054,9 @@ namespace Neon.HabboHotel.Rooms
                             X = false;
                         }
                         else
+                        {
                             continue;
-
+                        }
                     }
                     else if (User.Y == Item.GetY)
                     {
@@ -966,15 +1068,22 @@ namespace Neon.HabboHotel.Rooms
                             X = true;
                         }
                         else
+                        {
                             continue;
+                        }
                     }
                     else
+                    {
                         continue;
+                    }
                 }
             }
 
             if (Distance > 5)
+            {
                 return Item.GetSides().OrderBy(x => Guid.NewGuid()).FirstOrDefault();
+            }
+
             if (X && Distance < 99)
             {
                 if (iX > Coord.X)
@@ -1002,19 +1111,27 @@ namespace Neon.HabboHotel.Rooms
                 }
             }
             else
+            {
                 return Item.Coordinate;
+            }
         }
 
         public bool IsValidMovement(int CoordX, int CoordY)
         {
             if (CoordX < 0 || CoordY < 0 || CoordX >= Model.MapSizeX || CoordY >= Model.MapSizeY)
+            {
                 return false;
+            }
 
             if (SquareHasUsers(CoordX, CoordY))
+            {
                 return true;
+            }
 
             if (GetCoordinatedItems(new Point(CoordX, CoordY)).Count > 0 && !SquareIsOpen(CoordX, CoordY, false))
+            {
                 return false;
+            }
 
             return Model.SqState[CoordX, CoordY] == SquareState.OPEN;
         }
@@ -1022,10 +1139,14 @@ namespace Neon.HabboHotel.Rooms
         public bool IsValidWalk(RoomUser User, Vector2D From, Vector2D To, bool Override)
         {
             if (!ValidTile(To.X, To.Y))
+            {
                 return false;
+            }
 
             if (Override)
+            {
                 return true;
+            }
 
             List<Item> Items = _room.GetGameMap().GetAllRoomItemForSquare(To.X, To.Y);
             if (Items.Count > 0)
@@ -1036,12 +1157,15 @@ namespace Neon.HabboHotel.Rooms
                     Item I = Items.FirstOrDefault(x => x.GetBaseItem().InteractionType == InteractionType.GUILD_GATE);
                     if (I != null)
                     {
-                        Group Group = null;
-                        if (!NeonEnvironment.GetGame().GetGroupManager().TryGetGroup(I.GroupId, out Group))
+                        if (!NeonEnvironment.GetGame().GetGroupManager().TryGetGroup(I.GroupId, out Group Group))
+                        {
                             return false;
+                        }
 
                         if (User.GetClient() == null || User.GetClient().GetHabbo() == null)
+                        {
                             return false;
+                        }
 
                         if (Group.IsMember(User.GetClient().GetHabbo().Id))
                         {
@@ -1054,7 +1178,9 @@ namespace Neon.HabboHotel.Rooms
                             return true;
                         }
                         else
+                        {
                             return false;
+                        }
                     }
                 }
                 bool HasHcGate = Items.ToList().Where(x => x.GetBaseItem().InteractionType == InteractionType.HCGATE).ToList().Count() > 0;
@@ -1063,7 +1189,7 @@ namespace Neon.HabboHotel.Rooms
                     Item I = Items.FirstOrDefault(x => x.GetBaseItem().InteractionType == InteractionType.HCGATE);
                     if (I != null)
                     {
-                        var IsHc = User.GetClient().GetHabbo().GetClubManager().HasSubscription("habbo_vip");
+                        bool IsHc = User.GetClient().GetHabbo().GetClubManager().HasSubscription("habbo_vip");
                         if (!IsHc)
                         {
                             User.GetClient().SendMessage(new AlertNotificationHCMessageComposer(3));
@@ -1071,7 +1197,9 @@ namespace Neon.HabboHotel.Rooms
                         }
 
                         if (User.GetClient() == null || User.GetClient().GetHabbo() == null)
+                        {
                             return false;
+                        }
 
                         if (User.GetClient().GetHabbo().GetClubManager().HasSubscription("habbo_vip"))
                         {
@@ -1096,7 +1224,9 @@ namespace Neon.HabboHotel.Rooms
                     if (I != null)
                     {
                         if (User.GetClient() == null || User.GetClient().GetHabbo() == null)
+                        {
                             return false;
+                        }
 
                         bool IsVIP = User.GetClient().GetHabbo().GetClubManager().HasSubscription("club_vip");
                         if (!IsVIP)
@@ -1123,11 +1253,15 @@ namespace Neon.HabboHotel.Rooms
             }
 
             if (_room.GetRoomUserManager().GetUserForSquare(To.X, To.Y) != null && _room.RoomBlockingEnabled == 0)
+            {
                 return false;
+            }
 
             double HeightDiff = SqAbsoluteHeight(To.X, To.Y) - SqAbsoluteHeight(From.X, From.Y);
             if (HeightDiff > 1.5 && !User.RidingHorse)
+            {
                 return false;
+            }
 
             return true;
         }
@@ -1135,13 +1269,19 @@ namespace Neon.HabboHotel.Rooms
         public bool IsValidStep2(RoomUser User, Vector2D From, Vector2D To, bool EndOfPath, bool Override)
         {
             if (User == null)
+            {
                 return false;
+            }
 
             if (!ValidTile(To.X, To.Y))
+            {
                 return false;
+            }
 
             if (Override)
+            {
                 return true;
+            }
 
             /*
              * 0 = blocked
@@ -1159,12 +1299,15 @@ namespace Neon.HabboHotel.Rooms
                     Item I = Items.FirstOrDefault(x => x.GetBaseItem().InteractionType == InteractionType.GUILD_GATE);
                     if (I != null)
                     {
-                        Group Group = null;
-                        if (!NeonEnvironment.GetGame().GetGroupManager().TryGetGroup(I.GroupId, out Group))
+                        if (!NeonEnvironment.GetGame().GetGroupManager().TryGetGroup(I.GroupId, out Group Group))
+                        {
                             return false;
+                        }
 
                         if (User.GetClient() == null || User.GetClient().GetHabbo() == null)
+                        {
                             return false;
+                        }
 
                         if (Group.IsMember(User.GetClient().GetHabbo().Id))
                         {
@@ -1179,7 +1322,10 @@ namespace Neon.HabboHotel.Rooms
                         else
                         {
                             if (User.Path.Count > 0)
+                            {
                                 User.Path.Clear();
+                            }
+
                             User.PathRecalcNeeded = false;
                             return false;
                         }
@@ -1191,18 +1337,23 @@ namespace Neon.HabboHotel.Rooms
                     Item I = Items.FirstOrDefault(x => x.GetBaseItem().InteractionType == InteractionType.HCGATE);
                     if (I != null)
                     {
-                        var IsHc = User.GetClient().GetHabbo().GetClubManager().HasSubscription("habbo_vip");
+                        bool IsHc = User.GetClient().GetHabbo().GetClubManager().HasSubscription("habbo_vip");
                         if (!IsHc)
                         {
                             User.GetClient().SendMessage(new AlertNotificationHCMessageComposer(3));
                             if (User.Path.Count > 0)
+                            {
                                 User.Path.Clear();
+                            }
+
                             User.PathRecalcNeeded = false;
                             return false;
                         }
 
                         if (User.GetClient() == null || User.GetClient().GetHabbo() == null)
+                        {
                             return false;
+                        }
 
                         if (User.GetClient().GetHabbo().GetClubManager().HasSubscription("habbo_vip"))
                         {
@@ -1216,7 +1367,10 @@ namespace Neon.HabboHotel.Rooms
                         {
                             User.GetClient().SendMessage(new AlertNotificationHCMessageComposer(3));
                             if (User.Path.Count > 0)
+                            {
                                 User.Path.Clear();
+                            }
+
                             User.PathRecalcNeeded = false;
                             return false;
                         }
@@ -1231,12 +1385,15 @@ namespace Neon.HabboHotel.Rooms
                 Item I = Items.FirstOrDefault(x => x.GetBaseItem().InteractionType == InteractionType.VIPGATE);
                 if (I != null)
                 {
-                    var IsVIP = User.GetClient().GetHabbo().GetClubManager().HasSubscription("club_vip");
+                    bool IsVIP = User.GetClient().GetHabbo().GetClubManager().HasSubscription("club_vip");
                     if (!IsVIP)
                     {
                         User.GetClient().SendMessage(new AlertNotificationHCMessageComposer(1));
                         if (User.Path.Count > 0)
+                        {
                             User.Path.Clear();
+                        }
+
                         User.PathRecalcNeeded = false;
                         return false;
                     }
@@ -1244,8 +1401,9 @@ namespace Neon.HabboHotel.Rooms
 
 
                     if (User.GetClient() == null || User.GetClient().GetHabbo() == null)
-
+                    {
                         return false;
+                    }
 
                     if (User.GetClient().GetHabbo().GetClubManager().HasSubscription("club_vip"))
                     {
@@ -1260,7 +1418,10 @@ namespace Neon.HabboHotel.Rooms
                     {
                         User.GetClient().SendMessage(new AlertNotificationHCMessageComposer(1));
                         if (User.Path.Count > 0)
+                        {
                             User.Path.Clear();
+                        }
+
                         User.PathRecalcNeeded = false;
                         return false;
                     }
@@ -1270,10 +1431,12 @@ namespace Neon.HabboHotel.Rooms
 
             bool Chair = false;
             double HighestZ = -1;
-            foreach (Item Item in Items.ToList())
+            foreach (Item Item in Items)
             {
                 if (Item == null)
+                {
                     continue;
+                }
 
                 if (Item.GetZ < HighestZ)
                 {
@@ -1283,25 +1446,34 @@ namespace Neon.HabboHotel.Rooms
 
                 HighestZ = Item.GetZ;
                 if (Item.GetBaseItem().IsSeat)
+                {
                     Chair = true;
+                }
             }
 
             if ((GameMap[To.X, To.Y] == 3 && !EndOfPath && !Chair) || (GameMap[To.X, To.Y] == 0) || (GameMap[To.X, To.Y] == 2 && !EndOfPath))
             {
                 if (User.Path.Count > 0)
+                {
                     User.Path.Clear();
+                }
+
                 User.PathRecalcNeeded = true;
             }
 
             double HeightDiff = SqAbsoluteHeight(To.X, To.Y) - SqAbsoluteHeight(From.X, From.Y);
             if (HeightDiff > 1.5 && !User.RidingHorse)
+            {
                 return false;
+            }
 
             RoomUser Userx = _room.GetRoomUserManager().GetUserForSquare(To.X, To.Y);
             if (Userx != null)
             {
                 if (!Userx.IsWalking && EndOfPath)
+                {
                     return false;
+                }
             }
             return true;
         }
@@ -1311,10 +1483,14 @@ namespace Neon.HabboHotel.Rooms
         public bool IsValidStep(Vector2D From, Vector2D To, bool EndOfPath, bool Override, bool DiagMovement, bool Roller = false)
         {
             if (!ValidTile(To.X, To.Y))
+            {
                 return false;
+            }
 
             if (Override)
+            {
                 return true;
+            }
 
             if (DiagMovement)
             {
@@ -1324,52 +1500,72 @@ namespace Neon.HabboHotel.Rooms
                 if (XValue == -1 && YValue == -1)
                 {
                     if (GameMap[To.X + 1, To.Y] != 1 && GameMap[To.X, To.Y + 1] != 1)
+                    {
                         return false;
+                    }
                 }
                 else if (XValue == 1 && YValue == -1)
                 {
                     if (GameMap[To.X - 1, To.Y] != 1 && GameMap[To.X, To.Y + 1] != 1)
+                    {
                         return false;
+                    }
                 }
                 else if (XValue == 1 && YValue == 1)
                 {
                     if (GameMap[To.X - 1, To.Y] != 1 && GameMap[To.X, To.Y - 1] != 1)
+                    {
                         return false;
+                    }
                 }
                 else if (XValue == -1 && YValue == 1)
                 {
                     if (GameMap[To.X + 1, To.Y] != 1 && GameMap[To.X, To.Y - 1] != 1)
+                    {
                         return false;
+                    }
                 }
             }
 
             if (_room.RoomBlockingEnabled == 0 && SquareHasUsers(To.X, To.Y))
+            {
                 return false;
+            }
 
             List<Item> Items = _room.GetGameMap().GetAllRoomItemForSquare(To.X, To.Y);
             if (Items.Count > 0)
             {
                 bool HasGroupGate = Items.ToList().Where(x => x != null && x.GetBaseItem().InteractionType == InteractionType.GUILD_GATE).Count() > 0;
                 if (HasGroupGate)
+                {
                     return true;
+                }
 
                 bool HasHcGate = Items.ToList().Where(x => x != null && x.GetBaseItem().InteractionType == InteractionType.HCGATE).Count() > 0;
                 if (HasHcGate)
+                {
                     return true;
+                }
 
                 bool HasVIPGate = Items.ToList().Where(x => x != null && x.GetBaseItem().InteractionType == InteractionType.VIPGATE).Count() > 0;
                 if (HasVIPGate)
+                {
                     return true;
+                }
             }
 
             if ((GameMap[To.X, To.Y] == 3 && !EndOfPath) || GameMap[To.X, To.Y] == 0 || (GameMap[To.X, To.Y] == 2 && !EndOfPath))
+            {
                 return false;
+            }
 
             if (!Roller)
             {
                 double HeightDiff = SqAbsoluteHeight(To.X, To.Y) - SqAbsoluteHeight(From.X, From.Y);
                 if (HeightDiff > 1.5)
+                {
                     return false;
+                }
             }
 
             return true;
@@ -1380,20 +1576,27 @@ namespace Neon.HabboHotel.Rooms
             if (!pOverride)
             {
                 if (pState == 3)
+                {
                     return true;
+                }
+
                 if (pState == 1)
+                {
                     return true;
+                }
 
                 return false;
             }
             return true;
         }
 
-        public bool itemCanBePlacedHere(int x, int y)
+        public bool ItemCanBePlacedHere(int x, int y)
         {
             if (Model.MapSizeX - 1 < x || Model.MapSizeY - 1 < y ||
                 (x == Model.DoorX && y == Model.DoorY))
+            {
                 return false;
+            }
 
             return GameMap[x, y] == 1;
         }
@@ -1401,10 +1604,14 @@ namespace Neon.HabboHotel.Rooms
         public bool StackTable(int CoordX, int CoordY)
         {
             if (!ValidTile(CoordX, CoordY))
+            {
                 return false;
+            }
 
-            if (!itemCanBePlacedHere(CoordX, CoordY))
+            if (!ItemCanBePlacedHere(CoordX, CoordY))
+            {
                 return false;
+            }
 
             List<Item> Items = _room.GetGameMap().GetAllRoomItemForSquare(CoordX, CoordY);
             if (Items.Count > 0)
@@ -1412,10 +1619,14 @@ namespace Neon.HabboHotel.Rooms
                 foreach (Item Item in Items)
                 {
                     if (Item == null || Item.Data == null)
+                    {
                         continue;
+                    }
 
                     if (!Item.Data.Stackable)
+                    {
                         return false;
+                    }
                 }
             }
             return true;
@@ -1425,16 +1636,16 @@ namespace Neon.HabboHotel.Rooms
         {
             Point Points = new Point(X, Y);
 
-            List<int> Ids;
-
-            if (mCoordinatedItems.TryGetValue(Points, out Ids))
+            if (mCoordinatedItems.TryGetValue(Points, out List<int> Ids))
             {
                 List<Item> Items = GetItemsFromIds(Ids);
 
                 return SqAbsoluteHeight(X, Y, Items);
             }
             else
+            {
                 return Model.SqFloorHeight[X, Y];
+            }
 
             #region Old
             /*
@@ -1461,10 +1672,12 @@ namespace Neon.HabboHotel.Rooms
 
                 if (ItemsOnSquare != null && ItemsOnSquare.Count > 0)
                 {
-                    foreach (Item Item in ItemsOnSquare.ToList())
+                    foreach (Item Item in ItemsOnSquare)
                     {
                         if (Item == null)
+                        {
                             continue;
+                        }
 
                         if (Item.TotalHeight > HighestStack)
                         {
@@ -1474,7 +1687,10 @@ namespace Neon.HabboHotel.Rooms
                                 deductable = Item.GetBaseItem().Height;
                             }
                             else
+                            {
                                 deduct = false;
+                            }
+
                             HighestStack = Item.TotalHeight;
                         }
                     }
@@ -1484,10 +1700,14 @@ namespace Neon.HabboHotel.Rooms
                 double stackHeight = HighestStack - Model.SqFloorHeight[X, Y];
 
                 if (deduct)
+                {
                     stackHeight -= deductable;
+                }
 
                 if (stackHeight < 0)
+                {
                     stackHeight = 0;
+                }
 
                 return (floorHeight + stackHeight);
             }
@@ -1512,7 +1732,7 @@ namespace Neon.HabboHotel.Rooms
         {
             int x = 0;
 
-            var PointList = new Dictionary<int, ThreeDCoord>();
+            Dictionary<int, ThreeDCoord> PointList = new Dictionary<int, ThreeDCoord>();
 
             if (Length > 1)
             {
@@ -1576,17 +1796,21 @@ namespace Neon.HabboHotel.Rooms
         public List<Item> GetItemsFromIds(List<int> Input)
         {
             if (Input == null || Input.Count == 0)
+            {
                 return new List<Item>();
+            }
 
             List<Item> Items = new List<Item>();
 
             lock (Input)
             {
-                foreach (int Id in Input.ToList())
+                foreach (int Id in Input)
                 {
                     Item Itm = _room.GetRoomItemHandler().GetItem(Id);
                     if (Itm != null && !Items.Contains(Itm))
+                    {
                         Items.Add(Itm);
+                    }
                 }
             }
 
@@ -1595,18 +1819,24 @@ namespace Neon.HabboHotel.Rooms
 
         public List<Item> GetRoomItemForSquare(int pX, int pY, double minZ)
         {
-            var itemsToReturn = new List<Item>();
+            List<Item> itemsToReturn = new List<Item>();
 
 
-            var coord = new Point(pX, pY);
+            Point coord = new Point(pX, pY);
             if (mCoordinatedItems.ContainsKey(coord))
             {
-                var itemsFromSquare = GetItemsFromIds((List<int>)mCoordinatedItems[coord]);
+                List<Item> itemsFromSquare = GetItemsFromIds(mCoordinatedItems[coord]);
 
                 foreach (Item item in itemsFromSquare)
+                {
                     if (item.GetZ > minZ)
+                    {
                         if (item.GetX == pX && item.GetY == pY)
+                        {
                             itemsToReturn.Add(item);
+                        }
+                    }
+                }
             }
 
             return itemsToReturn;
@@ -1614,18 +1844,20 @@ namespace Neon.HabboHotel.Rooms
 
         public List<Item> GetRoomItemForSquare(int pX, int pY)
         {
-            var coord = new Point(pX, pY);
+            Point coord = new Point(pX, pY);
             //List<RoomItem> itemsFromSquare = new List<RoomItem>();
-            var itemsToReturn = new List<Item>();
+            List<Item> itemsToReturn = new List<Item>();
 
             if (mCoordinatedItems.ContainsKey(coord))
             {
-                var itemsFromSquare = GetItemsFromIds((List<int>)mCoordinatedItems[coord]);
+                List<Item> itemsFromSquare = GetItemsFromIds(mCoordinatedItems[coord]);
 
                 foreach (Item item in itemsFromSquare)
                 {
                     if (item.Coordinate.X == coord.X && item.Coordinate.Y == coord.Y)
+                    {
                         itemsToReturn.Add(item);
+                    }
                 }
             }
 
@@ -1634,18 +1866,20 @@ namespace Neon.HabboHotel.Rooms
 
         public bool GetRoomItemForSquare2(int pX, int pY)
         {
-            var coord = new Point(pX, pY);
+            Point coord = new Point(pX, pY);
             //List<RoomItem> itemsFromSquare = new List<RoomItem>();
-            var itemsToReturn = new List<Item>();
+            _ = new List<Item>();
 
             if (mCoordinatedItems.ContainsKey(coord))
             {
-                var itemsFromSquare = GetItemsFromIds((List<int>)mCoordinatedItems[coord]);
+                List<Item> itemsFromSquare = GetItemsFromIds(mCoordinatedItems[coord]);
 
                 foreach (Item item in itemsFromSquare)
                 {
                     if (!item.GetBaseItem().Stackable)
+                    {
                         return true;
+                    }
                 }
             }
 
@@ -1654,17 +1888,19 @@ namespace Neon.HabboHotel.Rooms
 
         public bool HasStackTool(int pX, int pY)
         {
-            var coord = new Point(pX, pY);
-            var itemsToReturn = new List<Item>();
+            Point coord = new Point(pX, pY);
+            _ = new List<Item>();
 
             if (mCoordinatedItems.ContainsKey(coord))
             {
-                var itemsFromSquare = GetItemsFromIds((List<int>)mCoordinatedItems[coord]);
+                List<Item> itemsFromSquare = GetItemsFromIds(mCoordinatedItems[coord]);
 
                 foreach (Item item in itemsFromSquare)
                 {
                     if (item.GetBaseItem().InteractionType == InteractionType.STACKTOOL)
+                    {
                         return true;
+                    }
                 }
             }
 
@@ -1673,32 +1909,37 @@ namespace Neon.HabboHotel.Rooms
 
         public bool IsRentableSpace(int pX, int pY, GameClient Session)
         {
-            var coord = new Point(pX, pY);
-            var itemsToReturn = new List<Item>();
-            RentableSpaceItem _rentableSpace;
+            Point coord = new Point(pX, pY);
+            _ = new List<Item>();
 
             if (mCoordinatedItems.ContainsKey(coord))
             {
-                var itemsFromSquare = GetItemsFromIds((List<int>)mCoordinatedItems[coord]);
+                List<Item> itemsFromSquare = GetItemsFromIds(mCoordinatedItems[coord]);
 
                 foreach (Item item in itemsFromSquare)
                 {
                     if (item.GetBaseItem().InteractionType == InteractionType.RENTABLE_SPACE)
-
-                        if (NeonEnvironment.GetGame().GetRentableSpaceManager().GetRentableSpaceItem(item.Id, out _rentableSpace))
+                    {
+                        if (NeonEnvironment.GetGame().GetRentableSpaceManager().GetRentableSpaceItem(item.Id, out RentableSpaceItem _rentableSpace))
                         {
                             Room room = Session.GetHabbo().CurrentRoom;
 
                             Item items = room.GetRoomItemHandler().GetItem(_rentableSpace.ItemId);
 
                             if (items == null)
+                            {
                                 return false;
+                            }
 
                             if (items.GetBaseItem() == null)
+                            {
                                 return false;
+                            }
 
                             if (items.GetBaseItem().InteractionType != InteractionType.RENTABLE_SPACE)
+                            {
                                 return false;
+                            }
 
                             if (_rentableSpace.OwnerId == Session.GetHabbo().Id && NeonEnvironment.GetUnixTimestamp() < _rentableSpace.ExpireStamp)
                             {
@@ -1713,7 +1954,7 @@ namespace Neon.HabboHotel.Rooms
                                 return false;
                             }
                         }
-
+                    }
                 }
             }
 
@@ -1722,14 +1963,16 @@ namespace Neon.HabboHotel.Rooms
         public List<Item> GetAllRoomItemForSquare(int pX, int pY)
         {
             Point Coord = new Point(pX, pY);
-
-            List<Item> Items = new List<Item>();
-            List<int> Ids;
-
-            if (mCoordinatedItems.TryGetValue(Coord, out Ids))
+            _ = new List<Item>();
+            List<Item> Items;
+            if (mCoordinatedItems.TryGetValue(Coord, out List<int> Ids))
+            {
                 Items = GetItemsFromIds(Ids);
+            }
             else
+            {
                 Items = new List<Item>();
+            }
 
             return Items;
         }
@@ -1756,8 +1999,16 @@ namespace Neon.HabboHotel.Rooms
 
         public static bool TilesTouching(int X1, int Y1, int X2, int Y2)
         {
-            if (!(Math.Abs(X1 - X2) > 1 || Math.Abs(Y1 - Y2) > 1)) return true;
-            if (X1 == X2 && Y1 == Y2) return true;
+            if (!(Math.Abs(X1 - X2) > 1 || Math.Abs(Y1 - Y2) > 1))
+            {
+                return true;
+            }
+
+            if (X1 == X2 && Y1 == Y2)
+            {
+                return true;
+            }
+
             return false;
         }
 
@@ -1793,7 +2044,7 @@ namespace Neon.HabboHotel.Rooms
             mCoordinatedItems = null;
 
             Model = null;
-            this._room = null;
+            _room = null;
             StaticModel = null;
         }
     }

@@ -1,15 +1,8 @@
-﻿using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
-using Neon.HabboHotel.Rooms;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Neon.HabboHotel.Rooms;
 
 namespace Neon.HabboHotel.Items.Interactor
 {
-    class InteractorCannon : IFurniInteractor
+    internal class InteractorCannon : IFurniInteractor
     {
         public void OnPlace(GameClients.GameClient Session, Item Item)
         {
@@ -22,21 +15,31 @@ namespace Neon.HabboHotel.Items.Interactor
         public void OnTrigger(GameClients.GameClient Session, Item Item, int Request, bool HasRights)
         {
             if (Session == null || Session.GetHabbo() == null || Item == null)
+            {
                 return;
+            }
 
             Room Room = Session.GetHabbo().CurrentRoom;
-            if(Room == null)
+            if (Room == null)
+            {
                 return;
+            }
 
             RoomUser Actor = Room.GetRoomUserManager().GetRoomUserByHabbo(Session.GetHabbo().Id);
             if (Actor == null)
+            {
                 return;
+            }
 
             if (Item.ExtraData == "1")
+            {
                 return;
+            }
 
-            if(Gamemap.TileDistance(Actor.X, Actor.Y, Item.GetX, Item.GetY) > 2)
+            if (Gamemap.TileDistance(Actor.X, Actor.Y, Item.GetX, Item.GetY) > 2)
+            {
                 return;
+            }
 
             Item.ExtraData = "1";
             Item.UpdateState(false, true);
@@ -47,10 +50,14 @@ namespace Neon.HabboHotel.Items.Interactor
         public void OnWiredTrigger(Item Item)
         {
             if (Item == null)
+            {
                 return;
+            }
 
             if (Item.ExtraData == "1")
+            {
                 return;
+            }
 
             Item.ExtraData = "1";
             Item.UpdateState(false, true);

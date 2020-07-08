@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Neon.HabboHotel.Support
+﻿namespace Neon.HabboHotel.Support
 {    /// <summary>
      /// TODO: Utilize ModerationTicket.cs
      /// </summary>

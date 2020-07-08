@@ -1,31 +1,16 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Pathfinding;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Chat;
 using Neon.HabboHotel.GameClients;
-using Neon.Communication.Packets.Outgoing.Rooms.Chat;
+using System;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.User.Fun
 {
-    class PullCommand : IChatCommand
+    internal class PullCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_pull"; }
-        }
+        public string PermissionRequired => "command_pull";
 
-        public string Parameters
-        {
-            get { return "%target%"; }
-        }
+        public string Parameters => "%target%";
 
-        public string Description
-        {
-            get { return "Atraer a un usuario haia tí."; }
-        }
+        public string Description => "Atraer a un usuario haia tí.";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {
@@ -69,7 +54,9 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User.Fun
 
             RoomUser ThisUser = Room.GetRoomUserManager().GetRoomUserByHabbo(Session.GetHabbo().Id);
             if (ThisUser == null)
+            {
                 return;
+            }
 
             if (ThisUser.SetX - 1 == Room.GetGameMap().Model.DoorX)
             {
@@ -84,25 +71,45 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User.Fun
                 Room.SendMessage(new ChatComposer(ThisUser.VirtualId, "*He atraído a " + Params[1] + "*", 0, ThisUser.LastBubble));
 
                 if (ThisUser.RotBody == 0)
+                {
                     PushDirection = "up";
+                }
+
                 if (ThisUser.RotBody == 2)
+                {
                     PushDirection = "right";
+                }
+
                 if (ThisUser.RotBody == 4)
+                {
                     PushDirection = "down";
+                }
+
                 if (ThisUser.RotBody == 6)
+                {
                     PushDirection = "left";
+                }
 
                 if (PushDirection == "up")
-                TargetUser.MoveTo(ThisUser.X, ThisUser.Y - 1);
+                {
+                    TargetUser.MoveTo(ThisUser.X, ThisUser.Y - 1);
+                }
 
                 if (PushDirection == "right")
+                {
                     TargetUser.MoveTo(ThisUser.X + 1, ThisUser.Y);
+                }
 
                 if (PushDirection == "down")
+                {
                     TargetUser.MoveTo(ThisUser.X, ThisUser.Y + 1);
+                }
 
                 if (PushDirection == "left")
+                {
                     TargetUser.MoveTo(ThisUser.X - 1, ThisUser.Y);
+                }
+
                 return;
             }
             else

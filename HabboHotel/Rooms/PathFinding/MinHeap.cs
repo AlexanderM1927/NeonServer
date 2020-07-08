@@ -2,7 +2,7 @@
 
 namespace Neon.HabboHotel.Pathfinding
 {
-    sealed class MinHeap<T> where T : IComparable<T>
+    internal sealed class MinHeap<T> where T : IComparable<T>
     {
         private int count;
         private int capacity;
@@ -11,16 +11,13 @@ namespace Neon.HabboHotel.Pathfinding
         private T[] array;
         private T[] tempArray;
 
-        public int Count
-        {
-            get { return this.count; }
-        }
+        public int Count => count;
 
         public MinHeap() : this(16) { }
 
         public MinHeap(int capacity)
         {
-            this.count = 0;
+            count = 0;
             this.capacity = capacity;
             array = new T[capacity];
         }
@@ -28,29 +25,29 @@ namespace Neon.HabboHotel.Pathfinding
         public void BuildHead()
         {
             int position;
-            for (position = (this.count - 1) >> 1; position >= 0; position--)
+            for (position = (count - 1) >> 1; position >= 0; position--)
             {
-                this.MinHeapify(position);
+                MinHeapify(position);
             }
         }
 
         public void Add(T item)
         {
-            this.count++;
-            if (this.count > this.capacity)
+            count++;
+            if (count > capacity)
             {
                 DoubleArray();
             }
-            this.array[this.count - 1] = item;
-            int position = this.count - 1;
+            array[count - 1] = item;
+            int position = count - 1;
 
             int parentPosition = ((position - 1) >> 1);
 
             while (position > 0 && array[parentPosition].CompareTo(array[position]) > 0)
             {
-                temp = this.array[position];
-                this.array[position] = this.array[parentPosition];
-                this.array[parentPosition] = temp;
+                temp = array[position];
+                array[position] = array[parentPosition];
+                array[parentPosition] = temp;
                 position = parentPosition;
                 parentPosition = ((position - 1) >> 1);
             }
@@ -58,10 +55,10 @@ namespace Neon.HabboHotel.Pathfinding
 
         private void DoubleArray()
         {
-            this.capacity <<= 1;
-            tempArray = new T[this.capacity];
-            CopyArray(this.array, tempArray);
-            this.array = tempArray;
+            capacity <<= 1;
+            tempArray = new T[capacity];
+            CopyArray(array, tempArray);
+            array = tempArray;
         }
 
         private static void CopyArray(T[] source, T[] destination)
@@ -75,14 +72,14 @@ namespace Neon.HabboHotel.Pathfinding
 
         public T ExtractFirst()
         {
-            if (this.count == 0)
+            if (count == 0)
             {
                 throw new InvalidOperationException("Heap is empty");
             }
-            temp = this.array[0];
-            this.array[0] = this.array[this.count - 1];
-            this.count--;
-            this.MinHeapify(0);
+            temp = array[0];
+            array[0] = array[count - 1];
+            count--;
+            MinHeapify(0);
             return temp;
         }
 
@@ -110,9 +107,9 @@ namespace Neon.HabboHotel.Pathfinding
 
                 if (minPosition != position)
                 {
-                    mheap = this.array[position];
-                    this.array[position] = this.array[minPosition];
-                    this.array[minPosition] = mheap;
+                    mheap = array[position];
+                    array[position] = array[minPosition];
+                    array[minPosition] = mheap;
                     position = minPosition;
                 }
                 else

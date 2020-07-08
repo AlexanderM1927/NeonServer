@@ -1,12 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Data;
-using System.Collections.Generic;
-using Neon.Database.Interfaces;
+﻿using Neon.Database.Interfaces;
 using Neon.HabboHotel.Catalog;
-using Neon.HabboHotel.Users.Inventory.Bots;
 using Neon.HabboHotel.Rooms.AI;
+using Neon.HabboHotel.Users.Inventory.Bots;
+using System;
+using System.Data;
 
 
 
@@ -17,9 +14,10 @@ namespace Neon.HabboHotel.Items.Utilities
         public static Bot CreateBot(ItemData Data, int OwnerId)
         {
             DataRow BotData = null;
-            CatalogBot CataBot = null;
-            if (!NeonEnvironment.GetGame().GetCatalog().TryGetBot(Data.Id, out CataBot))
+            if (!NeonEnvironment.GetGame().GetCatalog().TryGetBot(Data.Id, out CatalogBot CataBot))
+            {
                 return null;
+            }
 
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {

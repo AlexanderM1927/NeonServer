@@ -1,33 +1,35 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
+﻿using Neon.Communication.Packets.Outgoing.Navigator;
+using Neon.Communication.Packets.Outgoing.Rooms.Engine;
+using Neon.Communication.Packets.Outgoing.Rooms.Session;
+using Neon.Communication.Packets.Outgoing.Users;
+using Neon.Database.Interfaces;
 using Neon.HabboHotel.Rooms;
 using Neon.HabboHotel.Users;
-using Neon.Communication.Packets.Outgoing.Users;
-using Neon.Communication.Packets.Outgoing.Navigator;
-using Neon.Communication.Packets.Outgoing.Rooms.Engine;
-
-using Neon.Database.Interfaces;
-using Neon.Communication.Packets.Outgoing.Rooms.Session;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Neon.Communication.Packets.Incoming.Users
 {
-    class ChangeNameEvent : IPacketEvent
+    internal class ChangeNameEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
             if (Session == null || Session.GetHabbo() == null)
+            {
                 return;
+            }
 
             Room Room = Session.GetHabbo().CurrentRoom;
             if (Room == null)
+            {
                 return;
+            }
 
             RoomUser User = Room.GetRoomUserManager().GetRoomUserByHabbo(Session.GetHabbo().Username);
             if (User == null)
+            {
                 return;
+            }
 
             string NewName = Packet.PopString();
             string OldName = Session.GetHabbo().Username;
@@ -66,13 +68,21 @@ namespace Neon.Communication.Packets.Incoming.Users
 
             if (!Session.GetHabbo().GetPermissions().HasRight("mod_tool") && NewName.ToLower().Contains("mod") || NewName.ToLower().Contains("adm") || NewName.ToLower().Contains("admin")
                 || NewName.ToLower().Contains("m0d") || NewName.ToLower().Contains("mob") || NewName.ToLower().Contains("m0b"))
+            {
                 return;
+            }
             else if (NewName.Length > 15)
+            {
                 return;
+            }
             else if (NewName.Length < 3)
+            {
                 return;
+            }
             else if (InUse)
+            {
                 return;
+            }
             else
             {
                 if (!NeonEnvironment.GetGame().GetClientManager().UpdateClientUsername(Session, OldName, NewName))
@@ -102,7 +112,9 @@ namespace Neon.Communication.Packets.Incoming.Users
                 foreach (RoomData Data in Rooms)
                 {
                     if (Data == null)
+                    {
                         continue;
+                    }
 
                     Data.OwnerName = NewName;
                 }
@@ -110,7 +122,9 @@ namespace Neon.Communication.Packets.Incoming.Users
                 foreach (Room UserRoom in NeonEnvironment.GetGame().GetRoomManager().GetRooms().ToList())
                 {
                     if (UserRoom == null || UserRoom.RoomData.OwnerName != NewName)
+                    {
                         continue;
+                    }
 
                     UserRoom.OwnerName = NewName;
                     UserRoom.RoomData.OwnerName = NewName;
@@ -128,17 +142,29 @@ namespace Neon.Communication.Packets.Incoming.Users
         {
 
             if (Habbo.Rank == 1 && Habbo.VIPRank == 0 && Habbo.LastNameChange == 0)
+            {
                 return true;
+            }
             else if (Habbo.Rank == 2 && Habbo.VIPRank == 1 && (Habbo.LastNameChange == 0 || (NeonEnvironment.GetUnixTimestamp() + 604800) > Habbo.LastNameChange))
+            {
                 return true;
+            }
             else if (Habbo.Rank == 1 && Habbo.VIPRank == 2 && (Habbo.LastNameChange == 0 || (NeonEnvironment.GetUnixTimestamp() + 86400) > Habbo.LastNameChange))
+            {
                 return true;
+            }
             else if (Habbo.Rank == 1 && Habbo.VIPRank == 3)
+            {
                 return true;
+            }
             else if (Habbo.Rank == 1 && Habbo.VIPRank == 1 && (Habbo.LastNameChange == 0 || (NeonEnvironment.GetUnixTimestamp() + 604800) > Habbo.LastNameChange))
+            {
                 return true;
+            }
             else if (Habbo.GetPermissions().HasRight("mod_tool"))
+            {
                 return true;
+            }
 
             return false;
         }

@@ -10,8 +10,8 @@
 
         public Vector2D(int x, int y)
         {
-            this.X = x;
-            this.Y = y;
+            X = x;
+            Y = y;
         }
 
         public int X { get; set; }
@@ -29,7 +29,7 @@
         {
             if (obj is Vector2D)
             {
-                var v2d = (Vector2D)obj;
+                Vector2D v2d = (Vector2D)obj;
                 return v2d.X == X && v2d.Y == Y;
             }
 

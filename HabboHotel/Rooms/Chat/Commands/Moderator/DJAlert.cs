@@ -1,29 +1,14 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.Communication.Packets.Outgoing.Moderation;
-using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
 {
-    class DJAlert : IChatCommand
+    internal class DJAlert : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_djalert"; }
-        }
+        public string PermissionRequired => "command_djalert";
 
-        public string Parameters
-        {
-            get { return "%message%"; }
-        }
+        public string Parameters => "%message%";
 
-        public string Description
-        {
-            get { return "Envía una alerta a todo el hotel de emisión."; }
-        }
+        public string Description => "Envía una alerta a todo el hotel de emisión.";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {

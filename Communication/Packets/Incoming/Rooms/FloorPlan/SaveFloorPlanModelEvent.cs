@@ -1,27 +1,27 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Data;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
 using Neon.Communication.Packets.Outgoing.Rooms.Session;
-using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
 using Neon.Database.Interfaces;
-using Neon.HabboHotel.Items;
+using Neon.HabboHotel.Rooms;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
 
 namespace Neon.Communication.Packets.Incoming.Rooms.FloorPlan
 {
-    class SaveFloorPlanModelEvent : IPacketEvent
+    internal class SaveFloorPlanModelEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
             if (!Session.GetHabbo().InRoom)
+            {
                 return;
+            }
 
             Room Room = Session.GetHabbo().CurrentRoom;
             if (Room == null || Session.GetHabbo().CurrentRoomId != Room.Id || !Room.CheckRights(Session, true))
+            {
                 return;
+            }
 
             char[] validLetters =
             {
@@ -37,13 +37,13 @@ namespace Neon.Communication.Packets.Incoming.Rooms.FloorPlan
                 return;
             }
 
-            if(Map.Any(letter => !validLetters.Contains(letter)) || String.IsNullOrEmpty(Map))
+            if (Map.Any(letter => !validLetters.Contains(letter)) || string.IsNullOrEmpty(Map))
             {
                 Session.SendMessage(new RoomNotificationComposer("floorplan_editor.error", "errors", "Oops, it appears that you have entered an invalid floor map!"));
                 return;
             }
 
-            var modelData = Map.Split((char)13);
+            string[] modelData = Map.Split((char)13);
 
             int SizeY = modelData.Length;
             int SizeX = modelData[0].Length;
@@ -93,22 +93,34 @@ namespace Neon.Communication.Packets.Incoming.Rooms.FloorPlan
             catch { }
 
             if (WallThick > 1)
+            {
                 WallThick = 1;
+            }
 
             if (WallThick < -2)
+            {
                 WallThick = -2;
+            }
 
             if (FloorThick > 1)
+            {
                 FloorThick = 1;
+            }
 
             if (FloorThick < -2)
+            {
                 WallThick = -2;
+            }
 
             if (WallHeight < 0)
+            {
                 WallHeight = 0;
+            }
 
             if (WallHeight > 15)
+            {
                 WallHeight = 15;
+            }
 
             string ModelName = "model_bc_" + Room.Id;
 
@@ -164,7 +176,9 @@ namespace Neon.Communication.Packets.Incoming.Rooms.FloorPlan
             foreach (RoomUser User in UsersToReturn)
             {
                 if (User == null || User.GetClient() == null)
+                {
                     continue;
+                }
 
                 User.GetClient().SendMessage(new RoomForwardComposer(Room.Id));
             }

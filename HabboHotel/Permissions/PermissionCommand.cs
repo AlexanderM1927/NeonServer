@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Neon.HabboHotel.Permissions
+﻿namespace Neon.HabboHotel.Permissions
 {
-    class PermissionCommand
+    internal class PermissionCommand
     {
         public string Command { get; set; }
         public int GroupId { get; set; }

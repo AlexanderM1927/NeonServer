@@ -1,28 +1,14 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms;
+﻿using System.Collections.Generic;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
 {
-    class RoomUnmuteCommand : IChatCommand
+    internal class RoomUnmuteCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_unroommute"; }
-        }
+        public string PermissionRequired => "command_unroommute";
 
-        public string Parameters
-        {
-            get { return ""; }
-        }
+        public string Parameters => "";
 
-        public string Description
-        {
-            get { return "Desmutea"; }
-        }
+        public string Description => "Desmutea";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {
@@ -40,7 +26,9 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
                 foreach (RoomUser User in RoomUsers)
                 {
                     if (User == null || User.GetClient() == null || User.GetClient().GetHabbo() == null || User.GetClient().GetHabbo().Username == Session.GetHabbo().Username)
+                    {
                         continue;
+                    }
 
                     User.GetClient().SendWhisper("Esta sala ha sido desmuteada, puedes volver a hablar con normalidad.");
                 }

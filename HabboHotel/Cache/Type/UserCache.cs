@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.HabboHotel.Cache
 {
@@ -19,11 +15,11 @@ namespace Neon.HabboHotel.Cache
             this.Username = Username;
             this.Motto = Motto;
             this.Look = Look;
-            this.AddedTime = DateTime.Now;
+            AddedTime = DateTime.Now;
         }
         public bool isExpired()
         {
-            TimeSpan CacheTime = DateTime.Now - this.AddedTime;
+            TimeSpan CacheTime = DateTime.Now - AddedTime;
             return CacheTime.TotalMinutes >= 30;
         }
     }

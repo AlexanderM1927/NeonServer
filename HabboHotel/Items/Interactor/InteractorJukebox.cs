@@ -1,7 +1,4 @@
-﻿using Neon.Database.Interfaces;
-using Neon.HabboHotel.GameClients;
-using Neon.HabboHotel.Items.Wired;
-using System;
+﻿using Neon.HabboHotel.GameClients;
 
 namespace Neon.HabboHotel.Items.Interactor
 {
@@ -18,13 +15,17 @@ namespace Neon.HabboHotel.Items.Interactor
                 if (Item.ExtraData == "1")
                 {
                     if (Item.GetRoom().GetRoomMusicManager().PlaylistSize > 0)
+                    {
                         if (!Item.GetRoom().GetRoomMusicManager().IsPlaying)
+                        {
                             Item.GetRoom().GetRoomMusicManager().Start();
+                        }
                         else
                         {
                             Item.ExtraData = "0";
                             Item.UpdateState();
                         }
+                    }
                 }
             }
         }
@@ -43,7 +44,9 @@ namespace Neon.HabboHotel.Items.Interactor
         public void OnTrigger(GameClient Session, Item Item, int Request, bool HasRights)
         {
             if (!HasRights)
+            {
                 return;
+            }
 
             switch (Request)
             {

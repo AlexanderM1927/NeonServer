@@ -1,13 +1,13 @@
 ﻿#region
 
-using System;
-using System.Collections.Concurrent;
-using System.Drawing;
 using Neon.Communication.Packets.Outgoing;
 using Neon.HabboHotel.Items;
 using Neon.HabboHotel.Items.Wired;
 using Neon.HabboHotel.Rooms.Games.Teams;
 using Neon.Utilities;
+using System;
+using System.Collections.Concurrent;
+using System.Drawing;
 
 #endregion
 
@@ -51,39 +51,57 @@ namespace Neon.HabboHotel.Rooms.Games.Football
             GameIsStarted = false;
 
             if (!userTriggered)
+            {
                 _room.GetWired().TriggerEvent(WiredBoxType.TriggerGameEnds, null);
+            }
         }
 
-        public void StartGame() => GameIsStarted = true;
+        public void StartGame()
+        {
+            GameIsStarted = true;
+        }
 
         public void AddBall(Item item)
         {
             if (!NeonEnvironment.GetGame().GetRoomManager().LoadedBallRooms.Contains(_room))
+            {
                 NeonEnvironment.GetGame().GetRoomManager().LoadedBallRooms.Add(_room);
+            }
 
             Balls.TryAdd(item.Id, item);
         }
 
         public void RemoveBall(int itemID)
         {
-            var item = _room.GetRoomItemHandler().GetItem(itemID);
+            Item item = _room.GetRoomItemHandler().GetItem(itemID);
             if (item == null)
+            {
                 return;
+            }
+
             item.ballIsMoving = false;
             Balls.TryRemove(itemID, out item);
 
             if (NeonEnvironment.GetGame().GetRoomManager().LoadedBallRooms.Contains(_room))
+            {
                 NeonEnvironment.GetGame().GetRoomManager().LoadedBallRooms.Remove(_room);
+            }
         }
 
         internal void OnCycle()
         {
             if (Balls == null)
+            {
                 return;
-            foreach (var ball in Balls.Values)
+            }
+
+            foreach (Item ball in Balls.Values)
             {
                 if (ball == null)
+                {
                     return;
+                }
+
                 if (ball.ballIsMoving)
                 {
                     MoveBallProcess(ball, null);
@@ -95,19 +113,24 @@ namespace Neon.HabboHotel.Rooms.Games.Football
         internal void MoveBallProcess(Item item, RoomUser user)
         {
             {
-                var tryes = 0;
-                var newX = item.Coordinate.X;
-                var newY = item.Coordinate.Y;
+                int tryes = 0;
+                int newX = item.Coordinate.X;
+                int newY = item.Coordinate.Y;
 
                 if (item.ballMover == null && item.ballMover != user)
+                {
                     item.ballMover = user;
+                }
 
                 while (tryes < 3)
                 {
                     if (_room == null)
                     {
                         if (_room.GetGameMap() == null)
+                        {
                             _room.FixGameMap();
+                        }
+
                         return;
                     }
 
@@ -117,12 +140,12 @@ namespace Neon.HabboHotel.Rooms.Games.Football
                         break;
                     }
 
-                    var resetX = newX;
-                    var resetY = newY;
+                    int resetX = newX;
+                    int resetY = newY;
 
                     ComeDirection.GetNewCoords(item.Direction, ref newX, ref newY);
 
-                    var trollface = false;
+                    bool trollface = false;
 
                     if (_room.GetGameMap().SquareHasUsers(newX, newY)) // break 100 %, cannot return the ball
                     {
@@ -135,16 +158,21 @@ namespace Neon.HabboHotel.Rooms.Games.Football
                     }
 
                     if (trollface == false)
-                        if (!_room.GetGameMap().itemCanBePlacedHere(newX, newY))
+                    {
+                        if (!_room.GetGameMap().ItemCanBePlacedHere(newX, newY))
                         {
                             item.Direction = ComeDirection.InverseDirections(_room, item.Direction, newX, newY);
                             newX = resetX;
                             newY = resetY;
                             tryes++;
                             if (tryes > 2)
+                            {
                                 item.ballIsMoving = false;
+                            }
+
                             continue;
                         }
+                    }
 
                     if (MoveBall(item, item.ballMover, newX, newY))
                     {
@@ -154,7 +182,9 @@ namespace Neon.HabboHotel.Rooms.Games.Football
 
                     int.TryParse(item.ExtraData, out int Number);
                     if (Number > 11)
+                    {
                         item.ExtraData = (int.Parse(item.ExtraData) - 11).ToString();
+                    }
 
                     item._iBallValue++;
 
@@ -173,17 +203,21 @@ namespace Neon.HabboHotel.Rooms.Games.Football
         internal void OnUserWalk(RoomUser User)
         {
             if (User == null)
+            {
                 return;
+            }
 
-            foreach (var ball in Balls.Values)
+            foreach (Item ball in Balls.Values)
             {
                 if (ball == null)
+                {
                     return;
+                }
 
                 if (User.SetX == ball.GetX && User.SetY == ball.GetY && User.GoalX == ball.GetX &&
                     User.GoalY == ball.GetY && User.handelingBallStatus == 0) // super chute.
                 {
-                    var userPoint = new Point(User.X, User.Y);
+                    Point userPoint = new Point(User.X, User.Y);
                     ball.ExtraData = "55";
                     ball.ballIsMoving = true;
                     ball._iBallValue = 1;
@@ -191,7 +225,7 @@ namespace Neon.HabboHotel.Rooms.Games.Football
                 }
                 else if (User.X == ball.GetX && User.Y == ball.GetY && User.handelingBallStatus == 0)
                 {
-                    var userPoint = new Point(User.SetX, User.SetY);
+                    Point userPoint = new Point(User.SetX, User.SetY);
                     ball.ExtraData = "55";
                     ball.ballIsMoving = true;
                     ball._iBallValue = 1;
@@ -200,22 +234,25 @@ namespace Neon.HabboHotel.Rooms.Games.Football
                 else
                 {
                     if (User.handelingBallStatus == 0 && User.GoalX == ball.GetX && User.GoalY == ball.GetY)
+                    {
                         return;
+                    }
 
                     if (User.SetX == ball.GetX && User.SetY == ball.GetY && User.IsWalking &&
                         (User.X != User.GoalX || User.Y != User.GoalY))
                     {
                         User.handelingBallStatus = 1;
-                        var userPoint = new Point(User.X, User.Y);
+                        Point userPoint = new Point(User.X, User.Y);
                         ball.ExtraData = "11";
                         ball.ballIsMoving = true;
+                        ball._iBallValue = 1;
                         MoveBall(ball, User, userPoint);
 
-                        var _comeDirection = ComeDirection.GetComeDirection(new Point(User.X, User.Y), ball.Coordinate);
+                        Direction _comeDirection = ComeDirection.GetComeDirection(new Point(User.X, User.Y), ball.Coordinate);
                         if (_comeDirection != Direction.Null)
                         {
-                            var NewX = User.SetX;
-                            var NewY = User.SetY;
+                            int NewX = User.SetX;
+                            int NewY = User.SetY;
 
                             ComeDirection.GetNewCoords(_comeDirection, ref NewX, ref NewY);
                             if (ball.GetRoom().GetGameMap().ValidTile(NewX, NewY))
@@ -317,26 +354,35 @@ namespace Neon.HabboHotel.Rooms.Games.Football
             //            lock (_lock)
             {
                 if (item?.GetBaseItem() == null /*|| mover == null || mover.GetHabbo() == null*/)
+                {
                     return false;
+                }
+
                 if (item.ballIsMoving)
                 {
                     if (item.ExtraData == "55" || item.ExtraData == "44" || item.ExtraData == "11") // puede ser un cañito? o.O
                     {
-                        var randomValue = new Random().Next(1, 7);
+                        int randomValue = new Random().Next(1, 7);
                         if (randomValue != 5) // no cañito de CR7
-                            if (!_room.GetGameMap().itemCanBePlacedHere(newX, newY))
+                        {
+                            if (!_room.GetGameMap().ItemCanBePlacedHere(newX, newY))
+                            {
                                 return false;
+                            }
+                        }
                     }
                 }
                 else
                 {
-                    if (!_room.GetGameMap().itemCanBePlacedHere(newX, newY))
+                    if (!_room.GetGameMap().ItemCanBePlacedHere(newX, newY))
+                    {
                         return false;
+                    }
                 }
 
-                var oldRoomCoord = item.Coordinate;
+                Point oldRoomCoord = item.Coordinate;
 
-                var mMessage2 = new ServerPacket(ServerPacketHeader.ObjectUpdateMessageComposer); // Cf
+                ServerPacket mMessage2 = new ServerPacket(ServerPacketHeader.ObjectUpdateMessageComposer); // Cf
                 mMessage2.WriteInteger(item.Id);
                 mMessage2.WriteInteger(item.GetBaseItem().SpriteId);
                 mMessage2.WriteInteger(newX);
@@ -353,14 +399,18 @@ namespace Neon.HabboHotel.Rooms.Games.Football
                 _room.SendFastMessage(mMessage2);
 
                 if (oldRoomCoord.X == newX && oldRoomCoord.Y == newY)
+                {
                     return false;
+                }
 
                 item.SetState(newX, newY, item.GetZ,
                     Gamemap.GetAffectedTiles(item.GetBaseItem().Length, item.GetBaseItem().Width, newX, newY,
                         item.Rotation));
 
                 if (mover != null)
+                {
                     _room.OnUserShoot(mover, item);
+                }
 
                 return false;
             }
@@ -372,7 +422,9 @@ namespace Neon.HabboHotel.Rooms.Games.Football
             {
                 item.Direction = ComeDirection.GetComeDirection(user, item.Coordinate);
                 if (item.Direction != Direction.Null)
+                {
                     MoveBallProcess(item, mover);
+                }
 
                 _room.OnUserShoot(mover, item);
             }

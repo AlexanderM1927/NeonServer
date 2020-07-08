@@ -1,29 +1,15 @@
-﻿using System;
-using System.Linq;
-using System.Text;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
 using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms;
-using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
 {
-    class RoomMuteCommand : IChatCommand
+    internal class RoomMuteCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_roommute"; }
-        }
+        public string PermissionRequired => "command_roommute";
 
-        public string Parameters
-        {
-            get { return "%razón%"; }
-        }
+        public string Parameters => "%razón%";
 
-        public string Description
-        {
-            get { return "Silencia la sala."; }
-        }
+        public string Description => "Silencia la sala.";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {
@@ -34,7 +20,9 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
             }
 
             if (!Room.RoomMuted)
+            {
                 Room.RoomMuted = true;
+            }
 
             string Msg = CommandManager.MergeParams(Params, 1);
 
@@ -44,7 +32,9 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
                 foreach (RoomUser User in RoomUsers)
                 {
                     if (User == null || User.GetClient() == null || User.GetClient().GetHabbo() == null || User.GetClient().GetHabbo().Username == Session.GetHabbo().Username)
+                    {
                         continue;
+                    }
 
                     User.GetClient().SendMessage(new RoomCustomizedAlertComposer("Esta sala ha salido silenciada por la siguiente razón:\n\n" + Msg + "\n\n - " + Session.GetHabbo().Username + ""));
                 }

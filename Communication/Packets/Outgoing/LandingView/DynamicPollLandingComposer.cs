@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Neon.Communication.Packets.Outgoing.LandingView
+﻿namespace Neon.Communication.Packets.Outgoing.LandingView
 {
-    class DynamicPollLandingComposer : ServerPacket
+    internal class DynamicPollLandingComposer : ServerPacket
     {
         public DynamicPollLandingComposer(bool HasDone)
             : base(ServerPacketHeader.DynamicPollLandingComposer)

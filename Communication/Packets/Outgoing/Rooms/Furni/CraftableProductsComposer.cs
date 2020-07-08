@@ -1,19 +1,15 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using Neon.HabboHotel.Items;
+﻿using Neon.HabboHotel.Items;
 
 namespace Neon.Communication.Packets.Outgoing.Rooms.Furni
 {
-    class CraftableProductsComposer : ServerPacket
+    internal class CraftableProductsComposer : ServerPacket
     {
         public CraftableProductsComposer(Item item)
             : base(ServerPacketHeader.CraftableProductsMessageComposer)
         {
             int total = 0;
-            var crafting = NeonEnvironment.GetGame().GetCraftingManager();
-            foreach (var recipe in crafting.CraftingRecipes.Values)
+            HabboHotel.Items.Crafting.CraftingManager crafting = NeonEnvironment.GetGame().GetCraftingManager();
+            foreach (HabboHotel.Items.Crafting.CraftingRecipe recipe in crafting.CraftingRecipes.Values)
             {
                 if (recipe.Type == item.GetBaseItem().Id)
                 {
@@ -22,7 +18,7 @@ namespace Neon.Communication.Packets.Outgoing.Rooms.Furni
                 }
             }
             base.WriteInteger(total); //crafting.CraftingRecipes.Count
-            foreach (var recipe in crafting.CraftingRecipes.Values)
+            foreach (HabboHotel.Items.Crafting.CraftingRecipe recipe in crafting.CraftingRecipes.Values)
             {
                 if (recipe.Type == item.GetBaseItem().Id)
                 {
@@ -31,7 +27,7 @@ namespace Neon.Communication.Packets.Outgoing.Rooms.Furni
                 }
             }
             base.WriteInteger(crafting.CraftableItems.Count);
-            foreach (var itemName in crafting.CraftableItems)
+            foreach (string itemName in crafting.CraftableItems)
             {
                 base.WriteString(itemName);
             }

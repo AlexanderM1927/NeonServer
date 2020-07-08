@@ -1,7 +1,6 @@
-﻿using System;
+﻿using Neon.Database.Interfaces;
+using System;
 using System.Collections.Generic;
-
-using Neon.Database.Interfaces;
 
 namespace Neon.HabboHotel.Catalog.Marketplace
 {
@@ -21,11 +20,11 @@ namespace Neon.HabboHotel.Catalog.Marketplace
         {
             int num = 0;
             int num2 = 0;
-            if (this.MarketAverages.ContainsKey(SpriteID) && this.MarketCounts.ContainsKey(SpriteID))
+            if (MarketAverages.ContainsKey(SpriteID) && MarketCounts.ContainsKey(SpriteID))
             {
-                if (this.MarketCounts[SpriteID] > 0)
+                if (MarketCounts[SpriteID] > 0)
                 {
-                    return (this.MarketAverages[SpriteID] / this.MarketCounts[SpriteID]);
+                    return (MarketAverages[SpriteID] / MarketCounts[SpriteID]);
                 }
                 return 0;
             }
@@ -39,18 +38,20 @@ namespace Neon.HabboHotel.Catalog.Marketplace
                 num2 = dbClient.getInteger();
             }
 
-            this.MarketAverages.Add(SpriteID, num);
-            this.MarketCounts.Add(SpriteID, num2);
+            MarketAverages.Add(SpriteID, num);
+            MarketCounts.Add(SpriteID, num2);
 
             if (num2 > 0)
+            {
                 return Convert.ToInt32(Math.Ceiling((double)(num / num2)));
-            
+            }
+
             return 0;
         }
 
         public string FormatTimestampString()
         {
-            return this.FormatTimestamp().ToString().Split(new char[] { ',' })[0];
+            return FormatTimestamp().ToString().Split(new char[] { ',' })[0];
         }
 
         public double FormatTimestamp()
@@ -62,7 +63,7 @@ namespace Neon.HabboHotel.Catalog.Marketplace
         {
             Dictionary<int, MarketOffer> dictionary = new Dictionary<int, MarketOffer>();
             Dictionary<int, int> dictionary2 = new Dictionary<int, int>();
-            foreach (MarketOffer item in this.MarketItems)
+            foreach (MarketOffer item in MarketItems)
             {
                 if (dictionary.ContainsKey(item.SpriteId))
                 {

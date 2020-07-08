@@ -1,13 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Text;
+﻿using Neon.HabboHotel.Groups;
 using System.Collections.Generic;
-
-using Neon.HabboHotel.Groups;
 
 namespace Neon.Communication.Packets.Outgoing.Catalog
 {
-    class GroupFurniConfigComposer : ServerPacket
+    internal class GroupFurniConfigComposer : ServerPacket
     {
         public GroupFurniConfigComposer(ICollection<Group> Groups)
             : base(ServerPacketHeader.GroupFurniConfigMessageComposer)

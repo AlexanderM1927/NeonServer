@@ -1,16 +1,11 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Data;
-using System.Collections.Generic;
-
-
-using Neon.Communication.Packets.Outgoing.Marketplace;
+﻿using Neon.Communication.Packets.Outgoing.Marketplace;
 using Neon.Database.Interfaces;
+using System;
+using System.Data;
 
 namespace Neon.Communication.Packets.Incoming.Marketplace
 {
-    class GetMarketplaceItemStatsEvent : IPacketEvent
+    internal class GetMarketplaceItemStatsEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {

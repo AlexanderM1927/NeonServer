@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Neon.HabboHotel.Talents
+﻿namespace Neon.HabboHotel.Talents
 {
     public enum TalentType
     {

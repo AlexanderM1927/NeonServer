@@ -1,17 +1,12 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-namespace Neon.Communication.Packets.Outgoing.Messenger
+﻿namespace Neon.Communication.Packets.Outgoing.Messenger
 {
-    class RoomInviteComposer : ServerPacket
+    internal class RoomInviteComposer : ServerPacket
     {
         public RoomInviteComposer(int SenderId, string Text)
             : base(ServerPacketHeader.RoomInviteMessageComposer)
         {
             base.WriteInteger(SenderId);
-           base.WriteString(Text);
+            base.WriteString(Text);
         }
     }
 }

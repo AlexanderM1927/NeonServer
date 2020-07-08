@@ -1,7 +1,5 @@
 ﻿namespace Neon.HabboHotel.Catalog
 {
-    using System;
-
     public class Frontpage
     {
         public string _frontImage;
@@ -11,30 +9,30 @@
 
         public Frontpage(int Id, string FrontName, string FrontLink, string FrontImage)
         {
-            this._id = Id;
-            this._frontName = FrontName;
-            this._frontLink = FrontLink;
-            this._frontImage = FrontImage;
+            _id = Id;
+            _frontName = FrontName;
+            _frontLink = FrontLink;
+            _frontImage = FrontImage;
         }
 
         public string FrontImage()
         {
-            return this._frontImage;
+            return _frontImage;
         }
 
         public string FrontLink()
         {
-            return this._frontLink;
+            return _frontLink;
         }
 
         public string FrontName()
         {
-            return this._frontName;
+            return _frontName;
         }
 
         public int Id()
         {
-            return this._id;
+            return _id;
         }
     }
 }

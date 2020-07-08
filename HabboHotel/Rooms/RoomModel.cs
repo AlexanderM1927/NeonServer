@@ -54,19 +54,21 @@ namespace Neon.HabboHotel.Rooms
                 this.Heightmap = Heightmap.ToLower();
                 this.StaticFurniMap = StaticFurniMap;
 
-                this.gotPublicPool = !string.IsNullOrEmpty(Poolmap);
+                gotPublicPool = !string.IsNullOrEmpty(Poolmap);
                 string[] tmpHeightmap = Heightmap.Split(Convert.ToChar(13));
                 string[] tmpFxMap = Poolmap.Split(Convert.ToChar(13));
 
-                this.MapSizeX = tmpHeightmap[0].Length;
-                this.MapSizeY = tmpHeightmap.Length;
+                MapSizeX = tmpHeightmap[0].Length;
+                MapSizeY = tmpHeightmap.Length;
                 this.ClubOnly = ClubOnly;
 
                 SqState = new SquareState[MapSizeX, MapSizeY];
                 SqFloorHeight = new short[MapSizeX, MapSizeY];
                 SqSeatRot = new byte[MapSizeX, MapSizeY];
                 if (gotPublicPool)
+                {
                     mRoomModelfx = new byte[MapSizeX, MapSizeY];
+                }
 
                 //this.Furnis = Furnis;
 

@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Neon.Communication.Packets.Outgoing.Inventory.Purse
+﻿namespace Neon.Communication.Packets.Outgoing.Inventory.Purse
 {
-    class HabboActivityPointNotificationComposer : ServerPacket
+    internal class HabboActivityPointNotificationComposer : ServerPacket
     {
         public HabboActivityPointNotificationComposer(int Balance, int Notif, int currencyType = 0)
             : base(ServerPacketHeader.HabboActivityPointNotificationMessageComposer)

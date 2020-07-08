@@ -1,14 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Data;
-using System.Collections.Generic;
-
-
-
-namespace Neon.Communication.Packets.Outgoing.Marketplace
+﻿namespace Neon.Communication.Packets.Outgoing.Marketplace
 {
-    class MarketplaceItemStatsComposer : ServerPacket
+    internal class MarketplaceItemStatsComposer : ServerPacket
     {
         public MarketplaceItemStatsComposer(int ItemId, int SpriteId, int AveragePrice)
             : base(ServerPacketHeader.MarketplaceItemStatsMessageComposer)

@@ -28,23 +28,44 @@ namespace Neon.Utilities.Enclosure
         public void add(Point p)
         {
             if (mostLeft == badPoint)
+            {
                 mostLeft = p;
+            }
+
             if (mostRight == badPoint)
+            {
                 mostRight = p;
+            }
+
             if (mostTop == badPoint)
+            {
                 mostTop = p;
+            }
+
             if (mostDown == badPoint)
+            {
                 mostDown = p;
+            }
 
             if (p.X < mostLeft.X)
+            {
                 mostLeft = p;
-            if (p.X > mostRight.X)
-                mostRight = p;
-            if (p.Y > mostTop.Y)
-                mostTop = p;
-            if (p.Y < mostDown.Y)
-                mostDown = p;
+            }
 
+            if (p.X > mostRight.X)
+            {
+                mostRight = p;
+            }
+
+            if (p.Y > mostTop.Y)
+            {
+                mostTop = p;
+            }
+
+            if (p.Y < mostDown.Y)
+            {
+                mostDown = p;
+            }
 
             PointList.Add(p);
         }

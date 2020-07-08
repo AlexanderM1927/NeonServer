@@ -1,10 +1,6 @@
-﻿using Neon.HabboHotel.Calendar;
-using System;
-using System.Collections.Generic;
-
-namespace Neon.Communication.Packets.Outgoing.Campaigns
+﻿namespace Neon.Communication.Packets.Outgoing.Campaigns
 {
-    class CampaignCalendarDataComposer : ServerPacket
+    internal class CampaignCalendarDataComposer : ServerPacket
     {
         public CampaignCalendarDataComposer(bool[] OpenedBoxes)
             : base(ServerPacketHeader.CampaignCalendarDataMessageComposer)
@@ -26,7 +22,9 @@ namespace Neon.Communication.Packets.Outgoing.Campaigns
                 {
                     // DÍA ACTUAL (EVITAMOS)
                     if (NeonEnvironment.GetGame().GetCalendarManager().GetUnlockDays() == i)
+                    {
                         continue;
+                    }
 
                     LateCount++;
                 }
@@ -47,10 +45,14 @@ namespace Neon.Communication.Packets.Outgoing.Campaigns
             {
                 // DÍA ACTUAL (EVITAMOS)
                 if (NeonEnvironment.GetGame().GetCalendarManager().GetUnlockDays() == i)
+                {
                     continue;
+                }
 
                 if (!OpenedBoxes[i])
+                {
                     base.WriteInteger(i);
+                }
             }
         }
     }

@@ -1,16 +1,12 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.Utilities;
-using Neon.HabboHotel.Users;
+﻿using Neon.HabboHotel.GameClients;
 using Neon.HabboHotel.Groups;
-using Neon.HabboHotel.GameClients;
+using Neon.HabboHotel.Users;
+using System;
+using System.Collections.Generic;
 
 namespace Neon.Communication.Packets.Outgoing.Users
 {
-    class ProfileInformationComposer : ServerPacket
+    internal class ProfileInformationComposer : ServerPacket
     {
         public ProfileInformationComposer(Habbo Data, GameClient Session, List<Group> Groups, int friendCount)
             : base(ServerPacketHeader.ProfileInformationMessageComposer)

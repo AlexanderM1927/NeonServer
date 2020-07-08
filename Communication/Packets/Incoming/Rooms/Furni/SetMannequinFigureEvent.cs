@@ -1,26 +1,27 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
+﻿using Neon.HabboHotel.Items;
 using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Items;
+using System;
+using System.Linq;
 
 
 namespace Neon.Communication.Packets.Incoming.Rooms.Furni
 {
-    class SetMannequinFigureEvent : IPacketEvent
+    internal class SetMannequinFigureEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
             Room Room = Session.GetHabbo().CurrentRoom;
             if (Room == null || !Room.CheckRights(Session, true))
+            {
                 return;
+            }
 
             int ItemId = Packet.PopInt();
             Item Item = Session.GetHabbo().CurrentRoom.GetRoomItemHandler().GetItem(ItemId);
             if (Item == null)
+            {
                 return;
+            }
 
             string Gender = Session.GetHabbo().Gender.ToLower();
             string Figure = "";
@@ -28,7 +29,9 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Furni
             foreach (string Str in Session.GetHabbo().Look.Split('.'))
             {
                 if (Str.Contains("hr") || Str.Contains("hd") || Str.Contains("he") || Str.Contains("ea") || Str.Contains("ha"))
+                {
                     continue;
+                }
 
                 Figure += Str + ".";
             }
@@ -40,7 +43,9 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Furni
                 Item.ExtraData = Gender + Convert.ToChar(5) + Figure + Convert.ToChar(5) + Flags[2];
             }
             else
+            {
                 Item.ExtraData = Gender + Convert.ToChar(5) + Figure + Convert.ToChar(5) + "Default";
+            }
 
             Item.UpdateState(true, true);
         }

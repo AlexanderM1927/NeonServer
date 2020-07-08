@@ -1,13 +1,13 @@
-﻿using Neon.HabboHotel.GameClients;
-using Neon.Communication.Packets.Outgoing.Rooms.Chat;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Chat;
+using Neon.HabboHotel.GameClients;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.Administrator
 {
     internal class LinkStaffCommand : IChatCommand
     {
-        public string PermissionRequired { get  { return "command_link";   }  }
-        public string Parameters  { get { return "%message%"; }  }
-        public string Description { get { return "Envia un link a la sala"; } }
+        public string PermissionRequired => "command_link";
+        public string Parameters => "%message%";
+        public string Description => "Envia un link a la sala";
 
         public void Execute(GameClient Session, Room Room, string[] Params)
         {

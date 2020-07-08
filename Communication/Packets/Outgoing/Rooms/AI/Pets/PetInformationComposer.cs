@@ -1,23 +1,20 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Users;
+﻿using Neon.HabboHotel.Rooms;
 using Neon.HabboHotel.Rooms.AI;
-using Neon.HabboHotel.Rooms;
+using Neon.HabboHotel.Users;
+using System;
 
 namespace Neon.Communication.Packets.Outgoing.Rooms.AI.Pets
 {
-    class PetInformationComposer : ServerPacket
+    internal class PetInformationComposer : ServerPacket
     {
         public PetInformationComposer(Pet Pet)
             : base(ServerPacketHeader.PetInformationMessageComposer)
         {
-            Room Room;
 
-            if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Pet.RoomId, out Room))
+            if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Pet.RoomId, out Room Room))
+            {
                 return;
+            }
 
             base.WriteInteger(Pet.PetId);
             base.WriteString(Pet.Name);

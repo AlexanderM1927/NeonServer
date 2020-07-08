@@ -1,24 +1,14 @@
 ﻿using Neon.HabboHotel.GameClients;
-using Neon.Communication.Packets.Outgoing.Nux;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
 {
-    class GiveSpecialReward : IChatCommand
+    internal class GiveSpecialReward : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_give_special"; }
-        }
+        public string PermissionRequired => "command_give_special";
 
-        public string Parameters
-        {
-            get { return "%username% %type% %amount%"; }
-        }
+        public string Parameters => "%username% %type% %amount%";
 
-        public string Description
-        {
-            get { return ""; }
-        }
+        public string Description => "";
 
         public void Execute(GameClient Session, Room Room, string[] Params)
         {

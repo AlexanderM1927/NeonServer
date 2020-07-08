@@ -1,8 +1,7 @@
-﻿using System;
-using Neon.Communication.Packets.Outgoing.Rooms.Chat;
-using Neon.Communication.Packets.Outgoing.Pets;
+﻿using Neon.Communication.Packets.Outgoing.Pets;
 using Neon.Communication.Packets.Outgoing.Rooms.AI.Pets;
-using Neon.HabboHotel.GameClients;
+using Neon.Communication.Packets.Outgoing.Rooms.Chat;
+using System;
 
 namespace Neon.HabboHotel.Rooms.AI
 {
@@ -55,12 +54,12 @@ namespace Neon.HabboHotel.Rooms.AI
             this.X = X;
             this.Y = Y;
             this.Z = Z;
-            this.PlacedInRoom = false;
-            this.DBState = DatabaseUpdateState.Updated;
+            PlacedInRoom = false;
+            DBState = DatabaseUpdateState.Updated;
             this.Saddle = Saddle;
-            this.AnyoneCanRide = Anyonecanride;
-            this.PetHair = PetHer;
-            this.HairDye = Dye;
+            AnyoneCanRide = Anyonecanride;
+            PetHair = PetHer;
+            HairDye = Dye;
             this.GnomeClothing = GnomeClothing;
         }
 
@@ -70,10 +69,15 @@ namespace Neon.HabboHotel.Rooms.AI
             Room.SendMessage(new RespectPetNotificationMessageComposer(this));
 
             if (DBState != DatabaseUpdateState.NeedsInsert)
+            {
                 DBState = DatabaseUpdateState.NeedsUpdate;
+            }
 
             if (experience <= 150000)
+            {
                 Addexperience(10);
+            }
+
             Room.SendMessage(new AddExperiencePointsComposer(PetId, VirtualId, 10));
         }
 
@@ -86,13 +90,17 @@ namespace Neon.HabboHotel.Rooms.AI
                 experience = 150000;
 
                 if (Room != null)
+                {
                     Room.SendMessage(new AddExperiencePointsComposer(PetId, VirtualId, Amount));
+                }
 
                 return;
             }
 
             if (DBState != DatabaseUpdateState.NeedsInsert)
+            {
                 DBState = DatabaseUpdateState.NeedsUpdate;
+            }
 
             if (Room != null)
             {
@@ -115,19 +123,28 @@ namespace Neon.HabboHotel.Rooms.AI
             if (Add)
             {
                 if (Energy == 100) // If Energy is 100, no point.
+                {
                     return;
+                }
 
                 if (Energy > 85)
+                {
                     MaxE = MaxEnergy - Energy;
+                }
                 else
+                {
                     MaxE = 10;
-
+                }
             }
             else
+            {
                 MaxE = 15; // Remove Max Energy as 15
+            }
 
             if (MaxE <= 4)
+            {
                 MaxE = 15;
+            }
 
             int r = NeonEnvironment.GetRandomNumber(4, MaxE);
 
@@ -142,12 +159,14 @@ namespace Neon.HabboHotel.Rooms.AI
                 }
             }
             else
-
+            {
                 Energy = Energy + r;
-
+            }
 
             if (DBState != DatabaseUpdateState.NeedsInsert)
+            {
                 DBState = DatabaseUpdateState.NeedsUpdate;
+            }
         }
 
         public Room Room
@@ -155,22 +174,23 @@ namespace Neon.HabboHotel.Rooms.AI
             get
             {
                 if (!IsInRoom)
+                {
                     return null;
+                }
 
-                Room _room;
 
-                if (NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(RoomId, out _room))
+                if (NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(RoomId, out Room _room))
+                {
                     return _room;
+                }
                 else
+                {
                     return null;
-            
+                }
             }
         }
 
-        public bool IsInRoom
-        {
-            get { return (RoomId > 0); }
-        }
+        public bool IsInRoom => (RoomId > 0);
 
         public int Level
         {
@@ -179,50 +199,29 @@ namespace Neon.HabboHotel.Rooms.AI
                 for (int level = 0; level < experienceLevels.Length; ++level)
                 {
                     if (experience < experienceLevels[level])
+                    {
                         return level + 1;
+                    }
                 }
                 return experienceLevels.Length;
             }
         }
 
-        public static int MaxLevel
-        {
-            get { return 20; }
-        }
+        public static int MaxLevel => 20;
 
-        public int experienceGoal
-        {
-            get
-            {
+        public int experienceGoal =>
                 //will error index out of range (need to look into this sometime)
-                return experienceLevels[Level - 1];
-            }
-        }
+                experienceLevels[Level - 1];
 
-        public static int MaxEnergy
-        {
-            get { return 100; }
-        }
+        public static int MaxEnergy => 100;
 
-        public static int MaxNutrition
-        {
-            get { return 150; }
-        }
+        public static int MaxNutrition => 150;
 
-        public int Age
-        {
-            get { return Convert.ToInt32(Math.Floor((NeonEnvironment.GetUnixTimestamp() - CreationStamp) / 86400)); }
-        }
+        public int Age => Convert.ToInt32(Math.Floor((NeonEnvironment.GetUnixTimestamp() - CreationStamp) / 86400));
 
-        public string Look
-        {
-            get { return Type + " " + Race + " " + Color + " " + GnomeClothing; }
-        }
+        public string Look => Type + " " + Race + " " + Color + " " + GnomeClothing;
 
-        public string OwnerName
-        {
-            get { return NeonEnvironment.GetGame().GetClientManager().GetNameById(OwnerId); }
-        }
+        public string OwnerName => NeonEnvironment.GetGame().GetClientManager().GetNameById(OwnerId);
     }
 
     public enum DatabaseUpdateState

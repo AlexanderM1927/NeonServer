@@ -1,30 +1,25 @@
 ﻿using Neon.Communication.Packets.Outgoing.Groups;
 using Neon.HabboHotel.GameClients;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.Communication.Packets.Incoming.Groups
 {
-    class PostGroupContentEvent : IPacketEvent
+    internal class PostGroupContentEvent : IPacketEvent
     {
         public void Parse(GameClient Session, ClientPacket Packet)
         {
-            var ForumId = Packet.PopInt();
-            var ThreadId = Packet.PopInt();
-            var Caption = Packet.PopString();
-            var Message = Packet.PopString();
+            int ForumId = Packet.PopInt();
+            int ThreadId = Packet.PopInt();
+            string Caption = Packet.PopString();
+            string Message = Packet.PopString();
 
-            var Forum = NeonEnvironment.GetGame().GetGroupForumManager().GetForum(ForumId);
+            HabboHotel.Groups.Forums.GroupForum Forum = NeonEnvironment.GetGame().GetGroupForumManager().GetForum(ForumId);
             if (Forum == null)
             {
                 Session.SendNotification(";forum.thread.post.reply.error.forumnotfound");
                 return;
             }
-            var e = "";
-            var IsNewThread = ThreadId == 0;
+            string e = "";
+            bool IsNewThread = ThreadId == 0;
             if (IsNewThread)
             {
 
@@ -34,8 +29,8 @@ namespace Neon.Communication.Packets.Incoming.Groups
                     return;
                 }
 
-                var Thread = Forum.CreateThread(Session.GetHabbo().Id, Caption);
-                var Post = Thread.CreatePost(Session.GetHabbo().Id, Message);
+                HabboHotel.Groups.Forums.GroupForumThread Thread = Forum.CreateThread(Session.GetHabbo().Id, Caption);
+                HabboHotel.Groups.Forums.GroupForumThreadPost Post = Thread.CreatePost(Session.GetHabbo().Id, Message);
 
                 Session.SendMessage(new ThreadCreatedComposer(Session, Thread));
 
@@ -49,7 +44,7 @@ namespace Neon.Communication.Packets.Incoming.Groups
             }
             else
             {
-                var Thread = Forum.GetThread(ThreadId);
+                HabboHotel.Groups.Forums.GroupForumThread Thread = Forum.GetThread(ThreadId);
                 if (Thread == null)
                 {
                     Session.SendNotification(";forum.thread.post.reply.error.threadnotfound");
@@ -68,7 +63,7 @@ namespace Neon.Communication.Packets.Incoming.Groups
                     return;
                 }
 
-                var Post = Thread.CreatePost(Session.GetHabbo().Id, Message);
+                HabboHotel.Groups.Forums.GroupForumThreadPost Post = Thread.CreatePost(Session.GetHabbo().Id, Message);
                 Session.SendMessage(new ThreadReplyComposer(Session, Post));
                 NeonEnvironment.GetGame().GetAchievementManager().ProgressAchievement(Session, "ACH_Forum", 1);
             }

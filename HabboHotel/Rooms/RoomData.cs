@@ -1,11 +1,9 @@
-﻿using System;
+﻿using Neon.Database.Interfaces;
+using Neon.HabboHotel.Groups;
+using System;
 using System.Collections.Generic;
 using System.Data;
-
-using Neon.HabboHotel.Groups;
-using Neon.Database.Interfaces;
 using System.Globalization;
-using Neon.HabboHotel.Users;
 
 namespace Neon.HabboHotel.Rooms
 {
@@ -82,17 +80,24 @@ namespace Neon.HabboHotel.Rooms
                 dbClient.SetQuery("SELECT `username` FROM `users` WHERE `id` = @owner LIMIT 1");
                 dbClient.AddParameter("owner", OwnerId);
                 string result = dbClient.getString();
-                if (!String.IsNullOrEmpty(result))
+                if (!string.IsNullOrEmpty(result))
+                {
                     OwnerName = result;
+                }
             }
 
-            this.Access = RoomAccessUtility.ToRoomAccess(Row["state"].ToString().ToLower());
+            Access = RoomAccessUtility.ToRoomAccess(Row["state"].ToString().ToLower());
 
             Category = Convert.ToInt32(Row["category"]);
             if (!string.IsNullOrEmpty(Row["users_now"].ToString()))
+            {
                 UsersNow = Convert.ToInt32(Row["users_now"]);
+            }
             else
+            {
                 UsersNow = 0;
+            }
+
             UsersMax = Convert.ToInt32(Row["users_max"]);
             ModelName = Convert.ToString(Row["model_name"]);
             Score = Convert.ToInt32(Row["score"]);
@@ -116,11 +121,14 @@ namespace Neon.HabboHotel.Rooms
             TradeSettings = Convert.ToInt32(Row["trade_settings"]);
             RollerSpeed = Convert.ToInt32(Row["roller_speed"]);
 
-            Group G = null;
-            if (NeonEnvironment.GetGame().GetGroupManager().TryGetGroup(Convert.ToInt32(Row["group_id"]), out G))
+            if (NeonEnvironment.GetGame().GetGroupManager().TryGetGroup(Convert.ToInt32(Row["group_id"]), out Group G))
+            {
                 Group = G;
+            }
             else
+            {
                 Group = null;
+            }
 
             foreach (string Tag in Row["tags"].ToString().Split(','))
             {
@@ -129,15 +137,15 @@ namespace Neon.HabboHotel.Rooms
 
             mModel = NeonEnvironment.GetGame().GetRoomManager().GetModel(ModelName);
 
-            this.PushEnabled = NeonEnvironment.EnumToBool(Row["push_enabled"].ToString());
-            this.PullEnabled = NeonEnvironment.EnumToBool(Row["pull_enabled"].ToString());
-            this.SPushEnabled = NeonEnvironment.EnumToBool(Row["spush_enabled"].ToString());
-            this.SPullEnabled = NeonEnvironment.EnumToBool(Row["spull_enabled"].ToString());
-            this.EnablesEnabled = NeonEnvironment.EnumToBool(Row["enables_enabled"].ToString());
-            this.RespectNotificationsEnabled = NeonEnvironment.EnumToBool(Row["respect_notifications_enabled"].ToString());
-            this.PetMorphsAllowed = NeonEnvironment.EnumToBool(Row["pet_morphs_allowed"].ToString());
-            this.Shoot = Convert.ToInt32(Row["shoot"]);
-            this.HideWired = NeonEnvironment.EnumToBool(Row["hide_wired"].ToString());
+            PushEnabled = NeonEnvironment.EnumToBool(Row["push_enabled"].ToString());
+            PullEnabled = NeonEnvironment.EnumToBool(Row["pull_enabled"].ToString());
+            SPushEnabled = NeonEnvironment.EnumToBool(Row["spush_enabled"].ToString());
+            SPullEnabled = NeonEnvironment.EnumToBool(Row["spull_enabled"].ToString());
+            EnablesEnabled = NeonEnvironment.EnumToBool(Row["enables_enabled"].ToString());
+            RespectNotificationsEnabled = NeonEnvironment.EnumToBool(Row["respect_notifications_enabled"].ToString());
+            PetMorphsAllowed = NeonEnvironment.EnumToBool(Row["pet_morphs_allowed"].ToString());
+            Shoot = Convert.ToInt32(Row["shoot"]);
+            HideWired = NeonEnvironment.EnumToBool(Row["hide_wired"].ToString());
 
             WiredScoreBordDay = new Dictionary<int, KeyValuePair<int, string>>();
             WiredScoreBordWeek = new Dictionary<int, KeyValuePair<int, string>>();
@@ -157,7 +165,7 @@ namespace Neon.HabboHotel.Rooms
                 int getmonthtoday = Convert.ToInt32(now.ToString("MM"));
                 int getweektoday = CultureInfo.GetCultureInfo("Nl-nl").Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
 
-                this.WiredScoreFirstBordInformation = new List<int>()
+                WiredScoreFirstBordInformation = new List<int>()
                 {
                     getdaytoday,
                     getmonthtoday,
@@ -165,7 +173,7 @@ namespace Neon.HabboHotel.Rooms
                 };
 
                 dbClient.SetQuery("SELECT * FROM wired_scorebord WHERE roomid = @id ORDER BY `punten` DESC ");
-                dbClient.AddParameter("id", this.Id);
+                dbClient.AddParameter("id", Id);
                 foreach (DataRow row in dbClient.getTable().Rows)
                 {
                     int userid = Convert.ToInt32(row["userid"]);
@@ -173,7 +181,7 @@ namespace Neon.HabboHotel.Rooms
                     int Punten = Convert.ToInt32(row["punten"]);
                     string soort = Convert.ToString(row["soort"]);
                     int timestamp = Convert.ToInt32(row["timestamp"]);
-                    if ((!(soort == "day") || this.WiredScoreBordDay.ContainsKey(userid) ? false : !SuperCheck[0]))
+                    if ((!(soort == "day") || WiredScoreBordDay.ContainsKey(userid) ? false : !SuperCheck[0]))
                     {
                         if (timestamp != getdaytoday)
                         {
@@ -181,40 +189,40 @@ namespace Neon.HabboHotel.Rooms
                         }
                         if (!SuperCheck[0])
                         {
-                            this.WiredScoreBordDay.Add(userid, new KeyValuePair<int, string>(Punten, username));
+                            WiredScoreBordDay.Add(userid, new KeyValuePair<int, string>(Punten, username));
                         }
                     }
-                    if ((!(soort == "month") || this.WiredScoreBordMonth.ContainsKey(userid) ? false : !SuperCheck[1]))
+                    if ((!(soort == "month") || WiredScoreBordMonth.ContainsKey(userid) ? false : !SuperCheck[1]))
                     {
                         if (timestamp != getmonthtoday)
                         {
                             SuperCheck[1] = false;
                         }
-                        this.WiredScoreBordMonth.Add(userid, new KeyValuePair<int, string>(Punten, username));
+                        WiredScoreBordMonth.Add(userid, new KeyValuePair<int, string>(Punten, username));
                     }
-                    if ((!(soort == "week") || this.WiredScoreBordWeek.ContainsKey(userid) ? false : !SuperCheck[2]))
+                    if ((!(soort == "week") || WiredScoreBordWeek.ContainsKey(userid) ? false : !SuperCheck[2]))
                     {
                         if (timestamp != getweektoday)
                         {
                             SuperCheck[2] = false;
                         }
-                        this.WiredScoreBordWeek.Add(userid, new KeyValuePair<int, string>(Punten, username));
+                        WiredScoreBordWeek.Add(userid, new KeyValuePair<int, string>(Punten, username));
                     }
                 }
                 if (SuperCheck[0])
                 {
-                    dbClient.RunQuery(string.Concat("DELETE FROM `wired_scorebord` WHERE `roomid`='", this.Id, "' AND `soort`='day'"));
-                    this.WiredScoreBordDay.Clear();
+                    dbClient.RunQuery(string.Concat("DELETE FROM `wired_scorebord` WHERE `roomid`='", Id, "' AND `soort`='day'"));
+                    WiredScoreBordDay.Clear();
                 }
                 if (SuperCheck[1])
                 {
-                    dbClient.RunQuery(string.Concat("DELETE FROM `wired_scorebord` WHERE `roomid`='", this.Id, "' AND `soort`='month'"));
-                    this.WiredScoreBordMonth.Clear();
+                    dbClient.RunQuery(string.Concat("DELETE FROM `wired_scorebord` WHERE `roomid`='", Id, "' AND `soort`='month'"));
+                    WiredScoreBordMonth.Clear();
                 }
                 if (SuperCheck[2])
                 {
-                    dbClient.RunQuery(string.Concat("DELETE FROM `wired_scorebord` WHERE `roomid`='", this.Id, "' AND `soort`='week'"));
-                    this.WiredScoreBordDay.Clear();
+                    dbClient.RunQuery(string.Concat("DELETE FROM `wired_scorebord` WHERE `roomid`='", Id, "' AND `soort`='week'"));
+                    WiredScoreBordDay.Clear();
                 }
             }
         }
@@ -222,21 +230,20 @@ namespace Neon.HabboHotel.Rooms
 
         public RoomPromotion Promotion
         {
-            get { return this._promotion; }
-            set { this._promotion = value; }
+            get => _promotion;
+            set => _promotion = value;
         }
 
-        public bool HasActivePromotion
-        {
-            get { return this.Promotion != null; }
-        }
+        public bool HasActivePromotion => Promotion != null;
 
         public void EndPromotion()
         {
-            if (!this.HasActivePromotion)
+            if (!HasActivePromotion)
+            {
                 return;
+            }
 
-            this.Promotion = null;
+            Promotion = null;
         }
 
         public RoomModel Model
@@ -244,7 +251,10 @@ namespace Neon.HabboHotel.Rooms
             get
             {
                 if (mModel == null)
+                {
                     mModel = NeonEnvironment.GetGame().GetRoomManager().GetModel(ModelName);
+                }
+
                 return mModel;
             }
         }

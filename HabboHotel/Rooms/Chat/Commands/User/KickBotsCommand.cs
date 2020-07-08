@@ -1,37 +1,19 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Drawing;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms.AI;
-using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.GameClients;
-
-using Neon.HabboHotel.Users.Inventory.Bots;
-using Neon.Communication.Packets.Outgoing.Inventory.Bots;
-
+﻿using Neon.Communication.Packets.Outgoing.Inventory.Bots;
 using Neon.Database.Interfaces;
+using Neon.HabboHotel.Users.Inventory.Bots;
+using System;
+using System.Linq;
 
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.User
 {
-    class KickBotsCommand : IChatCommand
+    internal class KickBotsCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_kickbots"; }
-        }
+        public string PermissionRequired => "command_kickbots";
 
-        public string Parameters
-        {
-            get { return ""; }
-        }
+        public string Parameters => "";
 
-        public string Description
-        {
-            get { return "Expulsar a todos los BOTs dentro de tu sala."; }
-        }
+        public string Description => "Expulsar a todos los BOTs dentro de tu sala.";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {
@@ -44,11 +26,14 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User
             foreach (RoomUser User in Room.GetRoomUserManager().GetUserList().ToList())
             {
                 if (User == null || User.IsPet || !User.IsBot)
+                {
                     continue;
+                }
 
-                RoomUser BotUser = null;
-                if (!Room.GetRoomUserManager().TryGetBot(User.BotData.Id, out BotUser))
+                if (!Room.GetRoomUserManager().TryGetBot(User.BotData.Id, out RoomUser BotUser))
+                {
                     return;
+                }
 
                 using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
                 {

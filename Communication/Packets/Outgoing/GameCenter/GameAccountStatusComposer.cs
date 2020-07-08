@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Neon.Communication.Packets.Outgoing.GameCenter
+﻿namespace Neon.Communication.Packets.Outgoing.GameCenter
 {
-    class GameAccountStatusComposer : ServerPacket
+    internal class GameAccountStatusComposer : ServerPacket
     {
         public GameAccountStatusComposer(int GameID)
             : base(ServerPacketHeader.GameAccountStatusMessageComposer)

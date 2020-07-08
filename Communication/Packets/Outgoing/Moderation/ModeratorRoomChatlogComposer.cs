@@ -1,28 +1,22 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Data;
-using System.Collections.Generic;
-using Neon.Database.Interfaces;
-using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Users;
-
-using Neon.Utilities;
+﻿using Neon.Database.Interfaces;
 using Neon.HabboHotel.Cache;
+using Neon.HabboHotel.Rooms;
+using System;
+using System.Data;
 
 namespace Neon.Communication.Packets.Outgoing.Moderation
 {
-    class ModeratorRoomChatlogComposer : ServerPacket
+    internal class ModeratorRoomChatlogComposer : ServerPacket
     {
         public ModeratorRoomChatlogComposer(Room Room)
             : base(ServerPacketHeader.ModeratorRoomChatlogMessageComposer)
         {
             base.WriteByte(1);
             base.WriteShort(2);//Count
-           base.WriteString("roomName");
+            base.WriteString("roomName");
             base.WriteByte(2);
-           base.WriteString(Room.Name);
-           base.WriteString("roomId");
+            base.WriteString(Room.Name);
+            base.WriteString("roomId");
             base.WriteByte(1);
             base.WriteInteger(Room.Id);
 
@@ -60,7 +54,7 @@ namespace Neon.Communication.Packets.Outgoing.Moderation
                         base.WriteString(dDateTime.Hour + ":" + dDateTime.Minute);
                         base.WriteInteger(Habbo.Id);
                         base.WriteString(Habbo.Username);
-                        base.WriteString(string.IsNullOrWhiteSpace(Convert.ToString(Row["message"]) )? "*user sent a blank message*" : Convert.ToString(Row["message"]));
+                        base.WriteString(string.IsNullOrWhiteSpace(Convert.ToString(Row["message"])) ? "*user sent a blank message*" : Convert.ToString(Row["message"]));
                         base.WriteBoolean(false);
                     }
                 }

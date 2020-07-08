@@ -1,6 +1,6 @@
 ﻿namespace Neon.Communication.Packets.Outgoing.Rooms.Furni.LoveLocks
 {
-    class LoveLockDialogueSetLockedMessageComposer : ServerPacket
+    internal class LoveLockDialogueSetLockedMessageComposer : ServerPacket
     {
         public LoveLockDialogueSetLockedMessageComposer(int ItemId)
             : base(ServerPacketHeader.LoveLockDialogueSetLockedMessageComposer)

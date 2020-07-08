@@ -1,18 +1,16 @@
-﻿using System.Collections.Concurrent;
-
-using Neon.Communication.Packets.Incoming;
+﻿using Neon.Communication.Packets.Incoming;
+using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
 using Neon.HabboHotel.Rooms;
 using Neon.HabboHotel.Users;
-using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
-using Neon.Communication.Packets.Outgoing.Rooms.Engine;
+using System.Collections.Concurrent;
 
 namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
 {
-    class SendCustomMessageBox : IWiredItem
+    internal class SendCustomMessageBox : IWiredItem
     {
         public Room Instance { get; set; }
         public Item Item { get; set; }
-        public WiredBoxType Type { get { return WiredBoxType.SendCustomMessageBox; } }
+        public WiredBoxType Type => WiredBoxType.SendCustomMessageBox;
         public ConcurrentDictionary<int, Item> SetItems { get; set; }
         public string StringData { get; set; }
         public bool BoolData { get; set; }
@@ -22,7 +20,7 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
         {
             this.Instance = Instance;
             this.Item = Item;
-            this.SetItems = new ConcurrentDictionary<int, Item>();
+            SetItems = new ConcurrentDictionary<int, Item>();
         }
 
         public void HandleSave(ClientPacket Packet)
@@ -30,23 +28,29 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
             int Unknown = Packet.PopInt();
             string Message = Packet.PopString();
 
-            this.StringData = Message;
+            StringData = Message;
         }
 
         public bool Execute(params object[] Params)
         {
             if (Params == null || Params.Length == 0)
+            {
                 return false;
+            }
 
             Habbo Player = (Habbo)Params[0];
             if (Player == null || Player.GetClient() == null || string.IsNullOrWhiteSpace(StringData))
+            {
                 return false;
+            }
 
             RoomUser User = Player.CurrentRoom.GetRoomUserManager().GetRoomUserByHabbo(Player.Username);
             if (User == null)
+            {
                 return false;
+            }
 
-            var Message = StringData.Split('_');
+            string[] Message = StringData.Split('_');
 
             if (Message[0] == "1")
             {
@@ -66,7 +70,7 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
 
             if (Message[0] == "4")
             {
-                Player.GetClient().SendMessage(RoomNotificationComposer.SendBubble(Message[1], Message[2],Message[3]));
+                Player.GetClient().SendMessage(RoomNotificationComposer.SendBubble(Message[1], Message[2], Message[3]));
             }
 
             if (Message[0] == "5")

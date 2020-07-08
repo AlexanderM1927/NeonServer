@@ -1,33 +1,34 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms;
-using Neon.Communication.Packets.Outgoing;
-using Neon.Communication.Packets.Outgoing.Nux;
-using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
+﻿
 using Neon.HabboHotel.GameClients;
+using Neon.HabboHotel.Rooms;
 
 namespace Neon.Communication.Packets.Incoming.Rooms.Engine
 {
-    class MoveAvatarEvent : IPacketEvent
+    internal class MoveAvatarEvent : IPacketEvent
     {
         public void Parse(GameClient Session, ClientPacket Packet)
         {
             if (Session == null || Session.GetHabbo() == null)
+            {
                 return;
+            }
 
             if (!Session.GetHabbo().InRoom)
+            {
                 return;
+            }
 
             Room Room = Session.GetHabbo().CurrentRoom;
             if (Room == null)
+            {
                 return;
+            }
 
             RoomUser User = Room.GetRoomUserManager().GetRoomUserByHabbo(Session.GetHabbo().Id);
             if (User == null || !User.CanWalk)
+            {
                 return;
+            }
 
             int MoveX = Packet.PopInt();
             int MoveY = Packet.PopInt();
@@ -39,8 +40,8 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Engine
             }
 
             // NEON CUSTOM -REMOVE IF LAG
-            //if (!Room.GetGameMap().SquareIsOpen(MoveX, MoveY, false))
-            //{ return; }
+            if (!Room.GetGameMap().SquareIsOpen(MoveX, MoveY, false))
+            { return; }
 
             if (MoveX == User.X && MoveY == User.Y)
             {
@@ -59,7 +60,9 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Engine
             {
                 RoomUser Horse = Room.GetRoomUserManager().GetRoomUserByVirtualId(User.HorseID);
                 if (Horse != null)
+                {
                     Horse.MoveTo(MoveX, MoveY);
+                }
             }
 
             //int bubble = Session.GetHabbo().lastX++;
@@ -89,7 +92,10 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Engine
                     Controlled.MoveTo(MoveX, MoveY);
                     return;
                 }
-                else Session.SendWhisper("El usuario al que controlas no existe o no puede moverse.", 34);
+                else
+                {
+                    Session.SendWhisper("El usuario al que controlas no existe o no puede moverse.", 34);
+                }
             }
 
             User.MoveTo(MoveX, MoveY);

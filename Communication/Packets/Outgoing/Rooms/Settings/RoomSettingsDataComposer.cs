@@ -1,13 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
+﻿
 using Neon.HabboHotel.Rooms;
 
 namespace Neon.Communication.Packets.Outgoing.Rooms.Settings
 {
-    class RoomSettingsDataComposer : ServerPacket
+    internal class RoomSettingsDataComposer : ServerPacket
     {
         public RoomSettingsDataComposer(Room Room)
             : base(ServerPacketHeader.RoomSettingsDataMessageComposer)
@@ -24,7 +20,7 @@ namespace Neon.Communication.Packets.Outgoing.Rooms.Settings
             base.WriteInteger(Room.Tags.Count);
             foreach (string Tag in Room.Tags.ToArray())
             {
-               base.WriteString(Tag);
+                base.WriteString(Tag);
             }
 
             base.WriteInteger(Room.TradeSettings); //Trade

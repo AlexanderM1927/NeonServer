@@ -1,9 +1,7 @@
-﻿using System;
-using System.Data;
-
+﻿using Neon.Database.Interfaces;
 using Neon.HabboHotel.Rooms;
-
-using Neon.Database.Interfaces;
+using System;
+using System.Data;
 
 
 namespace Neon.HabboHotel.Items
@@ -29,7 +27,9 @@ namespace Neon.HabboHotel.Items
         public static int GetTeleRoomId(int TeleId, Room pRoom)
         {
             if (pRoom.GetRoomItemHandler().GetItem(TeleId) != null)
+            {
                 return pRoom.RoomId;
+            }
 
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
@@ -57,7 +57,9 @@ namespace Neon.HabboHotel.Items
 
             Item item = pRoom.GetRoomItemHandler().GetItem(LinkId);
             if (item != null && item.GetBaseItem().InteractionType == InteractionType.TELEPORT)
+            {
                 return true;
+            }
 
             int RoomId = GetTeleRoomId(LinkId, pRoom);
 

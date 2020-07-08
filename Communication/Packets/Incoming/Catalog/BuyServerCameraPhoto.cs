@@ -14,7 +14,9 @@ namespace Neon.Communication.Packets.Incoming.Catalog
         public void Parse(GameClient Session, ClientPacket paket)
         {
             if (!Session.GetHabbo().lastPhotoPreview.Contains("-"))
+            {
                 return;
+            }
 
             if (Session.GetHabbo().Duckets < 1)
             {
@@ -26,10 +28,14 @@ namespace Neon.Communication.Packets.Incoming.Catalog
             string timestamp = Session.GetHabbo().lastPhotoPreview.Split('-')[1];
             string md5image = URLPost.GetMD5(Session.GetHabbo().lastPhotoPreview);
             if (!NeonEnvironment.GetGame().GetItemManager().GetItem(8763, out ItemData Item))
+            {
                 return;
-            if (Item == null)
-                return;
+            }
 
+            if (Item == null)
+            {
+                return;
+            }
 
             Item photoPoster = ItemFactory.CreateSingleItemNullable(Item, Session.GetHabbo(), "{\"timestamp\":\"" + timestamp + "\", \"id\":\"" + md5image + "\"}", "");
 
@@ -42,7 +48,7 @@ namespace Neon.Communication.Packets.Incoming.Catalog
                 Session.SendMessage(new FurniListNotificationComposer(photoPoster.Id, 1));
                 Session.GetHabbo().Duckets--;
                 Session.SendMessage(new HabboActivityPointNotificationComposer(Session.GetHabbo().Duckets, -1));
-                
+
                 NeonEnvironment.GetGame().GetAchievementManager().ProgressAchievement(Session, "ACH_CameraPhotoCount", 1);
             }
 

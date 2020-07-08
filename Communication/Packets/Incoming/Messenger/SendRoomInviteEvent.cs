@@ -1,17 +1,13 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.Utilities;
-using Neon.HabboHotel.GameClients;
-using Neon.Communication.Packets.Outgoing.Messenger;
-using Neon.Database.Interfaces;
+﻿using Neon.Communication.Packets.Outgoing.Messenger;
 using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
+using Neon.Database.Interfaces;
+using Neon.HabboHotel.GameClients;
+using Neon.Utilities;
+using System.Collections.Generic;
 
 namespace Neon.Communication.Packets.Incoming.Messenger
 {
-    class SendRoomInviteEvent : IPacketEvent
+    internal class SendRoomInviteEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
@@ -23,7 +19,9 @@ namespace Neon.Communication.Packets.Incoming.Messenger
 
             int Amount = Packet.PopInt();
             if (Amount > 500)
+            {
                 return; // don't send at all
+            }
 
             List<int> Targets = new List<int>();
             for (int i = 0; i < Amount; i++)
@@ -37,15 +35,16 @@ namespace Neon.Communication.Packets.Incoming.Messenger
 
             string Message = StringCharFilter.Escape(Packet.PopString());
             if (Message.Length > 121)
+            {
                 Message = Message.Substring(0, 121);
+            }
 
             if (Message.Contains("&#1Âº;") || Message.Contains("&#1Âº") || Message.Contains("&#"))
             { Session.SendMessage(new MassEventComposer("habbopages/spammer.txt")); return; }
 
-            string word;
 
             if (!Session.GetHabbo().GetPermissions().HasRight("word_filter_override") &&
-                NeonEnvironment.GetGame().GetChatManager().GetFilter().IsUnnaceptableWord(Message, out word))
+                NeonEnvironment.GetGame().GetChatManager().GetFilter().IsUnnaceptableWord(Message, out string word))
             {
                 Session.GetHabbo().BannedPhraseCount++;
                 if (Session.GetHabbo().BannedPhraseCount >= 1)
@@ -71,11 +70,15 @@ namespace Neon.Communication.Packets.Incoming.Messenger
             foreach (int UserId in Targets)
             {
                 if (!Session.GetHabbo().GetMessenger().FriendshipExists(UserId))
+                {
                     continue;
+                }
 
                 GameClient Client = NeonEnvironment.GetGame().GetClientManager().GetClientByUserID(UserId);
                 if (Client == null || Client.GetHabbo() == null || Client.GetHabbo().AllowMessengerInvites == true || Client.GetHabbo().AllowConsoleMessages == false)
+                {
                     continue;
+                }
 
                 Client.SendMessage(new RoomInviteComposer(Session.GetHabbo().Id, Message));
                 Client.SendMessage(RoomNotificationComposer.SendBubble("eventoxx", "" + Session.GetHabbo().Username + " te invita a un nuevo evento en su sala. Su mensaje es " + Message + ".", "event:navigator/goto/" + Session.GetHabbo().CurrentRoomId));

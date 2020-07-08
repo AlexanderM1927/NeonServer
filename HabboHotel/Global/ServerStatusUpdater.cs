@@ -1,31 +1,27 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Collections.Generic;
-
-using log4net;
+﻿using log4net;
 using Neon.Database.Interfaces;
+using System;
+using System.Threading;
 
 
 namespace Neon.HabboHotel.Global
 {
     public class ServerStatusUpdater : IDisposable
     {
-        private static ILog log = LogManager.GetLogger("Mango.Global.ServerUpdater");
+        private static readonly ILog log = LogManager.GetLogger("Mango.Global.ServerUpdater");
 
         private const int UPDATE_IN_SECS = 30;
-        string HotelName = NeonEnvironment.GetConfig().data["hotel.name"];
+        private readonly string HotelName = NeonEnvironment.GetConfig().data["hotel.name"];
 
         private Timer _timer;
-        
+
         public ServerStatusUpdater()
         {
         }
 
         public void Init()
         {
-            this._timer = new Timer(new TimerCallback(this.OnTick), null, TimeSpan.FromSeconds(UPDATE_IN_SECS), TimeSpan.FromSeconds(UPDATE_IN_SECS));
+            _timer = new Timer(new TimerCallback(OnTick), null, TimeSpan.FromSeconds(UPDATE_IN_SECS), TimeSpan.FromSeconds(UPDATE_IN_SECS));
 
             Console.Title = "Neon - [0] ON - [0] ROOMS - [0] UPTIME";
 
@@ -34,7 +30,7 @@ namespace Neon.HabboHotel.Global
 
         public void OnTick(object Obj)
         {
-            this.UpdateOnlineUsers();
+            UpdateOnlineUsers();
         }
 
         private void UpdateOnlineUsers()
@@ -63,7 +59,7 @@ namespace Neon.HabboHotel.Global
                 dbClient.RunQuery("UPDATE `server_status` SET `users_online` = '0', `loaded_rooms` = '0'");
             }
 
-            this._timer.Dispose();
+            _timer.Dispose();
             GC.SuppressFinalize(this);
         }
     }

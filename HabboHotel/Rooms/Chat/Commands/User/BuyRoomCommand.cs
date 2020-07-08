@@ -1,13 +1,8 @@
-﻿using Neon.Communication.Packets.Outgoing.Inventory.Purse;
-using Neon.Database.Interfaces;
-using Neon.HabboHotel.GameClients;
-using System.Collections.Generic;
-using System.Linq;
-using Neon.Communication.Packets.Outgoing.Rooms.Session;
+﻿using Neon.HabboHotel.GameClients;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.User
 {
-    class BuyRoomCommand : IChatCommand
+    internal class BuyRoomCommand : IChatCommand
     {
         public string Description => "Comprar una sala a venta del usuario.";
         public string Parameters => "";
@@ -19,7 +14,9 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User
             RoomUser Owner = Room.GetRoomUserManager().GetRoomUserByHabbo(Room.RoomData.OwnerId);
 
             if (User == null)
+            {
                 return;
+            }
 
             if (!Room.RoomForSale)
             {

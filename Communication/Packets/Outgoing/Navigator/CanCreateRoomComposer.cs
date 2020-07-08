@@ -1,11 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-namespace Neon.Communication.Packets.Outgoing.Navigator
+﻿namespace Neon.Communication.Packets.Outgoing.Navigator
 {
-    class CanCreateRoomComposer : ServerPacket
+    internal class CanCreateRoomComposer : ServerPacket
     {
         public CanCreateRoomComposer(bool Error, int MaxRoomsPerUser)
             : base(ServerPacketHeader.CanCreateRoomMessageComposer)

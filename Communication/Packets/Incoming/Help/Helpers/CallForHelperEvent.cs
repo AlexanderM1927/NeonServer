@@ -1,22 +1,18 @@
-﻿using Neon.HabboHotel.GameClients;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Neon.Communication.Packets.Outgoing.Help.Helpers;
+﻿using Neon.Communication.Packets.Outgoing.Help.Helpers;
+using Neon.HabboHotel.GameClients;
 using Neon.HabboHotel.Helpers;
+using System.Linq;
 
 namespace Neon.Communication.Packets.Incoming.Help.Helpers
 {
-    class CallForHelperEvent : IPacketEvent
+    internal class CallForHelperEvent : IPacketEvent
     {
         public void Parse(GameClient Session, ClientPacket Packet)
         {
-            var category = Packet.PopInt();
-            var message = Packet.PopString();
+            int category = Packet.PopInt();
+            string message = Packet.PopString();
 
-            var helper = HelperToolsManager.GetHelper(Session);
+            HabboHotel.Helpers.HabboHelper helper = HelperToolsManager.GetHelper(Session);
             if (helper != null)
             {
                 Session.SendNotification("TEST");
@@ -24,8 +20,8 @@ namespace Neon.Communication.Packets.Incoming.Help.Helpers
                 return;
             }
 
-            var call = HelperToolsManager.AddCall(Session, message, category);
-            var helpers = HelperToolsManager.GetHelpersToCase(call).FirstOrDefault();
+            HelperCase call = HelperToolsManager.AddCall(Session, message, category);
+            HabboHotel.Helpers.HabboHelper helpers = HelperToolsManager.GetHelpersToCase(call).FirstOrDefault();
 
             if (helpers != null)
             {

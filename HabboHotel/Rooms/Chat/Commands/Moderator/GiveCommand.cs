@@ -1,26 +1,16 @@
-﻿using Neon.HabboHotel.GameClients;
-using Neon.Communication.Packets.Outgoing.Inventory.Purse;
+﻿using Neon.Communication.Packets.Outgoing.Inventory.Purse;
 using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
-using System.Linq;
+using Neon.HabboHotel.GameClients;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
 {
-    class GiveCommand : IChatCommand
+    internal class GiveCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_give"; }
-        }
+        public string PermissionRequired => "command_give";
 
-        public string Parameters
-        {
-            get { return "%username% %type% %amount%"; }
-        }
+        public string Parameters => "%username% %type% %amount%";
 
-        public string Description
-        {
-            get { return ""; }
-        }
+        public string Description => "";
 
         public void Execute(GameClient Session, Room Room, string[] Params)
         {
@@ -50,14 +40,16 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
                         }
                         else
                         {
-                            int Amount;
-                            if (int.TryParse(Params[3], out Amount))
+                            if (int.TryParse(Params[3], out int Amount))
                             {
                                 Target.GetHabbo().Credits = Target.GetHabbo().Credits += Amount;
                                 Target.SendMessage(new CreditBalanceComposer(Target.GetHabbo().Credits));
 
                                 if (Target.GetHabbo().Id != Session.GetHabbo().Id)
+                                {
                                     Target.SendNotification(Session.GetHabbo().Username + " te ha enviado " + Amount.ToString() + " Credito(s)!");
+                                }
+
                                 Session.SendWhisper("Le enviaste " + Amount + " Credito(s) a " + Target.GetHabbo().Username + "!");
                                 break;
                             }
@@ -79,14 +71,16 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
                         }
                         else
                         {
-                            int Amount;
-                            if (int.TryParse(Params[3], out Amount))
+                            if (int.TryParse(Params[3], out int Amount))
                             {
                                 Target.GetHabbo().Duckets += Amount;
                                 Target.SendMessage(new HabboActivityPointNotificationComposer(Target.GetHabbo().Duckets, Amount));
 
                                 if (Target.GetHabbo().Id != Session.GetHabbo().Id)
+                                {
                                     Target.SendNotification(Session.GetHabbo().Username + " te ha enviado " + Amount.ToString() + " Ducket(s)!");
+                                }
+
                                 Session.SendWhisper("Le enviaste " + Amount + " Ducket(s) a " + Target.GetHabbo().Username + "!");
                                 break;
                             }
@@ -107,14 +101,16 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
                         }
                         else
                         {
-                            int Amount;
-                            if (int.TryParse(Params[3], out Amount))
+                            if (int.TryParse(Params[3], out int Amount))
                             {
                                 Target.GetHabbo().Diamonds += Amount;
                                 Target.SendMessage(new HabboActivityPointNotificationComposer(Target.GetHabbo().Diamonds, Amount, 5));
 
                                 if (Target.GetHabbo().Id != Session.GetHabbo().Id)
+                                {
                                     Target.SendNotification(Session.GetHabbo().Username + " te ha enviado " + Amount.ToString() + " Diamante(s)!");
+                                }
+
                                 Session.SendWhisper("Le enviaste " + Amount + " Diamante(s) a " + Target.GetHabbo().Username + "!");
                                 break;
                             }
@@ -140,8 +136,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
 
                         else
                         {
-                            int Amount;
-                            if (int.TryParse(Params[3], out Amount))
+                            if (int.TryParse(Params[3], out int Amount))
                             {
                                 if (Session.GetHabbo().Rank < 9 && Amount > 1)
                                 {
@@ -154,7 +149,10 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
                                 Target.SendMessage(new HabboActivityPointNotificationComposer(Target.GetHabbo().GOTWPoints, Amount, 103));
 
                                 if (Target.GetHabbo().Id != Session.GetHabbo().Id)
-                                Target.SendMessage(RoomNotificationComposer.SendBubble("eventoxx", "" + Session.GetHabbo().Username + " te acaba de enviar " + Amount + " Kekoins.\nHaz click para ver los premios disponibles.", "catalog/open/habbiween"));
+                                {
+                                    Target.SendMessage(RoomNotificationComposer.SendBubble("eventoxx", "" + Session.GetHabbo().Username + " te acaba de enviar " + Amount + " Kekoins.\nHaz click para ver los premios disponibles.", "catalog/open/habbiween"));
+                                }
+
                                 Session.SendMessage(RoomNotificationComposer.SendBubble("eventoxx", "Acabas de enviar " + Amount + " Kekoins a " + Target.GetHabbo().Username + "\nRecuerda que hemos depositado tu confianza en tí y que estos comandos los vemos en directo.", "catalog/open/habbiween"));
                                 NeonEnvironment.GetGame().GetAchievementManager().ProgressAchievement(Target, "ACH_AnimationRanking", 1);
                                 break;

@@ -1,13 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Text;
+﻿using Neon.HabboHotel.Rooms;
 using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms;
 
 namespace Neon.Communication.Packets.Outgoing.Catalog
 {
-    class GetCatalogRoomPromotionComposer : ServerPacket
+    internal class GetCatalogRoomPromotionComposer : ServerPacket
     {
         public GetCatalogRoomPromotionComposer(List<RoomData> UsersRooms)
             : base(ServerPacketHeader.PromotableRoomsMessageComposer)
@@ -17,7 +13,7 @@ namespace Neon.Communication.Packets.Outgoing.Catalog
             foreach (RoomData Room in UsersRooms)
             {
                 base.WriteInteger(Room.Id);
-               base.WriteString(Room.Name);
+                base.WriteString(Room.Name);
                 base.WriteBoolean(true);
             }
         }

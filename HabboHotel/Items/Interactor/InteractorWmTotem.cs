@@ -1,10 +1,8 @@
-﻿using System;
-
-using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.GameClients;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
 using Neon.Database.Interfaces;
-using System.Data;
-using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
+using Neon.HabboHotel.GameClients;
+using Neon.HabboHotel.Rooms;
+using System;
 
 namespace Neon.HabboHotel.Items.Interactor
 {
@@ -25,9 +23,14 @@ namespace Neon.HabboHotel.Items.Interactor
 
             RoomUser User = null;
             if (Session != null)
+            {
                 User = Item.GetRoom().GetRoomUserManager().GetRoomUserByHabbo(Session.GetHabbo().Id);
+            }
+
             if (User == null)
+            {
                 return;
+            }
 
             if (Item.GetBaseItem().InteractionType == InteractionType.TotemPlanet)
             {

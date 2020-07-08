@@ -1,11 +1,8 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Neon.Communication.Packets.Outgoing.Navigator
 {
-    class PopularRoomTagsResultComposer : ServerPacket
+    internal class PopularRoomTagsResultComposer : ServerPacket
     {
         public PopularRoomTagsResultComposer(ICollection<KeyValuePair<string, int>> Tags)
             : base(ServerPacketHeader.PopularRoomTagsResultMessageComposer)
@@ -13,7 +10,7 @@ namespace Neon.Communication.Packets.Outgoing.Navigator
             base.WriteInteger(Tags.Count);
             foreach (KeyValuePair<string, int> tag in Tags)
             {
-               base.WriteString(tag.Key);
+                base.WriteString(tag.Key);
                 base.WriteInteger(tag.Value);
             }
         }

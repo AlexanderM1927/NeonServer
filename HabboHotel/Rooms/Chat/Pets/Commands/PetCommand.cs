@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Neon.HabboHotel.Rooms.Chat.Pets.Commands
+﻿namespace Neon.HabboHotel.Rooms.Chat.Pets.Commands
 {
     public class PetCommand
     {
@@ -9,8 +7,8 @@ namespace Neon.HabboHotel.Rooms.Chat.Pets.Commands
 
         public PetCommand(int CommandId, string CommandInput)
         {
-            this.Id = CommandId;
-            this.Input = CommandInput;
+            Id = CommandId;
+            Input = CommandInput;
         }
     }
 }

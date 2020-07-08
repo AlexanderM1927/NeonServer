@@ -1,12 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Games;
-using Neon.HabboHotel.Users;
-
-namespace Neon.Communication.Packets.Outgoing.GameCenter
+﻿namespace Neon.Communication.Packets.Outgoing.GameCenter
 {
     public class Game1WeeklyLeaderboardComposer : ServerPacket
     {

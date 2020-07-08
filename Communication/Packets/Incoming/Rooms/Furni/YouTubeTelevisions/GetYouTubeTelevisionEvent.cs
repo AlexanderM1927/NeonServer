@@ -1,21 +1,19 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Items;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Furni.YouTubeTelevisions;
 using Neon.HabboHotel.Items.Televisions;
-using Neon.Communication.Packets.Outgoing.Rooms.Furni.YouTubeTelevisions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Neon.Communication.Packets.Incoming.Rooms.Furni.YouTubeTelevisions
 {
-    class GetYouTubeTelevisionEvent : IPacketEvent
+    internal class GetYouTubeTelevisionEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
             if (!Session.GetHabbo().InRoom)
+            {
                 return;
+            }
 
             int ItemId = Packet.PopInt();
             ICollection<TelevisionItem> Videos = NeonEnvironment.GetGame().GetTelevisionManager().TelevisionList;

@@ -1,9 +1,9 @@
-﻿using Neon.HabboHotel.GameClients;
-using Neon.Communication.Packets.Outgoing.Catalog;
+﻿using Neon.Communication.Packets.Outgoing.Catalog;
+using Neon.HabboHotel.GameClients;
 
 namespace Neon.Communication.Packets.Incoming.Catalog
 {
-    class GetClubGiftsEvent : IPacketEvent
+    internal class GetClubGiftsEvent : IPacketEvent
     {
         public void Parse(GameClient Session, ClientPacket Packet)
         {

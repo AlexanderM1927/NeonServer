@@ -1,32 +1,17 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using Neon.Database.Interfaces;
-using Neon.Utilities;
+﻿using Neon.Database.Interfaces;
 using Neon.HabboHotel.Users;
-using Neon.HabboHotel.GameClients;
 
 
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
 {
-    class MuteCommand : IChatCommand
+    internal class MuteCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_mute"; }
-        }
+        public string PermissionRequired => "command_mute";
 
-        public string Parameters
-        {
-            get { return "%username% %time%"; }
-        }
+        public string Parameters => "%username% %time%";
 
-        public string Description
-        {
-            get { return "Mutea a un usuario por cierto tiempo"; }
-        }
+        public string Description => "Mutea a un usuario por cierto tiempo";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {
@@ -49,11 +34,12 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
                 return;
             }
 
-            double Time;
-            if (double.TryParse(Params[2], out Time))
+            if (double.TryParse(Params[2], out double Time))
             {
                 if (Time > 600 && !Session.GetHabbo().GetPermissions().HasRight("mod_mute_limit_override"))
+                {
                     Time = 600;
+                }
 
                 using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
                 {
@@ -69,7 +55,9 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
                 Session.SendWhisper("Muteaste a  " + Habbo.Username + " por " + Time + " segundos.");
             }
             else
+            {
                 Session.SendWhisper("Por favor introduce numeros enteros.");
+            }
         }
     }
 }

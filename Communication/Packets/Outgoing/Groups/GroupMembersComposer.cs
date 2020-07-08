@@ -1,16 +1,10 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Users;
+﻿using Neon.HabboHotel.Cache;
 using Neon.HabboHotel.Groups;
-using Neon.HabboHotel.GameClients;
-using Neon.HabboHotel.Cache;
+using System.Collections.Generic;
 
 namespace Neon.Communication.Packets.Outgoing.Groups
 {
-    class GroupMembersComposer : ServerPacket
+    internal class GroupMembersComposer : ServerPacket
     {
         public GroupMembersComposer(Group Group, ICollection<UserCache> Members, int MembersCount, int Page, bool Admin, int ReqType, string SearchVal)
             : base(ServerPacketHeader.GroupMembersMessageComposer)

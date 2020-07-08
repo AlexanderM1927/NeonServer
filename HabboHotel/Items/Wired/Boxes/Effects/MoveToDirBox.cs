@@ -1,41 +1,53 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using System.Collections.Concurrent;
-
-using Neon.Communication.Packets.Incoming;
+﻿using Neon.Communication.Packets.Incoming;
+using Neon.HabboHotel.Items.Wired.Util;
 using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Users;
-using System.Drawing;
-using System.Security.Cryptography;
-using Neon.Communication.Packets.Outgoing.Rooms.Engine;
-using Neon.Utilities;
+using System;
+using System.Collections.Concurrent;
+using System.Linq;
 
 
 namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
 {
-    internal class MoveToDir : IWiredItem, IWiredCycle
+    internal class MoveToDirBox : IWiredItem, IWiredCycle
     {
         public Room Instance { get; set; }
         public Item Item { get; set; }
+        private bool _needChange;
+        private MovementDirection _startDirection;
+        private WhenMovementBlock _whenMoveIsBlocked;
 
-        public WiredBoxType Type
-        {
-            get { return WiredBoxType.EffectMoveToDir; }
-        }
+        public WiredBoxType Type => WiredBoxType.EffectMoveToDir;
 
         public ConcurrentDictionary<int, Item> SetItems { get; set; }
-        public string StringData { get; set; }
+        public string StringData
+        {
+            get => string.Format("{0};{1}", StartDirection, WhenMoveIsBlocked);
+            set
+            {
+                string[] array = value.Split(';');
+                if (array.Length != 2)
+                {
+                    _startDirection = MovementDirection.NONE;
+                    _whenMoveIsBlocked = WhenMovementBlock.NONE;
+                    return;
+                }
+                _startDirection = (MovementDirection)int.Parse(array[0]);
+                _whenMoveIsBlocked = (WhenMovementBlock)int.Parse(array[1]);
+            }
+        }
         public bool BoolData { get; set; }
+
+        public int StartDirection => (int)_startDirection;
+
+        public int WhenMoveIsBlocked => (int)_whenMoveIsBlocked;
 
         public int Delay
         {
-            get { return this._delay; }
+            get => _delay;
             set
             {
-                this._delay = value;
-                this.TickCount = value + 1;
+                _delay = value;
+                TickCount = value + 1;
             }
         }
 
@@ -45,19 +57,21 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
         private int _delay = 0;
         private long _next = 0;
 
-        public MoveToDir(Room Instance, Item Item)
+        public MoveToDirBox(Room Instance, Item Item)
         {
             this.Instance = Instance;
             this.Item = Item;
-            this.SetItems = new ConcurrentDictionary<int, Item>();
-            this.TickCount = Delay;
-            this.Requested = false;
+            SetItems = new ConcurrentDictionary<int, Item>();
+            TickCount = Delay;
+            Requested = false;
         }
 
         public void HandleSave(ClientPacket Packet)
         {
-            if (this.SetItems.Count > 0)
-                this.SetItems.Clear();
+            if (SetItems.Count > 0)
+            {
+                SetItems.Clear();
+            }
 
             int Unknown = Packet.PopInt();
             int Movement = Packet.PopInt();
@@ -71,25 +85,31 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
                 Item SelectedItem = Instance.GetRoomItemHandler().GetItem(Packet.PopInt());
 
                 if (SelectedItem != null && !Instance.GetWired().OtherBoxHasItem(this, SelectedItem.Id))
+                {
                     SetItems.TryAdd(SelectedItem.Id, SelectedItem);
+                }
             }
 
-            this.StringData = Movement + ";" + Rotation;
-            this.Delay = Packet.PopInt();
+            StringData = Movement + ";" + Rotation;
+            Delay = Packet.PopInt();
         }
 
         public bool Execute(params object[] Params)
         {
-            if (this.SetItems.Count == 0)
+            if (SetItems.Count == 0)
+            {
                 return false;
+            }
 
-            if (this._next == 0 || this._next < NeonEnvironment.Now())
-                this._next = NeonEnvironment.Now() + this.Delay;
+            if (_next == 0 || _next < NeonEnvironment.Now())
+            {
+                _next = NeonEnvironment.Now() + Delay;
+            }
 
             if (!Requested)
             {
-                this.TickCount = this.Delay;
-                this.Requested = true;
+                TickCount = Delay;
+                Requested = true;
             }
             return true;
         }
@@ -97,69 +117,1185 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
         public bool OnCycle()
         {
             if (Instance == null || !Requested || _next == 0)
+            {
                 return false;
+            }
 
             long Now = NeonEnvironment.Now();
             if (_next < Now)
             {
-                foreach (Item Item in this.SetItems.Values.ToList())
+                foreach (Item Item in SetItems.Values.ToList())
                 {
                     if (Item == null)
+                    {
                         continue;
+                    }
 
                     if (!Instance.GetRoomItemHandler().GetFloor.Contains(Item))
+                    {
                         continue;
+                    }
 
                     Item toRemove = null;
 
                     if (Instance.GetWired().OtherBoxHasItem(this, Item.Id))
-                        this.SetItems.TryRemove(Item.Id, out toRemove);
-
-
-                    Point Point = HandleMovement(Convert.ToInt32(this.StringData.Split(';')[0]), new Point(Item.GetX, Item.GetY));
-                    int newRot = HandleRotation(Convert.ToInt32(this.StringData.Split(';')[1]), Item.Rotation);
-
-                    Instance.GetWired().onUserFurniCollision(Instance, Item);
-
-                    if (!Instance.GetGameMap().ItemCanMove(Item, Point))
-                        continue;
-
-                    if (Instance.GetGameMap().CanRollItemHere(Point.X, Point.Y) && !Instance.GetGameMap().SquareHasUsers(Point.X, Point.Y))
                     {
-                        Double NewZ = Instance.GetGameMap().GetHeightForSquareFromData(Point);
-                        Boolean CanBePlaced = true;
+                        SetItems.TryRemove(Item.Id, out toRemove);
+                    }
 
-                        List<Item> Items = Instance.GetGameMap().GetCoordinatedItems(Point);
-                        foreach (Item IItem in Items.ToList())
+                    if (Item.MoveToDirMovement == MovementDirection.NONE || _needChange)
+                    {
+                        Item.MoveToDirMovement = _startDirection;
+                        _needChange = false;
+                    }
+
+                    System.Drawing.Point newPoint = Movement.HandleMovementDir(Item.Coordinate, Item.MoveToDirMovement, Item.Rotation);
+                    if (newPoint != Item.Coordinate)
+                    {
+
+                        if (Instance.GetGameMap().SquareIsOpen(newPoint.X, newPoint.Y, false))
                         {
-                            if (IItem == null || IItem.Id == Item.Id)
-                                continue;
-
-                            if (!IItem.GetBaseItem().Walkable)
+                            Instance.GetRoomItemHandler()
+                                .SetFloorItem(null, Item, newPoint.X, newPoint.Y, Item.Rotation, false, false, true, true);
+                        }
+                        else
+                        {
+                            switch (_whenMoveIsBlocked)
                             {
-                                _next = 0;
-                                CanBePlaced = false;
-                                break;
+                                #region NONE
+
+                                case WhenMovementBlock.NONE:
+                                    {
+                                        Item.MoveToDirMovement = MovementDirection.NONE;
+                                        break;
+                                    }
+
+                                #endregion NONE
+
+                                #region RIGHT45
+
+                                case WhenMovementBlock.RIGHT45:
+                                    {
+                                        if (Item.MoveToDirMovement == MovementDirection.RIGHT)
+                                        {
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN_RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN_LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP_LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP_RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.RIGHT;
+                                            }
+                                        }
+                                        else if (Item.MoveToDirMovement == MovementDirection.LEFT)
+                                        {
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP_LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP_RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN_RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN_LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.LEFT;
+                                            }
+                                        }
+                                        else if (Item.MoveToDirMovement == MovementDirection.UP)
+                                        {
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP_RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN_RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN_LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP_LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP;
+                                            }
+                                        }
+                                        else if (Item.MoveToDirMovement == MovementDirection.DOWN)
+                                        {
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN_LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP_LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP_RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN_RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN;
+                                            }
+                                        }
+                                        else if (Item.MoveToDirMovement == MovementDirection.UP_LEFT)
+                                        {
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP_RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN_RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN_LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP_LEFT;
+                                            }
+                                        }
+                                        else if (Item.MoveToDirMovement == MovementDirection.UP_RIGHT)
+                                        {
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.RIGHT;
+                                                break;
+                                            }
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN_RIGHT;
+                                                break;
+                                            }
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN;
+                                                break;
+                                            }
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN_LEFT;
+                                                break;
+                                            }
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.LEFT;
+                                                break;
+                                            }
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP_LEFT;
+                                                break;
+                                            }
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP;
+                                                break;
+                                            }
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP_RIGHT;
+                                                break;
+                                            }
+                                            return false;
+                                        }
+                                        else if (Item.MoveToDirMovement == MovementDirection.DOWN_RIGHT)
+                                        {
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN_LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP_LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP_RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN_RIGHT;
+                                            }
+                                        }
+                                        else if (Item.MoveToDirMovement == MovementDirection.DOWN_LEFT)
+                                        {
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP_LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP_RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN_RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN_LEFT;
+                                            }
+                                        }
+
+                                        break;
+                                    }
+
+                                #endregion RIGHT45
+
+                                #region RIGHT90
+
+                                case WhenMovementBlock.RIGHT90:
+                                    {
+                                        if (Item.MoveToDirMovement == MovementDirection.RIGHT)
+                                        {
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.RIGHT;
+                                            }
+                                        }
+                                        else if (Item.MoveToDirMovement == MovementDirection.LEFT)
+                                        {
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.LEFT;
+                                            }
+                                        }
+                                        else if (Item.MoveToDirMovement == MovementDirection.UP)
+                                        {
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP;
+                                            }
+                                        }
+                                        else if (Item.MoveToDirMovement == MovementDirection.DOWN)
+                                        {
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN;
+                                            }
+                                        }
+                                        else if (Item.MoveToDirMovement == MovementDirection.UP_LEFT)
+                                        {
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP_RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN_RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN_LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP_LEFT;
+                                            }
+                                        }
+                                        else if (Item.MoveToDirMovement == MovementDirection.UP_RIGHT)
+                                        {
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN_RIGHT;
+                                                break;
+                                            }
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN_LEFT;
+                                                break;
+                                            }
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP_LEFT;
+                                                break;
+                                            }
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP_RIGHT;
+                                                break;
+                                            }
+                                            return false;
+                                        }
+                                        else if (Item.MoveToDirMovement == MovementDirection.DOWN_RIGHT)
+                                        {
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN_LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP_LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP_RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN_RIGHT;
+                                            }
+                                        }
+                                        else if (Item.MoveToDirMovement == MovementDirection.DOWN_LEFT)
+                                        {
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP_LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP_RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN_RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN_LEFT;
+                                            }
+                                        }
+
+                                        break;
+                                    }
+
+                                #endregion RIGHT90
+
+                                #region LEFT45
+
+                                case WhenMovementBlock.LEFT45:
+                                    {
+                                        if (Item.MoveToDirMovement == MovementDirection.RIGHT)
+                                        {
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP_RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP_LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN_LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN_RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.RIGHT;
+                                            }
+                                        }
+                                        else if (Item.MoveToDirMovement == MovementDirection.LEFT)
+                                        {
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN_LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN_RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP_RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP_LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.LEFT;
+                                            }
+                                        }
+                                        else if (Item.MoveToDirMovement == MovementDirection.UP)
+                                        {
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP_LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN_LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN_RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP_RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP;
+                                            }
+                                        }
+                                        else if (Item.MoveToDirMovement == MovementDirection.DOWN)
+                                        {
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN_RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP_RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP_LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN_LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN;
+                                            }
+                                        }
+                                        else if (Item.MoveToDirMovement == MovementDirection.UP_LEFT)
+                                        {
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN_LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN_RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP_RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP_LEFT;
+                                            }
+                                        }
+                                        else if (Item.MoveToDirMovement == MovementDirection.UP_RIGHT)
+                                        {
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP_LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN_LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN_RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP_RIGHT;
+                                            }
+                                        }
+                                        else if (Item.MoveToDirMovement == MovementDirection.DOWN_RIGHT)
+                                        {
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP_RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP_LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN_LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN_RIGHT;
+                                            }
+                                        }
+                                        else if (Item.MoveToDirMovement == MovementDirection.DOWN_LEFT)
+                                        {
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN_RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP_RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP_LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN_LEFT;
+                                            }
+                                        }
+
+                                        break;
+                                    }
+
+                                #endregion LEFT45
+
+                                #region LEFT90
+
+                                case WhenMovementBlock.LEFT90:
+                                    {
+                                        if (Item.MoveToDirMovement == MovementDirection.RIGHT)
+                                        {
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.RIGHT;
+                                            }
+                                        }
+                                        else if (Item.MoveToDirMovement == MovementDirection.LEFT)
+                                        {
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.LEFT;
+                                            }
+                                        }
+                                        else if (Item.MoveToDirMovement == MovementDirection.UP)
+                                        {
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP;
+                                            }
+                                        }
+                                        else if (Item.MoveToDirMovement == MovementDirection.DOWN)
+                                        {
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN;
+                                            }
+                                        }
+                                        else if (Item.MoveToDirMovement == MovementDirection.UP_LEFT)
+                                        {
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN_LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN_RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP_RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP_LEFT;
+                                            }
+                                        }
+                                        else if (Item.MoveToDirMovement == MovementDirection.UP_RIGHT)
+                                        {
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP_LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN_LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN_RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP_RIGHT;
+                                            }
+                                        }
+                                        else if (Item.MoveToDirMovement == MovementDirection.DOWN_RIGHT)
+                                        {
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP_RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP_LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN_LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN_RIGHT;
+                                            }
+                                        }
+                                        else if (Item.MoveToDirMovement == MovementDirection.DOWN_LEFT)
+                                        {
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN_RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX + 1, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP_RIGHT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY - 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.UP_LEFT;
+                                            }
+
+                                            if (Instance.GetGameMap().IsValidMovement(Item.GetX - 1, Item.GetY + 1))
+                                            {
+                                                Item.MoveToDirMovement = MovementDirection.DOWN_LEFT;
+                                            }
+                                        }
+
+                                        break;
+                                    }
+
+                                #endregion LEFT90
+
+                                #region Turn Back
+
+                                case WhenMovementBlock.TURN_BACK:
+                                    {
+                                        if (Item.MoveToDirMovement == MovementDirection.RIGHT)
+                                        {
+                                            Item.MoveToDirMovement = MovementDirection.LEFT;
+                                        }
+                                        else if (Item.MoveToDirMovement == MovementDirection.LEFT)
+                                        {
+                                            Item.MoveToDirMovement = MovementDirection.RIGHT;
+                                        }
+                                        else if (Item.MoveToDirMovement == MovementDirection.UP)
+                                        {
+                                            Item.MoveToDirMovement = MovementDirection.DOWN;
+                                        }
+                                        else if (Item.MoveToDirMovement == MovementDirection.DOWN)
+                                        {
+                                            Item.MoveToDirMovement = MovementDirection.UP;
+                                        }
+                                        else if (Item.MoveToDirMovement == MovementDirection.UP_RIGHT)
+                                        {
+                                            Item.MoveToDirMovement = MovementDirection.DOWN_LEFT;
+                                        }
+                                        else if (Item.MoveToDirMovement == MovementDirection.DOWN_LEFT)
+                                        {
+                                            Item.MoveToDirMovement = MovementDirection.UP_RIGHT;
+                                        }
+                                        else if (Item.MoveToDirMovement == MovementDirection.UP_LEFT)
+                                        {
+                                            Item.MoveToDirMovement = MovementDirection.DOWN_RIGHT;
+                                        }
+                                        else if (Item.MoveToDirMovement == MovementDirection.DOWN_RIGHT)
+                                        {
+                                            Item.MoveToDirMovement = MovementDirection.UP_LEFT;
+                                        }
+
+                                        break;
+                                    }
+
+                                #endregion Turn Back
+
+                                #region Random
+
+                                case WhenMovementBlock.TURN_RANDOM:
+                                    {
+                                        Item.MoveToDirMovement = (MovementDirection)new Random().Next(1, 7);
+                                        break;
+                                    }
+
+                                    #endregion Random
                             }
 
-                            if (IItem.TotalHeight > NewZ)
-                                NewZ = IItem.TotalHeight;
-
-                            if (CanBePlaced == true && !IItem.GetBaseItem().Stackable)
-                                CanBePlaced = false;
-                        }
-
-                        if (newRot != Item.Rotation)
-                        {
-                            Item.Rotation = newRot;
-                            Item.UpdateState(false, true);
-                        }
-
-                        if (CanBePlaced && Point != Item.Coordinate)
-                        {
-                            Instance.SendMessage(new SlideObjectBundleComposer(Item.GetX, Item.GetY, Item.GetZ, Point.X,
-                                Point.Y, NewZ, 0, 0, Item.Id));
-                            Instance.GetRoomItemHandler().SetFloorItem(Item, Point.X, Point.Y, NewZ);
+                            newPoint = Movement.HandleMovementDir(Item.Coordinate, Item.MoveToDirMovement, Item.Rotation);
+                            Instance.GetRoomItemHandler()
+                                .SetFloorItem(null, Item, newPoint.X, newPoint.Y, Item.Rotation, false, false, true, true);
                         }
                     }
                 }
@@ -168,144 +1304,6 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
                 return true;
             }
             return false;
-        }
-
-        private int HandleRotation(int mode, int rotation)
-        {
-            switch (mode)
-            {
-                case 1:
-                    {
-                        rotation += 2;
-                        if (rotation > 6)
-                        {
-                            rotation = 0;
-                        }
-                        break;
-                    }
-
-                case 2:
-                    {
-                        rotation -= 2;
-                        if (rotation < 0)
-                        {
-                            rotation = 6;
-                        }
-                        break;
-                    }
-
-                case 3:
-                    {
-                        if (RandomNumber.GenerateRandom(0, 2) == 0)
-                        {
-                            rotation += 2;
-                            if (rotation > 6)
-                            {
-                                rotation = 0;
-                            }
-                        }
-                        else
-                        {
-                            rotation -= 2;
-                            if (rotation < 0)
-                            {
-                                rotation = 6;
-                            }
-                        }
-                        break;
-                    }
-            }
-            return rotation;
-        }
-
-        private Point HandleMovement(int Mode, Point Position)
-        {
-            Point NewPos = new Point();
-            switch (Mode)
-            {
-                case 0:
-                    {
-                        NewPos = Position;
-                        break;
-                    }
-                case 1:
-                    {
-                        switch (RandomNumber.GenerateRandom(1, 8))
-                        {
-                            case 1:
-                                NewPos = new Point(Position.X + 1, Position.Y);
-                                break;
-                            case 2:
-                                NewPos = new Point(Position.X - 1, Position.Y);
-                                break;
-                            case 3:
-                                NewPos = new Point(Position.X, Position.Y + 1);
-                                break;
-                            case 4:
-                                NewPos = new Point(Position.X, Position.Y - 1);
-                                break;
-                            case 5:
-                                NewPos = new Point(Position.X + 1, Position.Y + 1);
-                                break;
-                            case 6:
-                                NewPos = new Point(Position.X - 1, Position.Y - 1);
-                                break;
-                            case 7:
-                                NewPos = new Point(Position.X - 1, Position.Y + 1);
-                                break;
-                            case 8:
-                                NewPos = new Point(Position.X + 1, Position.Y - 1);
-                                break;
-                        }
-                        break;
-                    }
-                case 2:
-                    {
-                        if (RandomNumber.GenerateRandom(0, 2) == 1)
-                        {
-                            NewPos = new Point(Position.X - 1, Position.Y);
-                        }
-                        else
-                        {
-                            NewPos = new Point(Position.X + 1, Position.Y);
-                        }
-                        break;
-                    }
-                case 3:
-                    {
-                        if (RandomNumber.GenerateRandom(0, 2) == 1)
-                        {
-                            NewPos = new Point(Position.X, Position.Y - 1);
-                        }
-                        else
-                        {
-                            NewPos = new Point(Position.X, Position.Y + 1);
-                        }
-                        break;
-                    }
-                case 4:
-                    {
-                        NewPos = new Point(Position.X, Position.Y - 1);
-                        break;
-                    }
-                case 5:
-                    {
-                        NewPos = new Point(Position.X + 1, Position.Y);
-                        break;
-                    }
-                case 6:
-                    {
-                        NewPos = new Point(Position.X, Position.Y + 1);
-                        break;
-                    }
-                case 7:
-                    {
-                        NewPos = new Point(Position.X - 1, Position.Y);
-                        break;
-                    }
-            }
-
-            return NewPos;
         }
     }
 }

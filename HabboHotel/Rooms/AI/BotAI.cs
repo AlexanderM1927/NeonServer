@@ -1,6 +1,4 @@
-﻿using System;
-using Neon.HabboHotel.GameClients;
-using Neon.HabboHotel.Rooms;
+﻿using Neon.HabboHotel.GameClients;
 
 namespace Neon.HabboHotel.Rooms.AI
 {
@@ -14,10 +12,10 @@ namespace Neon.HabboHotel.Rooms.AI
 
         public void Init(int pBaseId, int pRoomUserId, int pRoomId, RoomUser user, Room room)
         {
-            this.BaseId = pBaseId;
-            this.RoomUserId = pRoomUserId;
-            this.RoomId = pRoomId;
-            this.roomUser = user;
+            BaseId = pBaseId;
+            RoomUserId = pRoomUserId;
+            RoomId = pRoomId;
+            roomUser = user;
             this.room = room;
         }
 
@@ -35,9 +33,13 @@ namespace Neon.HabboHotel.Rooms.AI
         {
             RoomUser User = GetRoomUser();
             if (User == null)
+            {
                 return null;
+            }
             else
+            {
                 return GetRoomUser().BotData;
+            }
         }
 
         public abstract void OnSelfEnterRoom();

@@ -1,11 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-namespace Neon.Communication.Packets.Outgoing.Messenger
+﻿namespace Neon.Communication.Packets.Outgoing.Messenger
 {
-    class NewConsoleMessageComposer : ServerPacket
+    internal class NewConsoleMessageComposer : ServerPacket
     {
         public NewConsoleMessageComposer(int Sender, string Message, int Time = 0)
             : base(ServerPacketHeader.NewConsoleMessageMessageComposer)
@@ -16,7 +11,7 @@ namespace Neon.Communication.Packets.Outgoing.Messenger
         }
     }
 
-    class FuckingConsoleMessageComposer : ServerPacket
+    internal class FuckingConsoleMessageComposer : ServerPacket
     {
         public FuckingConsoleMessageComposer(int Sender, string Message, string Data)
             : base(ServerPacketHeader.NewConsoleMessageMessageComposer)

@@ -1,14 +1,13 @@
-﻿using System;
-using Neon.HabboHotel.GameClients;
+﻿using Neon.Communication.Packets.Outgoing.Inventory.Furni;
 using Neon.Communication.Packets.Outgoing.Inventory.Purse;
-using Neon.Utilities;
-using Neon.HabboHotel.Items;
-using Neon.Communication.Packets.Outgoing.Inventory.Furni;
 using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
+using Neon.HabboHotel.GameClients;
+using Neon.HabboHotel.Items;
+using Neon.Utilities;
 
 namespace Neon.Communication.Packets.Incoming.Nucs
 {
-    class GetNuxPresentEvent : IPacketEvent
+    internal class GetNuxPresentEvent : IPacketEvent
     {
         public void Parse(GameClient Session, ClientPacket Packet)
         {
@@ -16,8 +15,8 @@ namespace Neon.Communication.Packets.Incoming.Nucs
             int Data2 = Packet.PopInt(); // ELEMENTO 2
             int Data3 = Packet.PopInt(); // ELEMENTO 3
             int Data4 = Packet.PopInt(); // SELECTOR
-            var RewardName = "";
-            var NuxGift = NeonEnvironment.GetGame().GetNuxUserGiftsListManager().NuxUserGiftsList;
+            string RewardName = "";
+            Outgoing.Nux.NuxUserGiftsList NuxGift = NeonEnvironment.GetGame().GetNuxUserGiftsListManager().NuxUserGiftsList;
 
             switch (Data4)
             {
@@ -61,7 +60,7 @@ namespace Neon.Communication.Packets.Incoming.Nucs
                             string[] Present8 = Furnis[8].Split(':');
                             string[] Present9 = Furnis[9].Split(':');
 
-                            var RewardItemId = 0;
+                            int RewardItemId = 0;
 
                             switch (RewardItem)
                             {
@@ -167,7 +166,7 @@ namespace Neon.Communication.Packets.Incoming.Nucs
                             string[] Present8 = Furnis[8].Split(':');
                             string[] Present9 = Furnis[9].Split(':');
 
-                            var RewardItemId = 0;
+                            int RewardItemId = 0;
 
                             switch (RewardItem)
                             {
@@ -272,7 +271,7 @@ namespace Neon.Communication.Packets.Incoming.Nucs
                             string[] Present8 = Furnis[8].Split(':');
                             string[] Present9 = Furnis[9].Split(':');
 
-                            var RewardItemId = 0;
+                            int RewardItemId = 0;
 
                             switch (RewardItem)
                             {

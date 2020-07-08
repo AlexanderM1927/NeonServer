@@ -1,30 +1,16 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using Neon.Database.Interfaces;
-using Neon.Utilities;
+﻿using Neon.Database.Interfaces;
 using Neon.HabboHotel.GameClients;
 
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
 {
-    class UnmuteCommand : IChatCommand
+    internal class UnmuteCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_unmute"; }
-        }
+        public string PermissionRequired => "command_unmute";
 
-        public string Parameters
-        {
-            get { return "%username%"; }
-        }
+        public string Parameters => "%username%";
 
-        public string Description
-        {
-            get { return "Desmutear un usuario"; }
-        }
+        public string Description => "Desmutear un usuario";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {

@@ -1,35 +1,38 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Items;
+﻿
 using Neon.Communication.Packets.Outgoing.Rooms.Engine;
 using Neon.Database.Interfaces;
+using Neon.HabboHotel.Items;
+using Neon.HabboHotel.Rooms;
 
 
 namespace Neon.Communication.Packets.Incoming.Rooms.Furni
 {
-    class SetTonerEvent : IPacketEvent
+    internal class SetTonerEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
-            Room Room;
 
-            if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Session.GetHabbo().CurrentRoomId, out Room))
+            if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Session.GetHabbo().CurrentRoomId, out Room Room))
+            {
                 return;
+            }
 
             if (!Room.CheckRights(Session, true))
+            {
                 return;
+            }
 
             if (Room.TonerData == null)
+            {
                 return;
+            }
 
             Item Item = Room.GetRoomItemHandler().GetItem(Room.TonerData.ItemId);
 
             if (Item == null || Item.GetBaseItem().InteractionType != InteractionType.TONER)
+            {
                 return;
+            }
 
             int Id = Packet.PopInt();
             int Int1 = Packet.PopInt();
@@ -37,7 +40,9 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Furni
             int Int3 = Packet.PopInt();
 
             if (Int1 > 255 || Int2 > 255 || Int3 > 255)
+            {
                 return;
+            }
 
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-namespace Neon.HabboHotel.Groups
+﻿namespace Neon.HabboHotel.Groups
 {
     public class GroupBadgeParts
     {
@@ -12,9 +7,9 @@ namespace Neon.HabboHotel.Groups
         public string AssetTwo { get; private set; }
         public GroupBadgeParts(int id, string assetOne, string assetTwo)
         {
-            this.Id = id;
-            this.AssetOne = assetOne;
-            this.AssetTwo = assetTwo;
+            Id = id;
+            AssetOne = assetOne;
+            AssetTwo = assetTwo;
         }
     }
 }

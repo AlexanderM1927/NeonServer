@@ -1,20 +1,15 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Games;
+﻿using Neon.Database.Interfaces;
 using Neon.HabboHotel.Users;
-using Neon.Database.Interfaces;
+using System;
 using System.Data;
 
 namespace Neon.Communication.Packets.Outgoing.GameCenter
+{
+    public class Game2LastWeekLeaderboardMessageComposer : ServerPacket
     {
-        public class Game2LastWeekLeaderboardMessageComposer : ServerPacket
+        public Game2LastWeekLeaderboardMessageComposer(int GameId, int Week)
+            : base(ServerPacketHeader.Game2LastWeekLeaderboardMessageComposer)
         {
-            public Game2LastWeekLeaderboardMessageComposer(int GameId, int Week)
-                : base(ServerPacketHeader.Game2LastWeekLeaderboardMessageComposer)
-            {
             base.WriteInteger(2018);
             base.WriteInteger(1);
             base.WriteInteger(0);
@@ -142,5 +137,5 @@ namespace Neon.Communication.Packets.Outgoing.GameCenter
             //base.WriteInteger(0);//
             //base.WriteInteger(Game.GameId);//Game Id?
         }
-        }
     }
+}

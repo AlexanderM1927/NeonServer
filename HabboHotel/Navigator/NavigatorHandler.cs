@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace Neon.HabboHotel.Navigator
 {
-    static class NavigatorHandler
+    internal static class NavigatorHandler
     {
         public static void Search(ServerPacket Message, SearchResultList SearchResult, string SearchData,
            GameClient Session, int FetchLimit)
@@ -33,7 +33,7 @@ namespace Neon.HabboHotel.Navigator
                             {
                                 //  var UserId = 0;
                                 DataTable GetRooms = null;
-                                using (var dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
+                                using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
                                 {
                                     if (SearchData.ToLower().StartsWith("owner:"))
                                     {
@@ -44,18 +44,24 @@ namespace Neon.HabboHotel.Navigator
                                     }
                                 }
 
-                                var Results = new List<RoomData>();
+                                List<RoomData> Results = new List<RoomData>();
                                 if (GetRooms != null)
+                                {
                                     foreach (
-                                        var RoomData in GetRooms.Rows.Cast<DataRow>().Select(Row => NeonEnvironment.GetGame()
+                                        RoomData RoomData in GetRooms.Rows.Cast<DataRow>().Select(Row => NeonEnvironment.GetGame()
                                                 .GetRoomManager()
                                                 .FetchRoomData(Convert.ToInt32(Row["id"]), Row))
                                             .Where(RoomData => RoomData != null && !Results.Contains(RoomData)))
+                                    {
                                         Results.Add(RoomData);
+                                    }
+                                }
 
                                 Message.WriteInteger(Results.Count);
-                                foreach (var Data in Results.ToList())
+                                foreach (RoomData Data in Results.ToList())
+                                {
                                     RoomAppender.WriteRoom(Message, Data, Data.Promotion);
+                                }
                             }
                         }
                         else if (SearchData.ToLower().StartsWith("tag:"))
@@ -65,8 +71,10 @@ namespace Neon.HabboHotel.Navigator
                                 NeonEnvironment.GetGame().GetRoomManager().SearchTaggedRooms(SearchData);
 
                             Message.WriteInteger(TagMatches.Count);
-                            foreach (var Data in TagMatches.ToList())
+                            foreach (RoomData Data in TagMatches.ToList())
+                            {
                                 RoomAppender.WriteRoom(Message, Data, Data.Promotion);
+                            }
                         }
                         else if (SearchData.ToLower().StartsWith("group:"))
                         {
@@ -75,40 +83,53 @@ namespace Neon.HabboHotel.Navigator
                                 NeonEnvironment.GetGame().GetRoomManager().SearchGroupRooms(SearchData);
 
                             Message.WriteInteger(GroupRooms.Count);
-                            foreach (var Data in GroupRooms.ToList())
+                            foreach (RoomData Data in GroupRooms.ToList())
+                            {
                                 RoomAppender.WriteRoom(Message, Data, Data.Promotion);
+                            }
                         }
                         else
                         {
                             if (SearchData.Length > 0)
                             {
                                 DataTable Table;
-                                using (var dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
+                                using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
                                 {
                                     dbClient.SetQuery(
                                         "SELECT `id`,`caption`,`description`,`roomtype`,`owner`,`state`,`category`,`users_now`,`users_max`,`model_name`,`score`,`allow_pets`,`allow_pets_eat`,`room_blocking_disabled`,`allow_hidewall`,`password`,`wallpaper`,`floor`,`landscape`,`floorthick`,`wallthick`,`mute_settings`,`kick_settings`,`ban_settings`,`chat_mode`,`chat_speed`,`chat_size`,`trade_settings`,`group_id`,`tags` FROM rooms WHERE `caption` LIKE @query ORDER BY `users_now` DESC LIMIT 50");
                                     if (SearchData.ToLower().StartsWith("roomname:"))
+                                    {
                                         dbClient.AddParameter("query", "%" + SearchData.Split(new[] { ':' }, 2)[1] + "%");
+                                    }
                                     else
+                                    {
                                         dbClient.AddParameter("query", "%" + SearchData + "%");
+                                    }
+
                                     Table = dbClient.getTable();
                                 }
 
-                                var Results = new List<RoomData>();
+                                List<RoomData> Results = new List<RoomData>();
                                 if (Table != null)
-                                    foreach (var RData in from DataRow Row in Table.Rows
-                                                          where Convert.ToString(Row["state"]) != "invisible"
-                                                          select NeonEnvironment.GetGame()
-                                                              .GetRoomManager()
-                                                              .FetchRoomData(Convert.ToInt32(Row["id"]), Row)
+                                {
+                                    foreach (RoomData RData in from DataRow Row in Table.Rows
+                                                               where Convert.ToString(Row["state"]) != "invisible"
+                                                               select NeonEnvironment.GetGame()
+                                                                   .GetRoomManager()
+                                                                   .FetchRoomData(Convert.ToInt32(Row["id"]), Row)
                                         into RData
-                                                          where RData != null && !Results.Contains(RData)
-                                                          select RData)
+                                                               where RData != null && !Results.Contains(RData)
+                                                               select RData)
+                                    {
                                         Results.Add(RData);
+                                    }
+                                }
 
                                 Message.WriteInteger(Results.Count);
-                                foreach (var Data in Results.ToList())
+                                foreach (RoomData Data in Results.ToList())
+                                {
                                     RoomAppender.WriteRoom(Message, Data, Data.Promotion);
+                                }
                             }
                         }
 
@@ -125,12 +146,20 @@ namespace Neon.HabboHotel.Navigator
                         foreach (FeaturedRoom FeaturedItem in Featured.ToList())
                         {
                             if (FeaturedItem == null)
+                            {
                                 continue;
+                            }
+
                             RoomData Data = NeonEnvironment.GetGame().GetRoomManager().GenerateRoomData(FeaturedItem.RoomId);
                             if (Data == null)
+                            {
                                 continue;
+                            }
+
                             if (!Rooms.Contains(Data))
+                            {
                                 Rooms.Add(Data);
+                            }
                         }
                         Message.WriteInteger(Rooms.Count);
                         foreach (RoomData Data in Rooms.ToList())
@@ -149,12 +178,20 @@ namespace Neon.HabboHotel.Navigator
                         foreach (StaffPick pick in picks.ToList())
                         {
                             if (pick == null)
+                            {
                                 continue;
+                            }
+
                             RoomData Data = NeonEnvironment.GetGame().GetRoomManager().GenerateRoomData(pick.RoomId);
                             if (Data == null)
+                            {
                                 continue;
+                            }
+
                             if (!rooms.Contains(Data))
+                            {
                                 rooms.Add(Data);
+                            }
                         }
                         Message.WriteInteger(rooms.Count);
                         foreach (RoomData data in rooms.ToList())
@@ -216,10 +253,14 @@ namespace Neon.HabboHotel.Navigator
                     {
                         RoomData Room = NeonEnvironment.GetGame().GetRoomManager().GenerateRoomData(Id);
                         if (Room == null)
+                        {
                             continue;
+                        }
 
                         if (!Favourites.Contains(Room))
+                        {
                             Favourites.Add(Room);
+                        }
                     }
 
                     Favourites = Favourites.Take(FetchLimit).ToList();
@@ -237,14 +278,20 @@ namespace Neon.HabboHotel.Navigator
                     foreach (Group Group in NeonEnvironment.GetGame().GetGroupManager().GetGroupsForUser(Session.GetHabbo().Id).ToList())
                     {
                         if (Group == null)
+                        {
                             continue;
+                        }
 
                         RoomData Data = NeonEnvironment.GetGame().GetRoomManager().GenerateRoomData(Group.RoomId);
                         if (Data == null)
+                        {
                             continue;
+                        }
 
                         if (!MyGroups.Contains(Data))
+                        {
                             MyGroups.Add(Data);
+                        }
                     }
 
                     MyGroups = MyGroups.Take(FetchLimit).ToList();
@@ -261,10 +308,14 @@ namespace Neon.HabboHotel.Navigator
                     foreach (MessengerBuddy buddy in Session.GetHabbo().GetMessenger().GetFriends().Where(p => p.InRoom))
                     {
                         if (buddy == null || !buddy.InRoom || buddy.UserId == Session.GetHabbo().Id)
+                        {
                             continue;
+                        }
 
                         if (!MyFriendsRooms.Contains(buddy.CurrentRoom.RoomData))
+                        {
                             MyFriendsRooms.Add(buddy.CurrentRoom.RoomData);
+                        }
                     }
 
                     Message.WriteInteger(MyFriendsRooms.Count);
@@ -289,10 +340,14 @@ namespace Neon.HabboHotel.Navigator
                         {
                             RoomData Data = NeonEnvironment.GetGame().GetRoomManager().GenerateRoomData(Convert.ToInt32(Row["room_id"]));
                             if (Data == null)
+                            {
                                 continue;
+                            }
 
                             if (!MyRights.Contains(Data))
+                            {
                                 MyRights.Add(Data);
+                            }
                         }
                     }
 

@@ -1,29 +1,14 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.GameClients;
+﻿using Neon.HabboHotel.GameClients;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
 {
-    class KickCommand : IChatCommand
+    internal class KickCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_kick"; }
-        }
+        public string PermissionRequired => "command_kick";
 
-        public string Parameters
-        {
-            get { return "%username% %reason%"; }
-        }
+        public string Parameters => "%username% %reason%";
 
-        public string Description
-        {
-            get { return "Expulsa a un usuario de la sala y le das una razon"; }
-        }
+        public string Description => "Expulsa a un usuario de la sala y le das una razon";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {
@@ -58,14 +43,19 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
                 return;
             }
 
-            Room TargetRoom;
-            if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(TargetClient.GetHabbo().CurrentRoomId, out TargetRoom))
+            if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(TargetClient.GetHabbo().CurrentRoomId, out Room TargetRoom))
+            {
                 return;
+            }
 
             if (Params.Length > 2)
+            {
                 TargetClient.SendNotification("Un moderador te ha expulsado de la sala por la siguiente razon: " + CommandManager.MergeParams(Params, 2));
+            }
             else
+            {
                 TargetClient.SendNotification("Un moderador te ha expulsado de la sala.");
+            }
 
             TargetRoom.GetRoomUserManager().RemoveUserFromRoom(TargetClient, true, false);
         }

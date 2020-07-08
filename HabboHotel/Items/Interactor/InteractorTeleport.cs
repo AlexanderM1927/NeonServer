@@ -70,11 +70,15 @@ namespace Neon.HabboHotel.Items.Interactor
         public void OnTrigger(GameClient Session, Item Item, int Request, bool HasRights)
         {
             if (Item == null || Item.GetRoom() == null || Session == null || Session.GetHabbo() == null)
+            {
                 return;
+            }
 
             RoomUser User = Item.GetRoom().GetRoomUserManager().GetRoomUserByHabbo(Session.GetHabbo().Id);
             if (User == null)
+            {
                 return;
+            }
 
             User.LastInteraction = NeonEnvironment.GetUnixTimestamp();
 
@@ -89,7 +93,9 @@ namespace Neon.HabboHotel.Items.Interactor
 
                 if (!User.CanWalk || Session.GetHabbo().IsTeleporting || Session.GetHabbo().TeleporterId != 0 ||
                     (User.LastInteraction + 2) - NeonEnvironment.GetUnixTimestamp() < 0)
+                {
                     return;
+                }
 
                 User.TeleDelay = 2;
 

@@ -1,13 +1,10 @@
-﻿using System;
-using System.Linq;
-using System.Text;
+﻿using Neon.HabboHotel.Navigator;
 using System.Collections.Generic;
-
-using Neon.HabboHotel.Navigator;
+using System.Linq;
 
 namespace Neon.Communication.Packets.Outgoing.Navigator
 {
-    class NavigatorMetaDataParserComposer : ServerPacket
+    internal class NavigatorMetaDataParserComposer : ServerPacket
     {
         public NavigatorMetaDataParserComposer(ICollection<TopLevelItem> TopLevelItems)
             : base(ServerPacketHeader.NavigatorMetaDataParserMessageComposer)
@@ -16,7 +13,7 @@ namespace Neon.Communication.Packets.Outgoing.Navigator
             foreach (TopLevelItem TopLevelItem in TopLevelItems.ToList())
             {
                 //TopLevelContext
-               base.WriteString(TopLevelItem.SearchCode);//Search code
+                base.WriteString(TopLevelItem.SearchCode);//Search code
                 base.WriteInteger(0);//Count of saved searches?
                 /*{
                     //SavedSearch

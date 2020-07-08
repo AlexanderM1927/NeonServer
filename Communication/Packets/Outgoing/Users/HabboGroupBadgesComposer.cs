@@ -1,14 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Neon.HabboHotel.Groups;
 using System.Collections.Generic;
-
-using Neon.HabboHotel.Groups;
 
 namespace Neon.Communication.Packets.Outgoing.Users
 {
-    class HabboGroupBadgesComposer : ServerPacket
+    internal class HabboGroupBadgesComposer : ServerPacket
     {
         public HabboGroupBadgesComposer(Dictionary<int, string> Badges)
             : base(ServerPacketHeader.HabboGroupBadgesMessageComposer)

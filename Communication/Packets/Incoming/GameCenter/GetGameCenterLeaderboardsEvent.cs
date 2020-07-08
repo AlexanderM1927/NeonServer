@@ -1,20 +1,12 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Games;
-using Neon.Communication.Packets.Outgoing.GameCenter;
-using System.Data;
-
-using Neon.HabboHotel.Users;
+﻿using Neon.Communication.Packets.Outgoing.GameCenter;
 using Neon.HabboHotel.GameClients;
-using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
+using Neon.HabboHotel.Games;
+using System;
 using System.Globalization;
 
 namespace Neon.Communication.Packets.Incoming.GameCenter
 {
-    class GetGameCenterLeaderboardsEvent : IPacketEvent
+    internal class GetGameCenterLeaderboardsEvent : IPacketEvent
     {
         public void Parse(GameClient Session, ClientPacket Packet)
         {
@@ -25,10 +17,9 @@ namespace Neon.Communication.Packets.Incoming.GameCenter
 
             if (weekNum == 1) { lastWeekNum = 52; } else { lastWeekNum = weekNum - 1; }
 
-            GameData GameData = null;
 
-            if (NeonEnvironment.GetGame().GetGameDataManager().TryGetGame(GameId, out GameData))
-            {               
+            if (NeonEnvironment.GetGame().GetGameDataManager().TryGetGame(GameId, out GameData GameData))
+            {
                 Session.SendMessage(new Game2LastWeekLeaderboardMessageComposer(GameId, lastWeekNum)); // Derecha Whats funcionando
                 Session.SendMessage(new Game2WeeklyLeaderboardComposer(GameId, weekNum)); // Funcionando Whats Izquierda
             }

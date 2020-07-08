@@ -1,11 +1,8 @@
-﻿using System;
-using System.Linq;
-using System.Data;
-using System.Collections.Generic;
-
+﻿using log4net;
 using Neon.Database.Interfaces;
-using log4net;
-using System.Globalization;
+using System;
+using System.Collections.Generic;
+using System.Data;
 
 namespace Neon.HabboHotel.Games
 {
@@ -17,15 +14,17 @@ namespace Neon.HabboHotel.Games
 
         public LeaderBoardDataManager()
         {
-            this._leaderboards = new Dictionary<int, LeaderBoardData>();
+            _leaderboards = new Dictionary<int, LeaderBoardData>();
 
-            this.Init();
+            Init();
         }
 
         public void Init()
         {
             if (_leaderboards.Count > 0)
+            {
                 _leaderboards.Clear();
+            }
 
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
@@ -38,7 +37,7 @@ namespace Neon.HabboHotel.Games
                     foreach (DataRow Row in GetData.Rows)
                     {
                         LeaderBoardData value = new LeaderBoardData(Convert.ToInt32(Row["game_id"]), Convert.ToInt32(Row["user_id"]), Convert.ToInt32(Row["points"]), Convert.ToInt32(Row["record"]), Convert.ToInt32(Row["week"]), Convert.ToInt32(Row["year"]));
-                        this._leaderboards.Add(Convert.ToInt32(Row["id"]), value);
+                        _leaderboards.Add(Convert.ToInt32(Row["id"]), value);
                     }
                 }
             }
@@ -48,29 +47,29 @@ namespace Neon.HabboHotel.Games
 
         public bool TryGetLeaderBoardData(int GameId, out LeaderBoardData LeaderBoardData)
         {
-            if (this._leaderboards.TryGetValue(GameId, out LeaderBoardData))
+            if (_leaderboards.TryGetValue(GameId, out LeaderBoardData))
+            {
                 return true;
+            }
+
             return false;
         }
 
         public bool TryGetLeaderBoardDataWithWeek(int GameId, int Week, out LeaderBoardData LeaderBoardData)
         {
-            if (this._leaderboards.TryGetValue(Week, out LeaderBoardData) && this._leaderboards.TryGetValue(GameId, out LeaderBoardData))
+            if (_leaderboards.TryGetValue(Week, out LeaderBoardData) && _leaderboards.TryGetValue(GameId, out LeaderBoardData))
+            {
                 return true;
+            }
+
             return false;
         }
 
-        public ICollection<LeaderBoardData> LeaderBoardData
-        {
-            get
-            {
-                return this._leaderboards.Values;
-            }
-        }
+        public ICollection<LeaderBoardData> LeaderBoardData => _leaderboards.Values;
 
         public Dictionary<int, LeaderBoardData> getLeaderBoards()
         {
-            return this._leaderboards;
+            return _leaderboards;
         }
     }
 }

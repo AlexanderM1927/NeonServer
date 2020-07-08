@@ -1,6 +1,6 @@
-﻿using System;
-using ConnectionManager;
+﻿using ConnectionManager;
 using Neon.Net;
+using System;
 
 namespace Neon.Core
 {
@@ -39,7 +39,7 @@ namespace Neon.Core
             try
             {
                 Connection.Dispose();
-                NeonEnvironment.GetGame().GetClientManager().DisposeConnection(Convert.ToInt32( Connection.getConnectionID()));
+                NeonEnvironment.GetGame().GetClientManager().DisposeConnection(Convert.ToInt32(Connection.getConnectionID()));
             }
             catch (Exception e)
             {

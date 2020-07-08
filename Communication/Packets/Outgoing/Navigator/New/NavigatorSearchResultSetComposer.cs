@@ -1,21 +1,17 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms;
+﻿using Neon.HabboHotel.GameClients;
 using Neon.HabboHotel.Navigator;
-using Neon.HabboHotel.GameClients;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Neon.Communication.Packets.Outgoing.Navigator
 {
-    class NavigatorSearchResultSetComposer : ServerPacket
+    internal class NavigatorSearchResultSetComposer : ServerPacket
     {
         public NavigatorSearchResultSetComposer(string Category, string Data, ICollection<SearchResultList> SearchResultLists, GameClient Session, int GoBack = 1, int FetchLimit = 12)
             : base(ServerPacketHeader.NavigatorSearchResultSetMessageComposer)
         {
-           base.WriteString(Category);//Search code.
-           base.WriteString(Data);//Text?
+            base.WriteString(Category);//Search code.
+            base.WriteString(Data);//Text?
 
             base.WriteInteger(SearchResultLists.Count);//Count
             foreach (SearchResultList SearchResult in SearchResultLists.ToList())

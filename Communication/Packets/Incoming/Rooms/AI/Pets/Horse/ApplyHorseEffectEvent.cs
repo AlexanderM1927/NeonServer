@@ -1,45 +1,45 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Items;
-
-
-
-using Neon.Communication.Packets.Outgoing.Rooms.Engine;
+﻿
 using Neon.Communication.Packets.Outgoing.Rooms.AI.Pets;
-
+using Neon.Communication.Packets.Outgoing.Rooms.Engine;
 using Neon.Database.Interfaces;
+using Neon.HabboHotel.Items;
+using Neon.HabboHotel.Rooms;
 
 namespace Neon.Communication.Packets.Incoming.Rooms.AI.Pets.Horse
 {
-    class ApplyHorseEffectEvent : IPacketEvent
+    internal class ApplyHorseEffectEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
             if (!Session.GetHabbo().InRoom)
+            {
                 return;
+            }
 
-            Room Room;
 
-            if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Session.GetHabbo().CurrentRoomId, out Room))
+            if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Session.GetHabbo().CurrentRoomId, out Room Room))
+            {
                 return;
+            }
 
             int ItemId = Packet.PopInt();
             Item Item = Room.GetRoomItemHandler().GetItem(ItemId);
             if (Item == null)
+            {
                 return;
+            }
 
             int PetId = Packet.PopInt();
 
-            RoomUser PetUser = null;
-            if (!Room.GetRoomUserManager().TryGetPet(PetId, out PetUser))
+            if (!Room.GetRoomUserManager().TryGetPet(PetId, out RoomUser PetUser))
+            {
                 return;
+            }
 
             if (PetUser.PetData == null || PetUser.PetData.OwnerId != Session.GetHabbo().Id)
+            {
                 return;
+            }
 
             if (Item.Data.InteractionType == InteractionType.HORSE_SADDLE_1)
             {
@@ -86,7 +86,7 @@ namespace Neon.Communication.Packets.Incoming.Rooms.AI.Pets.Horse
             {
                 int HairDye = 48;
                 string HairType = Item.GetBaseItem().ItemName.Split('_')[2];
-            
+
                 HairDye = HairDye + int.Parse(HairType);
                 PetUser.PetData.HairDye = HairDye;
 
@@ -105,13 +105,22 @@ namespace Neon.Communication.Packets.Incoming.Rooms.AI.Pets.Horse
                 int Parse = int.Parse(Race);
                 int RaceLast = 2 + (Parse * 4) - 4;
                 if (Parse == 13)
+                {
                     RaceLast = 61;
+                }
                 else if (Parse == 14)
+                {
                     RaceLast = 65;
+                }
                 else if (Parse == 15)
+                {
                     RaceLast = 69;
+                }
                 else if (Parse == 16)
+                {
                     RaceLast = 73;
+                }
+
                 PetUser.PetData.Race = RaceLast.ToString();
 
                 using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())

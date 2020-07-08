@@ -1,7 +1,6 @@
-﻿using System;
-
+﻿using Neon.HabboHotel.GameClients;
 using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.GameClients;
+using System;
 
 namespace Neon.HabboHotel.Items.Interactor
 {
@@ -28,9 +27,14 @@ namespace Neon.HabboHotel.Items.Interactor
         {
             RoomUser User = null;
             if (Session != null)
+            {
                 User = Item.GetRoom().GetRoomUserManager().GetRoomUserByHabbo(Session.GetHabbo().Id);
+            }
+
             if (User == null)
+            {
                 return;
+            }
 
             if (Gamemap.TilesTouching(Item.GetX, Item.GetY, User.X, User.Y))
             {
@@ -46,7 +50,10 @@ namespace Neon.HabboHotel.Items.Interactor
                         Item.ExtraData = "-1";
                         Item.UpdateState(false, true);
                         if (Session.GetHabbo().DiceNumber > 0)
+                        {
                             Item.ExtraData = Convert.ToString(Session.GetHabbo().DiceNumber);
+                        }
+
                         Item.RequestUpdate(3, true);
                         Session.GetHabbo().DiceNumber = 0;
                         Session.GetHabbo().RigDice = false;

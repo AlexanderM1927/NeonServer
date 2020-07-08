@@ -1,18 +1,16 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using Neon.Database.Interfaces;
+﻿using Neon.Database.Interfaces;
 using Neon.HabboHotel.Users;
 
 namespace Neon.Communication.Packets.Incoming.Moderation
 {
-    class ModerationMuteEvent : IPacketEvent
+    internal class ModerationMuteEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
             if (Session == null || Session.GetHabbo() == null || !Session.GetHabbo().GetPermissions().HasRight("mod_mute"))
+            {
                 return;
+            }
 
             int UserId = Packet.PopInt();
             string Message = Packet.PopString();

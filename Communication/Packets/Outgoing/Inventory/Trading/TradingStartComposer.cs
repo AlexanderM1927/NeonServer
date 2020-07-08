@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Neon.Communication.Packets.Outgoing.Inventory.Trading
+﻿namespace Neon.Communication.Packets.Outgoing.Inventory.Trading
 {
-    class TradingStartComposer : ServerPacket
+    internal class TradingStartComposer : ServerPacket
     {
         public TradingStartComposer(int User1Id, int User2Id)
             : base(ServerPacketHeader.TradingStartMessageComposer)

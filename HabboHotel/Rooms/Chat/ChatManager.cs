@@ -1,15 +1,11 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms.Chat.Logs;
-using Neon.HabboHotel.Rooms.Chat.Filter;
-using Neon.HabboHotel.Rooms.Chat.Emotions;
+﻿
+using log4net;
 using Neon.HabboHotel.Rooms.Chat.Commands;
+using Neon.HabboHotel.Rooms.Chat.Emotions;
+using Neon.HabboHotel.Rooms.Chat.Filter;
+using Neon.HabboHotel.Rooms.Chat.Logs;
 using Neon.HabboHotel.Rooms.Chat.Pets.Commands;
 using Neon.HabboHotel.Rooms.Chat.Pets.Locale;
-using log4net;
 using Neon.HabboHotel.Rooms.Chat.Styles;
 
 namespace Neon.HabboHotel.Rooms.Chat
@@ -21,93 +17,93 @@ namespace Neon.HabboHotel.Rooms.Chat
         /// <summary>
         /// Chat Emoticons.
         /// </summary>
-        private ChatEmotionsManager _emotions;
+        private readonly ChatEmotionsManager _emotions;
 
         /// <summary>
         /// Chatlog Manager
         /// </summary>
-        private ChatlogManager _logs;
+        private readonly ChatlogManager _logs;
 
         /// <summary>
         /// Filter Manager.
         /// </summary>
-        private WordFilterManager _filter;
+        private readonly WordFilterManager _filter;
 
         /// <summary>
         /// Commands.
         /// </summary>
-        private CommandManager _commands;
+        private readonly CommandManager _commands;
 
         /// <summary>
         /// Pet Commands.
         /// </summary>
-        private PetCommandManager _petCommands;
+        private readonly PetCommandManager _petCommands;
 
         /// <summary>
         /// Pet Locale.
         /// </summary>
-        private PetLocale _petLocale;
+        private readonly PetLocale _petLocale;
 
         /// <summary>
         /// Chat styles.
         /// </summary>
-        private ChatStyleManager _chatStyles;
+        private readonly ChatStyleManager _chatStyles;
 
         /// <summary>
         /// Initializes a new instance of the ChatManager class.
         /// </summary>
         public ChatManager()
         {
-            this._emotions = new ChatEmotionsManager();
-            this._logs = new ChatlogManager();
-         
-            this._filter = new WordFilterManager();
-            this._filter.InitWords();
-            this._filter.InitCharacters();
+            _emotions = new ChatEmotionsManager();
+            _logs = new ChatlogManager();
 
-            this._commands = new CommandManager(":");
-            this._petCommands = new PetCommandManager();
-            this._petLocale = new PetLocale();
-      
-            this._chatStyles = new ChatStyleManager();
-            this._chatStyles.Init();
+            _filter = new WordFilterManager();
+            _filter.InitWords();
+            _filter.InitCharacters();
+
+            _commands = new CommandManager(":");
+            _petCommands = new PetCommandManager();
+            _petLocale = new PetLocale();
+
+            _chatStyles = new ChatStyleManager();
+            _chatStyles.Init();
 
             log.Info(">> Chat Manager -> READY!");
         }
 
         public ChatEmotionsManager GetEmotions()
         {
-            return this._emotions;
+            return _emotions;
         }
 
         public ChatlogManager GetLogs()
         {
-            return this._logs;
+            return _logs;
         }
 
         public WordFilterManager GetFilter()
         {
-            return this._filter;
+            return _filter;
         }
 
-       public CommandManager GetCommands()
+        public CommandManager GetCommands()
         {
-            return this._commands;
+            return _commands;
         }
 
         public PetCommandManager GetPetCommands()
         {
-            return this._petCommands;
+            return _petCommands;
         }
 
         public PetLocale GetPetLocale()
         {
-            return this._petLocale;
+            return _petLocale;
         }
 
         public ChatStyleManager GetChatStyles()
         {
-            return this._chatStyles;
+            return _chatStyles;
         }
     }
 }

@@ -1,17 +1,14 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Items;
-using Neon.Communication.Packets.Outgoing.Inventory.Furni;
-
+﻿using Neon.Communication.Packets.Outgoing.Inventory.Furni;
 using Neon.Communication.Packets.Outgoing.Rooms.Furni;
+using Neon.HabboHotel.Items;
 using Neon.HabboHotel.Items.Crafting;
 using Neon.HabboHotel.Rooms;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Neon.Communication.Packets.Incoming.Rooms.Furni
 {
-    class CraftSecretEvent : IPacketEvent
+    internal class CraftSecretEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
@@ -31,24 +28,26 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Furni
 
             List<Item> items = new List<Item>();
 
-            var count = Packet.PopInt();
-            for (var i = 1; i <= count; i++)
+            int count = Packet.PopInt();
+            for (int i = 1; i <= count; i++)
             {
-                var id = Packet.PopInt();
+                int id = Packet.PopInt();
 
-                var item = Session.GetHabbo().GetInventoryComponent().GetItem(id);
+                Item item = Session.GetHabbo().GetInventoryComponent().GetItem(id);
                 if (item == null || items.Contains(item))
+                {
                     return;
+                }
 
                 items.Add(item);
             }
 
             CraftingRecipe recipe = null;
-            foreach (var Receta in NeonEnvironment.GetGame().GetCraftingManager().CraftingRecipes)
+            foreach (KeyValuePair<string, CraftingRecipe> Receta in NeonEnvironment.GetGame().GetCraftingManager().CraftingRecipes)
             {
                 bool found = false;
 
-                foreach (var item in Receta.Value.ItemsNeeded)
+                foreach (KeyValuePair<string, int> item in Receta.Value.ItemsNeeded)
                 {
                     if (item.Value != items.Count(item2 => item2.GetBaseItem().ItemName == item.Key))
                     {
@@ -60,19 +59,29 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Furni
                 }
 
                 if (found == false)
+                {
                     continue;
+                }
 
                 recipe = Receta.Value;
                 break;
             }
 
-            if (recipe == null) return;
-            ItemData resultItem = NeonEnvironment.GetGame().GetItemManager().GetItemByName(recipe.Result);
-            if (resultItem == null) return;
-            bool success = true;
-            foreach (var need in recipe.ItemsNeeded)
+            if (recipe == null)
             {
-                for (var i = 1; i <= need.Value; i++)
+                return;
+            }
+
+            ItemData resultItem = NeonEnvironment.GetGame().GetItemManager().GetItemByName(recipe.Result);
+            if (resultItem == null)
+            {
+                return;
+            }
+
+            bool success = true;
+            foreach (KeyValuePair<string, int> need in recipe.ItemsNeeded)
+            {
+                for (int i = 1; i <= need.Value; i++)
                 {
                     ItemData item = NeonEnvironment.GetGame().GetItemManager().GetItemByName(need.Key);
                     if (item == null)
@@ -81,14 +90,18 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Furni
                         continue;
                     }
 
-                    var inv = Session.GetHabbo().GetInventoryComponent().GetFirstItemByBaseId(item.Id);
+                    Item inv = Session.GetHabbo().GetInventoryComponent().GetFirstItemByBaseId(item.Id);
                     if (inv == null)
                     {
                         success = false;
                         continue;
                     }
 
-                    using (var dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor()) dbClient.RunQuery("DELETE FROM `items` WHERE `id` = '" + inv.Id + "' AND `user_id` = '" + Session.GetHabbo().Id + "' LIMIT 1");
+                    using (Database.Interfaces.IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
+                    {
+                        dbClient.RunQuery("DELETE FROM `items` WHERE `id` = '" + inv.Id + "' AND `user_id` = '" + Session.GetHabbo().Id + "' LIMIT 1");
+                    }
+
                     Session.GetHabbo().GetInventoryComponent().RemoveItem(inv.Id);
                 }
             }

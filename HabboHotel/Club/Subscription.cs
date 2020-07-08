@@ -1,5 +1,4 @@
-﻿using Neon;
-using Neon.Core;
+﻿using Neon.Core;
 
 namespace Neon.HabboHotel.Club
 {
@@ -8,21 +7,9 @@ namespace Neon.HabboHotel.Club
         private readonly string Caption;
         private int TimeExpire;
 
-        internal string SubscriptionId
-        {
-            get
-            {
-                return this.Caption;
-            }
-        }
+        internal string SubscriptionId => Caption;
 
-        internal int ExpireTime
-        {
-            get
-            {
-                return this.TimeExpire;
-            }
-        }
+        internal int ExpireTime => TimeExpire;
 
         internal Subscription(string Caption, int TimeExpire)
         {
@@ -32,23 +19,23 @@ namespace Neon.HabboHotel.Club
 
         internal bool IsValid()
         {
-            return this.TimeExpire > NeonEnvironment.GetUnixTimestamp();
+            return TimeExpire > NeonEnvironment.GetUnixTimestamp();
         }
 
         internal void SetEndTime(int time)
         {
-            this.TimeExpire = time;
+            TimeExpire = time;
         }
 
         internal void ExtendSubscription(int Time)
         {
             try
             {
-                this.TimeExpire = (this.TimeExpire + Time);
+                TimeExpire = (TimeExpire + Time);
             }
             catch
             {
-                Logging.LogException("T: " + this.TimeExpire + "." + Time);
+                Logging.LogException("T: " + TimeExpire + "." + Time);
             }
         }
     }

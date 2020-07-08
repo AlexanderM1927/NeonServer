@@ -2,10 +2,6 @@
 using Neon.Communication.Packets.Incoming;
 using Neon.Communication.Packets.Outgoing;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.HabboHotel.GameClients
 {
@@ -18,7 +14,7 @@ namespace Neon.HabboHotel.GameClients
         public Session(IWebSocketConnection socket)
         {
             this.socket = socket;
-            this.identifier = socket.ConnectionInfo.Id;
+            identifier = socket.ConnectionInfo.Id;
         }
 
         public void handleMessage(byte[] bytes)
@@ -48,7 +44,7 @@ namespace Neon.HabboHotel.GameClients
                     this.client = client;
 
                     ServerPacket loginSso = new ServerPacket(1);
-                    this.send(loginSso);
+                    send(loginSso);
 
                 }
 
@@ -74,18 +70,18 @@ namespace Neon.HabboHotel.GameClients
             }
         }
 
-        public void send(ServerPacket packet )
+        public void send(ServerPacket packet)
         {
-            if(this.socket.IsAvailable)
+            if (socket.IsAvailable)
             {
-                this.socket.Send(packet.GetBytes());
+                socket.Send(packet.GetBytes());
             }
         }
 
         public void onEnd()
         {
             client.wsSession = null;
-            this.client = null;
+            client = null;
         }
     }
 }

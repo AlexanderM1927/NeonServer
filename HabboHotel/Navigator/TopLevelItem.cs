@@ -1,9 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-namespace Neon.HabboHotel.Navigator
+﻿namespace Neon.HabboHotel.Navigator
 {
     public class TopLevelItem
     {
@@ -14,34 +9,34 @@ namespace Neon.HabboHotel.Navigator
 
         public TopLevelItem(int Id, string SearchCode, string Filter, string Localization)
         {
-            this._id = Id;
-            this._searchCode = SearchCode;
-            this._filter = Filter;
-            this._localization = Localization;
+            _id = Id;
+            _searchCode = SearchCode;
+            _filter = Filter;
+            _localization = Localization;
         }
 
         public int Id
         {
-            get { return this._id; }
-            set { this._id = value; }
+            get => _id;
+            set => _id = value;
         }
 
         public string SearchCode
         {
-            get { return this._searchCode; }
-            set { this._searchCode = value; }
+            get => _searchCode;
+            set => _searchCode = value;
         }
 
         public string Filter
         {
-            get { return this._filter; }
-            set { this._filter = value; }
+            get => _filter;
+            set => _filter = value;
         }
 
         public string Localization
         {
-            get { return this._localization; }
-            set { this._localization = value; }
+            get => _localization;
+            set => _localization = value;
         }
     }
 }

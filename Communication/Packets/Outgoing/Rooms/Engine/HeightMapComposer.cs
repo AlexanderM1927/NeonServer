@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.Communication.Packets.Outgoing.Rooms.Engine
 {
-    class HeightMapComposer : ServerPacket
+    internal class HeightMapComposer : ServerPacket
     {
         public HeightMapComposer(string Map)
             : base(ServerPacketHeader.HeightMapMessageComposer)
@@ -30,11 +26,12 @@ namespace Neon.Communication.Packets.Outgoing.Rooms.Engine
                     catch { pos = 'x'; }
 
                     if (pos == 'x')
+                    {
                         base.WriteShort(-1);
+                    }
                     else
                     {
-                        int Height = 0;
-                        if (int.TryParse(pos.ToString(), out Height))
+                        if (int.TryParse(pos.ToString(), out int Height))
                         {
                             Height = Height * 256;
                         }

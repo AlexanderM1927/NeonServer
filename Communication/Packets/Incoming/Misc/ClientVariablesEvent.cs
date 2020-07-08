@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Neon.Communication.Packets.Incoming.Misc
+﻿namespace Neon.Communication.Packets.Incoming.Misc
 {
-    class ClientVariablesEvent : IPacketEvent
+    internal class ClientVariablesEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {

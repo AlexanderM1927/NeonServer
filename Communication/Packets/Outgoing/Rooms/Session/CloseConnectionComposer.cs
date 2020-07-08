@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Neon.HabboHotel.GameClients;
+﻿using Neon.HabboHotel.GameClients;
 
 namespace Neon.Communication.Packets.Outgoing.Rooms.Session
 {
-    class CloseConnectionComposer : ServerPacket
+    internal class CloseConnectionComposer : ServerPacket
     {
         public CloseConnectionComposer(GameClient Session)
             : base(ServerPacketHeader.CloseConnectionMessageComposer)

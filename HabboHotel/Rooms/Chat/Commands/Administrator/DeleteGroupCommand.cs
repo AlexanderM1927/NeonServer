@@ -1,34 +1,23 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using Neon.Database.Interfaces;
+﻿using Neon.Database.Interfaces;
 
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.Administrator
 {
-    class DeleteGroupCommand : IChatCommand
+    internal class DeleteGroupCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_delete_group"; }
-        }
+        public string PermissionRequired => "command_delete_group";
 
-        public string Parameters
-        {
-            get { return ""; }
-        }
+        public string Parameters => "";
 
-        public string Description
-        {
-            get { return "Elimina un grupo de la base de dato."; }
-        }
+        public string Description => "Elimina un grupo de la base de dato.";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {
             Room = Session.GetHabbo().CurrentRoom;
             if (Room == null)
+            {
                 return;
+            }
 
             if (Room.Group == null)
             {

@@ -1,16 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Neon.Communication.Packets.Outgoing.Messenger;
+using Neon.Communication.Packets.Outgoing.Moderation;
 using Neon.Communication.Packets.Outgoing.Rooms.Chat;
-using Neon.Core;
+using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
 using Neon.HabboHotel.GameClients;
 using Neon.HabboHotel.Quests;
 using Neon.HabboHotel.Rooms;
-using Neon.Communication.Packets.Incoming;
-using Neon.Communication.Packets.Outgoing.Moderation;
-using Neon.Utilities;
 using Neon.HabboHotel.Rooms.Chat.Styles;
-using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
-using Neon.Communication.Packets.Outgoing.Messenger;
+using Neon.Utilities;
+using System;
+using System.Collections.Generic;
 
 namespace Neon.Communication.Packets.Incoming.Rooms.Chat
 {
@@ -19,13 +17,21 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Chat
         public void Parse(GameClient Session, ClientPacket Packet)
         {
             if (!Session.GetHabbo().InRoom)
+            {
                 return;
+            }
 
             Room Room = Session.GetHabbo().CurrentRoom;
             if (Room == null)
+            {
                 return;
+            }
+
             if (Session.GetHabbo().Rank > 8 && !Session.GetHabbo().StaffOk)
+            {
                 return;
+            }
+
             if (!Session.GetHabbo().GetPermissions().HasRight("mod_tool") && Room.CheckMute(Session))
             {
                 Session.SendWhisper("Oops, usted se encuentra silenciad@", 34);
@@ -33,7 +39,9 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Chat
             }
 
             if (NeonEnvironment.GetUnixTimestamp() < Session.GetHabbo().FloodTime && Session.GetHabbo().FloodTime != 0)
+            {
                 return;
+            }
 
             string Params = Packet.PopString();
             string ToUser = Params.Split(' ')[0];
@@ -45,11 +53,15 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Chat
 
             RoomUser User = Room.GetRoomUserManager().GetRoomUserByHabbo(Session.GetHabbo().Id);
             if (User == null)
+            {
                 return;
+            }
 
             RoomUser User2 = Room.GetRoomUserManager().GetRoomUserByHabbo(ToUser);
             if (User2 == null)
+            {
                 return;
+            }
 
             if (Session.GetHabbo().TimeMuted > 0)
             {
@@ -57,16 +69,16 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Chat
                 return;
             }
 
-            ChatStyle Style = null;
-            if (!NeonEnvironment.GetGame().GetChatManager().GetChatStyles().TryGetStyle(Colour, out Style) || (Style.RequiredRight.Length > 0 && !Session.GetHabbo().GetPermissions().HasRight(Style.RequiredRight)))
+            if (!NeonEnvironment.GetGame().GetChatManager().GetChatStyles().TryGetStyle(Colour, out ChatStyle Style) || (Style.RequiredRight.Length > 0 && !Session.GetHabbo().GetPermissions().HasRight(Style.RequiredRight)))
+            {
                 Colour = 0;
+            }
 
             User.LastBubble = Session.GetHabbo().CustomBubbleId == 0 ? Colour : Session.GetHabbo().CustomBubbleId;
 
             if (!Session.GetHabbo().GetPermissions().HasRight("mod_tool"))
             {
-                int MuteTime;
-                if (User.IncrementAndCheckFlood(out MuteTime))
+                if (User.IncrementAndCheckFlood(out int MuteTime))
                 {
                     Session.SendMessage(new FloodControlComposer(MuteTime));
                     return;
@@ -96,9 +108,8 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Chat
 
             Room.AddChatlog(Session.GetHabbo().Id, ": " + Message);
 
-            string word;
-            if (!Session.GetHabbo().GetPermissions().HasRight("word_filter_override") && 
-                NeonEnvironment.GetGame().GetChatManager().GetFilter().IsUnnaceptableWord(Message, out word))
+            if (!Session.GetHabbo().GetPermissions().HasRight("word_filter_override") &&
+                NeonEnvironment.GetGame().GetChatManager().GetFilter().IsUnnaceptableWord(Message, out string word))
             {
                 Session.GetHabbo().BannedPhraseCount++;
 
@@ -107,7 +118,7 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Chat
                     Session.SendWhisper("¡Has mencionado una palabra no apta para el hotel! Aviso " + Session.GetHabbo().BannedPhraseCount + "/10", 34);
 
                     DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
-                    dtDateTime = dtDateTime.AddSeconds(NeonEnvironment.GetUnixTimestamp()).ToLocalTime();
+                    _ = dtDateTime.AddSeconds(NeonEnvironment.GetUnixTimestamp()).ToLocalTime();
 
                     NeonEnvironment.GetGame().GetClientManager().StaffAlert1(new RoomInviteComposer(int.MinValue, "Spammer: " + Session.GetHabbo().Username + " / Frase: " + Message + " / Palabra: " + word.ToUpper() + " / Fase: " + Session.GetHabbo().BannedPhraseCount + " / 10."));
                     NeonEnvironment.GetGame().GetClientManager().StaffAlert2(new RoomNotificationComposer("Alerta de publicista:",
@@ -156,7 +167,7 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Chat
                 }
             }
 
-            List<RoomUser> ToNotify = Room.GetRoomUserManager().GetRoomUserByRank(4);
+            List<RoomUser> ToNotify = Room.GetRoomUserManager().GetRoomUserByRank(8);
             if (ToNotify.Count > 0)
             {
                 foreach (RoomUser user in ToNotify)

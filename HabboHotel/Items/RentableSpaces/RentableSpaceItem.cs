@@ -2,65 +2,36 @@
 {
     public class RentableSpaceItem
     {
-        private int _itemId;
-        private int _ownerId;
-        private string _ownerUsername;
-        private int _expireStamp;
-        private int _price;
-
         public RentableSpaceItem(int ItemId, int OwnerId, string OwnerUsername, int ExpireStamp, int Price)
         {
-            this._itemId = ItemId;
-            this._ownerId = OwnerId;
-            this._ownerUsername = OwnerUsername;
-            this._expireStamp = ExpireStamp;
-            this._price = Price;
+            this.ItemId = ItemId;
+            this.OwnerId = OwnerId;
+            this.OwnerUsername = OwnerUsername;
+            this.ExpireStamp = ExpireStamp;
+            this.Price = Price;
         }
 
         public bool IsRented()
         {
-            return this._expireStamp > NeonEnvironment.GetUnixTimestamp();
+            return ExpireStamp > NeonEnvironment.GetUnixTimestamp();
         }
 
-        public bool Rented
-        {
-            get { return this.IsRented(); }
-        }
+        public bool Rented => IsRented();
 
-        public int ItemId
-        {
-            get { return this._itemId; }
-            set { this._itemId = value; }
-        }
+        public int ItemId { get; set; }
 
 
-        public int OwnerId
-        {
-            get { return this._ownerId; }
-            set { this._ownerId = value; }
-        }
+        public int OwnerId { get; set; }
 
-        public string OwnerUsername
-        {
-            get { return this._ownerUsername; }
-            set { this._ownerUsername = value; }
-        }
+        public string OwnerUsername { get; set; }
 
-        public int ExpireStamp
-        {
-            get { return this._expireStamp; }
-            set { this._expireStamp = value; }
-        }
+        public int ExpireStamp { get; set; }
 
-        public int Price
-        {
-            get { return this._price; }
-            set { this._price = value; }
-        }
+        public int Price { get; set; }
 
         public int GetExpireSeconds()
         {
-            int i = this._expireStamp - (int)NeonEnvironment.GetUnixTimestamp();
+            int i = ExpireStamp - (int)NeonEnvironment.GetUnixTimestamp();
             return i > 0 ? i : 0;
         }
 

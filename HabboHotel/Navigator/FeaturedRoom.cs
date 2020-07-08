@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Neon.HabboHotel.Navigator
+﻿namespace Neon.HabboHotel.Navigator
 {
     public class FeaturedRoom
     {
@@ -13,12 +11,12 @@ namespace Neon.HabboHotel.Navigator
 
         public FeaturedRoom(int id, int roomId, string caption, string description, string image, int categoryId)
         {
-            this.Id = id;
-            this.RoomId = roomId;
-            this.Caption = caption;
-            this.Description = description;
-            this.Image = image;
-            this.CategoryId = categoryId;
+            Id = id;
+            RoomId = roomId;
+            Caption = caption;
+            Description = description;
+            Image = image;
+            CategoryId = categoryId;
         }
     }
 }

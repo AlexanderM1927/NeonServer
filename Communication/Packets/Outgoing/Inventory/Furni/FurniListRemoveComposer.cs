@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Neon.Communication.Packets.Outgoing.Inventory.Furni
+﻿namespace Neon.Communication.Packets.Outgoing.Inventory.Furni
 {
-    class FurniListRemoveComposer : ServerPacket
+    internal class FurniListRemoveComposer : ServerPacket
     {
         public FurniListRemoveComposer(int Id)
             : base(ServerPacketHeader.FurniListRemoveMessageComposer)

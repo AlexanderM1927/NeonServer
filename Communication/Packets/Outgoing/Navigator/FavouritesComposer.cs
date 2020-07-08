@@ -1,12 +1,8 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 
 namespace Neon.Communication.Packets.Outgoing.Navigator
 {
-    class FavouritesComposer : ServerPacket
+    internal class FavouritesComposer : ServerPacket
     {
         public FavouritesComposer(ArrayList favouriteIDs)
             : base(ServerPacketHeader.FavouritesMessageComposer)

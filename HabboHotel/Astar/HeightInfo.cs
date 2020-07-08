@@ -1,33 +1,32 @@
-﻿using System;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 
 namespace Neon.HabboHotel.Astar
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct HeightInfo
     {
-        private double[,] mMap;
-        private int mMaxX;
-        private int mMaxY;
+        private readonly double[,] mMap;
+        private readonly int mMaxX;
+        private readonly int mMaxY;
 
         public HeightInfo(int MaxX, int MaxY, double[,] Map)
         {
-            this.mMap = Map;
-            this.mMaxX = MaxX;
-            this.mMaxY = MaxY;
+            mMap = Map;
+            mMaxX = MaxX;
+            mMaxY = MaxY;
         }
 
         public double GetState(int x, int y)
         {
-            if ((x >= this.mMaxX) || (x < 0))
+            if ((x >= mMaxX) || (x < 0))
             {
                 return 0.0;
             }
-            if ((y >= this.mMaxY) || (y < 0))
+            if ((y >= mMaxY) || (y < 0))
             {
                 return 0.0;
             }
-            return this.mMap[x, y];
+            return mMap[x, y];
         }
     }
 }

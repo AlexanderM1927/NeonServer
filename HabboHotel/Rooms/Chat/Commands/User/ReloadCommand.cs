@@ -1,26 +1,17 @@
-﻿using System.Linq;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Session;
 using System.Collections.Generic;
-using Neon.Communication.Packets.Outgoing.Rooms.Session;
+using System.Linq;
 
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
 {
-    class Reloadcommand : IChatCommand
+    internal class Reloadcommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_reload"; }
-        }
+        public string PermissionRequired => "command_reload";
 
-        public string Parameters
-        {
-            get { return ""; }
-        }
+        public string Parameters => "";
 
-        public string Description
-        {
-            get { return "Recarga la sala"; }
-        }
+        public string Description => "Recarga la sala";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {
@@ -38,7 +29,9 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
             foreach (RoomUser User in UsersToReturn)
             {
                 if (User == null || User.GetClient() == null)
+                {
                     continue;
+                }
 
                 User.GetClient().SendMessage(new RoomForwardComposer(Room.Id));
             }

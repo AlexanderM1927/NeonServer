@@ -15,12 +15,14 @@ namespace Neon.HabboHotel.Catalog.PredesignedRooms
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
                 dbClient.SetQuery("SELECT * FROM catalog_predesigned_rooms;");
-                var table = dbClient.getTable();
+                DataTable table = dbClient.getTable();
                 foreach (DataRow row in table.Rows)
+                {
                     predesignedRoom.Add(Convert.ToUInt32(row["id"]), new PredesignedRooms(Convert.ToUInt32(row["id"]),
-                        Convert.ToUInt32(row["id"]), (string)row["room_model"], (string)row["flooritems"].ToString().TrimEnd(';'),
-                        (string)row["wallitems"].ToString().TrimEnd(';'), (string)row["catalogitems"].ToString().TrimEnd(';'), 
+                        Convert.ToUInt32(row["id"]), (string)row["room_model"], row["flooritems"].ToString().TrimEnd(';'),
+                        row["wallitems"].ToString().TrimEnd(';'), row["catalogitems"].ToString().TrimEnd(';'),
                         (string)row["room_decoration"]));
+                }
             }
         }
 

@@ -1,11 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-namespace Neon.Communication.Packets.Outgoing.Rooms.Furni
+﻿namespace Neon.Communication.Packets.Outgoing.Rooms.Furni
 {
-    class GnomeBoxComposer : ServerPacket
+    internal class GnomeBoxComposer : ServerPacket
     {
         public GnomeBoxComposer(int ItemId)
             : base(ServerPacketHeader.GnomeBoxMessageComposer)

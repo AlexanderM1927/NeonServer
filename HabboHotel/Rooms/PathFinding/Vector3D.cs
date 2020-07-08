@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Neon.HabboHotel.Pathfinding
+﻿namespace Neon.HabboHotel.Pathfinding
 {
-    sealed class Vector3D
+    internal sealed class Vector3D
     {
         private int x;
         private int y;
@@ -14,38 +8,20 @@ namespace Neon.HabboHotel.Pathfinding
 
         public int X
         {
-            get
-            {
-                return this.x;
-            }
-            set
-            {
-                this.x = value;
-            }
+            get => x;
+            set => x = value;
         }
 
         public int Y
         {
-            get
-            {
-                return this.y;
-            }
-            set
-            {
-                this.y = value;
-            }
+            get => y;
+            set => y = value;
         }
 
         public double Z
         {
-            get
-            {
-                return this.z;
-            }
-            set
-            {
-                this.z = value;
-            }
+            get => z;
+            set => z = value;
         }
 
         public Vector3D() { }
@@ -59,7 +35,7 @@ namespace Neon.HabboHotel.Pathfinding
 
         public Vector2D ToVector2D()
         {
-            return new Vector2D(this.x, this.y);
+            return new Vector2D(x, y);
         }
     }
 }

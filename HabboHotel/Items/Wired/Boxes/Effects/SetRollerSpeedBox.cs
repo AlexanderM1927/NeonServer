@@ -1,21 +1,13 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Concurrent;
-
-using Neon.Communication.Packets.Incoming;
+﻿using Neon.Communication.Packets.Incoming;
 using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Users;
-using Neon.Communication.Packets.Outgoing.Rooms.Chat;
+using System.Collections.Concurrent;
 namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
 {
-    class SetRollerSpeedBox: IWiredItem
+    internal class SetRollerSpeedBox : IWiredItem
     {
         public Room Instance { get; set; }
         public Item Item { get; set; }
-        public WiredBoxType Type { get { return WiredBoxType.EffectSetRollerSpeed; } }
+        public WiredBoxType Type => WiredBoxType.EffectSetRollerSpeed;
         public ConcurrentDictionary<int, Item> SetItems { get; set; }
         public string StringData { get; set; }
         public bool BoolData { get; set; }
@@ -25,33 +17,35 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
         {
             this.Instance = Instance;
             this.Item = Item;
-            this.SetItems = new ConcurrentDictionary<int, Item>();
+            SetItems = new ConcurrentDictionary<int, Item>();
 
-            if (this.SetItems.Count > 0)
-                this.SetItems.Clear();
+            if (SetItems.Count > 0)
+            {
+                SetItems.Clear();
+            }
         }
 
         public void HandleSave(ClientPacket Packet)
         {
-            if (this.SetItems.Count > 0)
-                this.SetItems.Clear();
+            if (SetItems.Count > 0)
+            {
+                SetItems.Clear();
+            }
 
             int Unknown = Packet.PopInt();
             string Message = Packet.PopString();
 
-            this.StringData = Message;
+            StringData = Message;
 
-            int Speed;
-            if (!int.TryParse(StringData, out Speed))
+            if (!int.TryParse(StringData, out int Speed))
             {
-                this.StringData = "";
+                StringData = "";
             }
         }
 
         public bool Execute(params object[] Params)
         {
-            int Speed;
-            if (int.TryParse(this.StringData, out Speed))
+            if (int.TryParse(StringData, out int Speed))
             {
                 Instance.GetRoomItemHandler().SetSpeed(Speed);
             }

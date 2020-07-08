@@ -1,19 +1,18 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
+﻿using Neon.Communication.Packets.Outgoing;
 using Neon.Communication.Packets.Outgoing.Nux;
-using Neon.Communication.Packets.Outgoing;
 
 namespace Neon.Communication.Packets.Incoming.Nucs
 {
-    class RoomNucsAlerta : IPacketEvent
+    internal class RoomNucsAlerta : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
-            var habbo = Session.GetHabbo();
+            HabboHotel.Users.Habbo habbo = Session.GetHabbo();
 
-            if (habbo == null) return;
+            if (habbo == null)
+            {
+                return;
+            }
             //if (!habbo.PassedNuxNavigator && !habbo.PassedNuxCatalog && !habbo.PassedNuxChat && !habbo.PassedNuxDuckets && !habbo.PassedNuxItems)
             //{
             //    Session.SendMessage(new NuxAlertComposer("helpBubble/add/BOTTOM_BAR_NAVIGATOR/Este es el navegador de salas, en el, podrás visitar nuevas salas y hacer nuevas amistades."));
@@ -43,13 +42,16 @@ namespace Neon.Communication.Packets.Incoming.Nucs
 
             //if (habbo.PassedNuxNavigator && habbo.PassedNuxCatalog && habbo.PassedNuxChat && habbo.PassedNuxDuckets && habbo.PassedNuxItems)
             //{
-                Session.SendMessage(new NuxAlertComposer("nux/lobbyoffer/show"));
-                habbo._NUX = false;
-                using (var dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
-                    dbClient.runFastQuery("UPDATE users SET nux_user = 'false' WHERE id = " + Session.GetHabbo().Id + ";");
-                var nuxStatus = new ServerPacket(ServerPacketHeader.NuxUserStatus);
-                nuxStatus.WriteInteger(0);
-                Session.SendMessage(nuxStatus);
+            Session.SendMessage(new NuxAlertComposer("nux/lobbyoffer/show"));
+            habbo._NUX = false;
+            using (Database.Interfaces.IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
+            {
+                dbClient.runFastQuery("UPDATE users SET nux_user = 'false' WHERE id = " + Session.GetHabbo().Id + ";");
+            }
+
+            ServerPacket nuxStatus = new ServerPacket(ServerPacketHeader.NuxUserStatus);
+            nuxStatus.WriteInteger(0);
+            Session.SendMessage(nuxStatus);
             //}
         }
     }

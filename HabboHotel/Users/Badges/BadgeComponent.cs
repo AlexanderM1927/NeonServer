@@ -1,16 +1,9 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-
+﻿using Neon.Communication.Packets.Outgoing.Inventory.Badges;
+using Neon.Communication.Packets.Outgoing.Inventory.Furni;
+using Neon.Database.Interfaces;
 using Neon.HabboHotel.GameClients;
 using Neon.HabboHotel.Users.UserDataManagement;
-using Neon.Communication.Packets.Incoming;
-
-using Neon.Communication.Packets.Outgoing.Inventory.Badges;
-using Neon.Communication.Packets.Outgoing.Inventory.Furni;
-
-using Neon.Database.Interfaces;
-using Neon.HabboHotel.Badges;
+using System.Collections.Generic;
 
 namespace Neon.HabboHotel.Users.Badges
 {
@@ -21,21 +14,20 @@ namespace Neon.HabboHotel.Users.Badges
 
         public BadgeComponent(Habbo Player, UserData data)
         {
-            this._player = Player;
-            this._badges = new Dictionary<string, Badge>();
+            _player = Player;
+            _badges = new Dictionary<string, Badge>();
 
             foreach (Badge badge in data.badges)
             {
 
-                if (!this._badges.ContainsKey(badge.Code))
-                    this._badges.Add(badge.Code, badge);
+                if (!_badges.ContainsKey(badge.Code))
+                {
+                    _badges.Add(badge.Code, badge);
+                }
             }
         }
 
-        public int Count
-        {
-            get { return _badges.Count; }
-        }
+        public int Count => _badges.Count;
 
         public int EquippedCount
         {
@@ -59,20 +51,22 @@ namespace Neon.HabboHotel.Users.Badges
 
         public ICollection<Badge> GetBadges()
         {
-            return this._badges.Values;
+            return _badges.Values;
         }
 
         public Badge GetBadge(string Badge)
         {
             if (_badges.ContainsKey(Badge))
-                return (Badge)_badges[Badge];
+            {
+                return _badges[Badge];
+            }
 
             return null;
         }
 
         public bool TryGetBadge(string BadgeCode, out Badge Badge)
         {
-            return this._badges.TryGetValue(BadgeCode, out Badge);
+            return _badges.TryGetValue(BadgeCode, out Badge);
         }
 
         public bool HasBadge(string Badge)
@@ -84,7 +78,7 @@ namespace Neon.HabboHotel.Users.Badges
         {
             foreach (string str in Badge)
             {
-                if (!this._badges.ContainsKey(str))
+                if (!_badges.ContainsKey(str))
                 {
                     return false;
                 }
@@ -92,12 +86,12 @@ namespace Neon.HabboHotel.Users.Badges
             return true;
         }
 
-        public void GiveBadge(string Badge, Boolean InDatabase, GameClient Session)
+        public void GiveBadge(string Badge, bool InDatabase, GameClient Session)
         {
             if (HasBadge(Badge))
+            {
                 return;
-
-
+            }
 
             if (InDatabase)
             {
@@ -141,7 +135,9 @@ namespace Neon.HabboHotel.Users.Badges
             }
 
             if (_badges.ContainsKey(Badge))
+            {
                 _badges.Remove(Badge);
+            }
         }
     }
 }

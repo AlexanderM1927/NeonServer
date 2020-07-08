@@ -1,10 +1,8 @@
 ﻿using Neon.HabboHotel.Calendar;
-using System;
-using System.Collections.Generic;
 
 namespace Neon.Communication.Packets.Outgoing.Campaigns
 {
-    class CalendarPrizesComposer : ServerPacket
+    internal class CalendarPrizesComposer : ServerPacket
     {
         public CalendarPrizesComposer(CalendarDay cday)
             : base(ServerPacketHeader.CalendarPrizesMessageComposer)

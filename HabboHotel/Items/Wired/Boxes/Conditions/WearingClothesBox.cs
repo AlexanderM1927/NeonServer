@@ -1,23 +1,17 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using System.Collections.Concurrent;
-
-using Neon.Communication.Packets.Incoming;
+﻿using Neon.Communication.Packets.Incoming;
 using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Pathfinding;
 using Neon.HabboHotel.Users;
+using System.Collections.Concurrent;
 
 namespace Neon.HabboHotel.Items.Wired.Boxes.Conditions
 {
-    class WearingClothesBox : IWiredItem
+    internal class WearingClothesBox : IWiredItem
     {
         public Room Instance { get; set; }
 
         public Item Item { get; set; }
 
-        public WiredBoxType Type { get { return WiredBoxType.ConditionWearingClothes; } }
+        public WiredBoxType Type => WiredBoxType.ConditionWearingClothes;
 
         public ConcurrentDictionary<int, Item> SetItems { get; set; }
 
@@ -31,7 +25,7 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Conditions
         {
             this.Instance = Instance;
             this.Item = Item;
-            this.SetItems = new ConcurrentDictionary<int, Item>();
+            SetItems = new ConcurrentDictionary<int, Item>();
         }
 
         public void HandleSave(ClientPacket Packet)
@@ -39,29 +33,37 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Conditions
             int Unknown = Packet.PopInt();
             string Look = Packet.PopString();
 
-            this.StringData = Look;
+            StringData = Look;
         }
 
         public bool Execute(params object[] Params)
         {
             if (Params == null || Params.Length == 0)
+            {
                 return false;
+            }
 
-            if (String.IsNullOrEmpty(this.StringData))
+            if (string.IsNullOrEmpty(StringData))
+            {
                 return false;
-            
-            string Look = this.StringData;
+            }
+
+            string Look = StringData;
 
             Habbo Player = (Habbo)Params[0];
             if (Player == null)
+            {
                 return false;
+            }
 
             RoomUser User = Instance.GetRoomUserManager().GetRoomUserByHabbo(Player.Id);
             if (User == null)
+            {
                 return false;
+            }
 
             if (User.GetClient().GetHabbo().Look == Look)
-            {  return true;  }
+            { return true; }
             else { return false; }
         }
     }

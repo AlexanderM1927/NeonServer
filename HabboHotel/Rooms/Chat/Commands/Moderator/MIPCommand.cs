@@ -1,33 +1,17 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using Neon.Database.Interfaces;
-using Neon.Utilities;
-using Neon.HabboHotel.Users;
+﻿using Neon.Database.Interfaces;
 using Neon.HabboHotel.GameClients;
-
-
 using Neon.HabboHotel.Moderation;
+using Neon.HabboHotel.Users;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
 {
-    class MIPCommand : IChatCommand
+    internal class MIPCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_mip"; }
-        }
+        public string PermissionRequired => "command_mip";
 
-        public string Parameters
-        {
-            get { return "%username%"; }
-        }
+        public string Parameters => "%username%";
 
-        public string Description
-        {
-            get { return "Machine Ban, banea a un usuario con IP"; }
-        }
+        public string Description => "Machine Ban, banea a un usuario con IP";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {
@@ -51,8 +35,8 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
                 return;
             }
 
-            String IPAddress = String.Empty;
-            Double Expire = NeonEnvironment.GetUnixTimestamp() + 78892200;
+            string IPAddress = string.Empty;
+            double Expire = NeonEnvironment.GetUnixTimestamp() + 78892200;
             string Username = Habbo.Username;
 
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
@@ -65,20 +49,32 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
 
             string Reason = null;
             if (Params.Length >= 3)
+            {
                 Reason = CommandManager.MergeParams(Params, 2);
+            }
             else
+            {
                 Reason = "No se especifico la razon";
+            }
 
             if (!string.IsNullOrEmpty(IPAddress))
+            {
                 NeonEnvironment.GetGame().GetModerationManager().BanUser(Session.GetHabbo().Username, ModerationBanType.IP, IPAddress, Reason, Expire);
+            }
+
             NeonEnvironment.GetGame().GetModerationManager().BanUser(Session.GetHabbo().Username, ModerationBanType.USERNAME, Habbo.Username, Reason, Expire);
 
             if (!string.IsNullOrEmpty(Habbo.MachineId))
+            {
                 NeonEnvironment.GetGame().GetModerationManager().BanUser(Session.GetHabbo().Username, ModerationBanType.MACHINE, Habbo.MachineId, Reason, Expire);
+            }
 
             GameClient TargetClient = NeonEnvironment.GetGame().GetClientManager().GetClientByUsername(Username);
             if (TargetClient != null)
+            {
                 TargetClient.Disconnect();
+            }
+
             Session.SendWhisper("Se ha baneado exitosamente al usuario '" + Username + "' por la siguiente razon: '" + Reason + "'!");
         }
     }

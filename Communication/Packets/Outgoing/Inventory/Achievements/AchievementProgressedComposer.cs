@@ -1,15 +1,11 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
+﻿
 using Neon.HabboHotel.Achievements;
 
 namespace Neon.Communication.Packets.Outgoing.Inventory.Achievements
 {
-    class AchievementProgressedComposer : ServerPacket
+    internal class AchievementProgressedComposer : ServerPacket
     {
-        public AchievementProgressedComposer(Achievement Achievement, int TargetLevel, AchievementLevel TargetLevelData,int TotalLevels, UserAchievement UserData)
+        public AchievementProgressedComposer(Achievement Achievement, int TargetLevel, AchievementLevel TargetLevelData, int TotalLevels, UserAchievement UserData)
             : base(ServerPacketHeader.AchievementProgressedMessageComposer)
         {
             base.WriteInteger(Achievement.Id); // Unknown (ID?)

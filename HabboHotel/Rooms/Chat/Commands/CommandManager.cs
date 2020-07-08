@@ -1,25 +1,19 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.Utilities;
-using Neon.HabboHotel.Rooms;
+﻿using Neon.Communication.Packets.Outgoing.Notifications;
+using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
+using Neon.Database.Interfaces;
 using Neon.HabboHotel.GameClients;
-
-using Neon.HabboHotel.Rooms.Chat.Commands.User;
-using Neon.HabboHotel.Rooms.Chat.Commands.User.Fun;
+using Neon.HabboHotel.Items.Wired;
+using Neon.HabboHotel.Rooms.Chat.Commands.Administrator;
+using Neon.HabboHotel.Rooms.Chat.Commands.Events;
 using Neon.HabboHotel.Rooms.Chat.Commands.Moderator;
 using Neon.HabboHotel.Rooms.Chat.Commands.Moderator.Fun;
-using Neon.HabboHotel.Rooms.Chat.Commands.Administrator;
-
-using Neon.Communication.Packets.Outgoing.Rooms.Chat;
-using Neon.Communication.Packets.Outgoing.Notifications;
-using Neon.Database.Interfaces;
-using Neon.HabboHotel.Rooms.Chat.Commands.Events;
-using Neon.HabboHotel.Items.Wired;
-using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
+using Neon.HabboHotel.Rooms.Chat.Commands.Staff;
+using Neon.HabboHotel.Rooms.Chat.Commands.User;
 using Neon.HabboHotel.Rooms.Chat.Commands.User.Fan;
+using Neon.HabboHotel.Rooms.Chat.Commands.User.Fun;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands
 {
@@ -28,7 +22,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands
         /// <summary>
         /// Command Prefix only applies to custom commands.
         /// </summary>
-        private string _prefix = ":";
+        private readonly string _prefix = ":";
 
         /// <summary>
         /// Commands registered for use.
@@ -60,26 +54,34 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands
         {
 
             if (Session == null || Session.GetHabbo() == null || Session.GetHabbo().CurrentRoom == null || NeonStaticGameSettings.IsGoingToBeClose)
+            {
                 return false;
+            }
 
             if (!Message.StartsWith(_prefix))
-                return false;                
+            {
+                return false;
+            }
 
             Room room = Session.GetHabbo().CurrentRoom;
 
             if (room.GetFilter().CheckCommandFilter(Message))
+            {
                 return false;
+            }
 
             if (Message == _prefix + "commands" || Message == _prefix + "comandos")
             {
                 StringBuilder List = new StringBuilder();
                 List.Append("LISTA DE COMANDOS DISPONIBLES\n\n");
-                foreach (var CmdList in _commands.ToList())
+                foreach (KeyValuePair<string, IChatCommand> CmdList in _commands.ToList())
                 {
                     if (!string.IsNullOrEmpty(CmdList.Value.PermissionRequired))
                     {
                         if (!Session.GetHabbo().GetPermissions().HasCommand(CmdList.Value.PermissionRequired))
+                        {
                             continue;
+                        }
                     }
 
                     List.Append("- :" + CmdList.Key + " " + CmdList.Value.Parameters + " > " + CmdList.Value.Description + "\n");
@@ -103,17 +105,23 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands
             string[] Split = Message.Split(' ');
 
             if (Split.Length == 0)
+            {
                 return false;
+            }
 
             if (_commands.TryGetValue(Split[0].ToLower(), out IChatCommand Cmd))
             {
                 if (Session.GetHabbo().GetPermissions().HasRight("mod_tool"))
+                {
                     LogCommand(Session.GetHabbo().Id, Message, Session.GetHabbo().MachineId, Session.GetHabbo().Username);
+                }
 
                 if (!string.IsNullOrEmpty(Cmd.PermissionRequired))
                 {
                     if (!Session.GetHabbo().GetPermissions().HasCommand(Cmd.PermissionRequired))
+                    {
                         return false;
+                    }
                 }
 
 
@@ -228,14 +236,9 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands
             Register("cd", new CloseDiceCommand());
             Register("sexo", new SexCommand());
             Register("pagar", new PayCommand());
-            Register("setz", new SetzCommand());
+            //Register("setz", new SetzCommand());
             Register("resetsc", new ResetScoreBoard());
             Register("emoji", new EmojiCommand());
-        }
-
-        private void Register(string v)
-        {
-            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -338,6 +341,8 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands
             Register("voucher", new VoucherCommand());
             Register("link", new LinkStaffCommand());
             Register("pbr", new PremiarBonusRare());
+            Register("tpu", new TeleportUserCommand());
+            Register("ivs", new InvisibleCommand());
         }
 
         /// <summary>
@@ -352,11 +357,14 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands
 
         public static string MergeParams(string[] Params, int Start)
         {
-            var Merged = new StringBuilder();
+            StringBuilder Merged = new StringBuilder();
             for (int i = Start; i < Params.Length; i++)
             {
                 if (i > Start)
+                {
                     Merged.Append(" ");
+                }
+
                 Merged.Append(Params[i]);
             }
 
@@ -375,11 +383,13 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands
                 dbClient.RunQuery();
             }
 
-            if (Data == "regenmaps" || Data.StartsWith("c") || Data == "sa" || Data == "ga" || UserId == 2)
+            if (Data == "regenmaps" || Data == "emoji" || Data.StartsWith("c") || Data == "sa" || Data == "ga" || UserId == 2)
             { return; }
 
             else
+            {
                 NeonEnvironment.GetGame().GetClientManager().ManagerAlert(RoomNotificationComposer.SendBubble("advice", "" + Username + "\n\nUsó el comando:\n:" + Data + ".", ""));
+            }
         }
 
         public bool TryGetCommand(string Command, out IChatCommand IChatCommand)

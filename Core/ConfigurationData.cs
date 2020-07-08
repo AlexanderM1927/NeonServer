@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Neon.Database.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using Neon.Database.Interfaces;
 
 
 namespace Neon.Core
@@ -18,14 +18,18 @@ namespace Neon.Core
             if (!File.Exists(filePath))
             {
                 if (!maynotexist)
+                {
                     throw new ArgumentException("Unable to locate configuration file at '" + filePath + "'.");
+                }
                 else
+                {
                     return;
+                }
             }
 
             try
             {
-                using (var stream = new StreamReader(filePath))
+                using (StreamReader stream = new StreamReader(filePath))
                 {
                     string line = "";
 

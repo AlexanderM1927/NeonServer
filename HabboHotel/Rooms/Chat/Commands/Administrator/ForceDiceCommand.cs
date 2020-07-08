@@ -1,27 +1,15 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using Neon.HabboHotel.GameClients;
+﻿using Neon.HabboHotel.GameClients;
+using System;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.Administrator
 {
-    class ForceDiceCommand : IChatCommand
+    internal class ForceDiceCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_rig"; }
-        }
+        public string PermissionRequired => "command_rig";
 
-        public string Parameters
-        {
-            get { return "%number%"; }
-        }
+        public string Parameters => "%number%";
 
-        public string Description
-        {
-            get { return "Allows you to carry a hand item"; }
-        }
+        public string Description => "Allows you to carry a hand item";
 
         public void Execute(GameClient Session, Room Room, string[] Params)
         {
@@ -44,7 +32,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Administrator
                 return;
             }
 
-            if(Number > 6 || Number < 1)
+            if (Number > 6 || Number < 1)
             {
                 Session.SendWhisper("La cifra debe estar entre 1 y 6.");
                 return;

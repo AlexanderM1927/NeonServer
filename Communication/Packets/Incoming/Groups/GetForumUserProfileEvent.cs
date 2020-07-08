@@ -1,15 +1,13 @@
-﻿using System.Collections.Generic;
-
-using Neon.HabboHotel.Users;
-using Neon.HabboHotel.Groups;
-using Neon.HabboHotel.GameClients;
-
+﻿using Neon.Communication.Packets.Outgoing.Users;
 using Neon.Database.Interfaces;
-using Neon.Communication.Packets.Outgoing.Users;
+using Neon.HabboHotel.GameClients;
+using Neon.HabboHotel.Groups;
+using Neon.HabboHotel.Users;
+using System.Collections.Generic;
 
 namespace Neon.Communication.Packets.Incoming.Groups.Forums
 {
-    class GetForumUserProfileEvent : IPacketEvent
+    internal class GetForumUserProfileEvent : IPacketEvent
     {
         public void Parse(GameClient Session, ClientPacket Packet)
         {

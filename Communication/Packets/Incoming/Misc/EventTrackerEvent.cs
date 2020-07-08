@@ -1,24 +1,19 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using Neon.HabboHotel.Users;
-using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
-using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.GameClients;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
 using Neon.Communication.Packets.Outgoing.Rooms.Session;
+using Neon.HabboHotel.GameClients;
+using Neon.HabboHotel.Rooms;
 
 namespace Neon.Communication.Packets.Incoming.Misc
 {
-    class EventTrackerEvent : IPacketEvent
+    internal class EventTrackerEvent : IPacketEvent
     {
         public void Parse(GameClient Session, ClientPacket Packet)
         {
-            string Test1 = Packet.PopString();       
+            _ = Packet.PopString();
             string Test2 = Packet.PopString();
             string Test3 = Packet.PopString();
-            string Test5 = Packet.PopString();
-            int Test4 = Packet.PopInt();
+            _ = Packet.PopString();
+            _ = Packet.PopInt();
 
             if (Session.GetHabbo().MultiWhisper && Test3.Equals("RWUAM_WHISPER_USER"))
             {
@@ -30,7 +25,11 @@ namespace Neon.Communication.Packets.Incoming.Misc
                     Session.SendMessage(RoomNotificationComposer.SendBubble("multi_whisper", "Has añadido a esta persona a tu lista de susurros múltiples.", ""));
                     return;
                 }
-                else Session.GetHabbo().MultiWhispers.Remove(User);
+                else
+                {
+                    Session.GetHabbo().MultiWhispers.Remove(User);
+                }
+
                 Session.SendMessage(RoomNotificationComposer.SendBubble("multi_whisper", "Has quitado a esta persona a tu lista de susurros múltiples.", ""));
 
                 return;

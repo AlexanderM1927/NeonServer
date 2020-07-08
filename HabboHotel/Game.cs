@@ -1,47 +1,42 @@
 ﻿
 using log4net;
-
 using Neon.Communication.Packets;
-using Neon.HabboHotel.GameClients;
-using Neon.HabboHotel.Moderation;
-using Neon.HabboHotel.Support;
-using Neon.HabboHotel.Catalog;
-using Neon.HabboHotel.Items;
-using Neon.HabboHotel.Items.Televisions;
-using Neon.HabboHotel.Navigator;
-using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Groups;
-using Neon.HabboHotel.Quests;
+using Neon.Communication.Packets.Incoming.LandingView;
+using Neon.Communication.Packets.Outgoing.Nux;
 using Neon.HabboHotel.Achievements;
-using Neon.HabboHotel.LandingView;
-using Neon.HabboHotel.Global;
-
-using Neon.HabboHotel.Games;
-
-using Neon.HabboHotel.Rooms.Chat;
-using Neon.HabboHotel.Talents;
+using Neon.HabboHotel.Badges;
 using Neon.HabboHotel.Bots;
 using Neon.HabboHotel.Cache;
-using Neon.HabboHotel.Rewards;
-using Neon.HabboHotel.Badges;
+using Neon.HabboHotel.Calendar;
+using Neon.HabboHotel.Catalog;
+using Neon.HabboHotel.Catalog.FurniMatic;
+using Neon.HabboHotel.GameClients;
+using Neon.HabboHotel.Games;
+using Neon.HabboHotel.Global;
+using Neon.HabboHotel.Groups;
+using Neon.HabboHotel.Groups.Forums;
+using Neon.HabboHotel.Helpers;
+using Neon.HabboHotel.Items;
+using Neon.HabboHotel.Items.Crafting;
+using Neon.HabboHotel.Items.RentableSpaces;
+using Neon.HabboHotel.Items.Televisions;
+using Neon.HabboHotel.LandingView;
+using Neon.HabboHotel.LandingView.CommunityGoal;
+using Neon.HabboHotel.Moderation;
+using Neon.HabboHotel.Navigator;
 using Neon.HabboHotel.Permissions;
+using Neon.HabboHotel.Quests;
+using Neon.HabboHotel.Rewards;
+using Neon.HabboHotel.Rooms;
+using Neon.HabboHotel.Rooms.Chat;
+using Neon.HabboHotel.Rooms.Music;
+using Neon.HabboHotel.Rooms.Polls;
 using Neon.HabboHotel.Subscriptions;
+using Neon.HabboHotel.Talents;
+using Neon.WebSockets;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Neon.HabboHotel.Camera;
-using Neon.HabboHotel.Catalog.FurniMatic;
-using Neon.Communication.Packets.Incoming.LandingView;
-using Neon.HabboHotel.Helpers;
-using Neon.HabboHotel.Groups.Forums;
-using System;
-using Neon.HabboHotel.Rooms.Music;
-using Neon.HabboHotel.Items.Crafting;
-using Neon.HabboHotel.Rooms.Polls;
-using Neon.HabboHotel.Calendar;
-using Neon.HabboHotel.Items.RentableSpaces;
-using Neon.Communication.Packets.Outgoing.Nux;
-using Neon.HabboHotel.LandingView.CommunityGoal;
-using Neon.WebSockets;
 //using Neon.HabboHotel.Alphas;
 
 namespace Neon.HabboHotel
@@ -103,82 +98,82 @@ namespace Neon.HabboHotel
         public Game()
         {
             GetHallOfFame.GetInstance().Load();
-            this._packetManager = new PacketManager();
-            this._rentableSpaceManager = new RentableSpaceManager();
-            this._clientManager = new GameClientManager();
-            this._modManager = new ModerationManager();
+            _packetManager = new PacketManager();
+            _rentableSpaceManager = new RentableSpaceManager();
+            _clientManager = new GameClientManager();
+            _modManager = new ModerationManager();
 
-            this._itemDataManager = new ItemDataManager();
-            this._itemDataManager.Init();
+            _itemDataManager = new ItemDataManager();
+            _itemDataManager.Init();
             //this._cameraManager = new CameraPhotoManager();
             //this._cameraManager.Init(this._itemDataManager);
-            this._catalogManager = new CatalogManager();
-            this._catalogManager.Init(this._itemDataManager);
-            this._frontpageManager = new FrontpageManager();
+            _catalogManager = new CatalogManager();
+            _catalogManager.Init(_itemDataManager);
+            _frontpageManager = new FrontpageManager();
 
-            this._televisionManager = new TelevisionManager();
-            this._crackableManager = new CrackableManager();
-            this._crackableManager.Initialize(NeonEnvironment.GetDatabaseManager().GetQueryReactor());
-            this._furniMaticRewardsManager = new FurniMaticRewardsManager();
-            this._furniMaticRewardsManager.Initialize(NeonEnvironment.GetDatabaseManager().GetQueryReactor());
+            _televisionManager = new TelevisionManager();
+            _crackableManager = new CrackableManager();
+            _crackableManager.Initialize(NeonEnvironment.GetDatabaseManager().GetQueryReactor());
+            _furniMaticRewardsManager = new FurniMaticRewardsManager();
+            _furniMaticRewardsManager.Initialize(NeonEnvironment.GetDatabaseManager().GetQueryReactor());
 
-            this._craftingManager = new CraftingManager();
-            this._craftingManager.Init();
+            _craftingManager = new CraftingManager();
+            _craftingManager.Init();
 
-            this._navigatorManager = new NavigatorManager();
-            this._roomManager = new RoomManager();
-            this._chatManager = new ChatManager();
-            this._groupManager = new GroupManager();
-            this._questManager = new QuestManager();
-            this._achievementManager = new AchievementManager();
-            this._talentTrackManager = new TalentTrackManager();
+            _navigatorManager = new NavigatorManager();
+            _roomManager = new RoomManager();
+            _chatManager = new ChatManager();
+            _groupManager = new GroupManager();
+            _questManager = new QuestManager();
+            _achievementManager = new AchievementManager();
+            _talentTrackManager = new TalentTrackManager();
 
-            this._landingViewManager = new LandingViewManager();
-            this._gameDataManager = new GameDataManager();
+            _landingViewManager = new LandingViewManager();
+            _gameDataManager = new GameDataManager();
 
-            this._globalUpdater = new ServerStatusUpdater();
-            this._globalUpdater.Init();
+            _globalUpdater = new ServerStatusUpdater();
+            _globalUpdater.Init();
 
-            this._languageLocale = new LanguageLocale();
-            this._antiMutant = new AntiMutant();
-            this._botManager = new BotManager();
+            _languageLocale = new LanguageLocale();
+            _antiMutant = new AntiMutant();
+            _botManager = new BotManager();
 
-            this._cacheManager = new CacheManager();
-            this._rewardManager = new RewardManager();
-            this._musicManager = new SongManager();
+            _cacheManager = new CacheManager();
+            _rewardManager = new RewardManager();
+            _musicManager = new SongManager();
 
-            this._badgeManager = new BadgeManager();
-            this._badgeManager.Init();
+            _badgeManager = new BadgeManager();
+            _badgeManager.Init();
 
-            this.forummanager = new GroupForumManager();
+            forummanager = new GroupForumManager();
 
-            this._communityGoalVS = new CommunityGoalVS();
-            this._communityGoalVS.LoadCommunityGoalVS();
+            _communityGoalVS = new CommunityGoalVS();
+            _communityGoalVS.LoadCommunityGoalVS();
 
-            this._permissionManager = new PermissionManager();
-            this._permissionManager.Init();
+            _permissionManager = new PermissionManager();
+            _permissionManager.Init();
 
-            this._subscriptionManager = new SubscriptionManager();
-            this._subscriptionManager.Init();
+            _subscriptionManager = new SubscriptionManager();
+            _subscriptionManager.Init();
 
             HelperToolsManager.Init();
 
-            this._calendarManager = new CalendarManager();
-            this._calendarManager.Init();
+            _calendarManager = new CalendarManager();
+            _calendarManager.Init();
 
-            this._leaderBoardDataManager = new LeaderBoardDataManager();
+            _leaderBoardDataManager = new LeaderBoardDataManager();
 
-            this._targetedoffersManager = new TargetedOffersManager();
-            this._targetedoffersManager.Initialize(NeonEnvironment.GetDatabaseManager().GetQueryReactor());
+            _targetedoffersManager = new TargetedOffersManager();
+            _targetedoffersManager.Initialize(NeonEnvironment.GetDatabaseManager().GetQueryReactor());
 
-            this._nuxusergiftManager = new NuxUserGiftsManager();
-            this._nuxusergiftManager.Initialize(NeonEnvironment.GetDatabaseManager().GetQueryReactor());
+            _nuxusergiftManager = new NuxUserGiftsManager();
+            _nuxusergiftManager.Initialize(NeonEnvironment.GetDatabaseManager().GetQueryReactor());
 
-            this._nuxusergiftlistManager = new NuxUserGiftsListManager();
-            this._nuxusergiftlistManager.Initialize(NeonEnvironment.GetDatabaseManager().GetQueryReactor());
+            _nuxusergiftlistManager = new NuxUserGiftsListManager();
+            _nuxusergiftlistManager.Initialize(NeonEnvironment.GetDatabaseManager().GetQueryReactor());
 
-            this._pollManager = new PollManager();
-            this._pollManager.Init();
+            _pollManager = new PollManager();
+            _pollManager.Init();
             WebSocketManager.StartListener();
 
 
@@ -186,33 +181,33 @@ namespace Neon.HabboHotel
 
         public void StartGameLoop()
         {
-            this._gameCycle = new Task(GameCycle);
-            this._gameCycle.Start();
+            _gameCycle = new Task(GameCycle);
+            _gameCycle.Start();
 
-            this._cycleActive = true;
+            _cycleActive = true;
         }
 
         private void GameCycle()
         {
-            while (this._cycleActive)
+            while (_cycleActive)
             {
-                this._cycleEnded = false;
+                _cycleEnded = false;
 
                 NeonEnvironment.GetGame().GetRoomManager().OnCycle();
                 NeonEnvironment.GetGame().GetClientManager().OnCycle();
                 //AlphaManager.getInstance().onCycle();
-                this._cycleEnded = true;
-                Thread.Sleep(this._cycleSleepTime);
+                _cycleEnded = true;
+                Thread.Sleep(_cycleSleepTime);
             }
         }
 
         public void StopGameLoop()
         {
-            this._cycleActive = false;
+            _cycleActive = false;
 
-            while (!this._cycleEnded)
+            while (!_cycleEnded)
             {
-                Thread.Sleep(this._cycleSleepTime);
+                Thread.Sleep(_cycleSleepTime);
             }
         }
 
@@ -248,7 +243,7 @@ namespace Neon.HabboHotel
 
         public FrontpageManager GetCatalogFrontPageManager()
         {
-            return this._frontpageManager;
+            return _frontpageManager;
         }
 
         public ItemDataManager GetItemManager()
@@ -279,22 +274,22 @@ namespace Neon.HabboHotel
 
         public ModerationManager GetModerationManager()
         {
-            return this._modManager;
+            return _modManager;
         }
 
         public PermissionManager GetPermissionManager()
         {
-            return this._permissionManager;
+            return _permissionManager;
         }
 
         public SubscriptionManager GetSubscriptionManager()
         {
-            return this._subscriptionManager;
+            return _subscriptionManager;
         }
 
         public QuestManager GetQuestManager()
         {
-            return this._questManager;
+            return _questManager;
         }
 
         public RentableSpaceManager GetRentableSpaceManager()
@@ -318,7 +313,7 @@ namespace Neon.HabboHotel
 
         public ChatManager GetChatManager()
         {
-            return this._chatManager;
+            return _chatManager;
         }
 
         //public CameraPhotoManager GetCameraManager()
@@ -328,53 +323,56 @@ namespace Neon.HabboHotel
 
         internal CrackableManager GetPinataManager()
         {
-            return this._crackableManager;
+            return _crackableManager;
         }
 
         public CraftingManager GetCraftingManager()
         {
-            return this._craftingManager;
+            return _craftingManager;
         }
 
         public FurniMaticRewardsManager GetFurniMaticRewardsMnager()
         {
-            return this._furniMaticRewardsManager;
+            return _furniMaticRewardsManager;
         }
 
         public GameDataManager GetGameDataManager()
         {
-            return this._gameDataManager;
+            return _gameDataManager;
         }
 
         public LanguageLocale GetLanguageLocale()
         {
-            return this._languageLocale;
+            return _languageLocale;
         }
-        public AntiMutant GetAntiMutant() => _antiMutant;
+        public AntiMutant GetAntiMutant()
+        {
+            return _antiMutant;
+        }
 
         public BotManager GetBotManager()
         {
-            return this._botManager;
+            return _botManager;
         }
 
         public CacheManager GetCacheManager()
         {
-            return this._cacheManager;
+            return _cacheManager;
         }
 
         public RewardManager GetRewardManager()
         {
-            return this._rewardManager;
+            return _rewardManager;
         }
 
         internal NuxUserGiftsManager GetNuxUserGiftsManager()
         {
-            return this._nuxusergiftManager;
+            return _nuxusergiftManager;
         }
 
         internal LeaderBoardDataManager GetLeaderBoardDataManager()
         {
-            return this._leaderBoardDataManager;
+            return _leaderBoardDataManager;
         }
 
         internal NuxUserGiftsListManager GetNuxUserGiftsListManager()
@@ -384,7 +382,7 @@ namespace Neon.HabboHotel
 
         public BadgeManager GetBadgeManager()
         {
-            return this._badgeManager;
+            return _badgeManager;
         }
 
 
@@ -395,12 +393,12 @@ namespace Neon.HabboHotel
 
         public PollManager GetPollManager()
         {
-            return this._pollManager;
+            return _pollManager;
         }
 
         public CommunityGoalVS GetCommunityGoalVS()
         {
-            return this._communityGoalVS;
+            return _communityGoalVS;
         }
     }
 }

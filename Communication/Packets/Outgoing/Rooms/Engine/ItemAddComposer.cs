@@ -1,28 +1,22 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Items;
+﻿using Neon.HabboHotel.Items;
 
 namespace Neon.Communication.Packets.Outgoing.Rooms.Engine
 {
-    class ItemAddComposer : ServerPacket
+    internal class ItemAddComposer : ServerPacket
     {
         public ItemAddComposer(Item Item)
             : base(ServerPacketHeader.ItemAddMessageComposer)
         {
-           base.WriteString(Item.Id.ToString());
+            base.WriteString(Item.Id.ToString());
             base.WriteInteger(Item.GetBaseItem().SpriteId);
-           base.WriteString(Item.wallCoord != null ? Item.wallCoord : string.Empty);
+            base.WriteString(Item.wallCoord != null ? Item.wallCoord : string.Empty);
 
             ItemBehaviourUtility.GenerateWallExtradata(Item, this);
 
             base.WriteInteger(-1);
             base.WriteInteger((Item.GetBaseItem().Modes > 1) ? 1 : 0); // Type New R63 ('use bottom')
             base.WriteInteger(Item.UserID);
-           base.WriteString(Item.Username);
+            base.WriteString(Item.Username);
         }
     }
 }

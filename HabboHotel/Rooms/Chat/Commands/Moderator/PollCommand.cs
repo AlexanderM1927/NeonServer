@@ -1,9 +1,4 @@
 ﻿using Neon.HabboHotel.GameClients;
-using Neon.HabboHotel.Items;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -23,20 +18,21 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
             }
             else
             {
-                
+
                 if (quest == "end")
                 {
                     Room.EndQuestion();
                 }
-                else if(time != -1 || time != 0)
+                else if (time != -1 || time != 0)
                 {
                     Room.StartQuestion(quest);
                     time *= 1000;
                     Task t = Task.Factory.StartNew(() => TaskStopQuestion(Room, time));
                 }
                 else
+                {
                     Room.StartQuestion(quest);
-
+                }
             }
         }
 

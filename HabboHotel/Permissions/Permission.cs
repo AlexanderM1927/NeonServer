@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Neon.HabboHotel.Permissions
+﻿namespace Neon.HabboHotel.Permissions
 {
-    class Permission
+    internal class Permission
     {
         public int Id { get; set; }
         public string PermissionName { get; set; }
@@ -15,7 +9,7 @@ namespace Neon.HabboHotel.Permissions
         public Permission(int Id, string Name, string Description)
         {
             this.Id = Id;
-            this.PermissionName = Name;
+            PermissionName = Name;
             this.Description = Description;
         }
     }

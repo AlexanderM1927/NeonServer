@@ -1,13 +1,10 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Music;
 using Neon.HabboHotel.Rooms.Music;
-using Neon.Communication.Packets.Outgoing.Rooms.Music;
+using System.Collections.Generic;
 
 namespace Neon.Communication.Packets.Incoming.Rooms.Music
 {
-    class GetMusicDataEvent : IPacketEvent
+    internal class GetMusicDataEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
@@ -21,7 +18,9 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Music
                 SongData item = NeonEnvironment.GetGame().GetMusicManager().GetSong(Pint);
 
                 if (item != null)
+                {
                     SongData.Add(item);
+                }
             }
 
             Session.SendMessage(new GetMusicDataComposer(SongData));

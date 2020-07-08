@@ -9,10 +9,10 @@
 
         public RoomPollQuestionSelection(int id, int questionId, string text, string value)
         {
-            this.Id = id;
-            this.QuestionId = questionId;
-            this.Text = text;
-            this.Value = value;
+            Id = id;
+            QuestionId = questionId;
+            Text = text;
+            Value = value;
         }
     }
 }

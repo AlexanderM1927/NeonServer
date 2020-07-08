@@ -1,17 +1,16 @@
-﻿using System;
-using System.Drawing;
-
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Chat;
 using Neon.HabboHotel.GameClients;
-using Neon.HabboHotel.Rooms.AI.Speech;
-using Neon.Communication.Packets.Outgoing.Rooms.Chat;
 using Neon.HabboHotel.Rooms.AI.Responses;
+using Neon.HabboHotel.Rooms.AI.Speech;
 using Neon.Utilities;
+using System;
+using System.Drawing;
 
 namespace Neon.HabboHotel.Rooms.AI.Types
 {
-    class BartenderBot : BotAI
+    internal class BartenderBot : BotAI
     {
-        private int VirtualId;
+        private readonly int VirtualId;
         private int ActionTimer = 0;
         private int SpeechTimer = 0;
 
@@ -41,14 +40,20 @@ namespace Neon.HabboHotel.Rooms.AI.Types
         public override void OnUserSay(RoomUser User, string Message)
         {
             if (User == null || User.GetClient() == null || User.GetClient().GetHabbo() == null)
+            {
                 return;
+            }
 
             if (Gamemap.TileDistance(GetRoomUser().X, GetRoomUser().Y, User.X, User.Y) > 8)
+            {
                 return;
+            }
 
             BotResponse Response = NeonEnvironment.GetGame().GetBotManager().GetResponse(GetBotData().AiType, Message);
             if (Response == null)
+            {
                 return;
+            }
 
             switch (Response.ResponseType.ToLower())
             {
@@ -74,14 +79,20 @@ namespace Neon.HabboHotel.Rooms.AI.Types
         public override void OnUserShout(RoomUser User, string Message)
         {
             if (User == null || User.GetClient() == null || User.GetClient().GetHabbo() == null)
+            {
                 return;
+            }
 
             if (Gamemap.TileDistance(GetRoomUser().X, GetRoomUser().Y, User.X, User.Y) > 8)
+            {
                 return;
+            }
 
             BotResponse Response = NeonEnvironment.GetGame().GetBotManager().GetResponse(GetBotData().AiType, Message);
             if (Response == null)
+            {
                 return;
+            }
 
             switch (Response.ResponseType.ToLower())
             {
@@ -107,27 +118,35 @@ namespace Neon.HabboHotel.Rooms.AI.Types
         public override void OnTimerTick()
         {
             if (GetBotData() == null)
+            {
                 return;
+            }
 
             if (SpeechTimer <= 0)
             {
                 if (GetBotData().RandomSpeech.Count > 0)
                 {
                     if (GetBotData().AutomaticChat == false)
+                    {
                         return;
+                    }
 
                     RandomSpeech Speech = GetBotData().GetRandomSpeech();
 
-                    string word;
-                    string String = NeonEnvironment.GetGame().GetChatManager().GetFilter().IsUnnaceptableWord(Speech.Message, out word) ? "Spam" : Speech.Message;
+                    string String = NeonEnvironment.GetGame().GetChatManager().GetFilter().IsUnnaceptableWord(Speech.Message, out string word) ? "Spam" : Speech.Message;
                     if (String.Contains("<img src") || String.Contains("<font ") || String.Contains("</font>") || String.Contains("</a>") || String.Contains("<i>"))
+                    {
                         String = "I really shouldn't be using HTML within bot speeches.";
+                    }
+
                     GetRoomUser().Chat(String, false, GetBotData().ChatBubble);
                 }
                 SpeechTimer = GetBotData().SpeakingInterval;
             }
             else
+            {
                 SpeechTimer--;
+            }
 
             if (ActionTimer <= 0)
             {
@@ -160,7 +179,7 @@ namespace Neon.HabboHotel.Rooms.AI.Types
                             }
                             else
                             {
-                                var Sq = new Point(Target.X, Target.Y);
+                                Point Sq = new Point(Target.X, Target.Y);
 
                                 if (Target.RotBody == 0)
                                 {
@@ -195,10 +214,12 @@ namespace Neon.HabboHotel.Rooms.AI.Types
                         break;
                 }
 
-                ActionTimer = new Random(DateTime.Now.Millisecond + this.VirtualId ^ 2).Next(5, 15);
+                ActionTimer = new Random(DateTime.Now.Millisecond + VirtualId ^ 2).Next(5, 15);
             }
             else
+            {
                 ActionTimer--;
+            }
         }
     }
 }

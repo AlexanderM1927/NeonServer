@@ -19,9 +19,8 @@ namespace Neon.HabboHotel.Items.Interactor
                 return;
             }
 
-            int OldValue = 0;
 
-            if (!int.TryParse(Item.ExtraData, out OldValue))
+            if (!int.TryParse(Item.ExtraData, out int OldValue))
             {
             }
 
@@ -52,9 +51,8 @@ namespace Neon.HabboHotel.Items.Interactor
 
         public void OnWiredTrigger(Item Item)
         {
-            int OldValue = 0;
 
-            if (!int.TryParse(Item.ExtraData, out OldValue))
+            if (!int.TryParse(Item.ExtraData, out int OldValue))
             {
             }
 

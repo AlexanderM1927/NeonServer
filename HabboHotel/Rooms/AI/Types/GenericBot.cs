@@ -1,22 +1,13 @@
-﻿using System;
-using System.Linq;
-using System.Drawing;
-using System.Collections.Generic;
-
-using Neon.Core;
-using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Items;
-using Neon.HabboHotel.GameClients;
+﻿using Neon.HabboHotel.GameClients;
 using Neon.HabboHotel.Rooms.AI.Speech;
-using Neon.Communication.Packets.Outgoing.Rooms.Chat;
-using Neon.HabboHotel.Rooms.AI.Responses;
-using Neon.HabboHotel.Items.Wired;
+using System;
+using System.Drawing;
 
 namespace Neon.HabboHotel.Rooms.AI.Types
 {
     public class GenericBot : BotAI
     {
-        private int VirtualId;
+        private readonly int VirtualId;
         private int ActionTimer = 0;
         private int SpeechTimer = 0;
 
@@ -58,28 +49,36 @@ namespace Neon.HabboHotel.Rooms.AI.Types
         public override void OnTimerTick()
         {
             if (GetBotData() == null)
+            {
                 return;
+            }
 
             if (SpeechTimer <= 0)
             {
                 if (GetBotData().RandomSpeech.Count > 0)
                 {
                     if (GetBotData().AutomaticChat == false)
+                    {
                         return;
+                    }
 
                     RandomSpeech Speech = GetBotData().GetRandomSpeech();
 
-                    string word;
-                    string String = NeonEnvironment.GetGame().GetChatManager().GetFilter().IsUnnaceptableWord(Speech.Message, out word) ? "Spam" : Speech.Message;
+                    string String = NeonEnvironment.GetGame().GetChatManager().GetFilter().IsUnnaceptableWord(Speech.Message, out string word) ? "Spam" : Speech.Message;
                     if (String.Contains("<") || String.Contains(">"))
+                    {
                         String = "I really shouldn't be using HTML within bot speeches.";
+                    }
+
                     GetRoomUser().Chat(String, false, GetBotData().ChatBubble);
                 }
                 SpeechTimer = GetBotData().SpeakingInterval;
             }
             else
+            {
                 SpeechTimer--;
-           
+            }
+
             if (ActionTimer <= 0)
             {
                 Point nextCoord;
@@ -110,7 +109,7 @@ namespace Neon.HabboHotel.Rooms.AI.Types
                             }
                             else
                             {
-                                var Sq = new Point(Target.X, Target.Y);
+                                Point Sq = new Point(Target.X, Target.Y);
 
                                 if (Target.RotBody == 0)
                                 {
@@ -138,7 +137,7 @@ namespace Neon.HabboHotel.Rooms.AI.Types
                                 GetRoomUser().MoveTo(Sq);
                             }
                         }
-                        else if(GetBotData().TargetUser == 0)
+                        else if (GetBotData().TargetUser == 0)
                         {
                             nextCoord = GetRoom().GetGameMap().GetRandomWalkableSquare();
                             GetRoomUser().MoveTo(nextCoord.X, nextCoord.Y);
@@ -150,10 +149,12 @@ namespace Neon.HabboHotel.Rooms.AI.Types
                         break;
                 }
 
-                ActionTimer = new Random(DateTime.Now.Millisecond + this.VirtualId ^ 2).Next(5, 15);
+                ActionTimer = new Random(DateTime.Now.Millisecond + VirtualId ^ 2).Next(5, 15);
             }
             else
+            {
                 ActionTimer--;
+            }
         }
     }
 }

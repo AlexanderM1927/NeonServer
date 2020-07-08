@@ -1,9 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-namespace Neon.HabboHotel.Moderation
+﻿namespace Neon.HabboHotel.Moderation
 {
     public static class BanTypeUtility
     {

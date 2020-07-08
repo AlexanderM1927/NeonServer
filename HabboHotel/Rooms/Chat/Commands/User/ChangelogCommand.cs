@@ -1,29 +1,20 @@
-﻿using System;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
 using Neon.HabboHotel.GameClients;
-using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
+using System;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.User
 {
-    class ChangelogCommand : IChatCommand
+    internal class ChangelogCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_info"; }
-        }
+        public string PermissionRequired => "command_info";
 
-        public string Parameters
-        {
-            get { return ""; }
-        }
+        public string Parameters => "";
 
-        public string Description
-        {
-            get { return "Últimas actualizaciones de Neon."; }
-        }
+        public string Description => "Últimas actualizaciones de Neon.";
 
         public void Execute(GameClient Session, Room Room, string[] Params)
         {
-            var _cache = new Random().Next(0, 300);
+            int _cache = new Random().Next(0, 300);
             Session.SendMessage(new MassEventComposer("habbopages/changelogs.txt?" + _cache));
         }
     }

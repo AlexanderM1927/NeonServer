@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Neon.Communication.Packets.Outgoing.Inventory.Purse
+﻿namespace Neon.Communication.Packets.Outgoing.Inventory.Purse
 {
-    class CreditBalanceComposer : ServerPacket
+    internal class CreditBalanceComposer : ServerPacket
     {
         public CreditBalanceComposer(int creditsBalance)
             : base(ServerPacketHeader.CreditBalanceMessageComposer)
         {
-           base.WriteString(creditsBalance + ".0");
+            base.WriteString(creditsBalance + ".0");
         }
     }
 }

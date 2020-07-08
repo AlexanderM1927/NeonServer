@@ -1,13 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
+﻿
 using Neon.HabboHotel.Groups;
 
 namespace Neon.Communication.Packets.Outgoing.Groups
 {
-    class ManageGroupComposer : ServerPacket
+    internal class ManageGroupComposer : ServerPacket
     {
         public ManageGroupComposer(Group Group)
             : base(ServerPacketHeader.ManageGroupMessageComposer)
@@ -26,23 +22,23 @@ namespace Neon.Communication.Packets.Outgoing.Groups
             base.WriteString("");
 
             string[] BadgeSplit = Group.Badge.Replace("b", "").Split('s');
-            this.WriteInteger(5);
+            WriteInteger(5);
             int Req = 5 - BadgeSplit.Length;
             int Final = 0;
             string[] array2 = BadgeSplit;
             for (int i = 0; i < array2.Length; i++)
             {
                 string Symbol = array2[i];
-                this.WriteInteger((Symbol.Length >= 6) ? int.Parse(Symbol.Substring(0, 3)) : int.Parse(Symbol.Substring(0, 2)));
-                this.WriteInteger((Symbol.Length >= 6) ? int.Parse(Symbol.Substring(3, 2)) : int.Parse(Symbol.Substring(2, 2)));
-                this.WriteInteger(Symbol.Length < 5 ? 0 : Symbol.Length >= 6 ? int.Parse(Symbol.Substring(5, 1)) : int.Parse(Symbol.Substring(4, 1)));
+                WriteInteger((Symbol.Length >= 6) ? int.Parse(Symbol.Substring(0, 3)) : int.Parse(Symbol.Substring(0, 2)));
+                WriteInteger((Symbol.Length >= 6) ? int.Parse(Symbol.Substring(3, 2)) : int.Parse(Symbol.Substring(2, 2)));
+                WriteInteger(Symbol.Length < 5 ? 0 : Symbol.Length >= 6 ? int.Parse(Symbol.Substring(5, 1)) : int.Parse(Symbol.Substring(4, 1)));
             }
 
             while (Final != Req)
             {
-                this.WriteInteger(0);
-                this.WriteInteger(0);
-                this.WriteInteger(0);
+                WriteInteger(0);
+                WriteInteger(0);
+                WriteInteger(0);
                 Final++;
             }
 

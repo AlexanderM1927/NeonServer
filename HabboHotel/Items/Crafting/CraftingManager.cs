@@ -23,7 +23,7 @@ namespace Neon.HabboHotel.Items.Crafting
             {
                 CraftingRecipes.Clear();
                 dbClient.SetQuery("SELECT * FROM crafting_recipes");
-                var recipes = dbClient.getTable();
+                DataTable recipes = dbClient.getTable();
                 foreach (DataRow recipe in recipes.Rows)
                 {
                     CraftingRecipe value = new CraftingRecipe((string)recipe["id"], (string)recipe["items"], (string)recipe["result"], (int)recipe["type"]);
@@ -32,7 +32,7 @@ namespace Neon.HabboHotel.Items.Crafting
 
                 CraftableItems.Clear();
                 dbClient.SetQuery("SELECT * FROM crafting_items");
-                var items = dbClient.getTable();
+                DataTable items = dbClient.getTable();
                 foreach (DataRow item in items.Rows)
                 {
                     CraftableItems.Add((string)item["itemName"]);
@@ -45,17 +45,23 @@ namespace Neon.HabboHotel.Items.Crafting
         internal CraftingRecipe GetRecipe(string name)
         {
             if (CraftingRecipes.ContainsKey(name))
+            {
                 return CraftingRecipes[name];
+            }
             else
+            {
                 return null;
+            }
         }
 
         internal CraftingRecipe GetRecipeByPrize(string name)
         {
-            foreach(CraftingRecipe c in CraftingRecipes.Values)
+            foreach (CraftingRecipe c in CraftingRecipes.Values)
             {
                 if (c.Result == name)
+                {
                     return c;
+                }
             }
             return null;
         }

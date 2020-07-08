@@ -1,33 +1,19 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Data;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Users;
-using Neon.HabboHotel.GameClients;
-
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
 using Neon.Database.Interfaces;
-using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
+using Neon.HabboHotel.GameClients;
+using System;
+using System.Data;
+using System.Text;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
 {
-    class UserInfoCommand : IChatCommand
+    internal class UserInfoCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_user_info"; }
-        }
+        public string PermissionRequired => "command_user_info";
 
-        public string Parameters
-        {
-            get { return "%username%"; }
-        }
+        public string Parameters => "%username%";
 
-        public string Description
-        {
-            get { return "Ve la informacion del usuario"; }
-        }
+        public string Description => "Ve la informacion del usuario";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {
@@ -103,7 +89,9 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
             {
                 HabboInfo.Append("<font color = '#0489B1'><b> Localización:</b></font>\r");
                 if (!TargetClient.GetHabbo().InRoom)
+                {
                     HabboInfo.Append("No se encuentra en ninguna sala.\r");
+                }
                 else
                 {
                     HabboInfo.Append("<font size='10'>Sala: " + TargetClient.GetHabbo().CurrentRoom.Name + " (" + TargetClient.GetHabbo().CurrentRoom.RoomId + ")\r");
@@ -111,7 +99,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
                     HabboInfo.Append("Visitantes: " + TargetClient.GetHabbo().CurrentRoom.UserCount + " de " + TargetClient.GetHabbo().CurrentRoom.UsersMax);
                 }
             }
-            Session.SendMessage(new RoomNotificationComposer("Información de "+ Username +":", (HabboInfo.ToString()), "usr/body/"+ Username +"", "", ""));
+            Session.SendMessage(new RoomNotificationComposer("Información de " + Username + ":", (HabboInfo.ToString()), "usr/body/" + Username + "", "", ""));
         }
     }
 }

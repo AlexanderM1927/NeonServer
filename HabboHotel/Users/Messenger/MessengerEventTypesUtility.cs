@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Neon.HabboHotel.Users.Messenger
+﻿namespace Neon.HabboHotel.Users.Messenger
 {
-   public static class MessengerEventTypesUtility
+    public static class MessengerEventTypesUtility
     {
         public static int GetEventTypePacketNum(MessengerEventTypes type)
         {

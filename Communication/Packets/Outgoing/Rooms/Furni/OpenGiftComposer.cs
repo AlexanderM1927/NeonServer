@@ -1,13 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
+﻿
 using Neon.HabboHotel.Items;
 
 namespace Neon.Communication.Packets.Outgoing.Rooms.Furni
 {
-    class OpenGiftComposer : ServerPacket
+    internal class OpenGiftComposer : ServerPacket
     {
         public OpenGiftComposer(ItemData Data, string Text, Item Item, bool ItemIsInRoom)
             : base(ServerPacketHeader.OpenGiftMessageComposer)

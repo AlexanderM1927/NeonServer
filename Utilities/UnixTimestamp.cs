@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.Utilities
 {
-    static class UnixTimestamp
+    internal static class UnixTimestamp
     {
         /// <summary>
         /// Gets the current date time now in Unix Timestamp format.

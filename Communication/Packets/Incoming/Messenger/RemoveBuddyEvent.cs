@@ -1,27 +1,29 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
+﻿using Neon.Database.Interfaces;
 using Neon.HabboHotel.GameClients;
-
-using Neon.Database.Interfaces;
+using System;
+using System.Linq;
 
 
 namespace Neon.Communication.Packets.Incoming.Messenger
 {
-    class RemoveBuddyEvent : IPacketEvent
+    internal class RemoveBuddyEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
             if (Session == null || Session.GetHabbo() == null || Session.GetHabbo().GetMessenger() == null)
+            {
                 return;
+            }
 
             int Amount = Packet.PopInt();
             if (Amount > 100)
+            {
                 Amount = 100;
+            }
             else if (Amount < 0)
+            {
                 return;
+            }
 
             for (int i = 0; i < Amount; i++)
             {
@@ -40,13 +42,17 @@ namespace Neon.Communication.Packets.Incoming.Messenger
 
 
                 if (Session.GetHabbo().Relationships.ContainsKey(Convert.ToInt32(Id)))
+                {
                     Session.GetHabbo().Relationships.Remove(Convert.ToInt32(Id));
+                }
 
                 GameClient Target = NeonEnvironment.GetGame().GetClientManager().GetClientByUserID(Id);
                 if (Target != null)
                 {
                     if (Target.GetHabbo().Relationships.ContainsKey(Convert.ToInt32(Session.GetHabbo().Id)))
+                    {
                         Target.GetHabbo().Relationships.Remove(Convert.ToInt32(Session.GetHabbo().Id));
+                    }
                 }
 
                 Session.GetHabbo().GetMessenger().DestroyFriendship(Id);

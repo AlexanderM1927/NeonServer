@@ -1,11 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-namespace Neon.Communication.Packets.Outgoing.Messenger
+﻿namespace Neon.Communication.Packets.Outgoing.Messenger
 {
-    class FollowFriendFailedComposer : ServerPacket
+    internal class FollowFriendFailedComposer : ServerPacket
     {
         public FollowFriendFailedComposer(int ErrorCode)
             : base(ServerPacketHeader.FollowFriendFailedMessageComposer)

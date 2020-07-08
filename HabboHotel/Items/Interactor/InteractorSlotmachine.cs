@@ -1,19 +1,16 @@
-﻿using Neon.Communication.Packets.Outgoing.Inventory.Furni;
-using Neon.Communication.Packets.Outgoing.Inventory.Purse;
-using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
+﻿using Neon.Communication.Packets.Outgoing.Inventory.Purse;
 using Neon.HabboHotel.GameClients;
 using Neon.HabboHotel.Rooms;
 using Neon.Utilities;
-using System;
 using System.Threading;
 
 namespace Neon.HabboHotel.Items.Interactor
 {
-    class InteractorSlotmachine : IFurniInteractor
+    internal class InteractorSlotmachine : IFurniInteractor
     {
-        string Rand1;
-        string Rand2;
-        string Rand3;
+        private string Rand1;
+        private string Rand2;
+        private string Rand3;
 
         public void OnPlace(GameClient Session, Item Item)
         {
@@ -46,15 +43,21 @@ namespace Neon.HabboHotel.Items.Interactor
             }
 
             if (Session == null || Session.GetHabbo() == null || Item == null)
+            {
                 return;
+            }
 
             Room Room = Session.GetHabbo().CurrentRoom;
             if (Room == null)
+            {
                 return;
+            }
 
             RoomUser Actor = Room.GetRoomUserManager().GetRoomUserByHabbo(Session.GetHabbo().Id);
             if (Actor == null)
+            {
                 return;
+            }
 
             if (Gamemap.TileDistance(Actor.X, Actor.Y, Item.GetX, Item.GetY) < 2)
             {
@@ -122,7 +125,7 @@ namespace Neon.HabboHotel.Items.Interactor
                     switch (Random1)
                     {
                         case 1:
-                            Session.GetHabbo().Diamonds += Bet *4;
+                            Session.GetHabbo().Diamonds += Bet * 4;
                             Session.SendMessage(new HabboActivityPointNotificationComposer(Session.GetHabbo().Diamonds, -Bet, 5));
                             Session.SendWhisper("Has ganado " + Bet * 4 + " diamantes con una triple estrella.", 34);
                             NeonEnvironment.GetGame().GetAchievementManager().ProgressAchievement(Actor.GetClient(), "ACH_StarBet", 1);
@@ -141,12 +144,12 @@ namespace Neon.HabboHotel.Items.Interactor
                             break;
                     }
                 }
-                
+
                 NeonEnvironment.GetGame().GetAchievementManager().ProgressAchievement(Actor.GetClient(), "ACH_GeneralBet", 1);
                 return;
             }
         }
-            
+
         public void OnWiredTrigger(Item Item)
         {
 

@@ -1,12 +1,8 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.Utilities;
-using Neon.Communication.Encryption.Keys;
-using Neon.Communication.Encryption.Crypto.RSA;
+﻿using Neon.Communication.Encryption.Crypto.RSA;
 using Neon.Communication.Encryption.KeyExchange;
+using Neon.Communication.Encryption.Keys;
+using Neon.Utilities;
+using System.Text;
 
 namespace Neon.Communication.Encryption
 {

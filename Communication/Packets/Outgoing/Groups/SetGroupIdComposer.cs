@@ -1,11 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-namespace Neon.Communication.Packets.Outgoing.Groups
+﻿namespace Neon.Communication.Packets.Outgoing.Groups
 {
-    class SetGroupIdComposer : ServerPacket
+    internal class SetGroupIdComposer : ServerPacket
     {
         public SetGroupIdComposer(int Id)
             : base(ServerPacketHeader.SetGroupIdMessageComposer)

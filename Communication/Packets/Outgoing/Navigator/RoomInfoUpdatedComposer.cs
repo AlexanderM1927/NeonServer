@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Neon.Communication.Packets.Outgoing.Navigator
+﻿namespace Neon.Communication.Packets.Outgoing.Navigator
 {
-    class RoomInfoUpdatedComposer : ServerPacket
+    internal class RoomInfoUpdatedComposer : ServerPacket
     {
         public RoomInfoUpdatedComposer(int roomID)
             : base(ServerPacketHeader.RoomInfoUpdatedMessageComposer)

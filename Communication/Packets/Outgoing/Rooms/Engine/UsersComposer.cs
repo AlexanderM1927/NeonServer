@@ -1,17 +1,14 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
+﻿using Neon.HabboHotel.Groups;
 using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Users;
-using Neon.HabboHotel.Groups;
-using System.Collections.ObjectModel;
 using Neon.HabboHotel.Rooms.AI;
+using Neon.HabboHotel.Users;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Neon.Communication.Packets.Outgoing.Rooms.Engine
 {
-    class UsersComposer : ServerPacket
+    internal class UsersComposer : ServerPacket
     {
         public UsersComposer(ICollection<RoomUser> Users)
             : base(ServerPacketHeader.UsersMessageComposer)
@@ -54,7 +51,9 @@ namespace Neon.Communication.Packets.Outgoing.Rooms.Engine
                         if (Habbo.GetStats().FavouriteGroupId > 0)
                         {
                             if (!NeonEnvironment.GetGame().GetGroupManager().TryGetGroup(Habbo.GetStats().FavouriteGroupId, out Group))
+                            {
                                 Group = null;
+                            }
                         }
                     }
                 }
@@ -682,7 +681,7 @@ namespace Neon.Communication.Packets.Outgoing.Rooms.Engine
                                 return "26 30 ffffff 5 0 -1 0 3 303 4 4 401 5 1 101 2 2 201 3";
                         }
                     }
-                #endregion
+                    #endregion
             }
         }
     }

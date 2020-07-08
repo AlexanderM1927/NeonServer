@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-
+﻿using Neon.HabboHotel.Moderation;
 using Neon.Utilities;
-using Neon.HabboHotel.Moderation;
+using System;
+using System.Collections.Generic;
 
 namespace Neon.Communication.Packets.Outgoing.Moderation
 {
-    class ModeratorInitComposer : ServerPacket
+    internal class ModeratorInitComposer : ServerPacket
     {
         public ModeratorInitComposer(ICollection<string> UserPresets, ICollection<string> RoomPresets, ICollection<ModerationTicket> Tickets)
             : base(ServerPacketHeader.ModeratorInitMessageComposer)

@@ -1,6 +1,6 @@
 ﻿
-using System;
 using Neon.Database.Interfaces;
+using System;
 
 
 namespace Neon.HabboHotel.Items
@@ -28,7 +28,9 @@ namespace Neon.HabboHotel.Items
                 string Row = dbClient.getString();
 
                 if (Row == null)
+                {
                     return 0;
+                }
 
                 return Convert.ToInt32(Row);
             }

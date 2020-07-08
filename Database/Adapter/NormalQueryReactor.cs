@@ -1,6 +1,5 @@
-﻿using System;
-
-using Neon.Database.Interfaces;
+﻿using Neon.Database.Interfaces;
+using System;
 
 namespace Neon.Database.Adapter
 {

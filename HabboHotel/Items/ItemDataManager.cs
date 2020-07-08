@@ -1,12 +1,9 @@
-﻿using System;
-using System.Data;
-using System.Collections.Generic;
-using System.Linq;
-
-using log4net;
+﻿using log4net;
 using Neon.Core;
-
 using Neon.Database.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Data;
 
 
 namespace Neon.HabboHotel.Items
@@ -20,18 +17,20 @@ namespace Neon.HabboHotel.Items
 
         public ItemDataManager()
         {
-            this._items = new Dictionary<int, ItemData>();
-            this._gifts = new Dictionary<int, ItemData>();
+            _items = new Dictionary<int, ItemData>();
+            _gifts = new Dictionary<int, ItemData>();
         }
 
         public void Init()
         {
-            if (this._items.Count > 0)
-                this._items.Clear();
+            if (_items.Count > 0)
+            {
+                _items.Clear();
+            }
 
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
-                dbClient.SetQuery("SELECT `id`,`item_name`,`public_name`,`type`,`width`,`length`,`stack_height`,`can_stack`,`can_sit`,`is_walkable`,`sprite_id`,`allow_recycle`,`allow_trade`,`allow_marketplace_sell`,`allow_gift`,`allow_inventory_stack`,`interaction_type`,`interaction_modes_count`,`vending_ids`,`height_adjustable`,`effect_id`,`wired_id`,`is_rare`,`clothing_id`, `extra_rot`,  `song_Id` FROM `furniture`");
+                dbClient.SetQuery("SELECT * FROM `furniture`");
                 DataTable ItemData = dbClient.getTable();
 
                 if (ItemData != null)
@@ -67,11 +66,15 @@ namespace Neon.HabboHotel.Items
                             bool ExtraRot = NeonEnvironment.EnumToBool(Row["extra_rot"].ToString());
                             int SongID = Convert.ToInt32(Row["song_Id"]);
 
-                            if (!this._gifts.ContainsKey(spriteID))
-                                this._gifts.Add(spriteID, new ItemData(id, spriteID, itemName, PublicName, type, width, length, height, allowStack, allowWalk, allowSit, allowRecycle, allowTrade, allowMarketplace, allowGift, allowInventoryStack, interactionType, cycleCount, vendingIDS, heightAdjustable, EffectId, WiredId, IsRare, ClothingId, ExtraRot, SongID));
+                            if (!_gifts.ContainsKey(spriteID))
+                            {
+                                _gifts.Add(spriteID, new ItemData(id, spriteID, itemName, PublicName, type, width, length, height, allowStack, allowWalk, allowSit, allowRecycle, allowTrade, allowMarketplace, allowGift, allowInventoryStack, interactionType, cycleCount, vendingIDS, heightAdjustable, EffectId, WiredId, IsRare, ClothingId, ExtraRot, SongID));
+                            }
 
-                            if (!this._items.ContainsKey(id))
-                                this._items.Add(id, new ItemData(id, spriteID, itemName, PublicName, type, width, length, height, allowStack, allowWalk, allowSit, allowRecycle, allowTrade, allowMarketplace, allowGift, allowInventoryStack, interactionType, cycleCount, vendingIDS, heightAdjustable, EffectId, WiredId, IsRare, ClothingId, ExtraRot, SongID));
+                            if (!_items.ContainsKey(id))
+                            {
+                                _items.Add(id, new ItemData(id, spriteID, itemName, PublicName, type, width, length, height, allowStack, allowWalk, allowSit, allowRecycle, allowTrade, allowMarketplace, allowGift, allowInventoryStack, interactionType, cycleCount, vendingIDS, heightAdjustable, EffectId, WiredId, IsRare, ClothingId, ExtraRot, SongID));
+                            }
                         }
                         catch (Exception e)
                         {
@@ -88,8 +91,11 @@ namespace Neon.HabboHotel.Items
 
         public bool GetItem(int Id, out ItemData Item)
         {
-            if (this._items.TryGetValue(Id, out Item))
+            if (_items.TryGetValue(Id, out Item))
+            {
                 return true;
+            }
+
             return false;
         }
 
@@ -99,15 +105,20 @@ namespace Neon.HabboHotel.Items
             {
                 ItemData item = entry.Value;
                 if (item.ItemName == name)
+                {
                     return item;
+                }
             }
             return null;
         }
 
         public bool GetGift(int SpriteId, out ItemData Item)
         {
-            if (this._gifts.TryGetValue(SpriteId, out Item))
+            if (_gifts.TryGetValue(SpriteId, out Item))
+            {
                 return true;
+            }
+
             return false;
         }
     }

@@ -1,21 +1,16 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using System.Collections.Concurrent;
-
+﻿using Neon.Communication.Packets.Incoming;
 using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Users;
-using Neon.Communication.Packets.Incoming;
 using Neon.HabboHotel.Rooms.Games.Teams;
+using Neon.HabboHotel.Users;
+using System.Collections.Concurrent;
 
 namespace Neon.HabboHotel.Items.Wired.Boxes.Conditions
 {
-    class ActorIsNotInTeamBox : IWiredItem
+    internal class ActorIsNotInTeamBox : IWiredItem
     {
         public Room Instance { get; set; }
         public Item Item { get; set; }
-        public WiredBoxType Type { get { return WiredBoxType.ConditionActorIsNotInTeamBox; } }
+        public WiredBoxType Type => WiredBoxType.ConditionActorIsNotInTeamBox;
         public ConcurrentDictionary<int, Item> SetItems { get; set; }
         public string StringData { get; set; }
         public bool BoolData { get; set; }
@@ -26,7 +21,7 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Conditions
             this.Instance = Instance;
             this.Item = Item;
 
-            this.SetItems = new ConcurrentDictionary<int, Item>();
+            SetItems = new ConcurrentDictionary<int, Item>();
         }
 
         public void HandleSave(ClientPacket Packet)
@@ -34,30 +29,45 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Conditions
             int Unknown = Packet.PopInt();
             int Unknown2 = Packet.PopInt();
 
-            this.StringData = Unknown2.ToString();
+            StringData = Unknown2.ToString();
         }
 
         public bool Execute(params object[] Params)
         {
-            if (Params.Length == 0 || Instance == null || String.IsNullOrEmpty(this.StringData))
+            if (Params.Length == 0 || Instance == null || string.IsNullOrEmpty(StringData))
+            {
                 return false;
+            }
 
             Habbo Player = (Habbo)Params[0];
             if (Player == null)
+            {
                 return false;
+            }
 
             RoomUser User = Instance.GetRoomUserManager().GetRoomUserByHabbo(Player.Id);
             if (User == null)
+            {
                 return false;
+            }
 
-            if (int.Parse(this.StringData) == 1 && User.Team != TEAM.RED)
+            if (int.Parse(StringData) == 1 && User.Team != TEAM.RED)
+            {
                 return true;
-            else if (int.Parse(this.StringData) == 2 && User.Team != TEAM.GREEN)
+            }
+            else if (int.Parse(StringData) == 2 && User.Team != TEAM.GREEN)
+            {
                 return true;
-            else if (int.Parse(this.StringData) == 3 && User.Team != TEAM.BLUE)
+            }
+            else if (int.Parse(StringData) == 3 && User.Team != TEAM.BLUE)
+            {
                 return true;
-            else if (int.Parse(this.StringData) == 4 && User.Team != TEAM.YELLOW)
+            }
+            else if (int.Parse(StringData) == 4 && User.Team != TEAM.YELLOW)
+            {
                 return true;
+            }
+
             return false;
         }
     }

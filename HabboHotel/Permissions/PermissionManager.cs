@@ -1,12 +1,10 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using log4net;
+﻿using log4net;
 using Neon.Database.Interfaces;
-using System.Data;
 using Neon.HabboHotel.Users;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
 
 namespace Neon.HabboHotel.Permissions
 {
@@ -31,10 +29,10 @@ namespace Neon.HabboHotel.Permissions
 
         public void Init()
         {
-            this.Permissions.Clear();
-            this._commands.Clear();
-            this.PermissionGroups.Clear();
-            this.PermissionGroupRights.Clear();
+            Permissions.Clear();
+            _commands.Clear();
+            PermissionGroups.Clear();
+            PermissionGroupRights.Clear();
 
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
@@ -45,7 +43,7 @@ namespace Neon.HabboHotel.Permissions
                 {
                     foreach (DataRow Row in GetPermissions.Rows)
                     {
-                        this.Permissions.Add(Convert.ToInt32(Row["id"]), new Permission(Convert.ToInt32(Row["id"]), Convert.ToString(Row["permission"]), Convert.ToString(Row["description"])));
+                        Permissions.Add(Convert.ToInt32(Row["id"]), new Permission(Convert.ToInt32(Row["id"]), Convert.ToString(Row["permission"]), Convert.ToString(Row["description"])));
                     }
                 }
             }
@@ -59,7 +57,7 @@ namespace Neon.HabboHotel.Permissions
                 {
                     foreach (DataRow Row in GetCommands.Rows)
                     {
-                         this._commands.Add(Convert.ToString(Row["command"]), new PermissionCommand(Convert.ToString(Row["command"]), Convert.ToInt32(Row["group_id"]), Convert.ToInt32(Row["subscription_id"])));
+                        _commands.Add(Convert.ToString(Row["command"]), new PermissionCommand(Convert.ToString(Row["command"]), Convert.ToInt32(Row["group_id"]), Convert.ToInt32(Row["subscription_id"])));
                     }
                 }
             }
@@ -73,7 +71,7 @@ namespace Neon.HabboHotel.Permissions
                 {
                     foreach (DataRow Row in GetPermissionGroups.Rows)
                     {
-                        this.PermissionGroups.Add(Convert.ToInt32(Row["id"]), new PermissionGroup(Convert.ToString("name"), Convert.ToString("description"), Convert.ToString("badge")));
+                        PermissionGroups.Add(Convert.ToInt32(Row["id"]), new PermissionGroup(Convert.ToString("name"), Convert.ToString("description"), Convert.ToString("badge")));
                     }
                 }
             }
@@ -90,21 +88,20 @@ namespace Neon.HabboHotel.Permissions
                         int GroupId = Convert.ToInt32(Row["group_id"]);
                         int PermissionId = Convert.ToInt32(Row["permission_id"]);
 
-                        if (!this.PermissionGroups.ContainsKey(GroupId))
+                        if (!PermissionGroups.ContainsKey(GroupId))
                         {
                             continue; // permission group does not exist
                         }
 
-                        Permission Permission = null;
 
-                        if (!this.Permissions.TryGetValue(PermissionId, out Permission))
+                        if (!Permissions.TryGetValue(PermissionId, out Permission Permission))
                         {
                             continue; // permission does not exist
                         }
 
                         if (PermissionGroupRights.ContainsKey(GroupId))
                         {
-                            this.PermissionGroupRights[GroupId].Add(Permission.PermissionName);
+                            PermissionGroupRights[GroupId].Add(Permission.PermissionName);
                         }
                         else
                         {
@@ -113,7 +110,7 @@ namespace Neon.HabboHotel.Permissions
                                     Permission.PermissionName
                                 };
 
-                            this.PermissionGroupRights.Add(GroupId, RightsSet);
+                            PermissionGroupRights.Add(GroupId, RightsSet);
                         }
 
                     }
@@ -132,13 +129,14 @@ namespace Neon.HabboHotel.Permissions
                         int PermissionId = Convert.ToInt32(Row["permission_id"]);
                         int SubscriptionId = Convert.ToInt32(Row["subscription_id"]);
 
-                        Permission Permission = null;
-                        if (!this.Permissions.TryGetValue(PermissionId, out Permission))
-                            continue; // permission does not exist
-
-                        if (this.PermissionSubscriptionRights.ContainsKey(SubscriptionId))
+                        if (!Permissions.TryGetValue(PermissionId, out Permission Permission))
                         {
-                            this.PermissionSubscriptionRights[SubscriptionId].Add(Permission.PermissionName);
+                            continue; // permission does not exist
+                        }
+
+                        if (PermissionSubscriptionRights.ContainsKey(SubscriptionId))
+                        {
+                            PermissionSubscriptionRights[SubscriptionId].Add(Permission.PermissionName);
                         }
                         else
                         {
@@ -147,7 +145,7 @@ namespace Neon.HabboHotel.Permissions
                                     Permission.PermissionName
                                 };
 
-                            this.PermissionSubscriptionRights.Add(SubscriptionId, RightsSet);
+                            PermissionSubscriptionRights.Add(SubscriptionId, RightsSet);
                         }
                     }
                 }
@@ -162,21 +160,19 @@ namespace Neon.HabboHotel.Permissions
 
         public bool TryGetGroup(int Id, out PermissionGroup Group)
         {
-            return this.PermissionGroups.TryGetValue(Id, out Group);
+            return PermissionGroups.TryGetValue(Id, out Group);
         }
 
         public List<string> GetPermissionsForPlayer(Habbo Player)
         {
             List<string> PermissionSet = new List<string>();
 
-            List<string> PermRights = null;
-            if (this.PermissionGroupRights.TryGetValue(Player.Rank, out PermRights))
+            if (PermissionGroupRights.TryGetValue(Player.Rank, out List<string> PermRights))
             {
                 PermissionSet.AddRange(PermRights);
             }
 
-            List<string> SubscriptionRights = null;
-            if (this.PermissionSubscriptionRights.TryGetValue(Player.VIPRank, out SubscriptionRights))
+            if (PermissionSubscriptionRights.TryGetValue(Player.VIPRank, out List<string> SubscriptionRights))
             {
                 PermissionSet.AddRange(SubscriptionRights);
             }
@@ -186,7 +182,7 @@ namespace Neon.HabboHotel.Permissions
 
         public List<string> GetCommandsForPlayer(Habbo Player)
         {
-            return this._commands.Where(x => Player.Rank >= x.Value.GroupId && Player.VIPRank >= x.Value.SubscriptionId).Select(x => x.Key).ToList();
+            return _commands.Where(x => Player.Rank >= x.Value.GroupId && Player.VIPRank >= x.Value.SubscriptionId).Select(x => x.Key).ToList();
         }
     }
 }

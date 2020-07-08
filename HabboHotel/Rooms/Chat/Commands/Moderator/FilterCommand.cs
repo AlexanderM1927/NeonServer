@@ -1,29 +1,14 @@
 ﻿using Neon.Database.Interfaces;
-using Neon.HabboHotel.Global;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
 {
-    class FilterCommand : IChatCommand
+    internal class FilterCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_filter"; }
-        }
+        public string PermissionRequired => "command_filter";
 
-        public string Parameters
-        {
-            get { return "%Palabra%"; }
-        }
+        public string Parameters => "%Palabra%";
 
-        public string Description
-        {
-            get { return "Agrega una palabra al Filtro."; }
-        }
+        public string Description => "Agrega una palabra al Filtro.";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {
@@ -34,6 +19,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
             }
             string BannedWord = Params[1];
             if (!string.IsNullOrWhiteSpace(BannedWord))
+            {
                 using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
                 {
                     dbClient.SetQuery("INSERT INTO wordfilter (`word`, `addedby`, `bannable`) VALUES " +
@@ -42,6 +28,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
                     dbClient.RunQuery();
                     Session.SendWhisper("'" + BannedWord + "' Ha sido agregado correctamente al Filtro");
                 }
+            }
         }
     }
 }

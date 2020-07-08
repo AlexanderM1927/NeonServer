@@ -1,34 +1,20 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using Neon.HabboHotel.GameClients;
+﻿using Neon.HabboHotel.GameClients;
+using System;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.User
 {
-    class RandomizeCommand : IChatCommand
+    internal class RandomizeCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_info"; }
-        }
+        public string PermissionRequired => "command_info";
 
-        public string Parameters
-        {
-            get { return "%min% %max%"; }
-        }
+        public string Parameters => "%min% %max%";
 
-        public string Description
-        {
-            get { return "Genera una cifra aleatoria entre 2 números."; }
-        }
+        public string Description => "Genera una cifra aleatoria entre 2 números.";
 
         public void Execute(GameClient Session, Room Room, string[] Params)
         {
-            int Rand1;
-            int Rand2;
-            int.TryParse(Params[1], out Rand1);
-            int.TryParse(Params[2], out Rand2);
+            int.TryParse(Params[1], out int Rand1);
+            int.TryParse(Params[2], out int Rand2);
 
             Random Rand = new Random();
 

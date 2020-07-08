@@ -1,6 +1,6 @@
 ﻿namespace Neon.Communication.Packets.Outgoing.Misc
 {
-    class LatencyTestComposer : ServerPacket
+    internal class LatencyTestComposer : ServerPacket
     {
         public LatencyTestComposer(int testResponce)
             : base(ServerPacketHeader.LatencyResponseMessageComposer)

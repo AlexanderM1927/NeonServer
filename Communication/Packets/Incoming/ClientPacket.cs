@@ -1,8 +1,5 @@
-﻿using System;
-using System.Text;
-
-using Neon.Utilities;
-using Neon.Communication.Packets.Incoming;
+﻿using Neon.Utilities;
+using System;
 
 namespace Neon.Communication.Packets.Incoming
 {
@@ -24,25 +21,18 @@ namespace Neon.Communication.Packets.Incoming
             MessageId = PopInt();
         }
 
-        public int Id
-        {
-            get { return MessageId; }
-        }
+        public int Id => MessageId;
 
-        public int RemainingLength
-        {
-            get { return Body.Length - Pointer; }
-        }
+        public int RemainingLength => Body.Length - Pointer;
 
-        public int Header
-        {
-            get { return MessageId; }
-        }
+        public int Header => MessageId;
 
         public void Init(byte[] body)
         {
             if (body == null)
+            {
                 body = new byte[0];
+            }
 
             Pointer = 0;
             MessageId = PopInt();
@@ -53,7 +43,9 @@ namespace Neon.Communication.Packets.Incoming
         public void Init(int messageID, byte[] body)
         {
             if (body == null)
+            {
                 body = new byte[0];
+            }
 
             MessageId = messageID;
             Body = body;
@@ -68,18 +60,22 @@ namespace Neon.Communication.Packets.Incoming
 
         public void AdvancePointer(int i)
         {
-            Pointer += i*4;
+            Pointer += i * 4;
         }
 
         public byte[] ReadBytes(int Bytes)
         {
             if (Bytes > RemainingLength)
+            {
                 Bytes = RemainingLength;
+            }
 
-            var data = new byte[Bytes];
+            byte[] data = new byte[Bytes];
 
             for (int i = 0; i < Bytes; i++)
+            {
                 data[i] = Body[Pointer++];
+            }
 
             return data;
         }
@@ -87,9 +83,11 @@ namespace Neon.Communication.Packets.Incoming
         public byte[] PlainReadBytes(int Bytes)
         {
             if (Bytes > RemainingLength)
+            {
                 Bytes = RemainingLength;
+            }
 
-            var data = new byte[Bytes];
+            byte[] data = new byte[Bytes];
 
             for (int x = 0, y = Pointer; x < Bytes; x++, y++)
             {
@@ -129,7 +127,7 @@ namespace Neon.Communication.Packets.Incoming
 
             byte[] Data = PlainReadBytes(4);
 
-            Int32 i = HabboEncoding.DecodeInt32(Data);
+            int i = HabboEncoding.DecodeInt32(Data);
 
             Pointer += 4;
 

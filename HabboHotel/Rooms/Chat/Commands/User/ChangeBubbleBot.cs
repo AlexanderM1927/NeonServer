@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
 using Neon.Database.Interfaces;
-using Neon.HabboHotel.Bots;
 using Neon.HabboHotel.GameClients;
-using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.User
 {
-    class BubbleBotCommand : IChatCommand
+    internal class BubbleBotCommand : IChatCommand
     {
         public string PermissionRequired => "command_bubble";
         public string Parameters => "%nombre% %id%";
@@ -20,11 +14,12 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User
         {
             RoomUser User = Room.GetRoomUserManager().GetRoomUserByHabbo(Session.GetHabbo().Id);
             if (User == null)
+            {
                 return;
+            }
 
             string BotName = CommandManager.MergeParams(Params, 1);
             string Bubble = CommandManager.MergeParams(Params, 2);
-            int BubbleID = 0;
 
             long nowTime = NeonEnvironment.CurrentTimeMillis();
             long timeBetween = nowTime - Session.GetHabbo()._lastTimeUsedHelpCommand;
@@ -45,15 +40,15 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User
             RoomUser Bot = Room.GetRoomUserManager().GetBotByName(Params[1]);
             if (Bot == null)
             {
-                Session.SendWhisper("No hay ningún bot llamado "+ Params[1] +" en la sala.", 34);
+                Session.SendWhisper("No hay ningún bot llamado " + Params[1] + " en la sala.", 34);
                 return;
             }
 
             if (Bot.BotData.ownerID != Session.GetHabbo().Id)
-                {
+            {
                 Session.SendWhisper("Estás cambiándole la burbuja a un bot que no es tuyo, crack, máquina, figura.", 34);
                 return;
-                }
+            }
 
             if (Bubble == "1" || Bubble == "23" || Bubble == "34" || Bubble == "37")
             {
@@ -61,21 +56,21 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User
                 return;
             }
 
-                if (Params.Length == 2)
+            if (Params.Length == 2)
+            {
+                Session.SendWhisper("Uy, se te olvidó introducir una ID de la burbuja.", 34);
+                return;
+            }
+
+            if (int.TryParse(Bubble, out int BubbleID))
+            {
+                using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
                 {
-                    Session.SendWhisper("Uy, se te olvidó introducir una ID de la burbuja.", 34);
-                    return;
+                    dbClient.runFastQuery("UPDATE `bots` SET `chat_bubble` =  '" + BubbleID + "' WHERE `name` =  '" + Bot.BotData.Name + "' AND  `room_id` =  '" + Session.GetHabbo().CurrentRoomId + "'");
+                    Bot.Chat("Me acabas de colocar la burbuja " + BubbleID + ".", true, BubbleID);
+                    Bot.BotData.ChatBubble = BubbleID;
                 }
-                
-                if (int.TryParse(Bubble, out BubbleID))
-                {
-                    using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
-                    {
-                        dbClient.runFastQuery("UPDATE `bots` SET `chat_bubble` =  '" + BubbleID + "' WHERE `name` =  '" + Bot.BotData.Name + "' AND  `room_id` =  '" + Session.GetHabbo().CurrentRoomId + "'");
-                        Bot.Chat("Me acabas de colocar la burbuja " + BubbleID + ".", true, BubbleID);
-                        Bot.BotData.ChatBubble = BubbleID;
-                }
-                }
+            }
 
             return;
         }

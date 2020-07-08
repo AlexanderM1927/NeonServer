@@ -5,7 +5,7 @@ namespace Neon.Utilities
     public static class RandomNumber
     {
         private static readonly Random r = new Random();
-        private static readonly Object l = new Object();
+        private static readonly object l = new object();
 
         private static readonly Random globalRandom = new Random();
         [ThreadStatic] private static Random localRandom;

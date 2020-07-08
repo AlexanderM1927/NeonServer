@@ -1,42 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Neon.HabboHotel.Rooms.Chat.Filter
+﻿namespace Neon.HabboHotel.Rooms.Chat.Filter
 {
-    sealed class WordFilter
+    internal sealed class WordFilter
     {
-        private string _word;
-        private string _replacement;
-        private bool _strict;
-        private bool _bannable;
+        private readonly string _word;
+        private readonly string _replacement;
+        private readonly bool _strict;
+        private readonly bool _bannable;
 
         public WordFilter(string Word, string Replacement, bool Strict, bool Bannable)
         {
-            this._word = Word;
-            this._replacement = Replacement;
-            this._strict = Strict;
-            this._bannable = Bannable;
+            _word = Word;
+            _replacement = Replacement;
+            _strict = Strict;
+            _bannable = Bannable;
         }
 
-        public string Word
-        {
-            get { return this._word; }
-        }
+        public string Word => _word;
 
-        public string Replacement
-        {
-            get { return this._replacement; }
-        }
-        public bool IsStrict
-        {
-            get { return this._strict; }
-        }
-        public bool IsBannable
-        {
-            get { return this._bannable; }
-        }
+        public string Replacement => _replacement;
+        public bool IsStrict => _strict;
+        public bool IsBannable => _bannable;
     }
 }

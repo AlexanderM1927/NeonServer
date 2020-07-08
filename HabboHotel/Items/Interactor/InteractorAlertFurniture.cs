@@ -1,15 +1,10 @@
 ﻿using Neon.Communication.Packets.Outgoing.Inventory.Purse;
 using Neon.HabboHotel.GameClients;
 using Neon.HabboHotel.Rooms;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.HabboHotel.Items.Interactor
 {
-    class InteractorAlertFurniture : IFurniInteractor
+    internal class InteractorAlertFurniture : IFurniInteractor
     {
 
         public void OnPlace(GameClient Session, Item Item)
@@ -33,9 +28,14 @@ namespace Neon.HabboHotel.Items.Interactor
         {
             RoomUser User = null;
             if (Session != null)
+            {
                 User = Item.GetRoom().GetRoomUserManager().GetRoomUserByHabbo(Session.GetHabbo().Id);
+            }
+
             if (User == null)
+            {
                 return;
+            }
 
             if (Gamemap.TilesTouching(Item.GetX, Item.GetY, User.X, User.Y))
             {

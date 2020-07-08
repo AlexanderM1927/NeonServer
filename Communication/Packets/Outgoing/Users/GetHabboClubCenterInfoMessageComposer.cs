@@ -1,14 +1,9 @@
-﻿using Neon.Communication.Packets.Outgoing;
-using Neon.HabboHotel.GameClients;
+﻿using Neon.HabboHotel.GameClients;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.Communication.Packets.Outgoing.Inventory.Purse
 {
-    class GetHabboClubCenterInfoMessageComposer : ServerPacket
+    internal class GetHabboClubCenterInfoMessageComposer : ServerPacket
     {
         public GetHabboClubCenterInfoMessageComposer(GameClient Session) : base(ServerPacketHeader.HabboClubCenterInfoMessageComposer)
         {

@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace Neon.Utilities
 {
-    static class StringCharFilter
+    internal static class StringCharFilter
     {
         /// 
 
@@ -34,9 +31,9 @@ namespace Neon.Utilities
 
             return str;
         }
-                public static string EscapeJSONString(string str)
+        public static string EscapeJSONString(string str)
         {
             return str.Replace("\"", "\\\"");
         }
-}
+    }
 }

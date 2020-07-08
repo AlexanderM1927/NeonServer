@@ -1,15 +1,12 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Data;
-using System.Collections.Generic;
-using Neon.Database.Interfaces;
+﻿using Neon.Database.Interfaces;
 using Neon.HabboHotel.GameClients;
+using System;
+using System.Data;
 
 
 namespace Neon.Communication.Packets.Outgoing.Avatar
 {
-    class WardrobeComposer : ServerPacket
+    internal class WardrobeComposer : ServerPacket
     {
         public WardrobeComposer(GameClient Session)
             : base(ServerPacketHeader.WardrobeMessageComposer)
@@ -21,15 +18,17 @@ namespace Neon.Communication.Packets.Outgoing.Avatar
                 DataTable WardrobeData = dbClient.getTable();
 
                 if (WardrobeData == null)
+                {
                     base.WriteInteger(0);
+                }
                 else
                 {
                     base.WriteInteger(WardrobeData.Rows.Count);
                     foreach (DataRow Row in WardrobeData.Rows)
                     {
                         base.WriteInteger(Convert.ToInt32(Row["slot_id"]));
-                       base.WriteString(Convert.ToString(Row["look"]));
-                       base.WriteString(Row["gender"].ToString().ToUpper());
+                        base.WriteString(Convert.ToString(Row["look"]));
+                        base.WriteString(Row["gender"].ToString().ToUpper());
                     }
                 }
             }

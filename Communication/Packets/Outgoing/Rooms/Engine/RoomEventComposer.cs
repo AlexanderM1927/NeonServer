@@ -1,13 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms;
+﻿using Neon.HabboHotel.Rooms;
+using System;
 
 namespace Neon.Communication.Packets.Outgoing.Rooms.Engine
 {
-    class RoomEventComposer : ServerPacket
+    internal class RoomEventComposer : ServerPacket
     {
         public RoomEventComposer(RoomData Data, RoomPromotion Promotion)
             : base(ServerPacketHeader.RoomEventMessageComposer)

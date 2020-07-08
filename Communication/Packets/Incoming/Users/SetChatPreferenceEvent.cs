@@ -1,21 +1,14 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.Communication.Packets.Incoming;
+﻿using Neon.Database.Interfaces;
 using Neon.HabboHotel.GameClients;
-using Neon.Communication.Packets.Outgoing.Sound;
-using Neon.Database.Interfaces;
 
 
 namespace Neon.Communication.Packets.Incoming.Users
 {
-    class SetChatPreferenceEvent : IPacketEvent
+    internal class SetChatPreferenceEvent : IPacketEvent
     {
         public void Parse(GameClient Session, ClientPacket Packet)
         {
-            Boolean ChatPreference = Packet.PopBoolean();
+            bool ChatPreference = Packet.PopBoolean();
 
             Session.GetHabbo().ChatPreference = ChatPreference;
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())

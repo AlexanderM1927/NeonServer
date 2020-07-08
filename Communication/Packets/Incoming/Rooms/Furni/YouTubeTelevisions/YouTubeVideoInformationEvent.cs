@@ -1,14 +1,10 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Furni.YouTubeTelevisions;
 using Neon.HabboHotel.Items.Televisions;
-using Neon.Communication.Packets.Outgoing.Rooms.Furni.YouTubeTelevisions;
+using System.Linq;
 
 namespace Neon.Communication.Packets.Incoming.Rooms.Furni.YouTubeTelevisions
 {
-    class YouTubeVideoInformationEvent : IPacketEvent
+    internal class YouTubeVideoInformationEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
@@ -18,7 +14,9 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Furni.YouTubeTelevisions
             foreach (TelevisionItem Tele in NeonEnvironment.GetGame().GetTelevisionManager().TelevisionList.ToList())
             {
                 if (Tele.YouTubeId != VideoId)
+                {
                     continue;
+                }
 
                 Session.SendMessage(new GetYouTubeVideoComposer(ItemId, Tele.YouTubeId));
             }

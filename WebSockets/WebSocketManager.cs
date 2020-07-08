@@ -1,17 +1,12 @@
 ﻿using Fleck;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.WebSockets
 {
-    class WebSocketManager
+    internal class WebSocketManager
     {
         public static void StartListener()
         {
-            var server = new WebSocketServer("ws://0.0.0.0:8181");
+            WebSocketServer server = new WebSocketServer("ws://0.0.0.0:8181");
             server.Start(socket =>
             {
                 socket.OnOpen = () => NeonEnvironment.GetGame().GetClientManager().registerSession(socket);

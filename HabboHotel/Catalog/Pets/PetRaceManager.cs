@@ -1,21 +1,22 @@
-﻿using System;
+﻿using Neon.Database.Interfaces;
+using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Collections.Generic;
-
-using Neon.Database.Interfaces;
 
 
 namespace Neon.HabboHotel.Catalog.Pets
 {
     public class PetRaceManager
     {
-        private List<PetRace> _races = new List<PetRace>();
+        private readonly List<PetRace> _races = new List<PetRace>();
 
         public void Init()
         {
-            if (this._races.Count > 0)
-                this._races.Clear();
+            if (_races.Count > 0)
+            {
+                _races.Clear();
+            }
 
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
@@ -27,8 +28,10 @@ namespace Neon.HabboHotel.Catalog.Pets
                     foreach (DataRow Row in Table.Rows)
                     {
                         PetRace Race = new PetRace(Convert.ToInt32(Row["raceid"]), Convert.ToInt32(Row["color1"]), Convert.ToInt32(Row["color2"]), (Convert.ToString(Row["has1color"]) == "1"), (Convert.ToString(Row["has2color"]) == "1"));
-                        if (!this._races.Contains(Race))
-                            this._races.Add(Race);
+                        if (!_races.Contains(Race))
+                        {
+                            _races.Add(Race);
+                        }
                     }
                 }
             }
@@ -200,7 +203,7 @@ namespace Neon.HabboHotel.Catalog.Pets
 
         public List<PetRace> GetRacesForRaceId(int RaceId)
         {
-            return this._races.Where(Race => Race.RaceId == RaceId).ToList();
+            return _races.Where(Race => Race.RaceId == RaceId).ToList();
         }
     }
 }

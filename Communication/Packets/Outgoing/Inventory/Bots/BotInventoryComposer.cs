@@ -1,14 +1,10 @@
-﻿using System;
-using System.Linq;
-using System.Text;
+﻿using Neon.HabboHotel.Users.Inventory.Bots;
 using System.Collections.Generic;
-
-using Neon.HabboHotel.GameClients;
-using Neon.HabboHotel.Users.Inventory.Bots;
+using System.Linq;
 
 namespace Neon.Communication.Packets.Outgoing.Inventory.Bots
 {
-    class BotInventoryComposer : ServerPacket
+    internal class BotInventoryComposer : ServerPacket
     {
         public BotInventoryComposer(ICollection<Bot> Bots)
             : base(ServerPacketHeader.BotInventoryMessageComposer)
@@ -17,10 +13,10 @@ namespace Neon.Communication.Packets.Outgoing.Inventory.Bots
             foreach (Bot Bot in Bots.ToList())
             {
                 base.WriteInteger(Bot.Id);
-               base.WriteString(Bot.Name);
-               base.WriteString(Bot.Motto);
-               base.WriteString(Bot.Gender);
-               base.WriteString(Bot.Figure);
+                base.WriteString(Bot.Name);
+                base.WriteString(Bot.Motto);
+                base.WriteString(Bot.Gender);
+                base.WriteString(Bot.Figure);
             }
         }
     }

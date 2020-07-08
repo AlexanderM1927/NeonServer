@@ -1,15 +1,11 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
+﻿
+using Neon.HabboHotel.Cache;
 using Neon.HabboHotel.Users;
 using Neon.HabboHotel.Users.Relationships;
-using Neon.HabboHotel.Cache;
 
 namespace Neon.Communication.Packets.Outgoing.Users
 {
-    class GetRelationshipsComposer : ServerPacket
+    internal class GetRelationshipsComposer : ServerPacket
     {
         public GetRelationshipsComposer(Habbo Habbo, int Loves, int Likes, int Hates)
             : base(ServerPacketHeader.GetRelationshipsMessageComposer)
@@ -24,16 +20,16 @@ namespace Neon.Communication.Packets.Outgoing.Users
                     base.WriteInteger(0);
                     base.WriteInteger(0);
                     base.WriteInteger(0); // Their ID
-                   base.WriteString("Placeholder");
-                   base.WriteString("hr-115-42.hd-190-1.ch-215-62.lg-285-91.sh-290-62");
+                    base.WriteString("Placeholder");
+                    base.WriteString("hr-115-42.hd-190-1.ch-215-62.lg-285-91.sh-290-62");
                 }
                 else
                 {
                     base.WriteInteger(Rel.Type);
                     base.WriteInteger(Rel.Type == 1 ? Loves : Rel.Type == 2 ? Likes : Hates);
                     base.WriteInteger(Rel.UserId); // Their ID
-                   base.WriteString(HHab.Username);
-                   base.WriteString(HHab.Look);
+                    base.WriteString(HHab.Username);
+                    base.WriteString(HHab.Look);
                 }
             }
         }

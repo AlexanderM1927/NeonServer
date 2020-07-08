@@ -1,13 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
+﻿
 using Neon.HabboHotel.Achievements;
 
 namespace Neon.Communication.Packets.Outgoing.Inventory.Achievements
 {
-    class AchievementUnlockedComposer : ServerPacket
+    internal class AchievementUnlockedComposer : ServerPacket
     {
         public AchievementUnlockedComposer(Achievement Achievement, int Level, int PointReward, int PixelReward)
             : base(ServerPacketHeader.AchievementUnlockedMessageComposer)

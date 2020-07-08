@@ -1,31 +1,34 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms;
+﻿
 using Neon.HabboHotel.Items;
+using Neon.HabboHotel.Rooms;
 
 namespace Neon.Communication.Packets.Incoming.Rooms.Furni.Moodlight
 {
-    class MoodlightUpdateEvent : IPacketEvent
+    internal class MoodlightUpdateEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
             if (!Session.GetHabbo().InRoom)
+            {
                 return;
+            }
 
-            Room Room;
 
-            if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Session.GetHabbo().CurrentRoomId, out Room))
+            if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Session.GetHabbo().CurrentRoomId, out Room Room))
+            {
                 return;
-            
+            }
+
             if (!Room.CheckRights(Session, true) || Room.MoodlightData == null)
+            {
                 return;
+            }
 
             Item Item = Room.GetRoomItemHandler().GetItem(Room.MoodlightData.ItemId);
             if (Item == null || Item.GetBaseItem().InteractionType != InteractionType.MOODLIGHT)
+            {
                 return;
+            }
 
             int Preset = Packet.PopInt();
             int BackgroundMode = Packet.PopInt();
@@ -34,7 +37,9 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Furni.Moodlight
 
             bool BackgroundOnly = false;
             if (BackgroundMode >= 2)
+            {
                 BackgroundOnly = true;
+            }
 
             Room.MoodlightData.Enabled = true;
             Room.MoodlightData.CurrentPreset = Preset;

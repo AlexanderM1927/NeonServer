@@ -1,19 +1,14 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using System.Collections.Concurrent;
-
-using Neon.Communication.Packets.Incoming;
+﻿using Neon.Communication.Packets.Incoming;
 using Neon.HabboHotel.Rooms;
+using System.Collections.Concurrent;
 
 namespace Neon.HabboHotel.Items.Wired.Boxes.Conditions
 {
-    class UserCountInRoomBox : IWiredItem
+    internal class UserCountInRoomBox : IWiredItem
     {
         public Room Instance { get; set; }
         public Item Item { get; set; }
-        public WiredBoxType Type { get { return WiredBoxType.ConditionUserCountInRoom; } }
+        public WiredBoxType Type => WiredBoxType.ConditionUserCountInRoom;
         public ConcurrentDictionary<int, Item> SetItems { get; set; }
         public string StringData { get; set; }
         public bool BoolData { get; set; }
@@ -23,7 +18,7 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Conditions
         {
             this.Instance = Instance;
             this.Item = Item;
-            this.SetItems = new ConcurrentDictionary<int, Item>();
+            SetItems = new ConcurrentDictionary<int, Item>();
         }
 
         public void HandleSave(ClientPacket Packet)
@@ -32,22 +27,28 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Conditions
             int CountOne = Packet.PopInt();
             int CountTwo = Packet.PopInt();
 
-            this.StringData = CountOne + ";" + CountTwo;
+            StringData = CountOne + ";" + CountTwo;
         }
 
         public bool Execute(params object[] Params)
         {
             if (Params.Length == 0)
+            {
                 return false;
+            }
 
-            if (String.IsNullOrEmpty(this.StringData))
+            if (string.IsNullOrEmpty(StringData))
+            {
                 return false;
+            }
 
-            int CountOne = this.StringData != null ? int.Parse(this.StringData.Split(';')[0]) : 1;
-            int CountTwo = this.StringData != null ? int.Parse(this.StringData.Split(';')[1]) : 50;
+            int CountOne = StringData != null ? int.Parse(StringData.Split(';')[0]) : 1;
+            int CountTwo = StringData != null ? int.Parse(StringData.Split(';')[1]) : 50;
 
-            if (this.Instance.UserCount >= CountOne && this.Instance.UserCount <= CountTwo)
+            if (Instance.UserCount >= CountOne && Instance.UserCount <= CountTwo)
+            {
                 return true;
+            }
 
             return false;
         }

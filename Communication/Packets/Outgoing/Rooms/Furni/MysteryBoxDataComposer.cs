@@ -1,12 +1,8 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using Neon.HabboHotel.GameClients;
+﻿using Neon.HabboHotel.GameClients;
 
 namespace Neon.Communication.Packets.Outgoing.Rooms.Furni
 {
-    class MysteryBoxDataComposer : ServerPacket
+    internal class MysteryBoxDataComposer : ServerPacket
     {
         public MysteryBoxDataComposer(GameClient Session)
             : base(ServerPacketHeader.MysteryBoxDataComposer)

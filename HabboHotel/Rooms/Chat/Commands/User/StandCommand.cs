@@ -1,34 +1,23 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms;
-
-namespace Neon.HabboHotel.Rooms.Chat.Commands.User
+﻿namespace Neon.HabboHotel.Rooms.Chat.Commands.User
 {
-    class StandCommand :IChatCommand
+    internal class StandCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_stand"; }
-        }
+        public string PermissionRequired => "command_stand";
 
         public string Parameters
         {
             get { return ""; ; }
         }
 
-        public string Description
-        {
-            get { return "Levantarse."; }
-        }
+        public string Description => "Levantarse.";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {
             RoomUser User = Room.GetRoomUserManager().GetRoomUserByHabbo(Session.GetHabbo().Username);
             if (User == null)
+            {
                 return;
+            }
 
             if (User.isSitting)
             {

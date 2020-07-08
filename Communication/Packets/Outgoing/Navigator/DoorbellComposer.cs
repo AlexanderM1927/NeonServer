@@ -1,18 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using System.Threading.Tasks;
-
-namespace Neon.Communication.Packets.Outgoing.Navigator
+﻿namespace Neon.Communication.Packets.Outgoing.Navigator
 {
-    class DoorbellComposer : ServerPacket
+    internal class DoorbellComposer : ServerPacket
     {
         public DoorbellComposer(string Username)
             : base(ServerPacketHeader.DoorbellMessageComposer)
         {
-           base.WriteString(Username);
+            base.WriteString(Username);
         }
     }
 }

@@ -1,14 +1,13 @@
-﻿using System;
+﻿using log4net;
+using Neon.Core;
+using Neon.Database.Interfaces;
+using Neon.HabboHotel.GameClients;
+using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-
-using Neon.Core;
-using Neon.HabboHotel.GameClients;
-using System.Collections.Concurrent;
-using Neon.Database.Interfaces;
-using log4net;
 
 namespace Neon.HabboHotel.Rooms
 {
@@ -24,7 +23,9 @@ namespace Neon.HabboHotel.Rooms
 
 
         private DateTime _cycleLastExecution;
-        private DateTime _cycleBallLastExecution;
+#pragma warning disable CS0169 // O campo "RoomManager._cycleBallLastExecution" nunca é usado
+        private readonly DateTime _cycleBallLastExecution;
+#pragma warning restore CS0169 // O campo "RoomManager._cycleBallLastExecution" nunca é usado
 
         public RoomManager()
         {
@@ -43,43 +44,18 @@ namespace Neon.HabboHotel.Rooms
 
         public void OnCycle()
         {
-            if (LoadedBallRooms.Count > 0)
-            {
-                var sinceBallLastTime = DateTime.Now - _cycleBallLastExecution;
-                if (sinceBallLastTime.TotalMilliseconds >= 180)
-                {
-                    _cycleBallLastExecution = DateTime.Now;
-                    foreach (var Room in LoadedBallRooms)
-                    {
-                        if (Room == null)
-                            return;
-                        try
-                        {
-                            if (Room.GotSoccer())
-                            {
-                                //                                lock (_lock)
-                                Room.GetSoccer().OnCycle();
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            Logging.LogCriticalException("INVALID MARIO BUG IN BALLMOVEMENT: <" + Room.Id +
-                                                         "> :" +
-                                                         e);
-                        }
-                    }
-                }
-            }
             try
             {
                 TimeSpan sinceLastTime = DateTime.Now - _cycleLastExecution;
                 if (sinceLastTime.TotalMilliseconds >= 500)
                 {
                     _cycleLastExecution = DateTime.Now;
-                    foreach (Room Room in this._rooms.Values.ToList())
+                    foreach (Room Room in _rooms.Values.ToList())
                     {
                         if (Room.isCrashed)
+                        {
                             continue;
+                        }
 
                         if (Room.ProcessTask == null || Room.ProcessTask.IsCompleted)
                         {
@@ -106,22 +82,18 @@ namespace Neon.HabboHotel.Rooms
             }
         }
 
-        public int LoadedRoomDataCount
-        {
-            get { return this._loadedRoomData.Count; }
-        }
+        public int LoadedRoomDataCount => _loadedRoomData.Count;
 
-        public int Count
-        {
-            get { return this._rooms.Count; }
-        }
+        public int Count => _rooms.Count;
 
         public DateTime PurgeLastExecution { get; }
 
         public void LoadModels()
         {
             if (_roomModels.Count > 0)
+            {
                 _roomModels.Clear();
+            }
 
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
@@ -129,14 +101,16 @@ namespace Neon.HabboHotel.Rooms
                 DataTable Data = dbClient.getTable();
 
                 if (Data == null)
+                {
                     return;
+                }
 
                 foreach (DataRow Row in Data.Rows)
                 {
                     string Modelname = Convert.ToString(Row["id"]);
                     _ = Convert.ToString(Row["public_items"]);
 
-                    _roomModels.Add(Modelname, new RoomModel(Convert.ToInt32(Row["door_x"]), Convert.ToInt32(Row["door_y"]), (Double)Row["door_z"], Convert.ToInt32(Row["door_dir"]),
+                    _roomModels.Add(Modelname, new RoomModel(Convert.ToInt32(Row["door_x"]), Convert.ToInt32(Row["door_y"]), (double)Row["door_z"], Convert.ToInt32(Row["door_dir"]),
                         Convert.ToString(Row["heightmap"]), Convert.ToString(Row["public_items"]), NeonEnvironment.EnumToBool(Row["club_only"].ToString()), Convert.ToString(Row["poolmap"]), Convert.ToInt32(Row["wall_height"])));
                 }
             }
@@ -151,12 +125,14 @@ namespace Neon.HabboHotel.Rooms
                 Row = dbClient.getRow();
 
                 if (Row == null)
+                {
                     return;
+                }
 
                 string Modelname = Convert.ToString(Row["id"]);
-                if (!this._roomModels.ContainsKey(Id))
+                if (!_roomModels.ContainsKey(Id))
                 {
-                    this._roomModels.Add(Modelname, new RoomModel(Convert.ToInt32(Row["door_x"]), Convert.ToInt32(Row["door_y"]), Convert.ToDouble(Row["door_z"]), Convert.ToInt32(Row["door_dir"]),
+                    _roomModels.Add(Modelname, new RoomModel(Convert.ToInt32(Row["door_x"]), Convert.ToInt32(Row["door_y"]), Convert.ToDouble(Row["door_z"]), Convert.ToInt32(Row["door_dir"]),
                       Convert.ToString(Row["heightmap"]), Convert.ToString(Row["public_items"]), NeonEnvironment.EnumToBool(Row["club_only"].ToString()), Convert.ToString(Row["poolmap"]), Convert.ToInt32(Row["wall_height"])));
                 }
             }
@@ -164,25 +140,28 @@ namespace Neon.HabboHotel.Rooms
 
         public void ReloadModel(string Id)
         {
-            if (!this._roomModels.ContainsKey(Id))
+            if (!_roomModels.ContainsKey(Id))
             {
-                this.LoadModel(Id);
+                LoadModel(Id);
                 return;
             }
 
-            this._roomModels.Remove(Id);
-            this.LoadModel(Id);
+            _roomModels.Remove(Id);
+            LoadModel(Id);
         }
 
         public bool TryGetModel(string Id, out RoomModel Model)
         {
-            return this._roomModels.TryGetValue(Id, out Model);
+            return _roomModels.TryGetValue(Id, out Model);
         }
 
         public void UnloadRoom(Room Room, bool RemoveData = false)
         {
             if (Room == null)
+            {
                 return;
+            }
+
             if (_rooms.TryRemove(Room.RoomId, out _))
             {
                 Room.Dispose();
@@ -198,7 +177,7 @@ namespace Neon.HabboHotel.Rooms
         public List<RoomData> SearchGroupRooms(string Query)
         {
             IEnumerable<RoomData> InstanceMatches =
-                (from RoomInstance in this._loadedRoomData
+                (from RoomInstance in _loadedRoomData
                  where RoomInstance.Value.UsersNow >= 0 &&
                  RoomInstance.Value.Access != RoomAccess.INVISIBLE &&
                  RoomInstance.Value.Group != null &&
@@ -213,7 +192,7 @@ namespace Neon.HabboHotel.Rooms
         public List<RoomData> SearchTaggedRooms(string Query)
         {
             IEnumerable<RoomData> InstanceMatches =
-                (from RoomInstance in this._loadedRoomData
+                (from RoomInstance in _loadedRoomData
                  where RoomInstance.Value.UsersNow >= 0 &&
                  RoomInstance.Value.Access != RoomAccess.INVISIBLE &&
                  (RoomInstance.Value.Tags.Contains(Query))
@@ -225,7 +204,7 @@ namespace Neon.HabboHotel.Rooms
         public List<RoomData> GetPopularRooms(int category, int Amount = 50)
         {
             IEnumerable<RoomData> rooms =
-                (from RoomInstance in this._loadedRoomData
+                (from RoomInstance in _loadedRoomData
                  where RoomInstance.Value.UsersNow > 0 &&
                  (category == -1 || RoomInstance.Value.Category == category) &&
                  RoomInstance.Value.Access != RoomAccess.INVISIBLE
@@ -238,7 +217,7 @@ namespace Neon.HabboHotel.Rooms
         public List<RoomData> GetRecommendedRooms(int Amount = 50, int CurrentRoomId = 0)
         {
             IEnumerable<RoomData> Rooms =
-                (from RoomInstance in this._loadedRoomData
+                (from RoomInstance in _loadedRoomData
                  where RoomInstance.Value.UsersNow >= 0 &&
                  RoomInstance.Value.Score >= 0 &&
                  RoomInstance.Value.Access != RoomAccess.INVISIBLE &&
@@ -252,7 +231,7 @@ namespace Neon.HabboHotel.Rooms
         public List<RoomData> GetPopularRatedRooms(int Amount = 50)
         {
             IEnumerable<RoomData> rooms =
-                (from RoomInstance in this._loadedRoomData
+                (from RoomInstance in _loadedRoomData
                  where RoomInstance.Value.Access != RoomAccess.INVISIBLE
                  orderby RoomInstance.Value.Score descending
                  select RoomInstance.Value).Take(Amount);
@@ -262,7 +241,7 @@ namespace Neon.HabboHotel.Rooms
         public List<RoomData> GetRoomsByCategory(int Category, int Amount = 50)
         {
             IEnumerable<RoomData> rooms =
-                (from RoomInstance in this._loadedRoomData
+                (from RoomInstance in _loadedRoomData
                  where RoomInstance.Value.Category == Category &&
                  RoomInstance.Value.UsersNow > 0 &&
                  RoomInstance.Value.Access != RoomAccess.INVISIBLE
@@ -278,7 +257,7 @@ namespace Neon.HabboHotel.Rooms
             if (Mode == 17)
             {
                 Rooms =
-                    (from RoomInstance in this._loadedRoomData
+                    (from RoomInstance in _loadedRoomData
                      where (RoomInstance.Value.HasActivePromotion) &&
                      RoomInstance.Value.Access != RoomAccess.INVISIBLE
                      orderby RoomInstance.Value.Promotion.TimestampStarted descending
@@ -287,7 +266,7 @@ namespace Neon.HabboHotel.Rooms
             else
             {
                 Rooms =
-                    (from RoomInstance in this._loadedRoomData
+                    (from RoomInstance in _loadedRoomData
                      where (RoomInstance.Value.HasActivePromotion) &&
                      RoomInstance.Value.Access != RoomAccess.INVISIBLE
                      orderby RoomInstance.Value.UsersNow descending
@@ -303,7 +282,7 @@ namespace Neon.HabboHotel.Rooms
             IEnumerable<RoomData> Rooms = null;
 
             Rooms =
-                (from RoomInstance in this._loadedRoomData
+                (from RoomInstance in _loadedRoomData
                  where (RoomInstance.Value.HasActivePromotion) &&
                  RoomInstance.Value.Promotion.CategoryId == CategoryId &&
                  RoomInstance.Value.Access != RoomAccess.INVISIBLE
@@ -316,7 +295,7 @@ namespace Neon.HabboHotel.Rooms
         public List<KeyValuePair<string, int>> GetPopularRoomTags()
         {
             IEnumerable<List<string>> Tags =
-                (from RoomInstance in this._loadedRoomData
+                (from RoomInstance in _loadedRoomData
                  where RoomInstance.Value.UsersNow >= 0 &&
                  RoomInstance.Value.Access != RoomAccess.INVISIBLE
                  orderby RoomInstance.Value.UsersNow descending
@@ -353,7 +332,7 @@ namespace Neon.HabboHotel.Rooms
         public List<RoomData> GetGroupRooms(int Amount = 50)
         {
             IEnumerable<RoomData> rooms =
-                (from RoomInstance in this._loadedRoomData
+                (from RoomInstance in _loadedRoomData
                  where RoomInstance.Value.Group != null &&
                  RoomInstance.Value.Access != RoomAccess.INVISIBLE
                  orderby RoomInstance.Value.Score descending
@@ -364,23 +343,29 @@ namespace Neon.HabboHotel.Rooms
         public Room TryGetRandomLoadedRoom()
         {
             IEnumerable<Room> room =
-                (from RoomInstance in this._rooms
-                where (RoomInstance.Value.RoomData.UsersNow > 0 &&
-                RoomInstance.Value.RoomData.Access == RoomAccess.OPEN &&
-                RoomInstance.Value.RoomData.UsersNow < RoomInstance.Value.RoomData.UsersMax)
-                orderby RoomInstance.Value.RoomData.UsersNow descending
-                select RoomInstance.Value).Take(1);
+                (from RoomInstance in _rooms
+                 where (RoomInstance.Value.RoomData.UsersNow > 0 &&
+                 RoomInstance.Value.RoomData.Access == RoomAccess.OPEN &&
+                 RoomInstance.Value.RoomData.UsersNow < RoomInstance.Value.RoomData.UsersMax)
+                 orderby RoomInstance.Value.RoomData.UsersNow descending
+                 select RoomInstance.Value).Take(1);
 
             if (room.Count() > 0)
+            {
                 return room.First();
+            }
             else
+            {
                 return null;
+            }
         }
 
         public RoomModel GetModel(string Model)
         {
             if (_roomModels.ContainsKey(Model))
-                return (RoomModel)_roomModels[Model];
+            {
+                return _roomModels[Model];
+            }
 
             return null;
         }
@@ -388,13 +373,17 @@ namespace Neon.HabboHotel.Rooms
         public RoomData GenerateRoomData(int RoomId)
         {
             if (_loadedRoomData.ContainsKey(RoomId))
-                return (RoomData)_loadedRoomData[RoomId];
+            {
+                return _loadedRoomData[RoomId];
+            }
 
             RoomData Data = new RoomData();
 
 
             if (TryGetRoom(RoomId, out Room Room))
+            {
                 return Room.RoomData;
+            }
 
             DataRow Row = null;
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
@@ -404,12 +393,16 @@ namespace Neon.HabboHotel.Rooms
             }
 
             if (Row == null)
+            {
                 return null;
+            }
 
             Data.Fill(Row);
 
             if (!_loadedRoomData.ContainsKey(RoomId))
+            {
                 _loadedRoomData.TryAdd(RoomId, Data);
+            }
 
             return Data;
         }
@@ -417,7 +410,9 @@ namespace Neon.HabboHotel.Rooms
         public RoomData FetchRoomData(int RoomId, DataRow dRow)
         {
             if (_loadedRoomData.ContainsKey(RoomId))
-                return (RoomData)_loadedRoomData[RoomId];
+            {
+                return _loadedRoomData[RoomId];
+            }
             else
             {
                 RoomData data = new RoomData();
@@ -425,7 +420,10 @@ namespace Neon.HabboHotel.Rooms
                 data.Fill(dRow);
 
                 if (!_loadedRoomData.ContainsKey(RoomId))
+                {
                     _loadedRoomData.TryAdd(RoomId, data);
+                }
+
                 return data;
             }
         }
@@ -434,23 +432,29 @@ namespace Neon.HabboHotel.Rooms
         {
 
             if (TryGetRoom(Id, out Room Room))
+            {
                 return Room;
+            }
 
             RoomData Data = GenerateRoomData(Id);
             if (Data == null)
+            {
                 return null;
+            }
 
             Room = new Room(Data);
 
             if (!_rooms.ContainsKey(Room.RoomId))
+            {
                 _rooms.TryAdd(Room.RoomId, Room);
+            }
 
             return Room;
         }
 
         public bool TryGetRoom(int RoomId, out Room Room)
         {
-            return this._rooms.TryGetValue(RoomId, out Room);
+            return _rooms.TryGetValue(RoomId, out Room);
         }
 
         public RoomData CreateRoom(GameClient Session, string Name, string Description, string Model, int Category, int MaxVisitors, int TradeSettings)
@@ -490,21 +494,23 @@ namespace Neon.HabboHotel.Rooms
 
         public ICollection<Room> GetRooms()
         {
-            return this._rooms.Values;
+            return _rooms.Values;
         }
 
         public void Dispose()
         {
             int length = _rooms.Count;
             int i = 0;
-            foreach (Room Room in this._rooms.Values.ToList())
+            foreach (Room Room in _rooms.Values.ToList())
             {
                 if (Room == null)
+                {
                     continue;
+                }
 
                 NeonEnvironment.GetGame().GetRoomManager().UnloadRoom(Room);
                 Console.Clear();
-                log.Info("<<- SERVER SHUTDOWN ->> ROOM ITEM SAVE: " + String.Format("{0:0.##}", ((double)i / length) * 100) + "%");
+                log.Info("<<- SERVER SHUTDOWN ->> ROOM ITEM SAVE: " + string.Format("{0:0.##}", ((double)i / length) * 100) + "%");
                 i++;
             }
             log.Info("Salas Guardadas correctamente!");

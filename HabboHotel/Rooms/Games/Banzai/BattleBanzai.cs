@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using Neon.Communication.Packets.Outgoing.Rooms.Avatar;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Avatar;
+using Neon.Communication.Packets.Outgoing.Rooms.Engine;
 using Neon.HabboHotel.GameClients;
 using Neon.HabboHotel.Items;
-using Neon.Utilities.Enclosure;
-using System.Linq;
-using Neon.Communication.Packets.Outgoing.Rooms.Engine;
-using System.Collections.Concurrent;
-using Neon.HabboHotel.Pathfinding;
 using Neon.HabboHotel.Items.Wired;
+using Neon.HabboHotel.Pathfinding;
 using Neon.HabboHotel.Rooms.Games.Teams;
+using Neon.Utilities.Enclosure;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
 
 namespace Neon.HabboHotel.Rooms.Games.Banzai
 {
@@ -26,46 +26,47 @@ namespace Neon.HabboHotel.Rooms.Games.Banzai
 
         public BattleBanzai(Room room)
         {
-            this._room = room;
+            _room = room;
             banzaiStarted = false;
             timestarted = 0;
-            this._pucks = new ConcurrentDictionary<int, Item>();
-            this._banzaiTiles = new ConcurrentDictionary<int, Item>();
+            _pucks = new ConcurrentDictionary<int, Item>();
+            _banzaiTiles = new ConcurrentDictionary<int, Item>();
         }
 
-        public bool isBanzaiActive
-        {
-            get { return banzaiStarted; }
-        }
+        public bool isBanzaiActive => banzaiStarted;
 
         public void AddTile(Item item, int itemID)
         {
             if (!_banzaiTiles.ContainsKey(itemID))
+            {
                 _banzaiTiles.TryAdd(itemID, item);
+            }
         }
 
         public void RemoveTile(int itemID)
         {
-            Item Item = null;
-            _banzaiTiles.TryRemove(itemID, out Item);
+            _banzaiTiles.TryRemove(itemID, out Item Item);
         }
 
         public void AddPuck(Item item)
         {
             if (!_pucks.ContainsKey(item.Id))
+            {
                 _pucks.TryAdd(item.Id, item);
+            }
         }
 
         public void RemovePuck(int itemID)
         {
-            Item Item = null;
-            _pucks.TryRemove(itemID, out Item);
+            _pucks.TryRemove(itemID, out Item Item);
         }
 
         public void OnUserWalk(RoomUser User)
         {
             if (User == null)
+            {
                 return;
+            }
 
             foreach (Item item in _pucks.Values.ToList())
             {
@@ -124,7 +125,7 @@ namespace Neon.HabboHotel.Rooms.Games.Banzai
                         NewY = User.Y + 2;
                     }
 
-                    if (!this._room.GetRoomItemHandler().CheckPosItem(User.GetClient(), item, NewX, NewY, item.Rotation, false, false))
+                    if (!_room.GetRoomItemHandler().CheckPosItem(User.GetClient(), item, NewX, NewY, item.Rotation, false, false))
                     {
                         if (User.RotBody == 0)
                         {
@@ -197,7 +198,9 @@ namespace Neon.HabboHotel.Rooms.Games.Banzai
         public void BanzaiStart()
         {
             if (banzaiStarted)
+            {
                 return;
+            }
 
             floorMap = new byte[_room.GetGameMap().Model.MapSizeY, _room.GetGameMap().Model.MapSizeX];
             field = new GameField(floorMap, true);
@@ -216,7 +219,7 @@ namespace Neon.HabboHotel.Rooms.Games.Banzai
                 tile.UpdateState();
             }
 
-            this.ResetTiles();
+            ResetTiles();
             banzaiStarted = true;
 
             _room.GetWired().TriggerEvent(WiredBoxType.TriggerGameStarts, null);
@@ -256,7 +259,9 @@ namespace Neon.HabboHotel.Rooms.Games.Banzai
             floorMap = null;
 
             if (!userTriggered)
+            {
                 _room.GetWired().TriggerEvent(WiredBoxType.TriggerGameEnds, null);
+            }
 
             TEAM winners = _room.GetGameManager().GetWinningTeam();
             _room.GetGameManager().UnlockGates();
@@ -294,7 +299,10 @@ namespace Neon.HabboHotel.Rooms.Games.Banzai
                         if (User.CurrentEffect == 35)
                         {
                             if (NeonEnvironment.GetUnixTimestamp() - timestarted > 5)
+                            {
                                 NeonEnvironment.GetGame().GetAchievementManager().ProgressAchievement(User.GetClient(), "ACH_BattleBallWinner", 1);
+                            }
+
                             _room.SendMessage(new ActionComposer(User.VirtualId, 1));
                         }
                     }
@@ -303,7 +311,10 @@ namespace Neon.HabboHotel.Rooms.Games.Banzai
                         if (User.CurrentEffect == 33)
                         {
                             if (NeonEnvironment.GetUnixTimestamp() - timestarted > 5)
+                            {
                                 NeonEnvironment.GetGame().GetAchievementManager().ProgressAchievement(User.GetClient(), "ACH_BattleBallWinner", 1);
+                            }
+
                             _room.SendMessage(new ActionComposer(User.VirtualId, 1));
                         }
                     }
@@ -312,7 +323,10 @@ namespace Neon.HabboHotel.Rooms.Games.Banzai
                         if (User.CurrentEffect == 34)
                         {
                             if (NeonEnvironment.GetUnixTimestamp() - timestarted > 5)
+                            {
                                 NeonEnvironment.GetGame().GetAchievementManager().ProgressAchievement(User.GetClient(), "ACH_BattleBallWinner", 1);
+                            }
+
                             _room.SendMessage(new ActionComposer(User.VirtualId, 1));
                         }
                     }
@@ -321,39 +335,50 @@ namespace Neon.HabboHotel.Rooms.Games.Banzai
                         if (User.CurrentEffect == 36)
                         {
                             if (NeonEnvironment.GetUnixTimestamp() - timestarted > 5)
+                            {
                                 NeonEnvironment.GetGame().GetAchievementManager().ProgressAchievement(User.GetClient(), "ACH_BattleBallWinner", 1);
+                            }
+
                             _room.SendMessage(new ActionComposer(User.VirtualId, 1));
                         }
                     }
                 }
                 if (field != null)
+                {
                     field.Dispose();
+                }
             }
         }
 
         public void MovePuck(Item item, GameClient mover, int newX, int newY, TEAM team)
         {
-            if (!_room.GetGameMap().itemCanBePlacedHere(newX, newY))
+            if (!_room.GetGameMap().ItemCanBePlacedHere(newX, newY))
+            {
                 return;
+            }
 
             Point oldRoomCoord = item.Coordinate;
 
 
             if (oldRoomCoord.X == newX && oldRoomCoord.Y == newY)
+            {
                 return;
+            }
 
             item.ExtraData = (Convert.ToInt32(team).ToString());
             item.UpdateNeeded = true;
             item.UpdateState();
 
-            Double NewZ = _room.GetGameMap().Model.SqFloorHeight[newX, newY];
+            double NewZ = _room.GetGameMap().Model.SqFloorHeight[newX, newY];
 
             _room.SendMessage(new SlideObjectBundleComposer(item.GetX, item.GetY, item.GetZ, newX, newY, NewZ, 0, 0, item.Id));
 
             _room.GetRoomItemHandler().SetFloorItem(mover, item, newX, newY, item.Rotation, false, false, false, false);
 
             if (mover == null || mover.GetHabbo() == null)
+            {
                 return;
+            }
 
             RoomUser user = mover.GetHabbo().CurrentRoom.GetRoomUserManager().GetRoomUserByHabbo(mover.GetHabbo().Id);
             if (banzaiStarted)
@@ -406,14 +431,18 @@ namespace Neon.HabboHotel.Rooms.Games.Banzai
         private void HandleBanzaiTiles(Point coord, TEAM team, RoomUser user)
         {
             if (team == TEAM.NONE)
+            {
                 return;
+            }
 
             List<Item> items = _room.GetGameMap().GetCoordinatedItems(coord);
             int i = 0;
             foreach (Item _item in _banzaiTiles.Values.ToList())
             {
                 if (_item == null)
+                {
                     continue;
+                }
 
                 if (_item.GetBaseItem().InteractionType != InteractionType.banzaifloor)
                 {
@@ -430,35 +459,50 @@ namespace Neon.HabboHotel.Rooms.Games.Banzai
                 }
 
                 if (_item.GetX != coord.X || _item.GetY != coord.Y)
+                {
                     continue;
+                }
 
                 SetTile(_item, team, user);
                 if (_item.ExtraData.Equals("5") || _item.ExtraData.Equals("8") || _item.ExtraData.Equals("11") ||
                     _item.ExtraData.Equals("14"))
+                {
                     i++;
+                }
+
                 _item.UpdateState(false, true);
             }
             if (i == _banzaiTiles.Count)
+            {
                 BanzaiEnd();
+            }
         }
 
         private void HandleMaxBanzaiTiles(Point coord, TEAM team)
         {
             if (team == TEAM.NONE)
+            {
                 return;
+            }
 
             List<Item> items = _room.GetGameMap().GetCoordinatedItems(coord);
 
             foreach (Item _item in _banzaiTiles.Values.ToList())
             {
                 if (_item == null)
+                {
                     continue;
+                }
 
                 if (_item.GetBaseItem().InteractionType != InteractionType.banzaifloor)
+                {
                     continue;
+                }
 
                 if (_item.GetX != coord.X || _item.GetY != coord.Y)
+                {
                     continue;
+                }
 
                 SetMaxForTile(_item, team);
                 _room.GetGameManager().AddPointToTeam(team, 1);
@@ -484,10 +528,14 @@ namespace Neon.HabboHotel.Rooms.Games.Banzai
             _pucks.Clear();
 
             if (floorMap != null)
+            {
                 Array.Clear(floorMap, 0, floorMap.Length);
+            }
 
             if (field != null)
+            {
                 field.Dispose();
+            }
 
             _room = null;
             _banzaiTiles = null;

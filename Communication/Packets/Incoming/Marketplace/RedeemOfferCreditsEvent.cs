@@ -1,16 +1,12 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Data;
-using System.Collections.Generic;
-
-using Neon.Communication.Packets.Outgoing.Inventory.Purse;
+﻿using Neon.Communication.Packets.Outgoing.Inventory.Purse;
 using Neon.Database.Interfaces;
+using System;
+using System.Data;
 
 
 namespace Neon.Communication.Packets.Incoming.Marketplace
 {
-    class RedeemOfferCreditsEvent : IPacketEvent
+    internal class RedeemOfferCreditsEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
@@ -20,7 +16,7 @@ namespace Neon.Communication.Packets.Incoming.Marketplace
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
                 dbClient.SetQuery("SELECT `asking_price` FROM `catalog_marketplace_offers` WHERE `user_id` = '" + Session.GetHabbo().Id + "' AND state = '2'");
-               Table = dbClient.getTable();
+                Table = dbClient.getTable();
             }
 
             if (Table != null)

@@ -1,18 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-
-using Neon.HabboHotel.GameClients;
-using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Users;
-using Neon.Communication.Packets.Incoming;
-using System.Collections.Concurrent;
-
-using Neon.Database.Interfaces;
-using log4net;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Music;
 using Neon.HabboHotel.Items;
-using Neon.Communication.Packets.Outgoing.Rooms.Music;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Neon.HabboHotel.Rooms.Music
 {
@@ -33,20 +22,11 @@ namespace Neon.HabboHotel.Rooms.Music
             mPlaylist = new SortedDictionary<int, SongInstance>();
         }
 
-        public SongInstance CurrentSong
-        {
-            get { return mSong; }
-        }
+        public SongInstance CurrentSong => mSong;
 
-        public bool IsPlaying
-        {
-            get { return mIsPlaying; }
-        }
+        public bool IsPlaying => mIsPlaying;
 
-        private double TimePlaying
-        {
-            get { return NeonEnvironment.GetUnixTimestamp() - mStartedPlayingTimestamp; }
-        }
+        private double TimePlaying => NeonEnvironment.GetUnixTimestamp() - mStartedPlayingTimestamp;
 
         public int SongSyncTimestamp
         {
@@ -81,35 +61,17 @@ namespace Neon.HabboHotel.Rooms.Music
             }
         }
 
-        public static int PlaylistCapacity
-        {
-            get { return 10; }
-        }
+        public static int PlaylistCapacity => 10;
 
-        public int PlaylistSize
-        {
-            get { return mPlaylist.Count; }
-        }
+        public int PlaylistSize => mPlaylist.Count;
 
-        public bool HasLinkedItem
-        {
-            get { return mRoomOutputItem != null; }
-        }
+        public bool HasLinkedItem => mRoomOutputItem != null;
 
-        public int LinkedItemId
-        {
-            get { return (mRoomOutputItem != null ? mRoomOutputItem.Id : 0); }
-        }
+        public int LinkedItemId => (mRoomOutputItem != null ? mRoomOutputItem.Id : 0);
 
-        public Item LinkedItem
-        {
-            get { return mRoomOutputItem; }
-        }
+        public Item LinkedItem => mRoomOutputItem;
 
-        public int SongQueuePosition
-        {
-            get { return mSongQueuePosition; }
-        }
+        public int SongQueuePosition => mSongQueuePosition;
 
         public void LinkRoomOutputItem(Item Item)
         {
@@ -118,18 +80,24 @@ namespace Neon.HabboHotel.Rooms.Music
 
         public int AddDisk(SongItem DiskItem)
         {
-            int SongId = (int)DiskItem.songID;
+            int SongId = DiskItem.songID;
 
             if (SongId == 0)
+            {
                 return -1;
+            }
 
             SongData SongData = NeonEnvironment.GetGame().GetMusicManager().GetSong(SongId);
 
             if (SongData == null)
+            {
                 return -1;
+            }
 
             if (mLoadedDisks.ContainsKey(DiskItem.itemID))
+            {
                 return -1;
+            }
 
             mLoadedDisks.Add(DiskItem.itemID, DiskItem);
 
@@ -254,7 +222,9 @@ namespace Neon.HabboHotel.Rooms.Music
         public void OnNewUserEnter(RoomUser user)
         {
             if (user.IsBot || user.GetClient() == null || mSong == null)
+            {
                 return;
+            }
 
             user.GetClient().SendMessage(new SyncMusicComposer(mSong.SongData.Id, mSongQueuePosition, SongSyncTimestamp));
         }
@@ -273,10 +243,14 @@ namespace Neon.HabboHotel.Rooms.Music
         public void Destroy()
         {
             if (mLoadedDisks != null)
+            {
                 mLoadedDisks.Clear();
+            }
 
             if (mPlaylist != null)
+            {
                 mPlaylist.Clear();
+            }
 
             mPlaylist = null;
             mLoadedDisks = null;

@@ -1,6 +1,4 @@
-﻿using Neon.HabboHotel.Rooms;
-
-namespace Neon.Communication.Packets.Outgoing.Rooms.Avatar
+﻿namespace Neon.Communication.Packets.Outgoing.Rooms.Avatar
 {
     public class ActionComposer : ServerPacket
     {

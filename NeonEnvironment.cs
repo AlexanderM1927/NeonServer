@@ -1,32 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Text;
-using System.Threading;
-using System.Windows.Forms;
+﻿using log4net;
 using MySql.Data.MySqlClient;
+using Neon.Communication.Encryption;
+using Neon.Communication.Encryption.Keys;
 using Neon.Core;
-
+using Neon.Database;
+using Neon.Database.Interfaces;
 using Neon.HabboHotel;
+using Neon.HabboHotel.Cache;
 using Neon.HabboHotel.GameClients;
 using Neon.HabboHotel.Users;
 using Neon.HabboHotel.Users.UserDataManagement;
-
 using Neon.Net;
 using Neon.Utilities;
-using log4net;
-
+using System;
 using System.Collections.Concurrent;
-using Neon.Communication.Packets.Outgoing.Moderation;
-using Neon.Communication.Encryption.Keys;
-using Neon.Communication.Encryption;
-
-using Neon.Database.Interfaces;
-using Neon.HabboHotel.Cache;
-using Neon.Database;
-using Neon.Communication.Packets.Outgoing.Notifications;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Windows.Forms;
 
 namespace Neon
 {
@@ -58,8 +52,8 @@ namespace Neon
                 'y', 'z', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '.'
             });
 
-        private static ConcurrentDictionary<int, Habbo> _usersCached = new ConcurrentDictionary<int, Habbo>();
-        
+        private static readonly ConcurrentDictionary<int, Habbo> _usersCached = new ConcurrentDictionary<int, Habbo>();
+
 
         public static string SWFRevision = "";
 
@@ -105,7 +99,7 @@ namespace Neon
 
                 _configuration = new ConfigurationData(Path.Combine(Application.StartupPath, @"config.ini"));
 
-                var connectionString = new MySqlConnectionStringBuilder
+                MySqlConnectionStringBuilder connectionString = new MySqlConnectionStringBuilder
                 {
                     ConnectionTimeout = 10,
                     Database = GetConfig().data["db.name"],
@@ -205,7 +199,7 @@ namespace Neon
         {
             return RandomNumber.GenerateNewRandom(Min, Max);
         }
-        
+
 
         public static double GetUnixTimestamp()
         {
@@ -215,8 +209,8 @@ namespace Neon
 
         internal static int GetIUnixTimestamp()
         {
-            var ts = (DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0));
-            var unixTime = ts.TotalSeconds;
+            TimeSpan ts = (DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0));
+            double unixTime = ts.TotalSeconds;
             return Convert.ToInt32(unixTime);
         }
 
@@ -235,21 +229,28 @@ namespace Neon
         }
 
         public static string FilterFigure(string figure)
-            =>
-                figure.Any(character => !IsValid(character))
-                    ? "sh-3338-93.ea-1406-62.hr-831-49.ha-3331-92.hd-180-7.ch-3334-93-1408.lg-3337-92.ca-1813-62"
-                    : figure;
+        {
+            return figure.Any(character => !IsValid(character))
+                               ? "sh-3338-93.ea-1406-62.hr-831-49.ha-3331-92.hd-180-7.ch-3334-93-1408.lg-3337-92.ca-1813-62"
+                               : figure;
+        }
 
-        private static bool IsValid(char character) => Allowedchars.Contains(character);
+        private static bool IsValid(char character)
+        {
+            return Allowedchars.Contains(character);
+        }
 
         internal static bool IsNum(string Int)
         {
-            double Num;
-            bool isNum = double.TryParse(Int, out Num);
+            bool isNum = double.TryParse(Int, out double Num);
             if (isNum)
+            {
                 return true;
+            }
             else
+            {
                 return false;
+            }
         }
 
         private static bool isValid(char character)
@@ -282,11 +283,15 @@ namespace Neon
 
             GameClient Client = GetGame().GetClientManager().GetClientByUserID(UserId);
             if (Client != null && Client.GetHabbo() != null)
+            {
                 return Client.GetHabbo().Username;
+            }
 
             UserCache User = NeonEnvironment.GetGame().GetCacheManager().GenerateUser(UserId);
             if (User != null)
+            {
                 return User.Username;
+            }
 
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
@@ -296,7 +301,9 @@ namespace Neon
             }
 
             if (string.IsNullOrEmpty(Name))
+            {
                 Name = "Unknown User";
+            }
 
             return Name;
         }
@@ -304,20 +311,24 @@ namespace Neon
         public static string RainbowT()
         {
             int numColorst = 1000;
-            var colorst = new List<string>();
-            var randomt = new Random();
+            List<string> colorst = new List<string>();
+            Random randomt = new Random();
             for (int i = 0; i < numColorst; i++)
             {
-                colorst.Add(String.Format("#{0:X6}", randomt.Next(0x1000000)));
+                colorst.Add(string.Format("#{0:X6}", randomt.Next(0x1000000)));
             }
 
             int indext = 0;
             string rainbowt = colorst[indext];
 
             if (indext > numColorst)
+            {
                 indext = 0;
+            }
             else
+            {
                 indext++;
+            }
 
             return rainbowt;
         }
@@ -333,7 +344,10 @@ namespace Neon
                     if (User != null && User.Id > 0)
                     {
                         if (_usersCached.ContainsKey(UserId))
+                        {
                             _usersCached.TryRemove(UserId, out User);
+                        }
+
                         return User;
                     }
                 }
@@ -342,7 +356,9 @@ namespace Neon
                     try
                     {
                         if (_usersCached.ContainsKey(UserId))
+                        {
                             return _usersCached[UserId];
+                        }
                         else
                         {
                             UserData data = UserDataFactory.GetUserData(UserId);
@@ -368,7 +384,7 @@ namespace Neon
             }
         }
 
-        public static Habbo GetHabboByUsername(String UserName)
+        public static Habbo GetHabboByUsername(string UserName)
         {
             try
             {
@@ -378,7 +394,9 @@ namespace Neon
                     dbClient.AddParameter("user", UserName);
                     int id = dbClient.getInteger();
                     if (id > 0)
+                    {
                         return GetHabboById(Convert.ToInt32(id));
+                    }
                 }
                 return null;
             }

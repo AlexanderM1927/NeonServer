@@ -1,13 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
+﻿
 using Neon.HabboHotel.Items;
 
 namespace Neon.Communication.Packets.Outgoing.Rooms.Engine
 {
-    class ItemUpdateComposer : ServerPacket
+    internal class ItemUpdateComposer : ServerPacket
     {
         public ItemUpdateComposer(Item Item, int UserId)
             : base(ServerPacketHeader.ItemUpdateMessageComposer)
@@ -17,17 +13,17 @@ namespace Neon.Communication.Packets.Outgoing.Rooms.Engine
 
         private void WriteWallItem(Item Item, int UserId)
         {
-           base.WriteString(Item.Id.ToString());
+            base.WriteString(Item.Id.ToString());
             base.WriteInteger(Item.GetBaseItem().SpriteId);
-           base.WriteString(Item.wallCoord);
+            base.WriteString(Item.wallCoord);
             switch (Item.GetBaseItem().InteractionType)
             {
                 case InteractionType.POSTIT:
-                   base.WriteString(Item.ExtraData.Split(' ')[0]);
+                    base.WriteString(Item.ExtraData.Split(' ')[0]);
                     break;
 
                 default:
-                   base.WriteString(Item.ExtraData);
+                    base.WriteString(Item.ExtraData);
                     break;
             }
             base.WriteInteger(-1);

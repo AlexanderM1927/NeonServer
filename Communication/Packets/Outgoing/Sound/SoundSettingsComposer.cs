@@ -1,14 +1,11 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 
 namespace Neon.Communication.Packets.Outgoing.Sound
 {
-    class SoundSettingsComposer : ServerPacket
+    internal class SoundSettingsComposer : ServerPacket
     {
-        public SoundSettingsComposer(ICollection<int> ClientVolumes, Boolean ChatPreference, Boolean InvitesStatus, Boolean FocusPreference, int FriendBarState)
+        public SoundSettingsComposer(ICollection<int> ClientVolumes, bool ChatPreference, bool InvitesStatus, bool FocusPreference, int FriendBarState)
             : base(ServerPacketHeader.SoundSettingsMessageComposer)
         {
             foreach (int VolumeValue in ClientVolumes)

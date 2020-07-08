@@ -1,32 +1,18 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using Neon.Database.Interfaces;
-using Neon.Utilities;
+﻿using Neon.Database.Interfaces;
 using Neon.HabboHotel.Users;
-using Neon.HabboHotel.GameClients;
+using System;
 
 
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
 {
-    class TradeBanCommand : IChatCommand
+    internal class TradeBanCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_trade_ban"; }
-        }
+        public string PermissionRequired => "command_trade_ban";
 
-        public string Parameters
-        {
-            get { return "%target% %length%"; }
-        }
+        public string Parameters => "%target% %length%";
 
-        public string Description
-        {
-            get { return "Banea el trade a un usuario"; }
-        }
+        public string Description => "Banea el trade a un usuario";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {
@@ -60,14 +46,17 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
                 return;
             }
 
-            double Days;
-            if (double.TryParse(Params[2], out Days))
+            if (double.TryParse(Params[2], out double Days))
             {
                 if (Days < 1)
+                {
                     Days = 1;
+                }
 
                 if (Days > 365)
+                {
                     Days = 365;
+                }
 
                 double Length = (NeonEnvironment.GetUnixTimestamp() + (Days * 86400));
                 using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
@@ -84,7 +73,9 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
                 Session.SendWhisper("Usted le ha bloqueado los tradeos a  " + Habbo.Username + " por " + Days + " día(s).");
             }
             else
+            {
                 Session.SendWhisper("Introduce dias valido, en numeros enteros.");
+            }
         }
     }
 }

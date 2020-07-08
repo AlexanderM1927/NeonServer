@@ -1,34 +1,36 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms;
-
-using Neon.HabboHotel.Users.Inventory.Bots;
-using Neon.Communication.Packets.Outgoing.Inventory.Bots;
+﻿using Neon.Communication.Packets.Outgoing.Inventory.Bots;
 using Neon.Database.Interfaces;
+using Neon.HabboHotel.Rooms;
+using Neon.HabboHotel.Users.Inventory.Bots;
+using System;
 
 namespace Neon.Communication.Packets.Incoming.Rooms.AI.Bots
 {
-    class PickUpBotEvent : IPacketEvent
+    internal class PickUpBotEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
             if (!Session.GetHabbo().InRoom)
+            {
                 return;
+            }
 
             int BotId = Packet.PopInt();
             if (BotId == 0)
+            {
                 return;
+            }
 
             Room Room = Session.GetHabbo().CurrentRoom;
             if (Room == null)
+            {
                 return;
+            }
 
-            RoomUser BotUser = null;
-            if (!Room.GetRoomUserManager().TryGetBot(BotId, out BotUser))
+            if (!Room.GetRoomUserManager().TryGetBot(BotId, out RoomUser BotUser))
+            {
                 return;
+            }
 
             if (Session.GetHabbo().Id != BotUser.BotData.ownerID && !Session.GetHabbo().GetPermissions().HasRight("bot_place_any_override"))
             {

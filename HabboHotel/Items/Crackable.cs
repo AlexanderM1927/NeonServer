@@ -1,31 +1,31 @@
 ﻿using Neon.Communication.Packets.Outgoing.Inventory.Purse;
+using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
 using Neon.Database.Interfaces;
 using Neon.HabboHotel.Rooms;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
 using System.Threading.Tasks;
 
 namespace Neon.HabboHotel.Items
 {
     internal class CrackableItem
     {
-        internal UInt32 ItemId;
+        internal uint ItemId;
         internal List<CrackableRewards> Rewards;
 
         internal CrackableItem(DataRow dRow)
         {
             ItemId = Convert.ToUInt32(dRow["item_baseid"]);
-            var rewardsString = (string)dRow["rewards"];
+            string rewardsString = (string)dRow["rewards"];
 
             Rewards = new List<CrackableRewards>();
-            foreach (var reward in rewardsString.Split(';'))
+            foreach (string reward in rewardsString.Split(';'))
             {
-                var rewardType = reward.Split(',')[0];
-                var rewardItem = reward.Split(',')[1];
-                var rewardLevel = uint.Parse(reward.Split(',')[2]);
+                string rewardType = reward.Split(',')[0];
+                string rewardItem = reward.Split(',')[1];
+                uint rewardLevel = uint.Parse(reward.Split(',')[2]);
                 Rewards.Add(new CrackableRewards(ItemId, rewardType, rewardItem, rewardLevel));
             }
         }
@@ -33,8 +33,8 @@ namespace Neon.HabboHotel.Items
 
     internal class CrackableRewards
     {
-        internal UInt32 CrackableId, CrackableLevel;
-        internal String CrackableRewardType, CrackableReward;
+        internal uint CrackableId, CrackableLevel;
+        internal string CrackableRewardType, CrackableReward;
 
         internal CrackableRewards(uint crackableId, string crackableRewardType, string crackableReward, uint crackableLevel)
         {
@@ -47,16 +47,20 @@ namespace Neon.HabboHotel.Items
 
     internal class CrackableManager
     {
-        internal Dictionary<Int32, CrackableItem> Crackable;
+        internal Dictionary<int, CrackableItem> Crackable;
 
         internal void Initialize(IQueryAdapter dbClient)
         {
-            Crackable = new Dictionary<Int32, CrackableItem>();
+            Crackable = new Dictionary<int, CrackableItem>();
             dbClient.SetQuery("SELECT * FROM crackable_rewards");
-            var table = dbClient.getTable();
+            DataTable table = dbClient.getTable();
             foreach (DataRow dRow in table.Rows)
             {
-                if (Crackable.ContainsKey(Convert.ToInt32(dRow["item_baseid"]))) continue;
+                if (Crackable.ContainsKey(Convert.ToInt32(dRow["item_baseid"])))
+                {
+                    continue;
+                }
+
                 Crackable.Add(Convert.ToInt32(dRow["item_baseid"]), new CrackableItem(dRow));
             }
         }
@@ -64,37 +68,71 @@ namespace Neon.HabboHotel.Items
 
         private List<CrackableRewards> GetRewardsByLevel(int itemId, int level)
         {
-            var rewards = new List<CrackableRewards>();
-            foreach (var reward in Crackable[itemId].Rewards.Where(furni => furni.CrackableLevel == level)) rewards.Add(reward);
+            List<CrackableRewards> rewards = new List<CrackableRewards>();
+            foreach (CrackableRewards reward in Crackable[itemId].Rewards.Where(furni => furni.CrackableLevel == level))
+            {
+                rewards.Add(reward);
+            }
+
             return rewards;
         }
 
         internal void ReceiveCrackableReward(RoomUser user, Room room, Item item)
         {
 
-            if (room == null || item == null) return;
-            if (item.GetBaseItem().InteractionType != InteractionType.PINATA && item.GetBaseItem().InteractionType != InteractionType.PINATATRIGGERED && item.GetBaseItem().InteractionType != InteractionType.RPGNEON && item.GetBaseItem().InteractionType != InteractionType.MAGICEGG && item.GetBaseItem().InteractionType != InteractionType.MAGICCHEST) return;
-            if (!Crackable.ContainsKey(item.GetBaseItem().Id)) return;
-            CrackableItem crackable;
-            Crackable.TryGetValue(item.GetBaseItem().Id, out crackable);
-            if (crackable == null) return;
+            if (room == null || item == null)
+            {
+                return;
+            }
+
+            if (item.GetBaseItem().InteractionType != InteractionType.PINATA && item.GetBaseItem().InteractionType != InteractionType.PINATATRIGGERED && item.GetBaseItem().InteractionType != InteractionType.RPGNEON && item.GetBaseItem().InteractionType != InteractionType.MAGICEGG && item.GetBaseItem().InteractionType != InteractionType.MAGICCHEST)
+            {
+                return;
+            }
+
+            if (!Crackable.ContainsKey(item.GetBaseItem().Id))
+            {
+                return;
+            }
+
+            Crackable.TryGetValue(item.GetBaseItem().Id, out CrackableItem crackable);
+            if (crackable == null)
+            {
+                return;
+            }
+
             int x = item.GetX, y = item.GetY;
             room.GetRoomItemHandler().RemoveFurniture(user.GetClient(), item.Id);
-            var level = 0;
-            var rand = new Random().Next(0, 100);
-            if (rand >= 95) level = 5;                   // 005% de probabilidad de que salga nivel 5
-            else if (rand >= 85 && rand < 95) level = 4; // 010% de probabilidad de que salga nivel 4
-            else if (rand >= 65 && rand < 85) level = 3; // 020% de probabilidad de que salga nivel 3
-            else if (rand >= 35 && rand < 65) level = 2; // 030% de probabilidad de que salga nivel 2
-            else level = 1;                              // 035% de probabilidad de que salga nivel 1
-                                                         // 100%
+            int level = 0;
+            int rand = new Random().Next(0, 100);
+            if (rand >= 95)
+            {
+                level = 5;                   // 005% de probabilidad de que salga nivel 5
+            }
+            else if (rand >= 85 && rand < 95)
+            {
+                level = 4; // 010% de probabilidad de que salga nivel 4
+            }
+            else if (rand >= 65 && rand < 85)
+            {
+                level = 3; // 020% de probabilidad de que salga nivel 3
+            }
+            else if (rand >= 35 && rand < 65)
+            {
+                level = 2; // 030% de probabilidad de que salga nivel 2
+            }
+            else
+            {
+                level = 1;                              // 035% de probabilidad de que salga nivel 1
+            }
+            // 100%
 
-            var possibleRewards = GetRewardsByLevel((int)crackable.ItemId, level);
-            var reward = possibleRewards[new Random().Next(0, (possibleRewards.Count - 1))];
+            List<CrackableRewards> possibleRewards = GetRewardsByLevel((int)crackable.ItemId, level);
+            CrackableRewards reward = possibleRewards[new Random().Next(0, (possibleRewards.Count - 1))];
 
             Task.Run(() =>
             {
-                using (var dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
+                using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
                 {
 
                     #region REWARD TYPES
@@ -162,7 +200,9 @@ namespace Neon.HabboHotel.Items
                         case "badge":
                             {
                                 if (user.GetClient().GetHabbo().GetBadgeComponent().HasBadge(reward.CrackableReward))
+                                {
                                     return;
+                                }
 
                                 user.GetClient().SendMessage(RoomNotificationComposer.SendBubble("award", "Acabas de ganar la placa: " + reward.CrackableReward + ".", ""));
                                 user.GetClient().SendMessage(RoomNotificationComposer.SendBubble("award", "Acabas de sacar un " + rand + " en los dados. ¡Enhorabuena!", ""));
@@ -174,9 +214,9 @@ namespace Neon.HabboHotel.Items
                             }
                             #endregion
                     }
-                    #endregion
+                #endregion
 
-                    ItemType:
+                ItemType:
                     room.GetRoomItemHandler().RemoveFurniture(user.GetClient(), item.Id);
                     dbClient.runFastQuery("UPDATE items SET base_item = " + int.Parse(reward.CrackableReward) + ", extra_data = '' WHERE id = " + item.Id);
                     item.BaseItem = int.Parse(reward.CrackableReward);

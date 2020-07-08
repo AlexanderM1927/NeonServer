@@ -153,7 +153,7 @@
         public const int ForumsListDataMessageComposer = 1567;
         public const int PongMessageComposer = 2664;
         public const int UserChangeMessageComposer = 2147;
-        public const int ModeratorUserChatlogMessageComposer = 1238;        
+        public const int ModeratorUserChatlogMessageComposer = 1238;
         public const int GiftWrappingConfigurationMessageComposer = 2048;
         public const int FloorPlanFloorMapMessageComposer = 938;
         public const int UserNameChangeMessageComposer = 3045;

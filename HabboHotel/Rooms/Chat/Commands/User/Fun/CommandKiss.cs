@@ -1,29 +1,16 @@
 ﻿using Neon.Communication.Packets.Outgoing.Rooms.Chat;
 using Neon.HabboHotel.GameClients;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.User.Fun
 {
-    class KissCommand : IChatCommand
+    internal class KissCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_golpe"; }
-        }
+        public string PermissionRequired => "command_golpe";
 
-        public string Parameters
-        {
-            get { return "%target%"; }
-        }
+        public string Parameters => "%target%";
 
-        public string Description
-        {
-            get { return "Golpear a alguien si la sala lo permite."; }
-        }
+        public string Description => "Golpear a alguien si la sala lo permite.";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {
@@ -67,11 +54,13 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User.Fun
 
             RoomUser ThisUser = Room.GetRoomUserManager().GetRoomUserByHabbo(Session.GetHabbo().Id);
             if (ThisUser == null)
+            {
                 return;
+            }
 
             if (!((Math.Abs(TargetUser.X - ThisUser.X) >= 2) || (Math.Abs(TargetUser.Y - ThisUser.Y) >= 2)))
             {
-                Room.SendMessage(new ChatComposer(ThisUser.VirtualId, "@red@ *He besado a "+Params[1]+ "*", 0, ThisUser.LastBubble));
+                Room.SendMessage(new ChatComposer(ThisUser.VirtualId, "@red@ *He besado a " + Params[1] + "*", 0, ThisUser.LastBubble));
                 ThisUser.ApplyEffect(9);
                 Room.SendMessage(new ChatComposer(TargetUser.VirtualId, "@cyan@ Oh vaya... me han dado un beso :$", 0, ThisUser.LastBubble));
                 TargetUser.ApplyEffect(9);

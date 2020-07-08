@@ -1,12 +1,12 @@
 ﻿
-using System.Linq;
 using Neon.Communication.Packets.Outgoing.Rooms.Music;
 using Neon.HabboHotel.Rooms;
 using Neon.HabboHotel.Rooms.Music;
+using System.Linq;
 
 namespace Neon.Communication.Packets.Incoming.Rooms.Music
 {
-    class RemovePlaylistItemEvent : IPacketEvent
+    internal class RemovePlaylistItemEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {

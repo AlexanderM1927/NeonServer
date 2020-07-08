@@ -1,11 +1,6 @@
 ﻿using log4net;
 using Neon.Database.Interfaces;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.HabboHotel.LandingView.CommunityGoal
 {

@@ -1,35 +1,28 @@
-﻿using System;
+﻿using Neon.Database.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-
-using Neon.HabboHotel.GameClients;
-using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Users;
-using Neon.Communication.Packets.Incoming;
-using System.Collections.Concurrent;
-
-using Neon.Database.Interfaces;
-using log4net;
 
 namespace Neon.HabboHotel.Rooms.Music
 {
     public class SongManager
     {
 
-        private Dictionary<int, SongData> songs;
+        private readonly Dictionary<int, SongData> songs;
 
         public SongManager()
         {
-            this.songs = new Dictionary<int, SongData>();
+            songs = new Dictionary<int, SongData>();
 
-            this.Init();
+            Init();
         }
 
         public void Init()
         {
-            if (this.songs.Count > 0)
+            if (songs.Count > 0)
+            {
                 songs.Clear();
+            }
 
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
@@ -46,9 +39,8 @@ namespace Neon.HabboHotel.Rooms.Music
 
         public SongData GetSong(int SongId)
         {
-            SongData song = null;
 
-            this.songs.TryGetValue(SongId, out song);
+            songs.TryGetValue(SongId, out SongData song);
 
             return song;
         }

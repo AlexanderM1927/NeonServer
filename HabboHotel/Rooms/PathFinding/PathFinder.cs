@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using Neon.HabboHotel.Rooms;
-using System.Drawing;
+﻿using Neon.HabboHotel.Rooms;
 using System;
+using System.Collections.Generic;
+using System.Drawing;
 
 namespace Neon.HabboHotel.Pathfinding
 {
@@ -29,7 +29,7 @@ namespace Neon.HabboHotel.Pathfinding
 
         public static List<Vector2D> FindPath(RoomUser User, bool Diag, Gamemap Map, Vector2D Start, Vector2D End)
         {
-            var Path = new List<Vector2D>();
+            List<Vector2D> Path = new List<Vector2D>();
 
             PathFinderNode Nodes = FindPathReversed(User, Diag, Map, Start, End);
 
@@ -50,20 +50,20 @@ namespace Neon.HabboHotel.Pathfinding
         public static PathFinderNode FindPathReversed(RoomUser User, bool Diag, Gamemap Map, Vector2D Start,
                                                       Vector2D End)
         {
-            var OpenList = new MinHeap<PathFinderNode>(256);
+            MinHeap<PathFinderNode> OpenList = new MinHeap<PathFinderNode>(256);
 
-            var PfMap = new PathFinderNode[Map.Model.MapSizeX, Map.Model.MapSizeY];
+            PathFinderNode[,] PfMap = new PathFinderNode[Map.Model.MapSizeX, Map.Model.MapSizeY];
             PathFinderNode Node;
             Vector2D Tmp;
             int Cost;
             int Diff;
 
-            var Current = new PathFinderNode(Start)
+            PathFinderNode Current = new PathFinderNode(Start)
             {
                 Cost = 0
             };
 
-            var Finish = new PathFinderNode(End);
+            PathFinderNode Finish = new PathFinderNode(End);
             PfMap[Current.Position.X, Current.Position.Y] = Current;
             OpenList.Add(Current);
 

@@ -2,22 +2,13 @@
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
 {
-    class DiceAlertCommand : IChatCommand
+    internal class DiceAlertCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_da2_alert"; }
-        }
+        public string PermissionRequired => "command_da2_alert";
 
-        public string Parameters
-        {
-            get { return "%message%"; }
-        }
+        public string Parameters => "%message%";
 
-        public string Description
-        {
-            get { return "Envía una alerta a todo el hotel de dados."; }
-        }
+        public string Description => "Envía una alerta a todo el hotel de dados.";
 
         public void Execute(GameClients.GameClient Session, Room Room, string[] Params)
         {
@@ -27,7 +18,9 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator
                 return;
             }
             else
+            {
                 Session.SendWhisper("Por favor escribe el mensaje a enviar");
+            }
         }
     }
 }

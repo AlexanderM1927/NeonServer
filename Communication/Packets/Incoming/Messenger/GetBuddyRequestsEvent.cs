@@ -1,15 +1,11 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Users;
+﻿using Neon.Communication.Packets.Outgoing.Messenger;
 using Neon.HabboHotel.Users.Messenger;
-using Neon.Communication.Packets.Outgoing.Messenger;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Neon.Communication.Packets.Incoming.Messenger
 {
-    class GetBuddyRequestsEvent : IPacketEvent
+    internal class GetBuddyRequestsEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {

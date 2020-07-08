@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Neon.Communication.Packets.Outgoing.Navigator
+﻿namespace Neon.Communication.Packets.Outgoing.Navigator
 {
-    class RoomRatingComposer : ServerPacket
+    internal class RoomRatingComposer : ServerPacket
     {
         public RoomRatingComposer(int Score, bool CanVote)
             : base(ServerPacketHeader.RoomRatingMessageComposer)

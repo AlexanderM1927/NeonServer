@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Neon.Communication.Packets.Outgoing.Rooms.Engine
+﻿namespace Neon.Communication.Packets.Outgoing.Rooms.Engine
 {
-    class UserRemoveComposer : ServerPacket
+    internal class UserRemoveComposer : ServerPacket
     {
         public UserRemoveComposer(int Id)
             : base(ServerPacketHeader.UserRemoveMessageComposer)
         {
-           base.WriteString(Id.ToString());
+            base.WriteString(Id.ToString());
         }
     }
 }

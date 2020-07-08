@@ -1,13 +1,7 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.Communication.Packets.Incoming;
-using Neon.HabboHotel.Users;
-using Neon.HabboHotel.Navigator;
+﻿using Neon.Communication.Packets.Outgoing.Navigator;
 using Neon.HabboHotel.GameClients;
-using Neon.Communication.Packets.Outgoing.Navigator;
+using Neon.HabboHotel.Navigator;
+using System.Collections.Generic;
 
 namespace Neon.Communication.Packets.Incoming.Navigator
 {
@@ -16,7 +10,9 @@ namespace Neon.Communication.Packets.Incoming.Navigator
         public void Parse(GameClient Session, ClientPacket Packet)
         {
             if (Session == null)
+            {
                 return;
+            }
 
             ICollection<SearchResultList> Categories = NeonEnvironment.GetGame().GetNavigator().GetFlatCategories();
 

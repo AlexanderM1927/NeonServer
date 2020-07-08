@@ -1,28 +1,15 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator.Fun
 {
-    class GoBoomCommand :IChatCommand
+    internal class GoBoomCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_goboom"; }
-        }
+        public string PermissionRequired => "command_goboom";
 
-        public string Parameters
-        {
-            get { return ""; }
-        }
+        public string Parameters => "";
 
-        public string Description
-        {
-            get { return "Make the entire room go boom! (Applys effect 108)"; }
-        }
+        public string Description => "Make the entire room go boom! (Applys effect 108)";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {
@@ -32,7 +19,9 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator.Fun
                 foreach (RoomUser U in Users.ToList())
                 {
                     if (U == null)
+                    {
                         continue;
+                    }
 
                     U.ApplyEffect(108);
                 }

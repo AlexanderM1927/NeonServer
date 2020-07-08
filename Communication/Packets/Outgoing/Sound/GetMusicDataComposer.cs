@@ -1,12 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Text;
+﻿using Neon.HabboHotel.Rooms.Music;
 using System.Collections.Generic;
-using Neon.HabboHotel.Rooms.Music;
 
 namespace Neon.Communication.Packets.Outgoing.Rooms.Music
 {
-    class GetMusicDataComposer : ServerPacket
+    internal class GetMusicDataComposer : ServerPacket
     {
         public GetMusicDataComposer(List<SongData> Songs)
             : base(ServerPacketHeader.GetMusicDataMessageComposer)

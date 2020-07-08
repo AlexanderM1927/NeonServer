@@ -1,5 +1,5 @@
-﻿using System;
-using Neon.HabboHotel.GameClients;
+﻿using Neon.HabboHotel.GameClients;
+using System;
 
 namespace Neon.HabboHotel.Items.Interactor
 {
@@ -20,9 +20,8 @@ namespace Neon.HabboHotel.Items.Interactor
                 return;
             }
 
-            int oldValue = 0;
 
-            if (!int.TryParse(Item.ExtraData, out oldValue))
+            if (!int.TryParse(Item.ExtraData, out int oldValue))
             {
                 Item.ExtraData = "0";
                 oldValue = 0;
@@ -42,19 +41,34 @@ namespace Neon.HabboHotel.Items.Interactor
                 else
                 {
                     if (oldValue < 30)
+                    {
                         oldValue = 30;
+                    }
                     else if (oldValue == 30)
+                    {
                         oldValue = 60;
+                    }
                     else if (oldValue == 60)
+                    {
                         oldValue = 120;
+                    }
                     else if (oldValue == 120)
+                    {
                         oldValue = 180;
+                    }
                     else if (oldValue == 180)
+                    {
                         oldValue = 300;
+                    }
                     else if (oldValue == 300)
+                    {
                         oldValue = 600;
+                    }
                     else
+                    {
                         oldValue = 0;
+                    }
+
                     Item.UpdateNeeded = false;
                 }
             }
@@ -98,14 +112,18 @@ namespace Neon.HabboHotel.Items.Interactor
         public void OnWiredTrigger(Item Item)
         {
             if (Item.GetRoom().GetBanzai().isBanzaiActive)
+            {
                 Item.GetRoom().GetBanzai().BanzaiEnd(true);
+            }
 
             Item.pendingReset = true;
             Item.UpdateNeeded = true;
             Item.UpdateState();
 
             if (!Item.GetRoom().GetBanzai().isBanzaiActive)
+            {
                 Item.GetRoom().GetBanzai().BanzaiStart();
+            }
         }
     }
 }

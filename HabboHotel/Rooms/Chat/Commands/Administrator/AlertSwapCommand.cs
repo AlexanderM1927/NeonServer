@@ -1,30 +1,22 @@
 ﻿using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
-using System;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.Administrator
 {
-    class AlertSwapCommand : IChatCommand
+    internal class AlertSwapCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_alertswap"; }
-        }
+        public string PermissionRequired => "command_alertswap";
 
-        public string Parameters
-        {
-            get { return "%type% %id%"; }
-        }
+        public string Parameters => "%type% %id%";
 
-        public string Description
-        {
-            get { return "Cambie el formato de la alerta seleccionada."; }
-        }
+        public string Description => "Cambie el formato de la alerta seleccionada.";
 
         public void Execute(GameClients.GameClient Session, Room Room, string[] Params)
         {
             RoomUser User = Room.GetRoomUserManager().GetRoomUserByHabbo(Session.GetHabbo().Id);
             if (User == null)
+            {
                 return;
+            }
 
             if (Params.Length == 1)
             {

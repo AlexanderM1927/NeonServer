@@ -1,20 +1,17 @@
-﻿using System;
-using System.Collections.Concurrent;
-
-using Neon.Communication.Packets.Incoming;
+﻿using Neon.Communication.Packets.Incoming;
 using Neon.HabboHotel.Rooms;
 using Neon.HabboHotel.Users;
-using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
+using System.Collections.Concurrent;
 
 namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
 {
-    class GiveUserFastwalkBox : IWiredItem
+    internal class GiveUserFastwalkBox : IWiredItem
     {
         public Room Instance { get; set; }
 
         public Item Item { get; set; }
 
-        public WiredBoxType Type { get { return WiredBoxType.EffectGiveUserFastwalk; } }
+        public WiredBoxType Type => WiredBoxType.EffectGiveUserFastwalk;
 
         public ConcurrentDictionary<int, Item> SetItems { get; set; }
 
@@ -28,7 +25,7 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
         {
             this.Instance = Instance;
             this.Item = Item;
-            this.SetItems = new ConcurrentDictionary<int, Item>();
+            SetItems = new ConcurrentDictionary<int, Item>();
         }
 
         public void HandleSave(ClientPacket Packet)
@@ -36,29 +33,39 @@ namespace Neon.HabboHotel.Items.Wired.Boxes.Effects
             int Unknown = Packet.PopInt();
             string Badge = Packet.PopString();
 
-            this.StringData = Badge;
+            StringData = Badge;
         }
 
         public bool Execute(params object[] Params)
         {
             if (Params == null || Params.Length == 0)
+            {
                 return false;
+            }
 
             Habbo Player = (Habbo)Params[0];
             if (Player == null || Player.GetClient() == null)
+            {
                 return false;
+            }
 
             RoomUser User = Player.CurrentRoom.GetRoomUserManager().GetRoomUserByHabbo(Player.Username);
             if (User == null)
+            {
                 return false;
+            }
 
-            if (String.IsNullOrEmpty(StringData))
+            if (string.IsNullOrEmpty(StringData))
+            {
                 return false;
+            }
 
             User.FastWalking = !User.FastWalking;
 
             if (User.SuperFastWalking)
+            {
                 User.SuperFastWalking = false;
+            }
 
             //User.GetClient().SendMessage(RoomNotificationComposer.SendBubble("wffwalk", "" + User.GetClient().GetHabbo().Username + ", acabas de activar la hiperactividad mediante Wired, ve con cuidado, ahora vas más rápido que la luz.", ""));
 

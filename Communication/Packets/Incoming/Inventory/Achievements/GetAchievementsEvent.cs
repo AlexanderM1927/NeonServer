@@ -1,13 +1,9 @@
-﻿using System;
+﻿using Neon.Communication.Packets.Outgoing.Inventory.Achievements;
 using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.Communication.Packets.Outgoing.Inventory.Achievements;
 
 namespace Neon.Communication.Packets.Incoming.Inventory.Achievements
 {
-    class GetAchievementsEvent : IPacketEvent
+    internal class GetAchievementsEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {

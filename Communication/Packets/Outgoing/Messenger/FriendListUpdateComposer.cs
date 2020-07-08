@@ -1,17 +1,13 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.GameClients;
-using Neon.HabboHotel.Users;
-using Neon.HabboHotel.Users.Relationships;
-using Neon.HabboHotel.Users.Messenger;
+﻿using Neon.HabboHotel.GameClients;
 using Neon.HabboHotel.Groups;
+using Neon.HabboHotel.Users.Messenger;
+using Neon.HabboHotel.Users.Relationships;
+using System;
+using System.Linq;
 
 namespace Neon.Communication.Packets.Outgoing.Messenger
 {
-    class FriendListUpdateComposer : ServerPacket
+    internal class FriendListUpdateComposer : ServerPacket
     {
         public FriendListUpdateComposer(int FriendId)
             : base(ServerPacketHeader.FriendListUpdateMessageComposer)
@@ -67,14 +63,22 @@ namespace Neon.Communication.Packets.Outgoing.Messenger
             base.WriteString(Buddy.mUsername);
             base.WriteInteger(1);
             if (!Buddy.mAppearOffline || Session.GetHabbo().GetPermissions().HasRight("mod_tool"))
+            {
                 base.WriteBoolean(Buddy.IsOnline);
+            }
             else
+            {
                 base.WriteBoolean(false);
+            }
 
             if (!Buddy.mHideInroom || Session.GetHabbo().GetPermissions().HasRight("mod_tool"))
+            {
                 base.WriteBoolean(Buddy.InRoom);
+            }
             else
+            {
                 base.WriteBoolean(false);
+            }
 
             base.WriteString("");//Habbo.IsOnline ? Habbo.Look : "");
             base.WriteInteger(0); // categoryid

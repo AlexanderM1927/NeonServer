@@ -1,32 +1,32 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Items;
-using Neon.Communication.Packets.Outgoing.Inventory.Purse;
+﻿
 using Neon.Communication.Packets.Outgoing.Inventory.Furni;
-
-using Neon.Database.Interfaces;
+using Neon.Communication.Packets.Outgoing.Inventory.Purse;
 using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
+using Neon.Database.Interfaces;
+using Neon.HabboHotel.Items;
+using Neon.HabboHotel.Rooms;
 
 namespace Neon.Communication.Packets.Incoming.Rooms.Furni
 {
-    class CreditFurniRedeemEvent : IPacketEvent
+    internal class CreditFurniRedeemEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
             if (!Session.GetHabbo().InRoom)
+            {
                 return;
+            }
 
-            Room Room;
 
-            if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Session.GetHabbo().CurrentRoomId, out Room))
+            if (!NeonEnvironment.GetGame().GetRoomManager().TryGetRoom(Session.GetHabbo().CurrentRoomId, out Room Room))
+            {
                 return;
+            }
 
             if (!Room.CheckRights(Session, true))
+            {
                 return;
+            }
 
             if (NeonEnvironment.GetDBConfig().DBData["exchange_enabled"] != "1")
             {
@@ -36,7 +36,9 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Furni
 
             Item Exchange = Room.GetRoomItemHandler().GetItem(Packet.PopInt());
             if (Exchange == null)
+            {
                 return;
+            }
 
             if (Exchange.GetBaseItem().ItemName.StartsWith("CF_"))
             {
@@ -62,6 +64,20 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Furni
                     Session.GetHabbo().Duckets += Value;
                     Session.SendMessage(new HabboActivityPointNotificationComposer(Session.GetHabbo().Duckets, Value));
                     Session.SendMessage(RoomNotificationComposer.SendBubble("duckets", "Has convertido correctamente " + Value + " Duckets, haz click aquí para abrir la tienda.", "catalog/open"));
+                }
+            }
+
+            if (Exchange.GetBaseItem().ItemName.StartsWith("DF_"))
+            {
+
+                string[] Split = Exchange.GetBaseItem().ItemName.Split('_');
+                int Value = int.Parse(Split[1]);
+
+                if (Value > 0)
+                {
+                    Session.GetHabbo().Diamonds += Value;
+                    Session.SendMessage(new HabboActivityPointNotificationComposer(Session.GetHabbo().Diamonds, Value, 5));
+                    Session.SendMessage(RoomNotificationComposer.SendBubble("diamantes", "Has convertido correctamente " + Value + " diamantes, haz click aquí para abrir la tienda.", "catalog/open"));
                 }
             }
 

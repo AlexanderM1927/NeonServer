@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Neon.Communication.Packets.Outgoing;
 using Neon.HabboHotel.GameClients;
-using Neon.Communication.Packets.Outgoing;
+using System;
 
 namespace Neon.HabboHotel.Items.Interactor
 {
@@ -22,7 +22,10 @@ namespace Neon.HabboHotel.Items.Interactor
                 Item.UpdateState();
                 Console.WriteLine(Tick.ToString());
             }
-            else Tick--;
+            else
+            {
+                Tick--;
+            }
         }
 
         public void OnRemove(GameClient Session, Item Item)
@@ -39,10 +42,9 @@ namespace Neon.HabboHotel.Items.Interactor
             }
 
 
-            int CurrentMode = 0;
             int NewMode = 0;
 
-            if (!int.TryParse(Item.ExtraData, out CurrentMode))
+            if (!int.TryParse(Item.ExtraData, out int CurrentMode))
             {
             }
 
@@ -71,7 +73,7 @@ namespace Neon.HabboHotel.Items.Interactor
 
         public void OnCycle(Item Item)
         {
-        }  
-                
         }
+
     }
+}

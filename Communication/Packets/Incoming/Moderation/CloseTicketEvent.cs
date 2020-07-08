@@ -1,28 +1,32 @@
-﻿using Neon.HabboHotel.Users;
-using Neon.HabboHotel.Moderation;
-using Neon.Communication.Packets.Outgoing.Moderation;
-using Neon.HabboHotel.GameClients;
+﻿using Neon.Communication.Packets.Outgoing.Moderation;
 using Neon.Database.Interfaces;
+using Neon.HabboHotel.GameClients;
+using Neon.HabboHotel.Moderation;
 
 namespace Neon.Communication.Packets.Incoming.Moderation
 {
-    class CloseTicketEvent : IPacketEvent
+    internal class CloseTicketEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
             if (Session == null || Session.GetHabbo() == null || !Session.GetHabbo().GetPermissions().HasRight("mod_tool"))
+            {
                 return;
+            }
 
             int Result = Packet.PopInt(); // 1 = useless, 2 = abusive, 3 = resolved
             int Junk = Packet.PopInt();
             int TicketId = Packet.PopInt();
 
-            ModerationTicket Ticket = null;
-            if (!NeonEnvironment.GetGame().GetModerationManager().TryGetTicket(TicketId, out Ticket))
+            if (!NeonEnvironment.GetGame().GetModerationManager().TryGetTicket(TicketId, out ModerationTicket Ticket))
+            {
                 return;
+            }
 
             if (Ticket.Moderator.Id != Session.GetHabbo().Id)
+            {
                 return;
+            }
 
             GameClient Client = NeonEnvironment.GetGame().GetClientManager().GetClientByUserID(Ticket.Sender.Id);
             if (Client != null)

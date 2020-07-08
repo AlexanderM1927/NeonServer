@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-namespace Neon.HabboHotel.Groups
+﻿namespace Neon.HabboHotel.Groups
 {
     public class GroupColours
     {
@@ -11,8 +6,8 @@ namespace Neon.HabboHotel.Groups
         public string Colour { get; private set; }
         public GroupColours(int id, string colour)
         {
-            this.Id = id;
-            this.Colour = colour;
+            Id = id;
+            Colour = colour;
         }
     }
 }

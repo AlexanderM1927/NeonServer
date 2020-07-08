@@ -1,8 +1,5 @@
-﻿using System;
-
+﻿
 using Neon.HabboHotel.GameClients;
-using Neon.HabboHotel.Rooms.Games;
-using Neon.HabboHotel.Rooms.Games.Teams;
 
 namespace Neon.HabboHotel.Items.Interactor
 {

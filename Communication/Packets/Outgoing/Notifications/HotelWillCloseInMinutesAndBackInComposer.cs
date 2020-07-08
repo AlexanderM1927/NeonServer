@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Neon.Communication.Packets.Outgoing.Notifications
+﻿namespace Neon.Communication.Packets.Outgoing.Notifications
 {
-    class HotelWillCloseInMinutesAndBackInComposer : ServerPacket
+    internal class HotelWillCloseInMinutesAndBackInComposer : ServerPacket
     {
         public HotelWillCloseInMinutesAndBackInComposer(int CloseIn, int OpenIn)
             : base(ServerPacketHeader.HotelWillCloseInMinutesAndBackInComposer)

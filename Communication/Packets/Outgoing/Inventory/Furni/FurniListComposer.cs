@@ -1,16 +1,11 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
+﻿using Neon.HabboHotel.Catalog.Utilities;
 using Neon.HabboHotel.Items;
-using Neon.HabboHotel.Groups;
-using Neon.HabboHotel.Users;
-using Neon.HabboHotel.Catalog.Utilities;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Neon.Communication.Packets.Outgoing.Inventory.Furni
 {
-    class FurniListComposer : ServerPacket
+    internal class FurniListComposer : ServerPacket
     {
         public FurniListComposer(List<Item> Items, ICollection<Item> Walls)
             : base(ServerPacketHeader.FurniListMessageComposer)
@@ -69,7 +64,9 @@ namespace Neon.Communication.Packets.Outgoing.Inventory.Furni
             }
 
             else
+            {
                 ItemBehaviourUtility.GenerateExtradata(Item, this);
+            }
 
             WriteBoolean(Item.GetBaseItem().AllowEcotronRecycle);
             WriteBoolean(Item.GetBaseItem().AllowTrade);
@@ -81,7 +78,7 @@ namespace Neon.Communication.Packets.Outgoing.Inventory.Furni
 
             if (!Item.IsWallItem)
             {
-               WriteString(string.Empty);
+                WriteString(string.Empty);
                 WriteInteger(0);
             }
         }

@@ -1,17 +1,13 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.Utilities;
+﻿using Neon.HabboHotel.Items;
 using Neon.HabboHotel.Rooms;
-using Neon.HabboHotel.Items;
-using Neon.HabboHotel.Groups;
-using Neon.HabboHotel.Users;
+using Neon.Utilities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Neon.Communication.Packets.Outgoing.Rooms.Engine
 {
-    class ObjectsComposer : ServerPacket
+    internal class ObjectsComposer : ServerPacket
     {
         public ObjectsComposer(Item[] Objects, Room Room)
             : base(ServerPacketHeader.ObjectsMessageComposer)
@@ -27,10 +23,14 @@ namespace Neon.Communication.Packets.Outgoing.Rooms.Engine
                 {
                     Item it = Objects[i];
                     if (it == null)
+                    {
                         continue;
+                    }
 
                     if (it.IsWired)
+                    {
                         continue;
+                    }
 
                     l.Add(it);
                 }
@@ -98,8 +98,15 @@ namespace Neon.Communication.Packets.Outgoing.Rooms.Engine
                 WriteInteger(0);
                 WriteInteger(7);
                 WriteString("6");
-                if (Item.ExtraData.Length <= 0) WriteInteger(0);
-                else WriteInteger(int.Parse(Item.ExtraData));
+                if (Item.ExtraData.Length <= 0)
+                {
+                    WriteInteger(0);
+                }
+                else
+                {
+                    WriteInteger(int.Parse(Item.ExtraData));
+                }
+
                 WriteInteger(100);
             }
 
@@ -108,8 +115,15 @@ namespace Neon.Communication.Packets.Outgoing.Rooms.Engine
                 WriteInteger(0);
                 WriteInteger(7);
                 WriteString("0");
-                if (Item.ExtraData.Length <= 0) WriteInteger(0);
-                else WriteInteger(int.Parse(Item.ExtraData));
+                if (Item.ExtraData.Length <= 0)
+                {
+                    WriteInteger(0);
+                }
+                else
+                {
+                    WriteInteger(int.Parse(Item.ExtraData));
+                }
+
                 WriteInteger(1);
             }
 

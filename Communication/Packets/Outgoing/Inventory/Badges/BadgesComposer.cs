@@ -1,14 +1,11 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-
-using Neon.HabboHotel.GameClients;
+﻿using Neon.HabboHotel.GameClients;
 using Neon.HabboHotel.Users.Badges;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Neon.Communication.Packets.Outgoing.Inventory.Badges
 {
-    class BadgesComposer : ServerPacket
+    internal class BadgesComposer : ServerPacket
     {
         public BadgesComposer(GameClient Session)
             : base(ServerPacketHeader.BadgesMessageComposer)
@@ -22,7 +19,9 @@ namespace Neon.Communication.Packets.Outgoing.Inventory.Badges
                 base.WriteString(Badge.Code);
 
                 if (Badge.Slot > 0)
+                {
                     EquippedBadges.Add(Badge);
+                }
             }
 
             base.WriteInteger(EquippedBadges.Count);

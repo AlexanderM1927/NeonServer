@@ -1,30 +1,17 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using Neon.Database.Interfaces;
-using Neon.HabboHotel.Items;
-using Neon.HabboHotel.Users;
+﻿using Neon.Database.Interfaces;
 using Neon.HabboHotel.GameClients;
+using Neon.HabboHotel.Items;
+using System.Linq;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.User
 {
-    class EjectAllCommand :IChatCommand
+    internal class EjectAllCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_ejectall"; }
-        }
+        public string PermissionRequired => "command_ejectall";
 
-        public string Parameters
-        {
-            get { return ""; }
-        }
+        public string Parameters => "";
 
-        public string Description
-        {
-            get { return "Expulsar todos los objetos de grupo en la sala."; }
-        }
+        public string Description => "Expulsar todos los objetos de grupo en la sala.";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {
@@ -32,12 +19,16 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User
             {
                 //Let us check anyway.
                 if (!Room.CheckRights(Session, true))
+                {
                     return;
+                }
 
                 foreach (Item Item in Room.GetRoomItemHandler().GetWallAndFloor.ToList())
                 {
                     if (Item == null || Item.UserID == Session.GetHabbo().Id)
+                    {
                         continue;
+                    }
 
                     GameClient TargetClient = NeonEnvironment.GetGame().GetClientManager().GetClientByUserID(Item.UserID);
                     if (TargetClient != null && TargetClient.GetHabbo() != null)
@@ -61,7 +52,9 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.User
                 foreach (Item Item in Room.GetRoomItemHandler().GetWallAndFloor.ToList())
                 {
                     if (Item == null || Item.UserID != Session.GetHabbo().Id)
+                    {
                         continue;
+                    }
 
                     GameClient TargetClient = NeonEnvironment.GetGame().GetClientManager().GetClientByUserID(Item.UserID);
                     if (TargetClient != null && TargetClient.GetHabbo() != null)

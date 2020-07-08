@@ -1,23 +1,19 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Data;
-using System.Collections.Generic;
+﻿using Neon.Database.Interfaces;
+using System;
 using System.Collections.Concurrent;
-
-using Neon.Database.Interfaces;
+using System.Data;
 
 namespace Neon.HabboHotel.Surveys
 {
-    class SurveyManager
+    internal class SurveyManager
     {
         private readonly ConcurrentDictionary<int, Question> _questions;
 
         public SurveyManager()
         {
-            this._questions = new ConcurrentDictionary<int, Question>();
+            _questions = new ConcurrentDictionary<int, Question>();
 
-            this.Init();
+            Init();
         }
 
         public void Init()
@@ -33,15 +29,17 @@ namespace Neon.HabboHotel.Surveys
             {
                 foreach (DataRow Row in Table.Rows)
                 {
-                    if (!this._questions.ContainsKey(Convert.ToInt32(Row["id"])))
-                    this._questions.TryAdd(Convert.ToInt32(Row["id"]), new Question());
+                    if (!_questions.ContainsKey(Convert.ToInt32(Row["id"])))
+                    {
+                        _questions.TryAdd(Convert.ToInt32(Row["id"]), new Question());
+                    }
                 }
             }
         }
 
         public bool TryGetQuestion(int QuestionId, out Question Question)
         {
-            return this._questions.TryGetValue(QuestionId, out Question);
+            return _questions.TryGetValue(QuestionId, out Question);
         }
     }
 }

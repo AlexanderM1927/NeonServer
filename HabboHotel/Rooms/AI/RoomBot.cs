@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-
+﻿using Neon.HabboHotel.Items.Utilities;
 using Neon.HabboHotel.Rooms.AI.Speech;
 using Neon.HabboHotel.Rooms.AI.Types;
-using Neon.HabboHotel.Items.Utilities;
+using System;
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace Neon.HabboHotel.Rooms.AI
@@ -56,7 +55,7 @@ namespace Neon.HabboHotel.Rooms.AI
             int minX, int minY, int maxX, int maxY, ref List<RandomSpeech> Speeches, string Gender, int Dance, int ownerID,
             bool AutomaticChat, int SpeakingInterval, bool MixSentences, int ChatBubble)
         {
-            this.Id = BotId;
+            Id = BotId;
             this.BotId = BotId;
             this.RoomId = RoomId;
 
@@ -77,11 +76,11 @@ namespace Neon.HabboHotel.Rooms.AI
             this.maxX = maxX;
             this.maxY = maxY;
 
-            this.VirtualId = -1;
-            this.RoomUser = null;
-            this.DanceId = Dance;
+            VirtualId = -1;
+            RoomUser = null;
+            DanceId = Dance;
 
-            this.LoadRandomSpeech(Speeches);
+            LoadRandomSpeech(Speeches);
             //this.LoadResponses(Responses);
 
             this.ownerID = ownerID;
@@ -90,16 +89,13 @@ namespace Neon.HabboHotel.Rooms.AI
             this.SpeakingInterval = SpeakingInterval;
             this.MixSentences = MixSentences;
 
-            this._chatBubble = ChatBubble;
-            this.ForcedMovement = false;
-            this.TargetCoordinate = new Point();
-            this.TargetUser = 0;
+            _chatBubble = ChatBubble;
+            ForcedMovement = false;
+            TargetCoordinate = new Point();
+            TargetUser = 0;
         }
 
-        public bool IsPet
-        {
-            get { return (AiType == BotAIType.PET); }
-        }
+        public bool IsPet => (AiType == BotAIType.PET);
 
         #region Speech Related
         public void LoadRandomSpeech(List<RandomSpeech> Speeches)
@@ -108,17 +104,22 @@ namespace Neon.HabboHotel.Rooms.AI
             foreach (RandomSpeech Speech in Speeches)
             {
                 if (Speech.BotID == BotId)
+                {
                     RandomSpeech.Add(Speech);
+                }
             }
         }
 
 
         public RandomSpeech GetRandomSpeech()
         {
-            var rand = new Random();
+            Random rand = new Random();
 
             if (RandomSpeech.Count < 1)
+            {
                 return new RandomSpeech("", 0);
+            }
+
             return RandomSpeech[rand.Next(0, (RandomSpeech.Count - 1))];
         }
         #endregion
@@ -152,8 +153,8 @@ namespace Neon.HabboHotel.Rooms.AI
 
         public int ChatBubble
         {
-            get { return this._chatBubble; }
-            set { this._chatBubble = value; }
+            get => _chatBubble;
+            set => _chatBubble = value;
         }
     }
 }

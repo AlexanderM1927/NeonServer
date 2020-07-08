@@ -1,23 +1,21 @@
-﻿using Neon.HabboHotel.GameClients;
-using Neon.Database.Interfaces;
+﻿using Neon.Communication.Packets.Outgoing.Inventory.Purse;
 using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
+using Neon.HabboHotel.GameClients;
 using Neon.Utilities;
-using System.Threading.Tasks;
 using System;
 using System.Collections.Generic;
-using Neon.Communication.Packets.Outgoing.Inventory.Purse;
 
 namespace Neon.HabboHotel.Rooms.AI.Types
 {
-    class CasinoRoullete : BotAI
+    internal class CasinoRoullete : BotAI
     {
-        private int VirtualId;
-        int GameLength = 100;
-        bool BetsOpen = false;
-        int Bets;
+        private readonly int VirtualId;
+        private int GameLength = 100;
+        private bool BetsOpen = false;
+        private int Bets;
         private double offerMultiplier;
 
-        private Dictionary<int, CasinoDataLocura> Data1;
+        private readonly Dictionary<int, CasinoDataLocura> Data1;
 
         public CasinoRoullete(int VirtualId)
         {
@@ -47,10 +45,14 @@ namespace Neon.HabboHotel.Rooms.AI.Types
         public override void OnUserSay(RoomUser User, string Message)
         {
             if (User == null || User.GetClient() == null || User.GetClient().GetHabbo() == null)
+            {
                 return;
+            }
 
             if (Gamemap.TileDistance(GetRoomUser().X, GetRoomUser().Y, User.X, User.Y) > 8)
+            {
                 return;
+            }
 
             // Notice that the bet is off to the users.
             if (BetsOpen == false)
@@ -66,17 +68,15 @@ namespace Neon.HabboHotel.Rooms.AI.Types
                 string Multiplier = Message.Split(' ')[0];
                 string Bet = Message.Split(' ')[2];
 
-                int IntMultiplier = 0;
                 // Check if the multiplier is a number.
-                if (!int.TryParse(Multiplier, out IntMultiplier))
+                if (!int.TryParse(Multiplier, out int IntMultiplier))
                 {
                     GetRoomUser().Chat(Multiplier + " no es un valor apto para la apuesta.", false, 33);
                     return;
                 }
 
-                int IntBet = 0;
                 // Check if the bet is a number.
-                if (!int.TryParse(Bet, out IntBet))
+                if (!int.TryParse(Bet, out int IntBet))
                 {
                     GetRoomUser().Chat(Bet + " no es un valor apto para la apuesta.", false, 33);
                     return;
@@ -91,29 +91,31 @@ namespace Neon.HabboHotel.Rooms.AI.Types
 
                 User.GetClient().GetHabbo().Diamonds = User.GetClient().GetHabbo().Diamonds - IntMultiplier;
                 User.GetClient().SendMessage(new HabboActivityPointNotificationComposer(User.GetClient().GetHabbo().Diamonds, -IntMultiplier, 5));
-                User.GetClient().SendMessage(RoomNotificationComposer.SendBubble("eventoxx", User.GetClient().GetHabbo().Username + ", acabas de apostar " + IntMultiplier + " diamantes al " + IntBet +".\n\n Buena suerte y apuesta con cabeza.", "catalog/open/habbiween"));
+                User.GetClient().SendMessage(RoomNotificationComposer.SendBubble("eventoxx", User.GetClient().GetHabbo().Username + ", acabas de apostar " + IntMultiplier + " diamantes al " + IntBet + ".\n\n Buena suerte y apuesta con cabeza.", "catalog/open/habbiween"));
 
-                GetRoomUser().Chat("Apuesta de " + IntMultiplier + " diamantes realizada al " + IntBet +" por "+ User.GetClient().GetHabbo().Username +".", false, 33);
+                GetRoomUser().Chat("Apuesta de " + IntMultiplier + " diamantes realizada al " + IntBet + " por " + User.GetClient().GetHabbo().Username + ".", false, 33);
 
                 offerMultiplier += .2;
-                
-                CasinoDataLocura data = new CasinoDataLocura();
-                data.bet = IntBet;
-                data.quantity = IntMultiplier;
-                data.userId = User.GetClient().GetHabbo().Id;
+
+                CasinoDataLocura data = new CasinoDataLocura
+                {
+                    bet = IntBet,
+                    quantity = IntMultiplier,
+                    userId = User.GetClient().GetHabbo().Id
+                };
 
 
                 Data1.Add(Bets, data);
 
                 // Notify BET Id to the user.
-                User.GetClient().SendShout(Bets +" es tu número de apuesta.", 33);
+                User.GetClient().SendShout(Bets + " es tu número de apuesta.", 33);
 
                 Bets++;
 
 
             }
 
-            
+
         }
 
         public class CasinoDataLocura
@@ -121,7 +123,7 @@ namespace Neon.HabboHotel.Rooms.AI.Types
             public int userId;
             public int quantity;
             public int bet;
-            
+
         }
 
         public override void OnUserShout(RoomUser User, string Message)
@@ -141,7 +143,7 @@ namespace Neon.HabboHotel.Rooms.AI.Types
             if (GameLength == 15)
             {
                 // Notice to users that betting is enabled during this timelapse.
-                
+
                 GetRoomUser().Chat("Apuestas cerradas, buena suerte.", false, 33);
                 BetsOpen = false;
             }
@@ -151,7 +153,7 @@ namespace Neon.HabboHotel.Rooms.AI.Types
                 // Generate the number from the roullette.
                 #region Serialize Numbers
 
-                int num = RandomNumber.GenerateRandom(0,36);
+                int num = RandomNumber.GenerateRandom(0, 36);
 
                 switch (num)
                 {
@@ -282,7 +284,7 @@ namespace Neon.HabboHotel.Rooms.AI.Types
                             int d = (int)Math.Ceiling(Data2.quantity * offerMultiplier);
                             client.GetHabbo().Diamonds += d;
                             client.SendMessage(new HabboActivityPointNotificationComposer(client.GetHabbo().Diamonds, d, 5));
-                            
+
                         }
                     }
                 }
@@ -295,10 +297,14 @@ namespace Neon.HabboHotel.Rooms.AI.Types
 
                 // Reset the timer of the round.
                 GameLength = 100;
-               
+
             }
-                else  GameLength--;
-                GetRoomUser().Chat(GameLength + "", false, 33);
+            else
+            {
+                GameLength--;
+            }
+
+            GetRoomUser().Chat(GameLength + "", false, 33);
 
         }
     }

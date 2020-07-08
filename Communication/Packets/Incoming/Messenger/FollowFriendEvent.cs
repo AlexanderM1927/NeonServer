@@ -1,24 +1,29 @@
-﻿using Neon.HabboHotel.GameClients;
-
-using Neon.Communication.Packets.Outgoing.Messenger;
+﻿using Neon.Communication.Packets.Outgoing.Messenger;
 using Neon.Communication.Packets.Outgoing.Rooms.Session;
+using Neon.HabboHotel.GameClients;
 
 namespace Neon.Communication.Packets.Incoming.Messenger
 {
-    class FollowFriendEvent : IPacketEvent
+    internal class FollowFriendEvent : IPacketEvent
     {
         public void Parse(HabboHotel.GameClients.GameClient Session, ClientPacket Packet)
         {
             if (Session == null || Session.GetHabbo() == null || Session.GetHabbo().GetMessenger() == null)
+            {
                 return;
+            }
 
             int BuddyId = Packet.PopInt();
             if (BuddyId == 0 || BuddyId == Session.GetHabbo().Id)
+            {
                 return;
+            }
 
             GameClient Client = NeonEnvironment.GetGame().GetClientManager().GetClientByUserID(BuddyId);
             if (Client == null || Client.GetHabbo() == null)
+            {
                 return;
+            }
 
             if (!Client.GetHabbo().InRoom)
             {
@@ -29,7 +34,9 @@ namespace Neon.Communication.Packets.Incoming.Messenger
             else if (Session.GetHabbo().CurrentRoom != null && Client.GetHabbo().CurrentRoom != null)
             {
                 if (Session.GetHabbo().CurrentRoom.RoomId == Client.GetHabbo().CurrentRoom.RoomId)
+                {
                     return;
+                }
             }
 
             Session.SendMessage(new RoomForwardComposer(Client.GetHabbo().CurrentRoomId));

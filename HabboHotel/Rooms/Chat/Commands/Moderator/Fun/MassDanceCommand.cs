@@ -1,29 +1,17 @@
-﻿using System;
-using System.Linq;
-using System.Text;
+﻿using Neon.Communication.Packets.Outgoing.Rooms.Avatar;
+using System;
 using System.Collections.Generic;
-
-using Neon.HabboHotel.Rooms;
-using Neon.Communication.Packets.Outgoing.Rooms.Avatar;
+using System.Linq;
 
 namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator.Fun
 {
-    class MassDanceCommand : IChatCommand
+    internal class MassDanceCommand : IChatCommand
     {
-        public string PermissionRequired
-        {
-            get { return "command_massdance"; }
-        }
+        public string PermissionRequired => "command_massdance";
 
-        public string Parameters
-        {
-            get { return "%DanceId%"; }
-        }
+        public string Parameters => "%DanceId%";
 
-        public string Description
-        {
-            get { return "Obliga a todos a Bailar"; }
-        }
+        public string Description => "Obliga a todos a Bailar";
 
         public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
         {
@@ -46,10 +34,14 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Moderator.Fun
                 foreach (RoomUser U in Users.ToList())
                 {
                     if (U == null)
+                    {
                         continue;
+                    }
 
                     if (U.CarryItemID > 0)
+                    {
                         U.CarryItemID = 0;
+                    }
 
                     U.DanceId = DanceId;
                     Room.SendMessage(new DanceComposer(U, DanceId));

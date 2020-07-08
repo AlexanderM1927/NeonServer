@@ -3,15 +3,12 @@ using Neon.Database.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.HabboHotel.Subscriptions
 {
     public class SubscriptionManager
     {
-        private static ILog log = LogManager.GetLogger("Neon.HabboHotel.Subscriptions.SubscriptionManager");
+        private static readonly ILog log = LogManager.GetLogger("Neon.HabboHotel.Subscriptions.SubscriptionManager");
 
         private readonly Dictionary<int, SubscriptionData> _subscriptions = new Dictionary<int, SubscriptionData>();
 
@@ -21,8 +18,10 @@ namespace Neon.HabboHotel.Subscriptions
 
         public void Init()
         {
-            if (this._subscriptions.Count > 0)
-                this._subscriptions.Clear();
+            if (_subscriptions.Count > 0)
+            {
+                _subscriptions.Clear();
+            }
 
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
@@ -33,8 +32,10 @@ namespace Neon.HabboHotel.Subscriptions
                 {
                     foreach (DataRow Row in GetSubscriptions.Rows)
                     {
-                        if (!this._subscriptions.ContainsKey(Convert.ToInt32(Row["id"])))
-                            this._subscriptions.Add(Convert.ToInt32(Row["id"]), new SubscriptionData(Convert.ToInt32(Row["id"]), Convert.ToString(Row["name"]), Convert.ToString(Row["badge_code"]), Convert.ToInt32(Row["credits"]), Convert.ToInt32(Row["duckets"]), Convert.ToInt32(Row["respects"])));
+                        if (!_subscriptions.ContainsKey(Convert.ToInt32(Row["id"])))
+                        {
+                            _subscriptions.Add(Convert.ToInt32(Row["id"]), new SubscriptionData(Convert.ToInt32(Row["id"]), Convert.ToString(Row["name"]), Convert.ToString(Row["badge_code"]), Convert.ToInt32(Row["credits"]), Convert.ToInt32(Row["duckets"]), Convert.ToInt32(Row["respects"])));
+                        }
                     }
                 }
             }
@@ -45,7 +46,7 @@ namespace Neon.HabboHotel.Subscriptions
 
         public bool TryGetSubscriptionData(int Id, out SubscriptionData Data)
         {
-            return this._subscriptions.TryGetValue(Id, out Data);
+            return _subscriptions.TryGetValue(Id, out Data);
         }
     }
 }

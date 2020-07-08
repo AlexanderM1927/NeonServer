@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-
-using Neon.HabboHotel.GameClients;
+﻿using log4net;
 using Neon.Communication.Packets.Incoming;
 using Neon.Communication.Packets.Outgoing.Inventory.Purse;
 using Neon.Communication.Packets.Outgoing.Quests;
-
 using Neon.Database.Interfaces;
-using log4net;
+using Neon.HabboHotel.GameClients;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
 
 namespace Neon.HabboHotel.Quests
 {
@@ -17,21 +15,23 @@ namespace Neon.HabboHotel.Quests
     {
         private static readonly ILog log = LogManager.GetLogger("Neon.HabboHotel.Quests.QuestManager");
 
-        private Dictionary<int, Quest> _quests;
-        private Dictionary<string, int> _questCount;
+        private readonly Dictionary<int, Quest> _quests;
+        private readonly Dictionary<string, int> _questCount;
 
         public QuestManager()
         {
             _quests = new Dictionary<int, Quest>();
             _questCount = new Dictionary<string, int>();
 
-            this.Init();
+            Init();
         }
 
         public void Init()
         {
-            if (this._quests.Count > 0)
-            _quests.Clear();
+            if (_quests.Count > 0)
+            {
+                _quests.Clear();
+            }
 
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
@@ -65,8 +65,7 @@ namespace Neon.HabboHotel.Quests
 
         private void AddToCounter(string category)
         {
-            int count = 0;
-            if (_questCount.TryGetValue(category, out count))
+            if (_questCount.TryGetValue(category, out int count))
             {
                 _questCount[category] = count + 1;
             }
@@ -78,15 +77,13 @@ namespace Neon.HabboHotel.Quests
 
         public Quest GetQuest(int Id)
         {
-            Quest quest = null;
-            _quests.TryGetValue(Id, out quest);
+            _quests.TryGetValue(Id, out Quest quest);
             return quest;
         }
 
         public int GetAmountOfQuestsInCategory(string Category)
         {
-            int count = 0;
-            _questCount.TryGetValue(Category, out count);
+            _questCount.TryGetValue(Category, out int count);
             return count;
         }
 
@@ -124,7 +121,9 @@ namespace Neon.HabboHotel.Quests
                 case QuestType.EXPLORE_FIND_ITEM:
 
                     if (EventData != UserQuest.GoalData)
+                    {
                         return;
+                    }
 
                     NewProgress = Convert.ToInt32(UserQuest.GoalData);
                     PassQuest = true;
@@ -133,7 +132,9 @@ namespace Neon.HabboHotel.Quests
                 case QuestType.STAND_ON:
 
                     if (EventData != UserQuest.GoalData)
+                    {
                         return;
+                    }
 
                     NewProgress = Convert.ToInt32(UserQuest.GoalData);
                     PassQuest = true;
@@ -142,13 +143,18 @@ namespace Neon.HabboHotel.Quests
                 case QuestType.XMAS_PARTY:
                     NewProgress++;
                     if (NewProgress == UserQuest.GoalData)
+                    {
                         PassQuest = true;
+                    }
+
                     break;
 
                 case QuestType.GIVE_ITEM:
 
                     if (EventData != UserQuest.GoalData)
+                    {
                         return;
+                    }
 
                     NewProgress = Convert.ToInt32(UserQuest.GoalData);
                     PassQuest = true;
@@ -160,7 +166,9 @@ namespace Neon.HabboHotel.Quests
                 dbClient.RunQuery("UPDATE `user_quests` SET `progress` = '" + NewProgress + "' WHERE `user_id` = '" + Session.GetHabbo().Id + "' AND `quest_id` = '" + UserQuest.Id + "' LIMIT 1");
 
                 if (PassQuest)
+                {
                     dbClient.RunQuery("UPDATE `user_stats` SET `quest_id` = '0' WHERE `id` = '" + Session.GetHabbo().Id + "' LIMIT 1");
+                }
             }
 
             Session.GetHabbo().quests[Session.GetHabbo().GetStats().QuestID] = NewProgress;
@@ -200,7 +208,9 @@ namespace Neon.HabboHotel.Quests
             foreach (Quest Quest in _quests.Values.ToList())
             {
                 if (Quest.Category.Contains("xmas2012"))
+                {
                     continue;
+                }
 
                 if (!UserQuestGoals.ContainsKey(Quest.Category))
                 {
@@ -221,10 +231,12 @@ namespace Neon.HabboHotel.Quests
 
             foreach (Quest Quest in _quests.Values.ToList())
             {
-                foreach (var Goal in UserQuestGoals)
+                foreach (KeyValuePair<string, int> Goal in UserQuestGoals)
                 {
                     if (Quest.Category.Contains("xmas2012"))
+                    {
                         continue;
+                    }
 
                     if (Quest.Category == Goal.Key && Quest.Number == Goal.Value)
                     {
@@ -242,7 +254,9 @@ namespace Neon.HabboHotel.Quests
         {
             Quest Quest = GetQuest(QuestId);
             if (Quest == null)
+            {
                 return;
+            }
 
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
@@ -259,7 +273,9 @@ namespace Neon.HabboHotel.Quests
         {
             Quest Quest = GetQuest(QuestId);
             if (Quest == null)
+            {
                 return;
+            }
 
             Session.SendMessage(new QuestStartedComposer(Session, Quest));
         }
@@ -267,13 +283,17 @@ namespace Neon.HabboHotel.Quests
         public void GetCurrentQuest(GameClient Session, ClientPacket Message)
         {
             if (!Session.GetHabbo().InRoom)
+            {
                 return;
+            }
 
             Quest UserQuest = GetQuest(Session.GetHabbo().QuestLastCompleted);
             Quest NextQuest = GetNextQuestInSeries(UserQuest.Category, UserQuest.Number + 1);
 
             if (NextQuest == null)
+            {
                 return;
+            }
 
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {
@@ -290,7 +310,9 @@ namespace Neon.HabboHotel.Quests
         {
             Quest Quest = GetQuest(Session.GetHabbo().GetStats().QuestID);
             if (Quest == null)
+            {
                 return;
+            }
 
             using (IQueryAdapter dbClient = NeonEnvironment.GetDatabaseManager().GetQueryReactor())
             {

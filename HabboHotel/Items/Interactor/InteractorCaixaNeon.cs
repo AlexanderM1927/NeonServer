@@ -1,21 +1,14 @@
-﻿using Neon.Communication.Packets.Outgoing.Catalog;
-using Neon.Communication.Packets.Outgoing.Inventory.Furni;
+﻿using Neon.Communication.Packets.Outgoing.Inventory.Furni;
 using Neon.Communication.Packets.Outgoing.Rooms.Notifications;
 using Neon.Communication.Packets.Outgoing.Users;
 using Neon.Database.Interfaces;
 using Neon.HabboHotel.GameClients;
 using Neon.HabboHotel.Rooms;
 using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Management.Instrumentation;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neon.HabboHotel.Items.Interactor
 {
-    class InteractorCaixaNeon : IFurniInteractor
+    internal class InteractorCaixaNeon : IFurniInteractor
     {
         public void OnPlace(GameClient Session, Item Item)
         {
@@ -32,9 +25,14 @@ namespace Neon.HabboHotel.Items.Interactor
         {
             RoomUser User = null;
             if (Session != null)
+            {
                 User = Item.GetRoom().GetRoomUserManager().GetRoomUserByHabbo(Session.GetHabbo().Id);
+            }
+
             if (User == null)
+            {
                 return;
+            }
 
             //  +-+-+-+-+-+ +-+-+-+-+-+
             //  |Arca Grega Fixado by: Javas
