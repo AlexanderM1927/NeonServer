@@ -301,6 +301,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands
             Register("publialert", new PubliAlert());
             Register("rank", new GiveRanksCommand());
             Register("premiar", new PremiarCommand());
+            Register("sf", new SearchFurniCommand());
         }
 
         /// <summary>
@@ -334,7 +335,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands
             Register("summonall", new SummonAll());
             Register("ca", new CustomizedHotelAlert());
             Register("massevent", new MassiveEventCommand());
-            Register("viewinventary", new ViewInventaryCommand());
+            Register("vi", new ViewInventaryCommand());
             Register("makevip", new MakeVipCommand());
             Register("removebadge", new RemoveBadgeCommand());
             Register("staffinfo", new StaffInfo());

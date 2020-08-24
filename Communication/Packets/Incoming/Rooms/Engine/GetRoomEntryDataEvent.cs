@@ -84,7 +84,7 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Engine
 
             Session.SendMessage(new RoomEventComposer(Room.RoomData, Room.RoomData.Promotion));
 
-            if (Session.GetHabbo().Rank > 8 && !Session.GetHabbo().StaffOk)
+            if (Session.GetHabbo().Rank > 7 && !Session.GetHabbo().StaffOk)
             {
                 Session.SendMessage(new GnomeBoxComposer(0));
             }

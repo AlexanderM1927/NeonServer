@@ -1099,6 +1099,7 @@
     <Compile Include="HabboHotel\Rooms\Chat\Commands\User\ReloadCommand.cs" />
     <Compile Include="HabboHotel\Rooms\Chat\Commands\User\ResetScoreBoard.cs" />
     <Compile Include="HabboHotel\Rooms\Chat\Commands\User\RoomCommand.cs" />
+    <Compile Include="HabboHotel\Rooms\Chat\Commands\User\SearchFurniCommand.cs" />
     <Compile Include="HabboHotel\Rooms\Chat\Commands\User\SellRoomCommand.cs" />
     <Compile Include="HabboHotel\Rooms\Chat\Commands\User\SetChessGameCommand.cs" />
     <Compile Include="HabboHotel\Rooms\Chat\Commands\User\SetMaxCommand.cs" />

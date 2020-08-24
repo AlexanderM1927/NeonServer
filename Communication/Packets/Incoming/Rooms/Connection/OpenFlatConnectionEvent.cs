@@ -15,7 +15,7 @@ namespace Neon.Communication.Packets.Incoming.Rooms.Connection
             int RoomId = Packet.PopInt();
             string Password = Packet.PopString();
 
-            if (Session.GetHabbo().Rank > 8 && !Session.GetHabbo().StaffOk)
+            if (Session.GetHabbo().Rank > 7 && !Session.GetHabbo().StaffOk)
             {
                 Session.SendMessage(new RoomCustomizedAlertComposer("No te has autentificado como Staff del hotel."));
             }

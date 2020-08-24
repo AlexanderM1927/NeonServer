@@ -10,7 +10,7 @@ namespace Neon.HabboHotel.Rooms.Chat.Commands.Administrator
 
         public string Description => "Permite ver el inventario de un usuario";
 
-        public void Execute(GameClients.GameClient Session, Rooms.Room Room, string[] Params)
+        public void Execute(GameClient Session, Room Room, string[] Params)
         {
             if (Room == null)
             {
